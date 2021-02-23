@@ -1,0 +1,11 @@
+# General
+include CHANGES.rst
+include LICENSE
+
+# versioneer
+include versioneer.py
+include dmriprep/_version.py
+
+# data
+include dmriprep/config/reports-spec.yml
+recursive-include * *.json

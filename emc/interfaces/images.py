@@ -170,7 +170,8 @@ class ReorderOutputsInputSpec(BaseInterfaceInputSpec):
     warped_dwi_images = InputMultiObject(File(exists=True), mandatory=True)
     initial_transforms = InputMultiObject(File(exists=True), mandatory=True)
     model_based_transforms = InputMultiObject(traits.List(), mandatory=True)
-    model_predicted_images = InputMultiObject(File(exists=True), mandatory=True)
+    model_predicted_images = InputMultiObject(File(exists=True),
+                                              mandatory=True)
 
 
 class ReorderOutputsOutputSpec(TraitedSpec):
@@ -192,7 +193,8 @@ class ReorderOutputs(SimpleInterface):
         model_transforms = self.inputs.model_based_transforms[::-1]
         model_images = self.inputs.model_predicted_images[::-1]
         b0_transforms = [
-            self.inputs.initial_transforms[idx] for idx in self.inputs.b0_indices
+            self.inputs.initial_transforms[idx] for idx in
+                            self.inputs.b0_indices
         ][::-1]
         num_dwis = len(self.inputs.initial_transforms)
 
@@ -206,7 +208,8 @@ class ReorderOutputs(SimpleInterface):
                 full_predicted_dwi_series.append(model_images.pop())
                 full_warped_images.append(warped_dwi_images.pop())
 
-        if not len(model_transforms) == len(b0_transforms) == len(model_images) == 0:
+        if not len(model_transforms) == len(b0_transforms) == \
+               len(model_images) == 0:
             raise Exception("Unable to recombine images and transforms")
 
         self._results["emc_warped_images"] = full_warped_images

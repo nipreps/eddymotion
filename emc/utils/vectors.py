@@ -10,8 +10,8 @@ BVEC_NORM_EPSILON = 0.1
 def _nonoverlapping_qspace_samples(
     prediction_bval, prediction_bvec, all_bvals, all_bvecs, cutoff
 ):
-    """Ensure that none of the training samples are too close to the sample to predict.
-    Parameters
+    """Ensure that none of the training samples are too close to the sample to
+     predict.
     """
     min_bval = min(min(all_bvals), prediction_bval)
     all_qvals = np.sqrt(all_bvals - min_bval)
@@ -21,12 +21,15 @@ def _nonoverlapping_qspace_samples(
     max_qval = max(max(all_qvals), prediction_qval)
     all_qvals_scaled = all_qvals / max_qval * 100
     scaled_qvecs = all_bvecs * all_qvals_scaled[:, np.newaxis]
-    scaled_prediction_qvec = prediction_bvec * (prediction_qval / max_qval * 100)
+    scaled_prediction_qvec = prediction_bvec * \
+                             (prediction_qval / max_qval * 100)
 
     # Calculate the distance between the sampled qvecs and the prediction qvec
     ok_samples = (
-        np.linalg.norm(scaled_qvecs - scaled_prediction_qvec, axis=1) > cutoff
-    ) * (np.linalg.norm(scaled_qvecs + scaled_prediction_qvec, axis=1) > cutoff)
+        np.linalg.norm(scaled_qvecs - scaled_prediction_qvec, axis=1
+                       ) > cutoff
+    ) * (np.linalg.norm(scaled_qvecs + scaled_prediction_qvec, axis=1
+                        ) > cutoff)
 
     return ok_samples
 

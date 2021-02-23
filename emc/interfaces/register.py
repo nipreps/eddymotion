@@ -1,7 +1,6 @@
 """Register tools interfaces."""
 import numpy as np
 import nibabel as nb
-import dmriprep
 from nipype import logging
 from pathlib import Path
 from nipype.utils.filemanip import fname_presuffix
@@ -44,7 +43,7 @@ class ApplyAffine(SimpleInterface):
     output_spec = _ApplyAffineOutputSpec
 
     def _run_interface(self, runtime):
-        from dmriprep.utils.register import apply_affine
+        from emc.utils.register import apply_affine
 
         warped_image_nifti = apply_affine(
             nb.load(self.inputs.moving_image),
@@ -105,11 +104,12 @@ class Register(SimpleInterface):
     output_spec = _RegisterOutputSpec
 
     def _run_interface(self, runtime):
-        from dmriprep.utils.register import affine_registration
+        import emc.utils
+        from emc.utils.register import affine_registration
 
         reg_types = ["c_of_mass", "translation", "rigid", "affine"]
         pipeline = [
-            getattr(dmriprep.utils.register, i)
+            getattr(emc.utils.register, i)
             for i in self.inputs.pipeline
             if i in reg_types
         ]

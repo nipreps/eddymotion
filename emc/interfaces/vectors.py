@@ -9,7 +9,7 @@ from nipype.interfaces.base import (
     traits,
     isdefined,
 )
-from emc.utils.vectors import DiffusionGradientTable, B0_THRESHOLD
+from dmriprep.utils.vectors import DiffusionGradientTable, B0_THRESHOLD
 
 
 class _ReorientVectorsInputSpec(BaseInterfaceInputSpec):

@@ -101,7 +101,7 @@ class CombineMotions(SimpleInterface):
 
     def _run_interface(self, runtime):
         import pandas as pd
-        from dmriprep.utils.images import get_params
+        from emc.utils.images import get_params
 
         output_fname = os.path.join(runtime.cwd, "motion_params.csv")
         motion_parms_path = os.path.join(runtime.cwd, "movpar.txt")

@@ -1,12 +1,11 @@
 import nipype.pipeline.engine as pe
 from nipype.interfaces import utility as niu, afni, ants
+from dmriprep.interfaces.images import ExtractB0, RescaleB0
+from emc.interfaces.model import SignalPrediction
 from emc.interfaces.images import (
-    SignalPrediction,
     CalculateCNR,
     ReorderOutputs,
-    ExtractB0,
     MatchTransforms,
-    RescaleB0,
     CombineMotions,
     ImageMath,
 )

@@ -36,11 +36,11 @@ class SignalPrediction(SimpleInterface):
     output_spec = SignalPredictionOutputSpec
 
     def _run_interface(self, runtime):
+        import warnings
+        import time
         from emc.utils.images import rapid_load
         from emc.utils.vectors import _nonoverlapping_qspace_samples
         from dipy.core.gradients import gradient_table_from_bvals_bvecs
-        import warnings
-        import time
         from dipy.reconst.shore import ShoreModel
         from dipy.reconst.dti import TensorModel
         from emc.utils.model import SFM4HMC, ExponentialIsotropicModel

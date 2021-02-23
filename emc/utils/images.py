@@ -37,7 +37,8 @@ def match_transforms(dwi_files, transforms, b0_indices):
 
     # Do sanity checks
     if not len(transforms) == len(b0_indices):
-        raise Exception("number of transforms does not match number of b0 images")
+        raise Exception("number of transforms does not match number of b0 "
+                        "images")
 
     # Create a list of which emc affines go with each of the split images
     nearest_affines = []

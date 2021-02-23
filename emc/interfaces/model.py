@@ -51,7 +51,7 @@ class SignalPrediction(SimpleInterface):
         pred_val = self.inputs.bval_to_predict
 
         # Load the reference B0
-        ref_data = nb.load(self.inputs.b0_median)
+        ref_data = nb.load(self.inputs.b0_median).get_fdata()
 
         # Load the mask image:
         mask_img = nb.load(self.inputs.b0_mask)

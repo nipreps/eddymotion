@@ -38,7 +38,6 @@ def _do_svd(X, y, jit=True):
     return uu, selt, v_t, ols_coef
 
 
-# Cell
 class ExponentialIsotropicModel(IsotropicModel):
     """
     Representing the isotropic signal as a fit to an exponential decay function

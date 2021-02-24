@@ -1,6 +1,6 @@
-# Contributing to dMRIPrep
+# Contributing to EddyMotionCorrection
 
-Welcome to the dMRIPrep repository!
+Welcome to the EddyMotionCorrection repository!
 We're excited you're here and want to contribute.
 
 **Imposter's syndrome disclaimer**[^1]: We want your help. No, really.
@@ -28,9 +28,9 @@ seasoned contributors have glossed over.
 
 ## Driving principles
 
-*dMRIPrep* is very much influenced and envisioned as a translation of [*fMRIPrep*][link_fmriprep]
+*EddyMotionCorrection* is very much influenced and envisioned as a translation of [*fMRIPrep*][link_fmriprep]
 to diffusion MRI data.
-That means *dMRIPrep* shares with *fMRIPrep* (and more generally, other
+That means *EddyMotionCorrection* shares with *fMRIPrep* (and more generally, other
 *NIPreps* [NeuroImaging Preprocessing pipelines]) the fundamental design principles:
 
   1. The tool only and fully supports BIDS and BIDS-Derivatives for the input and output data.
@@ -65,13 +65,13 @@ Already know what you're looking for in this guide? Jump to the following sectio
 * [Contributing through Github](#contributing-through-github)
 * [Understanding issues](#understanding-issues)
 * [Making a change](#making-a-change)
-* [Structuring contributions](#dMRIPrep-coding-style-guide)
+* [Structuring contributions](#EddyMotionCorrection-coding-style-guide)
 * [Licensing](#licensing)
 * [Recognizing contributors](#recognizing-contributions)
 
 ## Joining the conversation
 
-*dMRIPrep* is maintained by a growing group of enthusiastic developers&mdash;
+*EddyMotionCorrection* is maintained by a growing group of enthusiastic developers&mdash;
 and we're excited to have you join!
 Most of our discussions will take place on open [issues][link_issues].
 
@@ -102,7 +102,7 @@ GitHub has a really helpful page for getting started with
 
 Every project on GitHub uses [issues][link_issues] slightly differently.
 
-The following outlines how the *dMRIPrep* developers think about these tools.
+The following outlines how the *EddyMotionCorrection* developers think about these tools.
 
 * **Issues** are individual pieces of work that need to be completed to move the project forward.
 A general guideline: if you find yourself tempted to write a great big issue that
@@ -115,19 +115,19 @@ is difficult to be described as one unit of work, please consider splitting it i
 
 The current list of issue labels are [here][link_labels] and include:
 
-* [![Good first issue](https://img.shields.io/github/labels/nipreps/dmriprep/good%20first%20issue)][link_firstissue] *These issues contain a task that is amenable to new contributors because it doesn't entail a steep learning curve.*
+* [![Good first issue](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/good%20first%20issue)][link_firstissue] *These issues contain a task that is amenable to new contributors because it doesn't entail a steep learning curve.*
 
     If you feel that you can contribute to one of these issues,
     we especially encourage you to do so!
 
-* [![Bug](https://img.shields.io/github/labels/nipreps/dmriprep/bug)][link_bugs] *These issues point to problems in the project.*
+* [![Bug](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/bug)][link_bugs] *These issues point to problems in the project.*
 
     If you find new a bug, please give as much detail as possible in your issue,
     including steps to recreate the error.
     If you experience the same bug as one already listed,
     please add any additional information that you have as a comment.
 
-* [![Enhancement](https://img.shields.io/github/labels/nipreps/dmriprep/enhancement)][link_enhancement] *These issues are asking for new features and improvements to be considered by the project.*
+* [![Enhancement](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/enhancement)][link_enhancement] *These issues are asking for new features and improvements to be considered by the project.*
 
     Please try to make sure that your requested feature is distinct from any others
     that have already been requested or implemented.
@@ -139,44 +139,44 @@ we have two sets of special labels:
 
 | Label                                                                                           | Description                                                                                           |
 |--------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/impact%3A%20high) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/impact%3A%20medium) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/impact%3A%20low)    | Estimation of the downstream impact the proposed feature/bugfix will have.                |
-| ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/effort%3A%20high) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/effort%3A%20medium) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/effort%3A%20low)    | Estimation of effort required to implement the requested feature or fix the reported bug. |
+| ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/impact%3A%20high) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/impact%3A%20medium) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/impact%3A%20low)    | Estimation of the downstream impact the proposed feature/bugfix will have.                |
+| ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/effort%3A%20high) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/effort%3A%20medium) <br> ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/effort%3A%20low)    | Estimation of effort required to implement the requested feature or fix the reported bug. |
 
 These labels help triage and set priorities to the development tasks.
 For instance, one bug regression that has been reported to affect most of the users after
 a release with an easy fix because it is a known old problem that came back.
-Such an issue will typically be assigned the following labels ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/bug) ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/impact%3A%20high) ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/effort%3A%20low), and its priority will be maximal since addressing low-effort high-impact deliver the maximum turnout without increasing the churn by much.
+Such an issue will typically be assigned the following labels ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/bug) ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/impact%3A%20high) ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/effort%3A%20low), and its priority will be maximal since addressing low-effort high-impact deliver the maximum turnout without increasing the churn by much.
 
-Of course, the implementation of long-term goaled lines may include the scheduling of ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/impact%3A%20medium) ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/effort%3A%20high).
-Finally, ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/impact%3A%20low) ![GitHub labels](https://img.shields.io/github/labels/nipreps/dmriprep/effort%3A%20high) issues are less likely to be addressed.
+Of course, the implementation of long-term goaled lines may include the scheduling of ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/impact%3A%20medium) ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/effort%3A%20high).
+Finally, ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/impact%3A%20low) ![GitHub labels](https://img.shields.io/github/labels/nipreps/EddyMotionCorrection/effort%3A%20high) issues are less likely to be addressed.
 
 ## Making a change
 
-We appreciate all contributions to *dMRIPrep*,
+We appreciate all contributions to *EddyMotionCorrection*,
 but those accepted fastest will follow a workflow similar to the following:
 
 1. **Comment on an existing issue or open a new issue referencing your addition.**<br />
-  This allows other members of the *dMRIPrep* development team to confirm that you aren't
+  This allows other members of the *EddyMotionCorrection* development team to confirm that you aren't
   overlapping with work that's currently underway and that everyone is on the same page
   with the goal of the work you're going to carry out.<br />
   [This blog][link_pushpullblog] is a nice explanation of why putting this work in up front
   is so useful to everyone involved.
   
-1. **[Fork][link_fork] the [dMRIPrep repository][link_dMRIPrep] to your profile.**<br />
-  This is now your own unique copy of *dMRIPrep*.
+1. **[Fork][link_fork] the [EddyMotionCorrection repository][link_EddyMotionCorrection] to your profile.**<br />
+  This is now your own unique copy of *EddyMotionCorrection*.
   Changes here won't effect anyone else's work, so it's a safe space to explore edits to the code!
   
-1. **[Clone][link_clone] your forked dMRIPrep repository to your machine/computer.**<br />
+1. **[Clone][link_clone] your forked EddyMotionCorrection repository to your machine/computer.**<br />
   While you can edit files [directly on github][link_githubedit], sometimes the changes
   you want to make will be complex and you will want to use a [text editor][link_texteditor]
   that you have installed on your local machine/computer.
   (One great text editor is [vscode][link_vscode]).<br />  
   In order to work on the code locally, you must clone your forked repository.<br />  
-  To keep up with changes in the dMRIPrep repository,
-  add the ["upstream" dMRIPrep repository as a remote][link_addremote]
+  To keep up with changes in the EddyMotionCorrection repository,
+  add the ["upstream" EddyMotionCorrection repository as a remote][link_addremote]
   to your locally cloned repository.  
     ```Shell
-    git remote add upstream https://github.com/nipreps/dmriprep.git
+    git remote add upstream https://github.com/nipreps/EddyMotionCorrection.git
     ```
     Make sure to [keep your fork up to date][link_updateupstreamwiki] with the upstream repository.<br />  
     For example, to update your master branch on your local cloned repository:  
@@ -200,10 +200,10 @@ but those accepted fastest will follow a workflow similar to the following:
         You should name all your documentation branches with the prefix `doc/` or `docs/`
         as that will preempt triggering the full battery of continuous integration tests.
 
-1. **Make the changes you've discussed, following the [dMRIPrep coding style guide](#dMRIPrep-coding-style-guide).**<br />
+1. **Make the changes you've discussed, following the [EddyMotionCorrection coding style guide](#EddyMotionCorrection-coding-style-guide).**<br />
   Try to keep the changes focused: it is generally easy to review changes that address one feature or bug at a time.
   It can also be helpful to test your changes locally,
-  using a [dMRIPrep development environment][link_devel].
+  using a [EddyMotionCorrection development environment][link_devel].
   Once you are satisfied with your local changes, [add/commit/push them][link_add_commit_push]
   to the branch on your forked repository.
 
@@ -230,7 +230,7 @@ but those accepted fastest will follow a workflow similar to the following:
    [@bedevere-bot](https://github.com/search?q=commenter%3Abedevere-bot+soft+cushions) 
    to [poke you with soft cushions!](https://youtu.be/XnS49c9KZw8?t=1m7s)
 
-## dMRIPrep coding style guide
+## EddyMotionCorrection coding style guide
 
 Whenever possible, instances of Nipype `Node`s and `Workflow`s should use the same names
 as the variables they are assigned to.
@@ -276,8 +276,8 @@ myworkflow_rh_wf = init_workflow_wf(name='myworkflow_rh_wf')
 
 ## Licensing
 
-*dMRIPrep* is licensed under the Apache 2.0 license.
-By contributing to *dMRIPrep*,
+*EddyMotionCorrection* is licensed under the Apache 2.0 license.
+By contributing to *EddyMotionCorrection*,
 you acknowledge that any contributions will be licensed under the same terms.
 
 ## Recognizing contributions
@@ -325,7 +325,7 @@ of submission and wrote the manuscript.
 The ordering of the rest of the authors follows the ordering criteria of the [zenodo file][link_zenodo],
 with the difference that all the authors are pulled together in a unique list (i.e.,
 *creators* and *contributors* are treated equivalently).
-*dMRIPrep* and its community adheres to open science principles, such that a pre-print should
+*EddyMotionCorrection* and its community adheres to open science principles, such that a pre-print should
 be posted on an adequate archive service (e.g., [ArXiv](https://arxiv.org) or
 [BioRxiv](https://biorxiv.org)) prior publication.
 
@@ -344,10 +344,10 @@ You're awesome. :wave::smiley:
     [MetPy project](https://github.com/Unidata/MetPy).
 
 [link_github]: https://github.com/
-[link_dMRIPrep]: https://github.com/nipreps/dmriprep
+[link_EddyMotionCorrection]: https://github.com/nipreps/EddyMotionCorrection
 [link_signupinstructions]: https://help.github.com/articles/signing-up-for-a-new-github-account
 
-[link_neurostars]: https://neurostars.org/tags/dmriprep
+[link_neurostars]: https://neurostars.org/tags/EddyMotionCorrection
 
 [link_git]: https://git-scm.com/
 [link_handbook]: https://guides.github.com/introduction/git-handbook/
@@ -357,13 +357,13 @@ You're awesome. :wave::smiley:
 [markdown]: https://daringfireball.net/projects/markdown
 [rick_roll]: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
-[link_issues]: https://github.com/nipreps/dmriprep/issues
-[link_labels]: https://github.com/nipreps/dmriprep/labels
+[link_issues]: https://github.com/nipreps/EddyMotionCorrection/issues
+[link_labels]: https://github.com/nipreps/EddyMotionCorrection/labels
 [link_discussingissues]: https://help.github.com/articles/discussing-projects-in-issues-and-pull-requests
 
-[link_bugs]: https://github.com/nipreps/dmriprep/labels/bug
-[link_firstissue]: https://github.com/nipreps/dmriprep/labels/good%20first%20issue
-[link_enhancement]: https://github.com/nipreps/dmriprep/labels/enhancement
+[link_bugs]: https://github.com/nipreps/EddyMotionCorrection/labels/bug
+[link_firstissue]: https://github.com/nipreps/EddyMotionCorrection/labels/good%20first%20issue
+[link_enhancement]: https://github.com/nipreps/EddyMotionCorrection/labels/enhancement
 
 [link_pullrequest]: https://help.github.com/articles/creating-a-pull-request-from-a-fork
 [link_fork]: https://help.github.com/articles/fork-a-repo/
@@ -377,12 +377,12 @@ You're awesome. :wave::smiley:
 [link_add_commit_push]: https://help.github.com/articles/adding-a-file-to-a-repository-using-the-command-line
 [link_updateupstreamwiki]: https://help.github.com/articles/syncing-a-fork/
 [link_stemmrolemodels]: https://github.com/KirstieJane/STEMMRoleModels
-[link_zenodo]: https://github.com/nipreps/dmriprep/blob/master/.zenodo.json
-[link_update_script]: https://github.com/nipreps/dmriprep/blob/master/.maintenance/update_zenodo.py
-[link_devel]: https://dmriprep.readthedocs.io/en/latest/contributors.html
+[link_zenodo]: https://github.com/nipreps/EddyMotionCorrection/blob/master/.zenodo.json
+[link_update_script]: https://github.com/nipreps/EddyMotionCorrection/blob/master/.maintenance/update_zenodo.py
+[link_devel]: https://EddyMotionCorrection.readthedocs.io/en/latest/contributors.html
 [link_fmriprep]: http://fmriprep.org
 [link_bidsapps]: https://bids-apps.neuroimaging.io
-[link_mattermost]: https://mattermost.brainhack.org/brainhack/channels/dmriprep
+[link_mattermost]: https://mattermost.brainhack.org/brainhack/channels/EddyMotionCorrection
 
 [enh_ex]: https://github.com/poldracklab/fmriprep/pull/1508
 [fix_ex]: https://github.com/poldracklab/fmriprep/pull/1378

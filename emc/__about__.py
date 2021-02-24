@@ -1,18 +1,13 @@
-# emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-
-# vi: set ft=python sts=4 ts=4 sw=4 et:
 """Base module variables."""
 from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
 
 __packagename__ = 'emc'
-__copyright__ = 'Copyright 2019, The dMRIPrep developers'
-__credits__ = ('Contributors: please check the ``.zenodo.json`` file at the top-level folder'
-               'of the repository')
-__url__ = 'https://github.com/nipreps/dmriprep'
+__copyright__ = 'Copyright 2021, The EddyMotionCorrection developers'
+__url__ = 'https://github.com/dPys/EddyMotionCorrection'
 
 DOWNLOAD_URL = (
-    'https://github.com/nipreps/{name}/archive/{ver}.tar.gz'.format(
+    'https://github.com/dPys/{name}/archive/{ver}.tar.gz'.format(
         name=__packagename__, ver=__version__))
 
-__ga_id__ = "UA-156165436-1"

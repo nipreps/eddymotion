@@ -8,8 +8,8 @@ build/**/*
 build
 dist/**/*
 dist
-dmriprep.egg-info/**/*
-dmriprep.egg-info
+emc.egg-info/**/*
+emc.egg-info
 .eggs/**/*
 .eggs
 

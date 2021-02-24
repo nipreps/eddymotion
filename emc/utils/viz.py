@@ -1,3 +1,6 @@
+"""
+Vizualization tools
+"""
 import numpy as np
 import nibabel as nb
 from skimage import measure

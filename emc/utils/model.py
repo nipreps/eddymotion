@@ -1,3 +1,6 @@
+"""
+Prediction tools
+"""
 import numpy as np
 from dipy.reconst.sfm import (SparseFascicleModel, SparseFascicleFit,
                               IsotropicFit, IsotropicModel,

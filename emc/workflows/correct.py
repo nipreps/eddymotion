@@ -1,3 +1,7 @@
+"""
+Core workflow
+"""
+
 import nipype.pipeline.engine as pe
 from nipype.interfaces import utility as niu, afni, ants
 from dmriprep.interfaces.images import ExtractB0, RescaleB0
@@ -612,7 +616,6 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         "from nipype.utils.filemanip import fname_presuffix",
     ]
     from dmriprep.workflows.dwi.util import init_dwi_reference_wf
-    from dipy.denoise.nlmeans import nlmeans_3d
 
     emc_wf = pe.Workflow(name=name)
 
@@ -915,4 +918,5 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
             ),
         ]
     )
+
     return emc_wf

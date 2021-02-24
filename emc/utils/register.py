@@ -1,5 +1,5 @@
 """
-Linear affine registration tools for motion correction.
+Linear affine registration tools
 """
 import numpy as np
 import nibabel as nb

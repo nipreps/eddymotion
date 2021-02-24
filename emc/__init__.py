@@ -1,4 +1,4 @@
-"""Top-level package for emc."""
+"""Top-level package for emc"""
 import warnings as _warnings
 from .__about__ import (
     __version__,

@@ -1,4 +1,6 @@
-"""Prediction interfaces."""
+"""
+Prediction interfaces
+"""
 from pathlib import Path
 import nibabel as nb
 import numpy as np

@@ -1,4 +1,6 @@
-"""Register tools interfaces."""
+"""
+Registration interfaces
+"""
 import numpy as np
 import nibabel as nb
 from nipype import logging

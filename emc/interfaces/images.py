@@ -1,4 +1,6 @@
-"""Image tools interfaces."""
+"""
+Image prediction interfaces
+"""
 import os
 import numpy as np
 import nibabel as nb

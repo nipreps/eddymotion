@@ -1,4 +1,6 @@
-"""Utilities to operate on diffusion gradients."""
+"""
+Vector prediction tools
+"""
 from pathlib import Path
 from itertools import permutations
 import numpy as np

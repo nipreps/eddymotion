@@ -9,7 +9,8 @@ from nipype.interfaces.base import (
     File, Directory, InputMultiObject, Str, isdefined,
     SimpleInterface)
 from emc.utils.viz import _iteration_summary_plot, before_after_images
-
+import matplotlib
+matplotlib.use('agg')
 
 class SummaryOutputSpec(TraitedSpec):
     out_report = File(exists=True, desc='HTML segment containing summary')
@@ -95,4 +96,6 @@ class EMCReport(SummaryInterface):
         out_file = os.path.join(runtime.cwd, "emc_reg.gif")
         imageio.mimsave(out_file, images, fps=1)
         self._results['plot_file'] = out_file
+
+        del images
         return runtime

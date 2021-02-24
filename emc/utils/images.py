@@ -18,13 +18,13 @@ def average_images(images):
     return output_average_image
 
 
-def rapid_load(image_list, dtype=np.float32):
-    example_img = nb.load(image_list[0])
-    num_images = len(image_list)
-    output_matrix = np.zeros(tuple(example_img.shape) + (num_images,), dtype=dtype)
+def series_files2series_arr(image_list, dtype=np.float32):
+    output_array = np.zeros(
+        tuple(nb.load(image_list[0]).shape) + (len(image_list),), dtype=dtype)
     for image_num, image_path in enumerate(image_list):
-        output_matrix[..., image_num] = nb.load(image_path).get_fdata(dtype=dtype)
-    return output_matrix
+        output_array[..., image_num] = np.asarray(nb.load(image_path,
+                                                           dtype=dtype))
+    return output_array
 
 
 def match_transforms(dwi_files, transforms, b0_indices):
@@ -40,7 +40,7 @@ def match_transforms(dwi_files, transforms, b0_indices):
         raise Exception("number of transforms does not match number of b0 "
                         "images")
 
-    # Create a list of which emc affines go with each of the split images
+    # Create a list of which emc affines that correspond to the split images
     nearest_affines = []
     for index in range(num_dwis):
         nearest_b0_num = np.argmin(np.abs(index - original_b0_indices))

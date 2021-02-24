@@ -140,11 +140,12 @@ class CalculateCNR(SimpleInterface):
     output_spec = CalculateCNROutputSpec
 
     def _run_interface(self, runtime):
-        from emc.utils.images import rapid_load
+        from emc.utils.images import series_files2series_arr
 
         cnr_file = os.path.join(runtime.cwd, "emc_CNR.nii.gz")
-        model_images = rapid_load(self.inputs.predicted_images)
-        observed_images = rapid_load(self.inputs.emc_warped_images)
+        model_images = series_files2series_arr(self.inputs.predicted_images)
+        observed_images = series_files2series_arr(
+            self.inputs.emc_warped_images)
         mask_image = nb.load(self.inputs.mask_image)
         mask = mask_image.get_data() > 1e-6
         signal_vals = model_images[mask]

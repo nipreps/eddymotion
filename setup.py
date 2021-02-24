@@ -1,4 +1,4 @@
-"""dMRIPrep's setup script."""
+"""EMC's setup script."""
 import sys
 from setuptools import setup
 import versioneer

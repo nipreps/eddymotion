@@ -20,10 +20,10 @@ def average_images(images):
 
 def series_files2series_arr(image_list, dtype=np.float32):
     output_array = np.zeros(
-        tuple(nb.load(image_list[0]).shape) + (len(image_list),), dtype=dtype)
+        tuple(nb.load(image_list[0]).shape) + (len(image_list),)).astype(dtype=dtype)
     for image_num, image_path in enumerate(image_list):
-        output_array[..., image_num] = np.asarray(nb.load(image_path,
-                                                           dtype=dtype))
+        output_array[..., image_num] = np.asarray(nb.load(image_path
+                                                          ).dataobj).astype(dtype=dtype)
     return output_array
 
 

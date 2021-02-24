@@ -38,7 +38,7 @@ class SignalPrediction(SimpleInterface):
     def _run_interface(self, runtime):
         import warnings
         import time
-        from emc.utils.images import rapid_load
+        from emc.utils.images import series_files2series_arr
         from emc.utils.vectors import _nonoverlapping_qspace_samples
         from dipy.core.gradients import gradient_table_from_bvals_bvecs
         from dipy.reconst.shore import ShoreModel
@@ -50,12 +50,9 @@ class SignalPrediction(SimpleInterface):
         pred_vec = self.inputs.bvec_to_predict
         pred_val = self.inputs.bval_to_predict
 
-        # Load the reference B0
-        ref_data = nb.load(self.inputs.b0_median).get_fdata()
-
         # Load the mask image:
         mask_img = nb.load(self.inputs.b0_mask)
-        mask_array = mask_img.get_data() > 1e-6
+        mask_array = mask_img.get_fdata() > 1e-6
 
         if self.inputs.prune_b0s is True:
             all_images = prune_b0s_from_dwis(
@@ -85,30 +82,33 @@ class SignalPrediction(SimpleInterface):
         ]
         training_bvecs = all_bvecs[training_mask]
         training_bvals = all_bvals[training_mask]
-        # print("Training with volumes: {}".format(str(training_indices)))
-
-        # Load training data and fit the model
-        training_data = rapid_load(training_image_paths)
+        # print(f"Training with volumes: {training_indices}")
 
         # Build gradient table object
+        # Here, B0_THRESHOLD is imposed BY US, so we set it at 0.
         training_gtab = gradient_table_from_bvals_bvecs(
             training_bvals, training_bvecs, b0_threshold=0
         )
 
-        # Checked shelledness
+        # Checked shelled-ness
         if len(np.unique(training_gtab.bvals)) > 2:
             is_shelled = True
         else:
             is_shelled = False
 
         # Get the vector for the desired coordinate
+        # Again, here, B0_THRESHOLD is imposed BY US, so we set it at 0.
         prediction_gtab = gradient_table_from_bvals_bvecs(
             np.array(pred_val)[None], np.array(pred_vec)[None, :],
             b0_threshold=0
         )
 
+        val_str = str((pred_val,) +
+                      tuple(np.round(pred_vec, decimals=2))
+                      ).replace(', ', '_').replace(
+            '(', '').replace(')', '')
         if is_shelled and self.inputs.model_name == "3dshore":
-            # This is Matt's old code for multi-shell
+            # This part is adapted from Matt's old code for multi-shell Shore
 
             radial_order = 6
             zeta = 700
@@ -119,8 +119,8 @@ class SignalPrediction(SimpleInterface):
                                          radial_order=radial_order,
                                          zeta=zeta, lambdaN=lambdaN,
                                          lambdaL=lambdaL)
-            estimator_shore_fit = estimator_shore.fit(training_data,
-                                                      mask=mask_array)
+            estimator_shore_fit = estimator_shore.fit(
+                series_files2series_arr(training_image_paths), mask=mask_array)
             t2 = time.time()
             print(f"Fit time: {t2 - t1}")
             t3 = time.time()
@@ -129,7 +129,7 @@ class SignalPrediction(SimpleInterface):
             print(f"Predict time: {t4 - t3}")
             pred_shore_fit[~mask_array] = 0
             pred_fit_file = f"{runtime.cwd}/predicted_shore_" \
-                                  f"{(pred_val,) + tuple(np.round(pred_vec, decimals=2))}.nii.gz"
+                                  f"{val_str}.nii.gz"
             nb.Nifti1Image(pred_shore_fit, mask_img.affine, mask_img.header
                            ).to_filename(pred_fit_file)
         elif self.inputs.model_name == "sfm":
@@ -138,18 +138,20 @@ class SignalPrediction(SimpleInterface):
                 training_gtab,
                 isotropic=ExponentialIsotropicModel)
 
-            sff, _ = sfm_all.fit(training_data, alpha=10e-10,
-                                              mask=mask_array,
-                                              tol=10e-10, iso_params=None)
+            sff, _ = sfm_all.fit(series_files2series_arr(training_image_paths),
+                                 alpha=10e-10, mask=mask_array, tol=10e-10,
+                                 iso_params=None)
             t2 = time.time()
             print(f"Fit time: {t2 - t1}")
             t3 = time.time()
-            pred_sfm_fit = sff.predict(prediction_gtab, S0=ref_data[..., 0])
+            pred_sfm_fit = sff.predict(prediction_gtab,
+                                       S0=np.array(nb.load(
+                                           self.inputs.b0_median).dataobj))
             t4 = time.time()
             print(f"Predict time: {t4 - t3}")
 
             pred_fit_file = f"{runtime.cwd}/predicted_" \
-                            f"{(pred_val,) + tuple(np.round(pred_vec, decimals=2))}.nii.gz"
+                            f"{val_str}.nii.gz"
             pred_sfm_fit[~mask_array] = 0
 
             nb.Nifti1Image(pred_sfm_fit, mask_img.affine, mask_img.header
@@ -158,8 +160,8 @@ class SignalPrediction(SimpleInterface):
 
             t1 = time.time()
             estimator_ten = TensorModel(training_gtab)
-            estimator_ten_fit = estimator_ten.fit(training_data,
-                                                  mask=mask_array)
+            estimator_ten_fit = estimator_ten.fit(
+                series_files2series_arr(training_image_paths), mask=mask_array)
             t2 = time.time()
             print(f"Fit time: {t2 - t1}")
             t3 = time.time()
@@ -168,7 +170,7 @@ class SignalPrediction(SimpleInterface):
             print(f"Predict time: {t4 - t3}")
             pred_ten_fit[~mask_array] = 0
             pred_fit_file = f"{runtime.cwd}/predicted_" \
-                            f"{(pred_val,) + tuple(np.round(pred_vec, decimals=2))}.nii.gz"
+                            f"{val_str}.nii.gz"
             nb.Nifti1Image(pred_ten_fit, mask_img.affine, mask_img.header
                            ).to_filename(pred_fit_file)
         # elif self.inputs.model_name == "ensemble":

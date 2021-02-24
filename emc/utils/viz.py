@@ -33,7 +33,8 @@ def before_after_images(orig_file, aligned_file, model_file, imagenum):
     orig_img = nb.load(orig_file).get_fdata()
     aligned_img = nb.load(aligned_file).get_fdata()
     model_img = nb.load(model_file).get_fdata()
-    orig_mip, aligned_mip, target_mip = scaled_mip(orig_img, aligned_img, model_img, 0)
+    orig_mip, aligned_mip, target_mip = scaled_mip(
+        orig_img, aligned_img, model_img, 0)
 
     # Get contours for the orig, aligned images
     orig_contours = measure.find_contours(orig_mip, 0.7)
@@ -49,13 +50,21 @@ def before_after_images(orig_file, aligned_file, model_file, imagenum):
                  interpolation="nearest")
     ax[1].imshow(target_mip, vmax=1., vmin=0, origin="lower", cmap="gray",
                  interpolation="nearest")
-    ax[0].text(1, 1, "%03d: Before" % imagenum, fontsize=16, color='white')
+    ax[0].text(1, 1, "%03d: Uncorrected" % imagenum, fontsize=16,
+               color='Red')
+    ax[1].text(1, 1, "%03d: HeadMotion-Corr" % imagenum, fontsize=16,
+               color='Green')
+
     for contour in target_contours + target_contours_low:
-        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#e7298a")
-        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#e7298a")
+        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#e7298a")
+        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#e7298a")
     for contour in orig_contours + orig_contours_low:
-        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#d95f02")
-        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#d95f02")
+        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#d95f02")
+        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#d95f02")
     for axis in ax:
         axis.set_xticks([])
         axis.set_yticks([])
@@ -69,13 +78,20 @@ def before_after_images(orig_file, aligned_file, model_file, imagenum):
                  interpolation="nearest")
     ax[1].imshow(target_mip, vmax=1., vmin=0, origin="lower", cmap="gray",
                  interpolation="nearest")
-    ax[0].text(1, 1, "%03d: After" % imagenum, fontsize=16, color='white')
+    ax[0].text(1, 1, "%03d: Eddy-Corr" % imagenum, fontsize=16,
+               color='Yellow')
+    ax[1].text(1, 1, "%03d: HeadMotion-Corr" % imagenum, fontsize=16,
+               color='Green')
     for contour in target_contours + target_contours_low:
-        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#e7298a")
-        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#e7298a")
+        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#e7298a")
+        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#e7298a")
     for contour in aligned_contours + aligned_contours_low:
-        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#d95f02")
-        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9, color="#d95f02")
+        ax[1].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#d95f02")
+        ax[0].plot(contour[:, 1], contour[:, 0], linewidth=2, alpha=0.9,
+                   color="#d95f02")
     for axis in ax:
         axis.set_xticks([])
         axis.set_yticks([])

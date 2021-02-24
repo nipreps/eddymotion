@@ -38,7 +38,8 @@ def linear_alignment_workflow(transform, precision, iternum=0):
     ]
 
     iteration_wf = pe.Workflow(name="iterative_alignment_%03d" % iternum)
-    input_node_fields = ["image_paths", "template_image", "iteration_num"]
+    input_node_fields = ["image_paths", "initial_template_image",
+                         "iteration_num"]
     linear_alignment_inputnode = pe.Node(
         niu.IdentityInterface(fields=input_node_fields),
         name="linear_alignment_inputnode",
@@ -70,7 +71,8 @@ def linear_alignment_workflow(transform, precision, iternum=0):
         linear_alignment_inputnode, "image_paths", iter_reg, "moving_image"
     )
     iteration_wf.connect(
-        linear_alignment_inputnode, "template_image", iter_reg, "fixed_image"
+        linear_alignment_inputnode, "initial_template_image",
+        iter_reg, "fixed_image"
     )
 
     # Average the images
@@ -105,8 +107,10 @@ def linear_alignment_workflow(transform, precision, iternum=0):
     invert_average.inputs.invert_transform = True
 
     avg_to_list = pe.Node(niu.Merge(1), name="to_list")
-    iteration_wf.connect(avg_affines, "average_affine_file", avg_to_list, "in1")
-    iteration_wf.connect(avg_to_list, "out", invert_average, "transform_affine")
+    iteration_wf.connect(avg_affines, "average_affine_file",
+                         avg_to_list, "in1")
+    iteration_wf.connect(avg_to_list, "out", invert_average,
+                         "transform_affine")
     iteration_wf.connect(
         averaged_images, "output_average_image", invert_average, "moving_image"
     )
@@ -114,13 +118,16 @@ def linear_alignment_workflow(transform, precision, iternum=0):
         averaged_images, "output_average_image", invert_average, "fixed_image"
     )
     iteration_wf.connect(
-        invert_average, "warped_image", linear_alignment_outputnode, "updated_template"
+        invert_average, "warped_image", linear_alignment_outputnode,
+        "updated_template"
     )
     iteration_wf.connect(
-        iter_reg, "forward_transforms", linear_alignment_outputnode, "affine_transforms"
+        iter_reg, "forward_transforms", linear_alignment_outputnode,
+        "affine_transforms"
     )
     iteration_wf.connect(
-        iter_reg, "warped_image", linear_alignment_outputnode, "registered_image_paths"
+        iter_reg, "warped_image", linear_alignment_outputnode,
+        "registered_image_paths"
     )
 
     return iteration_wf
@@ -161,7 +168,7 @@ def init_b0_emc_wf(num_iters=3, transform="rigid", name="b0_emc_wf"):
         b0_emc_inputnode,
         "initial_template",
         initial_reg,
-        "linear_alignment_inputnode.template_image",
+        "linear_alignment_inputnode.initial_template_image",
     )
     b0_emc_wf.connect(
         b0_emc_inputnode,
@@ -182,7 +189,7 @@ def init_b0_emc_wf(num_iters=3, transform="rigid", name="b0_emc_wf"):
             reg_iters[-2],
             "linear_alignment_outputnode.updated_template",
             reg_iters[-1],
-            "linear_alignment_inputnode.template_image",
+            "linear_alignment_inputnode.initial_template_image",
         )
         b0_emc_wf.connect(
             b0_emc_inputnode,
@@ -221,124 +228,6 @@ def init_b0_emc_wf(num_iters=3, transform="rigid", name="b0_emc_wf"):
                       "iteration_templates")
 
     return b0_emc_wf
-
-
-def init_enhance_and_skullstrip_template_mask_wf(name):
-    eastm_workflow = pe.Workflow(name=name)
-    eastm_inputnode = pe.Node(
-        niu.IdentityInterface(fields=["in_file"]), name="eastm_inputnode"
-    )
-    eastm_outputnode = pe.Node(
-        niu.IdentityInterface(
-            fields=["mask_file", "skull_stripped_file", "bias_corrected_file"]
-        ),
-        name="eastm_outputnode",
-    )
-
-    # Truncate intensity values so they're OK for N4
-    truncate_values = pe.Node(
-        ImageMath(
-            dimension=3,
-            operation="TruncateImageIntensity",
-            secondary_arg="0.0 0.98 512",
-        ),
-        name="truncate_values",
-    )
-
-    # Truncate intensity values for creating a mask
-    # (there are many high outliers in b=0 images)
-    truncate_values_for_masking = pe.Node(
-        ImageMath(
-            dimension=3, operation="TruncateImageIntensity",
-            secondary_arg="0.0 0.9 512"
-        ),
-        name="truncate_values_for_masking",
-    )
-
-    # N4 will break if any negative values are present.
-    rescale_image = pe.Node(
-        ImageMath(dimension=3, operation="RescaleImage",
-                  secondary_arg="0 1000"),
-        name="rescale_image",
-    )
-
-    # Run N4 normally, force num_threads=1 for stability (images are small, no need for >1)
-    n4_correct = pe.Node(
-        ants.N4BiasFieldCorrection(
-            dimension=3,
-            n_iterations=[200, 200],
-            convergence_threshold=1e-6,
-            bspline_order=3,
-            bspline_fitting_distance=150,
-            copy_header=True,
-        ),
-        name="n4_correct",
-        n_procs=1,
-    )
-
-    # Sharpen the b0 ref
-    sharpen_image = pe.Node(
-        ImageMath(dimension=3, operation="Sharpen"), name="sharpen_image"
-    )
-
-    # Basic mask
-    initial_mask = pe.Node(afni.Automask(outputtype="NIFTI_GZ"),
-                           name="initial_mask")
-
-    # Fill holes left by Automask
-    fill_holes = pe.Node(
-        ImageMath(dimension=3, operation="FillHoles", secondary_arg="2"),
-        name="fill_holes",
-    )
-
-    # Dilate before smoothing
-    dilate_mask = pe.Node(
-        ImageMath(dimension=3, operation="MD", secondary_arg="1"),
-        name="dilate_mask"
-    )
-
-    # Smooth the mask and use it as a weight for N4
-    smooth_mask = pe.Node(
-        ImageMath(dimension=3, operation="G", secondary_arg="4"),
-        name="smooth_mask"
-    )
-
-    # Make a "soft" skull-stripped image
-    apply_mask = pe.Node(
-        ants.MultiplyImages(
-            dimension=3, output_product_image="SkullStrippedRef.nii.gz"
-        ),
-        name="apply_mask",
-    )
-
-    eastm_workflow.connect(
-        [
-            (eastm_inputnode, truncate_values, [("in_file", "in_file")]),
-            (truncate_values, rescale_image, [("out_file", "in_file")]),
-            (eastm_inputnode, truncate_values_for_masking, [("in_file",
-                                                             "in_file")]),
-            (truncate_values_for_masking, initial_mask, [("out_file",
-                                                          "in_file")]),
-            (initial_mask, fill_holes, [("out_file", "in_file")]),
-            (fill_holes, dilate_mask, [("out_file", "in_file")]),
-            (dilate_mask, smooth_mask, [("out_file", "in_file")]),
-            (rescale_image, n4_correct, [("out_file", "input_image")]),
-            (smooth_mask, n4_correct, [("out_file", "weight_image")]),
-            (n4_correct, sharpen_image, [("output_image", "in_file")]),
-            (sharpen_image, eastm_outputnode, [("out_file",
-                                                "bias_corrected_file")]),
-            (sharpen_image, apply_mask, [("out_file", "first_input")]),
-            (smooth_mask, apply_mask, [("out_file", "second_input")]),
-            (
-                apply_mask,
-                eastm_outputnode,
-                [("output_product_image", "skull_stripped_file")],
-            ),
-            (fill_holes, eastm_outputnode, [("out_file", "mask_file")]),
-        ]
-    )
-
-    return eastm_workflow
 
 
 def init_emc_model_iteration_wf(
@@ -722,12 +611,13 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         "import nibabel as nb",
         "from nipype.utils.filemanip import fname_presuffix",
     ]
+    from dmriprep.workflows.dwi.util import init_dwi_reference_wf
+    from dipy.denoise.nlmeans import nlmeans_3d
 
     emc_wf = pe.Workflow(name=name)
 
     meta_inputnode = pe.Node(
-        niu.IdentityInterface(fields=["dwi_file", "in_bval", "in_bvec",
-                                      "b0_template"]),
+        niu.IdentityInterface(fields=["dwi_file", "in_bval", "in_bvec"]),
         name="meta_inputnode",
     )
 
@@ -785,10 +675,8 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
     match_transforms_node = pe.Node(MatchTransforms(),
                                     name="match_transforms_node")
 
-    # Create a skull-stripped and enhanced b0
-    eastm_wf = init_enhance_and_skullstrip_template_mask_wf(
-        name="enhance_and_skullstrip_template_mask_wf"
-    )
+    # Create a B0 reference
+    dwi_reference_wf = init_dwi_reference_wf(omp_nthreads=4, mem_gb=8)
 
     # Instantiate b0 eddy correction
     b0_emc_wf = init_b0_emc_wf()
@@ -860,13 +748,21 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
             (vectors_node, extract_b0s_node, [("b0_ixs", "b0_ixs")]),
             (extract_b0s_node, split_b0s_node, [("out_file", "in_file")]),
             (meta_inputnode, split_dwis_node, [("dwi_file", "in_file")]),
-            (split_b0s_node, b0_emc_wf, [("out_files",
-                                          "b0_emc_inputnode.b0_images")]),
+
             (
                 meta_inputnode,
-                b0_emc_wf,
-                [("b0_template", "b0_emc_inputnode.initial_template")],
+                dwi_reference_wf,
+                [("dwi_file",
+                  "inputnode.dwi_file")],
             ),
+            (
+                vectors_node,
+                dwi_reference_wf,
+                [("b0_ixs",
+                  "inputnode.b0_ixs")],
+            ),
+            (split_b0s_node, b0_emc_wf, [("out_files",
+                                          "b0_emc_inputnode.b0_images")]),
             (
                 b0_emc_wf,
                 match_transforms_node,
@@ -882,10 +778,10 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
             (split_dwis_node, match_transforms_node, [("out_files",
                                                        "dwi_files")]),
             (
+                dwi_reference_wf,
                 b0_emc_wf,
-                eastm_wf,
-                [("b0_emc_outputnode.final_template",
-                  "eastm_inputnode.in_file")],
+                [("outputnode.ref_image_brain",
+                  "b0_emc_inputnode.initial_template")],
             ),
             (meta_inputnode, b0_based_vector_transforms, [("dwi_file",
                                                            "dwi_file")]),
@@ -912,8 +808,8 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
                 [("b0_emc_outputnode.aligned_images", "in_files")],
             ),
             (merge_b0s_node, b0_median, [("out_file", "in_file")]),
-            (eastm_wf, b0_median, [("eastm_outputnode.mask_file",
-                                    "mask_file")]),
+            (dwi_reference_wf, b0_median,
+             [("outputnode.dwi_mask", "mask_file")]),
             (b0_median, b0_based_image_transforms, [("out_ref",
                                                      "fixed_image")]),
 
@@ -948,9 +844,9 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
                 [("out_ref", "dwi_model_emc_inputnode.b0_median")],
             ),
             (
-                eastm_wf,
+                dwi_reference_wf,
                 dwi_model_emc_wf,
-                [("eastm_outputnode.mask_file",
+                [("outputnode.dwi_mask",
                   "dwi_model_emc_inputnode.b0_mask")],
             ),
             (

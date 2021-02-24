@@ -123,6 +123,7 @@ class SFM4HMC(SparseFascicleModel):
         -------
         SparseFascicleFit object
         """
+        import gc
 
         data_in_mask = data[mask]
         # Fitting is done on the relative signal (S/S0):
@@ -133,6 +134,10 @@ class SFM4HMC(SparseFascicleModel):
             flat_S = (data_in_mask[..., ~self.gtab.b0s_mask] /
                       flat_S0[..., None])
 
+        # No longer need data_in_mask
+        del data_in_mask
+        gc.collect()
+
         if iso_params is None:
             isotropic = self.isotropic(self.gtab).fit(data, mask)
         else:
@@ -141,6 +146,12 @@ class SFM4HMC(SparseFascicleModel):
 
         isopredict = isotropic.predict()
 
+        # Grab data shape and delete data so that it doesn't need to be in
+        # memory any longer
+        dat_shape = data.shape[:-1]
+        del data
+        gc.collect()
+
         if mask is None:
             isopredict = np.reshape(isopredict, (-1, isopredict.shape[-1]))
         else:
@@ -148,9 +159,9 @@ class SFM4HMC(SparseFascicleModel):
 
         # Here's where things get different: ##
         y = (flat_S - isopredict).T
+
         # Making sure nan voxels get 0 params:
-        nan_targets = np.unique(np.where(~np.isfinite(y))[1])
-        y[:, nan_targets] = 0
+        y[:, np.unique(np.where(~np.isfinite(y))[1])] = 0
 
         ### FIT FRACRIDGE
         uu, selt, v_t, ols_coef = _do_svd(self.design_matrix, y)
@@ -168,14 +179,14 @@ class SFM4HMC(SparseFascicleModel):
         flat_params = coef.squeeze().T
 
         if mask is None:
-            out_shape = data.shape[:-1] + (-1, )
+            out_shape = dat_shape + (-1, )
             beta = flat_params.reshape(out_shape)
-            S0 = flat_S0.reshape(data.shape[:-1])
+            S0 = flat_S0.reshape(dat_shape)
         else:
-            beta = np.zeros(data.shape[:-1] +
+            beta = np.zeros(dat_shape +
                             (self.design_matrix.shape[-1],))
             beta[mask, :] = flat_params
-            S0 = np.zeros(data.shape[:-1])
+            S0 = np.zeros(dat_shape)
             S0[mask] = flat_S0
 
         return SparseFascicleFit(self, beta, S0, isotropic), isotropic.params

@@ -10,4 +10,3 @@ __url__ = 'https://github.com/dPys/EddyMotionCorrection'
 DOWNLOAD_URL = (
     'https://github.com/dPys/{name}/archive/{ver}.tar.gz'.format(
         name=__packagename__, ver=__version__))
-

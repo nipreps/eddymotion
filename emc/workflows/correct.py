@@ -11,7 +11,7 @@ from emc.interfaces.images import (
     ReorderOutputs,
     MatchTransforms,
     CombineMotions,
-    ImageMath,
+    MergeMoCos,
 )
 from emc.interfaces.reports import IterationSummary, EMCReport
 from dmriprep.interfaces.vectors import CheckGradientTable
@@ -663,6 +663,7 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         name="split_dwis_node",
     )
 
+
     # Merge B0s into a single 4d image
     merge_b0s_node = pe.Node(
         niu.Function(
@@ -702,22 +703,17 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
     # Do model-based motion correction
     dwi_model_emc_wf = init_dwi_model_emc_wf(num_iters=2)
 
-    # Warp the modeled images into non-motion-corrected space
-    uncorrect_model_images = pe.MapNode(
+    # Warp the eddy-corrected images into motion-corrected space
+    motion_correct_images = pe.MapNode(
         ApplyAffine(),
-        iterfield=["moving_image", "transform_affine"],
-        name="uncorrect_model_images",
+        iterfield=["moving_image", "transform_affine", "fixed_image"],
+        name="motion_correct_images",
     )
-    uncorrect_model_images.inputs.invert_transform = True
+#    motion_correct_images.inputs.invert_transform = True
 
     # Save to 4d image
     merge_EMC_corrected_dwis_node = pe.Node(
-        niu.Function(
-            input_names=["in_files"],
-            output_names=["out_file"],
-            function=save_3d_to_4d,
-            imports=import_list,
-        ),
+        MergeMoCos(),
         name="merge_EMC_corrected_dwis_node",
     )
 
@@ -727,7 +723,7 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
                 "final_emc_4d_series"
                 "final_template",
                 "forward_transforms",
-                "noise_free_dwis",
+                "inverse_predicted_dwis",
                 "cnr_image",
                 "optimization_data",
             ]
@@ -889,32 +885,32 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
                 ],
             ),
             (
-                b0_emc_wf,
-                uncorrect_model_images,
-                [("b0_emc_outputnode.final_template", "fixed_image")],
+                dwi_model_emc_wf,
+                motion_correct_images,
+                [("dwi_model_emc_outputnode.model_predicted_images",
+                  "fixed_image")],
+            ),
+            (
+                b0_based_image_transforms,
+                motion_correct_images,
+                [("warped_image",
+                  "moving_image")],
             ),
             (
                 dwi_model_emc_wf,
-                uncorrect_model_images,
+                motion_correct_images,
                 [("dwi_model_emc_outputnode.emc_transforms",
                   "transform_affine")],
             ),
-            (split_dwis_node, uncorrect_model_images, [("out_files",
-                                                        "moving_image")]),
             (
-                uncorrect_model_images,
-                meta_outputnode,
-                [("warped_image", "noise_free_dwis")],
-            ),
-            (
-                uncorrect_model_images,
+                motion_correct_images,
                 merge_EMC_corrected_dwis_node,
                 [("warped_image", "in_files")],
             ),
             (
                 merge_EMC_corrected_dwis_node,
                 meta_outputnode,
-                [("out_file", "final_emc_4d_series")],
+                [("dwi_series", "final_emc_4d_series")],
             ),
         ]
     )

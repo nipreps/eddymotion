@@ -220,3 +220,34 @@ class ReorderOutputs(SimpleInterface):
         self._results["full_predicted_dwi_series"] = full_predicted_dwi_series
 
         return runtime
+
+
+class MergeMoCosInputSpec(BaseInterfaceInputSpec):
+    in_files = InputMultiObject(File(exists=True), mandatory=True)
+
+
+class MergeMoCosOutputSpec(TraitedSpec):
+    dwi_series = File(exists=True)
+
+
+class MergeMoCos(SimpleInterface):
+    input_spec = MergeMoCosInputSpec
+    output_spec = MergeMoCosOutputSpec
+
+    def _run_interface(self, runtime):
+        from pathlib import Path
+        from nipype.utils.filemanip import copyfile
+        from emc.utils.images import save_3d_to_4d
+
+        out_file = save_3d_to_4d(self.inputs.in_files)
+
+        dwi_series = f"{str(Path(runtime.cwd).parent.parent)}" \
+                       f"/motion_corrected_dwi.nii.gz"
+        copyfile(
+            out_file,
+            dwi_series,
+            copy=True,
+            use_hardlink=False)
+        self._results["dwi_series"] = dwi_series
+
+        return runtime

@@ -21,13 +21,16 @@ LOGGER = logging.getLogger("nipype.interface")
 
 class _ApplyAffineInputSpec(BaseInterfaceInputSpec):
     moving_image = File(
-        exists=True, mandatory=True, desc="image to apply transformation from"
+        exists=True, mandatory=True,
+        desc="An image to apply transformation from"
     )
     fixed_image = File(
-        exists=True, mandatory=True, desc="image to apply transformation to"
+        exists=True, mandatory=True,
+        desc="An image to apply transformation to"
     )
     transform_affine = InputMultiObject(
-        File(exists=True), mandatory=True, desc="transformation affine"
+        File(exists=True), mandatory=True,
+        desc="A list of transformation affines"
     )
     invert_transform = traits.Bool(False, usedefault=True)
 
@@ -80,8 +83,10 @@ class _RegisterInputSpec(BaseInterfaceInputSpec):
     level_iters = traits.List(
         trait=traits.Any(), value=[10000, 1000, 100], usedefault=True
     )
-    sigmas = traits.List(trait=traits.Any(), value=[5.0, 2.5, 0.0], usedefault=True)
-    factors = traits.List(trait=traits.Any(), value=[4, 2, 1], usedefault=True)
+    sigmas = traits.List(trait=traits.Any(), value=[5.0, 2.5, 0.0],
+                         usedefault=True)
+    factors = traits.List(trait=traits.Any(), value=[4, 2, 1],
+                          usedefault=True)
     params0 = traits.ArrayOrNone(value=None, usedefault=True)
     pipeline = traits.List(
         trait=traits.Any(),
@@ -92,7 +97,8 @@ class _RegisterInputSpec(BaseInterfaceInputSpec):
 
 class _RegisterOutputSpec(TraitedSpec):
     forward_transforms = traits.List(
-        File(exists=True), desc="List of output transforms for forward registration"
+        File(exists=True), desc="List of output transforms for forward "
+                                "registration"
     )
     warped_image = File(exists=True, desc="Outputs warped image")
 

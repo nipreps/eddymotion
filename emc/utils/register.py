@@ -154,7 +154,8 @@ def affine_registration(
     # Define the Affine registration object we'll use with the chosen metric:
     use_metric = affine_metric_dict[metric](nbins, sampling_prop)
     affreg = AffineRegistration(
-        metric=use_metric, level_iters=level_iters, sigmas=sigmas, factors=factors
+        metric=use_metric, level_iters=level_iters, sigmas=sigmas,
+        factors=factors
     )
 
     if not params0:
@@ -173,4 +174,5 @@ def affine_registration(
             starting_affine,
             params0,
         )
-    return nb.Nifti1Image(np.array(transformed), static.affine), starting_affine
+    return nb.Nifti1Image(np.array(transformed), static.affine), \
+           starting_affine

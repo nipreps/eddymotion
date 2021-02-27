@@ -70,7 +70,6 @@ def linear_alignment_workflow(transform, precision, iternum=0):
         iterfield=["moving_image"],
     )
 
-    # Run the images through affine registration
     iteration_wf.connect(
         linear_alignment_inputnode, "image_paths", iter_reg, "moving_image"
     )
@@ -79,7 +78,6 @@ def linear_alignment_workflow(transform, precision, iternum=0):
         iter_reg, "fixed_image"
     )
 
-    # Average the images
     averaged_images = pe.Node(
         niu.Function(
             input_names=["images"],
@@ -274,7 +272,7 @@ def init_emc_model_iteration_wf(
     )
     predict_dwis.synchronize = True
 
-    # Register original images to the predicted images
+    # Register non-transformed images to the predicted images
     settings = pkgrf(
         "emc",
         "config/emc_{precision}_{transform}.json".format(
@@ -370,8 +368,9 @@ def init_emc_model_iteration_wf(
     return emc_model_iter_workflow
 
 
-def init_dwi_model_emc_wf(num_iters=2, name="dwi_model_emc_wf"):
-    dwi_model_emc_wf_workflow = pe.Workflow(name=name)
+def init_dwi_model_emc_wf(num_iters=1, name="dwi_model_emc_wf"):
+
+    dwi_model_emc_wf = pe.Workflow(name=name)
     inputnode = pe.Node(
         niu.IdentityInterface(
             fields=[
@@ -414,9 +413,8 @@ def init_dwi_model_emc_wf(num_iters=2, name="dwi_model_emc_wf"):
     collect_motion_params = pe.Node(niu.Merge(num_iters),
                                     name="collect_motion_params")
 
-    dwi_model_emc_wf_workflow.connect(
+    dwi_model_emc_wf.connect(
         [
-            # Connect the first iteration
             (
                 inputnode,
                 initial_model_iteration,
@@ -464,7 +462,7 @@ def init_dwi_model_emc_wf(num_iters=2, name="dwi_model_emc_wf"):
                 name=iteration_name,
             )
         )
-        dwi_model_emc_wf_workflow.connect(
+        dwi_model_emc_wf.connect(
             [
                 (
                     model_iterations[-2],
@@ -519,7 +517,7 @@ def init_dwi_model_emc_wf(num_iters=2, name="dwi_model_emc_wf"):
     if num_iters > 1:
         summarize_iterations = pe.Node(IterationSummary(),
                                        name="summarize_iterations")
-        dwi_model_emc_wf_workflow.connect(
+        dwi_model_emc_wf.connect(
             [
                 (
                     collect_motion_params,
@@ -539,7 +537,7 @@ def init_dwi_model_emc_wf(num_iters=2, name="dwi_model_emc_wf"):
             ]
         )
 
-    dwi_model_emc_wf_workflow.connect(
+    dwi_model_emc_wf.connect(
         [
             (
                 model_iterations[-1],
@@ -601,7 +599,7 @@ def init_dwi_model_emc_wf(num_iters=2, name="dwi_model_emc_wf"):
         ]
     )
 
-    return dwi_model_emc_wf_workflow
+    return dwi_model_emc_wf
 
 
 def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
@@ -616,12 +614,18 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         "from nipype.utils.filemanip import fname_presuffix",
     ]
     from dmriprep.workflows.dwi.util import init_dwi_reference_wf
+    from emc.utils.images import _pass_predicted_outs, mask_4d
+    from emc.interfaces.images import Patch2Self
 
     emc_wf = pe.Workflow(name=name)
 
     meta_inputnode = pe.Node(
         niu.IdentityInterface(fields=["dwi_file", "in_bval", "in_bvec"]),
         name="meta_inputnode",
+    )
+
+    patch2self_node = pe.Node(Patch2Self(patch_radius='auto'),
+        name="patch2self_node",
     )
 
     # Instantiate vectors object
@@ -663,6 +667,15 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         name="split_dwis_node",
     )
 
+    split_dwis_masked_node = pe.Node(
+        niu.Function(
+            input_names=["in_file"],
+            output_names=["out_files"],
+            function=save_4d_to_3d,
+            imports=import_list,
+        ),
+        name="split_dwis_masked_node",
+    )
 
     # Merge B0s into a single 4d image
     merge_b0s_node = pe.Node(
@@ -703,13 +716,36 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
     # Do model-based motion correction
     dwi_model_emc_wf = init_dwi_model_emc_wf(num_iters=2)
 
+    # Average the images
+    average_predicted_node = pe.Node(
+        niu.Function(
+            input_names=["images"],
+            output_names=["output_average_image"],
+            function=average_images,
+            imports=import_list,
+        ),
+        name="average_predicted_node",
+    )
+
+    match_transforms_hmc_node = pe.Node(MatchTransforms(),
+                                    name="match_transforms_hmc_node")
+
+    mask_4d_node = pe.Node(
+        niu.Function(
+            input_names=["dwi_file", "mask_file"],
+            output_names=["dwi_masked"],
+            function=mask_4d,
+            imports=import_list,
+        ),
+        name="mask_4d_node",
+    )
+
     # Warp the eddy-corrected images into motion-corrected space
     motion_correct_images = pe.MapNode(
         ApplyAffine(),
-        iterfield=["moving_image", "transform_affine", "fixed_image"],
+        iterfield=["moving_image", "transform_affine"],
         name="motion_correct_images",
     )
-#    motion_correct_images.inputs.invert_transform = True
 
     # Save to 4d image
     merge_EMC_corrected_dwis_node = pe.Node(
@@ -743,15 +779,19 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
                     ("in_bvec", "in_bvec"),
                 ],
             ),
-            (meta_inputnode, extract_b0s_node, [("dwi_file", "in_file")]),
-            (vectors_node, extract_b0s_node, [("b0_ixs", "b0_ixs")]),
-            (extract_b0s_node, split_b0s_node, [("out_file", "in_file")]),
-            (meta_inputnode, split_dwis_node, [("dwi_file", "in_file")]),
-
             (
                 meta_inputnode,
+                patch2self_node,
+                [("dwi_file", "in_file"), ("in_bval", "bval_file")],
+            ),
+            (patch2self_node, extract_b0s_node, [("out_file", "in_file")]),
+            (vectors_node, extract_b0s_node, [("b0_ixs", "b0_ixs")]),
+            (extract_b0s_node, split_b0s_node, [("out_file", "in_file")]),
+            (patch2self_node, split_dwis_node, [("out_file", "in_file")]),
+            (
+                patch2self_node,
                 dwi_reference_wf,
-                [("dwi_file",
+                [("out_file",
                   "inputnode.dwi_file")],
             ),
             (
@@ -782,7 +822,7 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
                 [("outputnode.ref_image_brain",
                   "b0_emc_inputnode.initial_template")],
             ),
-            (meta_inputnode, b0_based_vector_transforms, [("dwi_file",
+            (patch2self_node, b0_based_vector_transforms, [("out_file",
                                                            "dwi_file")]),
             (
                 match_transforms_node,
@@ -886,21 +926,47 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
             ),
             (
                 dwi_model_emc_wf,
-                motion_correct_images,
-                [("dwi_model_emc_outputnode.model_predicted_images",
-                  "fixed_image")],
-            ),
-            (
-                b0_based_image_transforms,
-                motion_correct_images,
-                [("warped_image",
-                  "moving_image")],
+                average_predicted_node,
+                [(("dwi_model_emc_outputnode.model_predicted_images",
+                   _pass_predicted_outs), "images")],
             ),
             (
                 dwi_model_emc_wf,
+                match_transforms_hmc_node,
+                [
+                    (
+                        ("dwi_model_emc_outputnode.emc_transforms",
+                         _pass_predicted_outs),
+                        "transforms",
+                    )
+                ],
+            ),
+            (
+                match_transforms_hmc_node,
                 motion_correct_images,
-                [("dwi_model_emc_outputnode.emc_transforms",
+                [("transforms",
                   "transform_affine")],
+            ),
+            (vectors_node, match_transforms_hmc_node,
+             [("b0_ixs", "b0_indices")]),
+            (patch2self_node, mask_4d_node,
+             [("out_file", "dwi_file")]),
+            (dwi_reference_wf, mask_4d_node,
+             [("outputnode.dwi_mask", "mask_file")]),
+            (mask_4d_node, split_dwis_masked_node,
+             [("dwi_masked", "in_file")]),
+            (split_dwis_masked_node, match_transforms_hmc_node,
+             [("out_files", "dwi_files")]),
+            (
+                split_dwis_masked_node,
+                motion_correct_images,
+                [("out_files",
+                  "moving_image")],
+            ),
+            (
+                average_predicted_node,
+                motion_correct_images,
+                [("out_file", "fixed_image")],
             ),
             (
                 motion_correct_images,

@@ -966,7 +966,7 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
             (
                 average_predicted_node,
                 motion_correct_images,
-                [("out_file", "fixed_image")],
+                [("output_average_image", "fixed_image")],
             ),
             (
                 motion_correct_images,

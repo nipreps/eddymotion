@@ -59,7 +59,7 @@ def linear_alignment_workflow(transform, precision, iternum=0):
 
     settings = pkgrf(
         "emc",
-        "config/emc_{precision}_{transform}.json".format(
+        f"config/emc_{precision}_{transform}.json".format(
             precision=precision, transform=transform
         ),
     )
@@ -616,6 +616,7 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
     from dmriprep.workflows.dwi.util import init_dwi_reference_wf
     from emc.utils.images import _pass_predicted_outs, mask_4d
     from emc.interfaces.images import Patch2Self
+    from niworkflows.interfaces.nibabel import ApplyMask
 
     emc_wf = pe.Workflow(name=name)
 
@@ -726,6 +727,9 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         ),
         name="average_predicted_node",
     )
+
+    apply_mask_to_predicted = pe.Node(ApplyMask(),
+                                      name="apply_mask_to_predicted_node")
 
     match_transforms_hmc_node = pe.Node(MatchTransforms(),
                                     name="match_transforms_hmc_node")
@@ -965,8 +969,18 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
             ),
             (
                 average_predicted_node,
+                apply_mask_to_predicted,
+                [("output_average_image", "in_file")],
+            ),
+            (
+                dwi_reference_wf,
+                apply_mask_to_predicted,
+                [("outputnode.dwi_mask", "in_mask")],
+            ),
+            (
+                apply_mask_to_predicted,
                 motion_correct_images,
-                [("output_average_image", "fixed_image")],
+                [("out_file", "fixed_image")],
             ),
             (
                 motion_correct_images,

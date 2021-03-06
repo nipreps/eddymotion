@@ -269,10 +269,12 @@ class Patch2SelfInputSpec(BaseInterfaceInputSpec):
     b0_denoising = traits.Bool(True, usedefault=True,
                                desc='denoise the b=0 images too')
     clip_negative_vals = traits.Bool(True, usedefault=True,
-                                     desc='Sets negative values after denoising to 0')
+                                     desc='Sets negative values after '
+                                          'denoising to 0')
     shift_intensity = traits.Bool(False, usedefault=True,
-                                  desc='Shifts the distribution of intensities per '
-                                  'volume to give non-negative values')
+                                  desc='Shifts the distribution of '
+                                       'intensities per volume to give '
+                                       'non-negative values')
 
 
 class Patch2SelfOutputSpec(TraitedSpec):

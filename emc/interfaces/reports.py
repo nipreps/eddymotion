@@ -1,7 +1,6 @@
 """
 Reporting tools
 """
-
 import os
 import pandas as pd
 from nipype.interfaces.base import (
@@ -11,6 +10,7 @@ from nipype.interfaces.base import (
 from emc.utils.viz import _iteration_summary_plot, before_after_images
 import matplotlib
 matplotlib.use('agg')
+
 
 class SummaryOutputSpec(TraitedSpec):
     out_report = File(exists=True, desc='HTML segment containing summary')

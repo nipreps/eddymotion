@@ -141,11 +141,12 @@ class SignalPrediction(SimpleInterface):
                 isotropic=ExponentialIsotropicModel)
 
             sff, _ = sfm_all.fit(series_files2series_arr(training_image_paths),
-                                 alpha=10e-10, mask=mask_array, tol=10e-10,
+                                 alpha=1e-16, mask=mask_array, tol=10e-10,
                                  iso_params=None)
             t2 = time.time()
             print(f"Fit time: {t2 - t1}")
             t3 = time.time()
+
             pred_sfm_fit = sff.predict(prediction_gtab,
                                        S0=np.array(nb.load(
                                            self.inputs.b0_median).dataobj))

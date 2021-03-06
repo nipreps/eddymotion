@@ -86,7 +86,7 @@ def match_transforms(dwi_files, transforms, b0_indices):
 
     # Do sanity checks
     if not len(transforms) == len(b0_indices):
-        raise Exception("number of transforms does not match number of b0 "
+        raise Exception("Number of transforms does not match number of b0 "
                         "images")
 
     # Create a list of which emc affines that correspond to the split images
@@ -100,13 +100,21 @@ def match_transforms(dwi_files, transforms, b0_indices):
 
 
 def save_4d_to_3d(in_file):
-    files_3d = nb.four_to_three(nb.load(in_file))
-    out_files = []
-    for i, file_3d in enumerate(files_3d):
-        out_file = fname_presuffix(in_file, suffix="_tmp_{}".format(i))
-        file_3d.to_filename(out_file)
-        out_files.append(out_file)
-    del files_3d
+    in_img = nb.load(in_file)
+    if in_img.shape[-1] > 1:
+        files_3d = nb.four_to_three()
+        out_files = []
+        for i, file_3d in enumerate(files_3d):
+            out_file = fname_presuffix(in_file, suffix="_tmp_{}".format(i))
+            file_3d.to_filename(out_file)
+            out_files.append(out_file)
+        del files_3d
+    else:
+        out_file = fname_presuffix(in_file, suffix="_tmp_{}".format(0))
+        in_img.to_filename(out_file)
+        out_files = [out_file]
+    in_img.uncache()
+
     return out_files
 
 

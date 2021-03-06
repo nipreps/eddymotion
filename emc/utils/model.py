@@ -160,26 +160,40 @@ class SFM4HMC(SparseFascicleModel):
         else:
             isopredict = isopredict[mask]
 
-        # Here's where things get different: ##
-        y = (flat_S - isopredict).T
+###
+        # y = (flat_S - isopredict).T
+        #
+        # # Making sure nan voxels get 0 params:
+        # y[:, np.unique(np.where(~np.isfinite(y))[1])] = 0
+        #
+        # ### FIT FRACRIDGE
+        # uu, selt, v_t, ols_coef = _do_svd(self.design_matrix, y)
+        # # Set solutions for small eigenvalues to 0 for all targets:
+        # isbad = selt < tol
+        # if np.any(isbad):
+        #     warnings.warn("Some eigenvalues are being treated as 0")
+        #
+        # ols_coef[isbad, ...] = 0
+        # seltsq = selt**2
+        # sclg = seltsq / (seltsq + alpha)
+        # coef = sclg[:, np.newaxis] * ols_coef
+        # coef = v_t.T @ coef
+        #
+        # flat_params = coef.squeeze().T
 
-        # Making sure nan voxels get 0 params:
-        y[:, np.unique(np.where(~np.isfinite(y))[1])] = 0
+        flat_params = np.zeros((data_in_mask.shape[0],
+                                self.design_matrix.shape[-1]))
 
-        ### FIT FRACRIDGE
-        uu, selt, v_t, ols_coef = _do_svd(self.design_matrix, y)
-        # Set solutions for small eigenvalues to 0 for all targets:
-        isbad = selt < tol
-        if np.any(isbad):
-            warnings.warn("Some eigenvalues are being treated as 0")
-
-        ols_coef[isbad, ...] = 0
-        seltsq = selt**2
-        sclg = seltsq / (seltsq + alpha)
-        coef = sclg[:, np.newaxis] * ols_coef
-        coef = v_t.T @ coef
-
-        flat_params = coef.squeeze().T
+        for vox, vox_data in enumerate(flat_S):
+            # In voxels in which S0 is 0, we just want to keep the
+            # parameters at all-zeros, and avoid nasty sklearn errors:
+            if not (np.any(~np.isfinite(vox_data)) or np.all(vox_data == 0)):
+                fit_it = vox_data - isopredict[vox]
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    flat_params[vox] = self.solver.fit(self.design_matrix,
+                                                       fit_it).coef_
+###
 
         if mask is None:
             out_shape = dat_shape + (-1, )

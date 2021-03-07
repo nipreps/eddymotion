@@ -102,7 +102,7 @@ def match_transforms(dwi_files, transforms, b0_indices):
 def save_4d_to_3d(in_file):
     in_img = nb.load(in_file)
     if in_img.shape[-1] > 1:
-        files_3d = nb.four_to_three()
+        files_3d = nb.four_to_three(in_img)
         out_files = []
         for i, file_3d in enumerate(files_3d):
             out_file = fname_presuffix(in_file, suffix="_tmp_{}".format(i))

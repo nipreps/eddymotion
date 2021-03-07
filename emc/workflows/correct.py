@@ -287,6 +287,8 @@ def init_emc_model_iteration_wf(
         name="register_to_predicted",
     )
     register_to_predicted.synchronize = True
+    register_to_predicted._n_cores = 1
+    register_to_predicted._mem_gb = 2
 
     # Apply new transforms to vectors
     post_vector_transforms = pe.Node(ReorientVectors(),
@@ -630,7 +632,7 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
     patch2self_node = pe.Node(Patch2Self(patch_radius='auto'),
         name="patch2self_node",
     )
-    patch2self_node._n_procs = 2 
+    patch2self_node._n_procs = 4
     patch2self_node._mem_gb = 8
 
     # Instantiate vectors object

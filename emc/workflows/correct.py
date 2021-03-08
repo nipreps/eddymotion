@@ -629,7 +629,7 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         name="meta_inputnode",
     )
 
-    patch2self_node = pe.Node(Patch2Self(patch_radius='auto'),
+    patch2self_node = pe.Node(Patch2Self(patch_radius='auto', b0_denoising=True,),
         name="patch2self_node",
     )
     patch2self_node._n_procs = 4

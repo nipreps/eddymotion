@@ -32,8 +32,8 @@ def _pass_predicted_outs(ins):
     import os
     from emc.utils.images import flatten
 
-    return [i for i in list(flatten(ins)) if i is not '/' and
-            os.path.isfile(i)]
+    return [i for i in list(flatten(ins)) if i != '/' and
+            os.path.isfile(i) is True]
 
 
 def mask_4d(dwi_file, mask_file):
@@ -209,7 +209,7 @@ def get_params(A):
     return rotations, translations
 
 
-def _vol_split(train, vol_idx):
+def _vol_split(train, vol_idx, working):
     """ Split the 3D volumes into the train and test set.
     Parameters
     ----------
@@ -230,16 +230,24 @@ def _vol_split(train, vol_idx):
     mask = np.zeros(train.shape[0])
     mask[vol_idx] = 1
     cur_x = train[mask == 0]
-    cur_x = cur_x.reshape(((train.shape[0]-1)*train.shape[1],
-                           train.shape[2]))
+
+    new_shape = ((train.shape[0]-1)*train.shape[1],
+                           train.shape[2])
+    fp = np.memmap(f"{working}/{vol_idx}.memmap", dtype='float32', mode='w+',
+                   shape=cur_x.shape)
+
+    fp[:] = cur_x[:]
+
+    cur_x = fp.reshape(new_shape)
 
     # Center voxel of the selected block
     y = train[vol_idx, train.shape[1]//2, :]
     return cur_x, y
 
 
-def _vol_denoise(train, vol_idx, model, data_shape, alpha):
+def _vol_denoise(train, vol_idx, model, data_shape, alpha, working):
     """ Denoise a single 3D volume using a train and test phase.
+
     Parameters
     ----------
     train : ndarray
@@ -284,7 +292,7 @@ def _vol_denoise(train, vol_idx, model, data_shape, alpha):
         e_s += "`dipy.optimize.SKLearnLinearSolver` object"
         raise ValueError(e_s)
 
-    cur_x, y = _vol_split(train, vol_idx)
+    cur_x, y = _vol_split(train, vol_idx, working)
     model.fit(cur_x.T, y.T)
 
     return model.predict(cur_x.T).reshape(data_shape[0], data_shape[1],
@@ -340,11 +348,12 @@ def _extract_3d_patches(arr, patch_radius):
     return np.array(all_patches).T
 
 
-def patch2self(data, bvals, patch_radius=[0, 0, 0], model='ridge',
-               b0_threshold=50, out_dtype=None, alpha=1.0, verbose=False,
-               b0_denoising=True, clip_negative_vals=True,
+def patch2self(data, bvals, working_directory, patch_radius=[0, 0, 0],
+               model='ridge', b0_threshold=50, out_dtype=None, alpha=1.0,
+               verbose=False, b0_denoising=True, clip_negative_vals=True,
                shift_intensity=False):
     """ Patch2Self Denoiser
+
     Parameters
     ----------
     data : ndarray
@@ -457,7 +466,8 @@ def patch2self(data, bvals, patch_radius=[0, 0, 0], model='ridge',
             denoised_b0s[..., vol_idx] = _vol_denoise(train_b0,
                                                       vol_idx, model,
                                                       data_b0s.shape,
-                                                      alpha=alpha)
+                                                      alpha=alpha,
+                                                      working=working_directory)
 
             if verbose:
                 print("Denoised b0 Volume: ", vol_idx)
@@ -478,7 +488,8 @@ def patch2self(data, bvals, patch_radius=[0, 0, 0], model='ridge',
         denoised_dwi[..., vol_idx] = _vol_denoise(train_dwi,
                                                   vol_idx, model,
                                                   data_dwi.shape,
-                                                  alpha=alpha)
+                                                  alpha=alpha,
+                                                  working=working_directory)
 
         if verbose:
             print("Denoised DWI Volume: ", vol_idx)

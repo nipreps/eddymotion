@@ -272,7 +272,7 @@ def init_emc_model_iteration_wf(
     )
     predict_dwis.synchronize = True
     predict_dwis._n_procs = 1
-    predict_dwis._mem_gb = 2
+    predict_dwis._mem_gb = 4
 
     # Register non-transformed images to the predicted images
     settings = pkgrf(

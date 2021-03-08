@@ -137,6 +137,9 @@ class SFM4HMC(SparseFascicleModel):
             flat_S = (data_in_mask[..., ~self.gtab.b0s_mask] /
                       flat_S0[..., None])
 
+        flat_params = np.zeros((data_in_mask.shape[0],
+                                self.design_matrix.shape[-1]))
+
         # No longer need data_in_mask
         del data_in_mask
         gc.collect()
@@ -180,9 +183,6 @@ class SFM4HMC(SparseFascicleModel):
         # coef = v_t.T @ coef
         #
         # flat_params = coef.squeeze().T
-
-        flat_params = np.zeros((data_in_mask.shape[0],
-                                self.design_matrix.shape[-1]))
 
         for vox, vox_data in enumerate(flat_S):
             # In voxels in which S0 is 0, we just want to keep the

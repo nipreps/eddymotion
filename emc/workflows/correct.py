@@ -271,6 +271,8 @@ def init_emc_model_iteration_wf(
         name="predict_dwis",
     )
     predict_dwis.synchronize = True
+    predict_dwis._n_procs = 1
+    predict_dwis._mem_gb = 2
 
     # Register non-transformed images to the predicted images
     settings = pkgrf(
@@ -627,10 +629,10 @@ def init_emc_wf(name, mem_gb=3, omp_nthreads=8):
         name="meta_inputnode",
     )
 
-    patch2self_node = pe.Node(Patch2Self(patch_radius='auto',
-                                         b0_denoising=True),
-                              name="patch2self_node")
-    patch2self_node._n_cores = 1
+    patch2self_node = pe.Node(Patch2Self(patch_radius='auto'),
+        name="patch2self_node",
+    )
+    patch2self_node._n_procs = 4
     patch2self_node._mem_gb = 8
 
     # Instantiate vectors object

@@ -335,7 +335,8 @@ class Patch2Self(SimpleInterface):
                        verbose=True,
                        b0_denoising=self.inputs.b0_denoising,
                        clip_negative_vals=self.inputs.clip_negative_vals,
-                       shift_intensity=self.inputs.shift_intensity
+                       shift_intensity=self.inputs.shift_intensity,
+                       working_directory=runtime.cwd
                        )
 
         # Back to nifti
@@ -345,6 +346,9 @@ class Patch2Self(SimpleInterface):
                                        noisy_img.header)
         denoised_img.to_filename(denoised_file)
         p2s_residuals.to_filename(noise_file)
+
+        os.system(f"rm -rf {runtime.cwd}/*.memmap &")
+
         self._results['out_file'] = denoised_file
         self._results['noise_image'] = noise_file
         return runtime

@@ -34,6 +34,8 @@ work/**/*
 work
 out/**/*
 out/
+.idea/**/*
+.idea
 
 # CI, etc.
 .circleci

@@ -117,102 +117,49 @@ class SignalPrediction(SimpleInterface):
             lambdaN = 1e-8
             lambdaL = 1e-8
             t1 = time.time()
-            estimator_shore = ShoreModel(training_gtab,
-                                         radial_order=radial_order,
-                                         zeta=zeta, lambdaN=lambdaN,
-                                         lambdaL=lambdaL)
-            estimator_shore_fit = estimator_shore.fit(
-                series_files2series_arr(training_image_paths), mask=mask_array)
-            t2 = time.time()
-            print(f"Fit time: {t2 - t1}")
-            t3 = time.time()
-            pred_shore_fit = estimator_shore_fit.predict(prediction_gtab)
-            t4 = time.time()
-            print(f"Predict time: {t4 - t3}")
-            pred_shore_fit[~mask_array] = 0
-            pred_fit_file = f"{runtime.cwd}/predicted_shore_" \
-                                  f"{val_str}.nii.gz"
-            nb.Nifti1Image(pred_shore_fit, mask_img.affine, mask_img.header
-                           ).to_filename(pred_fit_file)
+            estimator = ShoreModel(training_gtab,
+                                   radial_order=radial_order,
+                                   zeta=zeta, lambdaN=lambdaN,
+                                   lambdaL=lambdaL)
+            fit_kwargs = {}
+            pred_kwargs = {}
+
         elif self.inputs.model_name == "sfm":
             t1 = time.time()
-            sfm_all = SFM4HMC(
+            estimator = SFM4HMC(
                 training_gtab,
                 isotropic=ExponentialIsotropicModel)
-
-            sff, _ = sfm_all.fit(series_files2series_arr(training_image_paths),
-                                 alpha=1e-16, mask=mask_array, tol=10e-10,
-                                 iso_params=None)
-            t2 = time.time()
-            print(f"Fit time: {t2 - t1}")
-            t3 = time.time()
-
-            pred_sfm_fit = sff.predict(prediction_gtab,
-                                       S0=np.array(nb.load(
-                                           self.inputs.b0_median).dataobj))
-            t4 = time.time()
-            print(f"Predict time: {t4 - t3}")
-
-            pred_fit_file = f"{runtime.cwd}/predicted_" \
-                            f"{val_str}.nii.gz"
-            pred_sfm_fit[~mask_array] = 0
-
-            nb.Nifti1Image(pred_sfm_fit, mask_img.affine, mask_img.header
-                           ).to_filename(pred_fit_file)
+            fit_kwargs = dict(alpha=1e-16,
+                              mask=mask_array,
+                              tol=10e-10,
+                              iso_params=None)
+            pred_kwargs = dict(
+                S0=np.array(nb.load(self.inputs.b0_median).dataobj))
         elif self.inputs.model_name == "tensor":
-
             t1 = time.time()
-            estimator_ten = TensorModel(training_gtab)
-            estimator_ten_fit = estimator_ten.fit(
-                series_files2series_arr(training_image_paths), mask=mask_array)
-            t2 = time.time()
-            print(f"Fit time: {t2 - t1}")
-            t3 = time.time()
-            pred_ten_fit = estimator_ten_fit.predict(prediction_gtab)[..., 0]
-            t4 = time.time()
-            print(f"Predict time: {t4 - t3}")
-            pred_ten_fit[~mask_array] = 0
-            pred_fit_file = f"{runtime.cwd}/predicted_" \
-                            f"{val_str}.nii.gz"
-            nb.Nifti1Image(pred_ten_fit, mask_img.affine, mask_img.header
-                           ).to_filename(pred_fit_file)
-        # elif self.inputs.model_name == "ensemble":
-        #     from mlens.ensemble import SuperLearner
-        #
-        #     # Use tensor as an initiator of a meta-learner
-        #     ensemble = SuperLearner()
-        #
-        #     t1 = time.time()
-        #     # Instantiate tensor
-        #     estimator_ten = TensorModel(training_gtab, mask=mask_array)
-        #
-        #     # Instantiate sfm
-        #     sfm_all = SFM4HMC(
-        #         training_gtab,
-        #         isotropic=ExponentialIsotropicModel)
-        #
-        #     sff, _ = sfm_all.fit(training_data, alpha=10e-10,
-        #                                       mask=mask_array,
-        #                                       tol=10e-10, iso_params=None)
-        #
-        #     t2 = time.time()
-        #     print(f"Fit time: {t2 - t1}")
-        #     t3 = time.time()
-        #
-        #     ensemble.add([estimator_ten, sff])
-        #
-        #     pred_fit = ensemble.predict(prediction_gtab)[..., 0]
-        #     t4 = time.time()
-        #     print(f"Predict time: {t4 - t3}")
-        #
-        #     pred_fit[~mask_array] = 0
-        #     pred_fit_file = f"{runtime.cwd}/predicted_" \
-        #                     f"{(pred_val,) + tuple(np.round(pred_vec, decimals=2))}.nii.gz"
-        #     nb.Nifti1Image(pred_fit, mask_img.affine, mask_img.header
-        #                    ).to_filename(pred_fit_file)
+            estimator = TensorModel(training_gtab)
+
+            fit_kwargs = {}
+            pred_kwargs = {}
         else:
             raise ValueError("Model not supported.")
 
-        self._results["predicted_image"] = pred_fit_file
+        estimator = estimator.fit(
+            series_files2series_arr(training_image_paths), mask=mask_array,
+            **fit_kwargs)
+        t2 = time.time()
+        print(f"Fit time: {t2 - t1}")
+        t3 = time.time()
+        pred = estimator.predict(
+            prediction_gtab,
+            **pred_kwargs)
+        t4 = time.time()
+        print(f"Predict time: {t4 - t3}")
+        pred[~mask_array] = 0
+        pred_file = f"{runtime.cwd}/predicted_{val_str}.nii.gz"
+        nb.Nifti1Image(
+            pred, mask_img.affine, mask_img.header).to_filename(pred_file)
+
+        self._results["predicted_image"] = pred_file
 
         return runtime

@@ -5,8 +5,8 @@ from pathlib import Path
 
 
 @attr.s(slots=True)
-class EddyMotionEstimation:
-    """Estimate rigid-body head-motion and distortions derived from eddy-currents."""
+class EddyMotionEstimator:
+    """Estimates rigid-body head-motion and distortions derived from eddy-currents."""
 
     datapath = attr.ib(default=None)
     """Path to the input DWI dataset."""

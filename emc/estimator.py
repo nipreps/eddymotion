@@ -1,52 +1,68 @@
 """A SHORELine-like algorithm for the realignment of dMRI data."""
 import attr
 import numpy as np
-from pathlib import Path
+from emc.utils.register import affine_registration
 
 
 @attr.s(slots=True)
 class EddyMotionEstimator:
     """Estimates rigid-body head-motion and distortions derived from eddy-currents."""
 
-    datapath = attr.ib(default=None)
-    """Path to the input DWI dataset."""
-    gradients = attr.ib(default=None)
-    """A 2D numpy array of the gradient table in RAS+B format."""
-    bzero = attr.ib(default=None)
-    """A *b=0* reference map, preferably obtained by some smart averaging."""
-    model = attr.ib(default="SFM", type="str")
-    """The prediction model - options: SFM, SHORE, Tensor, DKI."""
-    transforms = attr.ib(default=None)
-    """Current transform parameters (list of affine matrices)."""
+    dwdata = attr.ib(default=None)
+    """A :class:`~emc.dmri.DWI` instance."""
 
+    @staticmethod
     def fit(
+        dwdata,
+        *,
+        n_iter=1,
+        align_kwards=None,
+        **kwargs,
+    ):
+        """Run the algorithm."""
+        for _ in range(n_iter):
+            for i in np.random.shuffle(range(len(dwdata))):
+                data_train, data_test = dwdata.logo_split(i)
+
+                # fit & predict
+                model = ModelFactory(**kwargs).fit(
+                    *data_train,
+                    mask=dwdata.brainmask,
+                )
+                predicted = model.predict(
+                    *data_test,
+                    mask=dwdata.brainmask,
+                )
+                predicted[~dwdata.brainmask] = 0  # OE: very concerned about this
+
+                # run volume-to-volume registration
+                align_kwards = align_kwards or {}
+                _, xform = affine_registration(
+                    data_test[0],
+                    predicted,
+                    starting_affine=dwdata.em_affines[i],
+                    **align_kwards,
+                )
+
+                # update
+                dwdata.set_transform(i, xform)
+
+        raise NotImplementedError
+
+    def transform(
+        *,
+        X,
+    ):
+        """Generate a corrected NiBabel SpatialImage object."""
+        raise NotImplementedError
+
+        transform().to_filename("myfile.nii.gz")
+
+    def fit_transform(
         *,
         X=None,
         init=None,
         **kwargs,
     ):
-        """
-        Run the algorithm.
-
-        Parameters
-        ----------
-        X : :obj:`~nibabel.SpatialImage`
-          A DWI image, as a nibabel image object.
-        init : :obj:`~numpy.ndarray`
-          An Nx4x4 array of initialization transforms.
-
-        """
-        loo_index = np.random.shuffle(range(len(X)))
-
-        self.transforms = [
-            _emc(X, index=i)
-            for i in loo_index
-        ]
+        """Execute both fitting and transforming."""
         raise NotImplementedError
-
-    def predict():
-        """Generate a corrected NiBabel SpatialImage object."""
-
-
-def _emc(x, index, model="SFM"):
-    return NotImplementedError

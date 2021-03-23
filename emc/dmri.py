@@ -7,27 +7,33 @@ from pathlib import Path
 from nitransforms.linear import Affine
 
 
+def _data_repr(value):
+    if value is None:
+        return "None"
+    return f"<{'x'.join(str(v) for v in value.shape)} ({value.dtype})>"
+
+
 @attr.s(slots=True)
 class DWI:
     """Data representation structure for dMRI data."""
 
-    dataobj = attr.ib(default=None)
+    dataobj = attr.ib(default=None, repr=_data_repr)
     """A numpy ndarray object for the data array, without *b=0* volumes."""
-    affine = attr.ib(default=None)
+    affine = attr.ib(default=None, repr=_data_repr)
     """Best affine for RAS-to-voxel conversion of coordinates (NIfTI header)."""
-    brainmask = attr.ib(default=None)
+    brainmask = attr.ib(default=None, repr=_data_repr)
     """A boolean ndarray object containing a corresponding brainmask."""
-    bzero = attr.ib(default=None)
+    bzero = attr.ib(default=None, repr=_data_repr)
     """
     A *b=0* reference map, preferably obtained by some smart averaging.
     If the :math:`B_0` fieldmap is set, this *b=0* reference map should also
     be unwarped.
     """
-    gradients = attr.ib(default=None)
+    gradients = attr.ib(default=None, repr=_data_repr)
     """A 2D numpy array of the gradient table in RAS+B format."""
     em_affines = attr.ib(default=None)
     """List of linear matrices that bring DWIs (i.e., no b=0) into alignment."""
-    fieldmap = attr.ib(default=None)
+    fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
     _filepath = attr.ib(default=None)
     """A path to an HDF5 file to store the whole dataset."""

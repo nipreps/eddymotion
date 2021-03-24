@@ -107,6 +107,7 @@ class EddyMotionEstimator:
                             from_file=pkg_fn("emc", "config/registration.json"),
                             fixed_image=str(fixed.absolute()),
                             moving_image=str(moving.absolute()),
+                            **align_kwargs,
                         )
                         if bmask_img:
                             registration.inputs.fixed_image_masks = bmask_img

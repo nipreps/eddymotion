@@ -68,10 +68,9 @@ class DWI:
 
     def set_transform(self, index, affine, order=1):
         """Set an affine, and update data object and gradients."""
-        reference = namedtuple(
-            "ImageGrid",
-            ("shape", "affine")
-        )(shape=self.dataobj.shape[:3], affine=self.affine)
+        reference = namedtuple("ImageGrid", ("shape", "affine"))(
+            shape=self.dataobj.shape[:3], affine=self.affine
+        )
 
         # create a nitransforms object
         if self.fieldmap:
@@ -90,7 +89,7 @@ class DWI:
         self.dataobj[..., index] = xform.apply(dwframe)
 
         # invert transform transform b-vector and origin
-        r_bvec = ~xform.apply([bvec, (0., 0., 0.)])
+        r_bvec = ~xform.apply([bvec, (0.0, 0.0, 0.0)])
         # Reset b-vector's origin
         new_bvec = r_bvec[1] - r_bvec[0]
         # Normalize and update

@@ -1,68 +1,78 @@
-"""A SHORELine-like algorithm for the realignment of dMRI data."""
-import attr
+"""A model-based algorithm for the realignment of dMRI data."""
 import numpy as np
 from emc.utils.register import affine_registration
+from emc.model import ModelFactory
 
 
-@attr.s(slots=True)
 class EddyMotionEstimator:
     """Estimates rigid-body head-motion and distortions derived from eddy-currents."""
-
-    dwdata = attr.ib(default=None)
-    """A :class:`~emc.dmri.DWI` instance."""
 
     @staticmethod
     def fit(
         dwdata,
         *,
         n_iter=1,
-        align_kwards=None,
+        align_kwargs=None,
+        model="b0",
         **kwargs,
     ):
-        """Run the algorithm."""
+        r"""
+        Estimate head-motion and Eddy currents.
+
+        Parameters
+        ----------
+        dwdata : :obj:`~emc.dmri.DWI`
+            The target DWI dataset, represented by this tool's internal
+            type. The object is used in-place, and will contain the estimated
+            parameters in its ``em_affines`` property, as well as the rotated
+            *b*-vectors within its ``gradients`` property.
+        n_iter : :obj:`int`
+            Number of iterations this particular model is going to be repeated.
+        align_kwargs : :obj:`dict`
+            Parameters to configure the image registration process.
+        model : :obj:`str`
+            Selects the diffusion model that will generate the registration target
+            corresponding to each gradient map.
+            See :obj:`~emc.model.ModelFactory` for allowed models (and corresponding
+            keywords).
+
+        Return
+        ------
+        affines : :obj:`list` of :obj:`numpy.ndarray`
+            A list of :math:`4 \times 4` affine matrices encoding the estimated
+            parameters of the deformations caused by head-motion and eddy-currents.
+
+        """
         for _ in range(n_iter):
             for i in np.random.shuffle(range(len(dwdata))):
                 data_train, data_test = dwdata.logo_split(i)
 
-                # fit & predict
-                model = ModelFactory(**kwargs).fit(
+                # fit the diffusion model
+                model = ModelFactory.init(gtab=data_train[1], model=model,).fit(
                     *data_train,
                     mask=dwdata.brainmask,
+                    **kwargs,
                 )
+
+                # generate a synthetic gradient volume
                 predicted = model.predict(
                     *data_test,
                     mask=dwdata.brainmask,
+                    S0=dwdata.bzero,
+                    **kwargs,
                 )
-                predicted[~dwdata.brainmask] = 0  # OE: very concerned about this
 
-                # run volume-to-volume registration
-                align_kwards = align_kwards or {}
+                # run a original-to-synthetic affine registration
+                init_affine = dwdata.em_affines[i] if dwdata.em_affines else None
+                align_kwargs = align_kwargs or {}
                 _, xform = affine_registration(
-                    data_test[0],
-                    predicted,
-                    starting_affine=dwdata.em_affines[i],
-                    **align_kwards,
+                    data_test[0],  # moving
+                    predicted,  # fixed
+                    starting_affine=init_affine,
+                    **align_kwargs,
                 )
 
                 # update
                 dwdata.set_transform(i, xform)
 
-        raise NotImplementedError
-
-    def transform(
-        *,
-        X,
-    ):
-        """Generate a corrected NiBabel SpatialImage object."""
-        raise NotImplementedError
-
-        transform().to_filename("myfile.nii.gz")
-
-    def fit_transform(
-        *,
-        X=None,
-        init=None,
-        **kwargs,
-    ):
-        """Execute both fitting and transforming."""
-        raise NotImplementedError
+        return dwdata.em_affines

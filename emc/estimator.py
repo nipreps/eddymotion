@@ -68,7 +68,7 @@ class EddyMotionEstimator:
         for _ in range(n_iter):
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
-            with tqdm(total=len(index_order)) as pbar:
+            with tqdm(total=len(index_order), unit="dwi") as pbar:
                 for milestone, i in enumerate(index_order, 1):
                     data_train, data_test = dwdata.logo_split(i)
 

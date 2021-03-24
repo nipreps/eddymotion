@@ -37,7 +37,7 @@ class DWI:
     """List of linear matrices that bring DWIs (i.e., no b=0) into alignment."""
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
-    _filepath = attr.ib(default=None, repr=False)
+    _filepath = attr.ib(default=mkstemp(suffix=".h5")[1], repr=False)
     """A path to an HDF5 file to store the whole dataset."""
 
     def __len__(self):
@@ -74,15 +74,15 @@ class DWI:
             shape=self.dataobj.shape[:3], affine=self.affine
         )
 
-        if not self._filepath:
-            self.to_filename(mkstemp(suffix=".h5")[1])
-
         # create a nitransforms object
         if self.fieldmap:
             # compose fieldmap into transform
             raise NotImplementedError
         else:
             xform = Affine(matrix=affine, reference=reference)
+
+        if not Path(self._filepath).exists():
+            self.to_filename(self._filepath)
 
         # read original DWI data & b-vector
         with h5py.File(self._filepath, "r") as in_file:
@@ -131,7 +131,16 @@ class DWI:
                         f.name,
                         data=value,
                     )
-        self._filepath = filename
+
+    def to_nifti(self, filename):
+        """Write a NIfTI 1.0 file to disk."""
+        nii = nb.Nifti1Image(
+            self.dataobj,
+            self.affine,
+            None,
+        )
+        nii.header.set_xyzt("mm")
+        nii.to_filename(filename)
 
     @classmethod
     def from_filename(cls, filename):

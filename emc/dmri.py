@@ -1,9 +1,11 @@
 """Representing data in hard-disk and memory."""
+from pathlib import Path
 from collections import namedtuple
+from tempfile import mkstemp
 import attr
 import numpy as np
 import h5py
-from pathlib import Path
+import nibabel as nb
 from nitransforms.linear import Affine
 
 
@@ -72,6 +74,9 @@ class DWI:
             shape=self.dataobj.shape[:3], affine=self.affine
         )
 
+        if not self._filepath:
+            self.to_filename(mkstemp(suffix=".h5")[1])
+
         # create a nitransforms object
         if self.fieldmap:
             # compose fieldmap into transform
@@ -85,15 +90,19 @@ class DWI:
             dwframe = root["dataobj"][..., index]
             bvec = root["gradients"][:3, index]
 
+        dwmoving = nb.Nifti1Image(dwframe, self.affine, None)
+
         # resample and update orientation at index
-        self.dataobj[..., index] = xform.apply(dwframe)
+        self.dataobj[..., index] = np.asanyarray(
+            xform.apply(dwmoving).dataobj, dtype=self.dataobj.dtype
+        )
 
         # invert transform transform b-vector and origin
-        r_bvec = ~xform.apply([bvec, (0.0, 0.0, 0.0)])
+        r_bvec = (~xform).map([bvec, (0.0, 0.0, 0.0)])
         # Reset b-vector's origin
         new_bvec = r_bvec[1] - r_bvec[0]
         # Normalize and update
-        self.gradients[:3, index] = new_bvec / np.norm(new_bvec)
+        self.gradients[:3, index] = new_bvec / np.linalg.norm(new_bvec)
 
         # update transform
         if self.em_affines is None:
@@ -133,10 +142,10 @@ class DWI:
         return retval
 
 
-def load(filename, gradients_file=None, b0_file=None, fmap_file=None):
+def load(
+    filename, gradients_file=None, b0_file=None, brainmask_file=None, fmap_file=None
+):
     """Load DWI data."""
-    import nibabel as nb
-
     filename = Path(filename)
     if filename.name.endswith(".h5"):
         return DWI.from_filename(filename)
@@ -156,6 +165,10 @@ def load(filename, gradients_file=None, b0_file=None, fmap_file=None):
     if b0_file:
         b0img = nb.as_closest_canonical(nb.load(b0_file))
         retval.bzero = np.asanyarray(b0img.dataobj)
+
+    if brainmask_file:
+        mask = nb.as_closest_canonical(nb.load(brainmask_file))
+        retval.brainmask = np.asanyarray(mask.dataobj)
 
     if fmap_file:
         fmapimg = nb.as_closest_canonical(nb.load(fmap_file))

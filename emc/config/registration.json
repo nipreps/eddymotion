@@ -1,0 +1,36 @@
+{
+  "collapse_output_transforms": true,
+  "convergence_threshold": [ 1E-6, 1E-7 ],
+  "convergence_window_size": [ 5, 3 ],
+  "dimension": 3,
+  "interpolation": "BSpline",
+  "metric": [ "Mattes", "Mattes" ],
+  "metric_weight": [ 1.0, 1.0 ],
+  "number_of_iterations": [
+    [ 500, 100, 0 ],
+    [ 50 ]
+  ],
+  "radius_or_number_of_bins": [ 32, 32 ],
+  "sampling_percentage": [ 0.25, 0.25 ],
+  "sampling_strategy": [ "Regular", "Random" ],
+  "shrink_factors": [
+    [ 4, 2, 1 ],
+    [ 1 ]
+  ],
+  "sigma_units": [ "vox", "vox" ],
+  "smoothing_sigmas": [
+    [ 4.0, 2.0, 0.0 ],
+    [ 0.0 ]
+  ],
+  "transform_parameters": [
+    [ 1.0 ],
+    [ 1.0 ]
+  ],
+  "transforms": [ "Rigid", "Rigid" ],
+  "use_estimate_learning_rate_once": [ false, true ],
+  "use_histogram_matching": [ true, true ],
+  "verbose": true,
+  "winsorize_lower_quantile": 0.0001,
+  "winsorize_upper_quantile": 0.9998,
+  "write_composite_transform": false
+}

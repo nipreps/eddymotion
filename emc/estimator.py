@@ -1,14 +1,13 @@
 """A model-based algorithm for the realignment of dMRI data."""
+from pathlib import Path
+from tempfile import TemporaryDirectory, mkstemp
+from pkg_resources import resource_filename as pkg_fn
+from tqdm import tqdm
 import numpy as np
-from dipy.align import transforms as dat
-from dipy.align import metrics as dam
-from dipy.align.imaffine import (
-    AffineRegistration,
-    MutualInformationMetric,
-)
+import nibabel as nb
+import nitransforms as nt
+from nipype.interfaces.ants.registration import Registration
 from emc.model import ModelFactory
-
-dam.MutualInformationMetric = MutualInformationMetric
 
 
 class EddyMotionEstimator:
@@ -59,57 +58,106 @@ class EddyMotionEstimator:
         if seed or seed == 0:
             np.random.seed(20210324 if seed is True else seed)
 
+        bmask_img = None
+        if dwdata.brainmask is not None:
+            _, bmask_img = mkstemp(suffix="_bmask.nii.gz")
+            nb.Nifti1Image(
+                dwdata.brainmask.astype("uint8"), dwdata.affine, None
+            ).to_filename(bmask_img)
+
         for _ in range(n_iter):
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
-            for i in index_order:
-                data_train, data_test = dwdata.logo_split(i)
+            with tqdm(total=len(index_order)) as pbar:
+                for milestone, i in enumerate(index_order, 1):
+                    data_train, data_test = dwdata.logo_split(i)
 
-                # fit the diffusion model
-                model = ModelFactory.init(gtab=data_train[1], model=model)
-                model.fit(
-                    *data_train,
-                    mask=dwdata.brainmask,
-                    **kwargs,
-                )
+                    # fit the diffusion model
+                    dwmodel = ModelFactory.init(gtab=data_train[1], model=model)
+                    dwmodel.fit(
+                        *data_train,
+                        mask=dwdata.brainmask,
+                        **kwargs,
+                    )
 
-                # generate a synthetic gradient volume
-                predicted = model.predict(
-                    *data_test,
-                    mask=dwdata.brainmask,
-                    S0=dwdata.bzero,
-                    **kwargs,
-                )
+                    # generate a synthetic gradient volume
+                    predicted = dwmodel.predict(
+                        *data_test,
+                        mask=dwdata.brainmask,
+                        S0=dwdata.bzero,
+                        **kwargs,
+                    )
 
-                # run a original-to-synthetic affine registration
-                xform_model = getattr(
-                    dat, f"{align_kwargs.pop('Transform', 'Rigid')}Transform3D"
-                )()
-                metric_model = getattr(
-                    dam, f"{align_kwargs.pop('Metric', 'MutualInformation')}Metric"
-                )(
-                    align_kwargs.pop("nbins", 32),
-                    align_kwargs.pop("SamplingPercentage", 0.25),
-                )
-                registration = AffineRegistration(
-                    metric=metric_model,
-                    level_iters=align_kwargs.pop("NumberOfIterations", [100]),
-                    sigmas=align_kwargs.pop("SmoothingSigmas", [0.0]),
-                    factors=align_kwargs.pop("DecimatingFactors", [0]),
-                )
+                    # run a original-to-synthetic affine registration
+                    with TemporaryDirectory() as tmpdir:
+                        pbar.write(f"Processing b-index <{i}> in <{tmpdir}>")
+                        tmpdir = Path(tmpdir)
+                        moving = tmpdir / "moving.nii.gz"
+                        fixed = tmpdir / "fixed.nii.gz"
+                        nb.Nifti1Image(
+                            _advanced_clip(np.squeeze(data_test[0])),
+                            dwdata.affine,
+                            None,
+                        ).to_filename(moving)
+                        nb.Nifti1Image(
+                            _advanced_clip(np.squeeze(predicted)), dwdata.affine, None
+                        ).to_filename(fixed)
+                        registration = Registration(
+                            terminal_output="file",
+                            from_file=pkg_fn("emc", "config/registration.json"),
+                            fixed_image=str(fixed.absolute()),
+                            moving_image=str(moving.absolute()),
+                        )
+                        if bmask_img:
+                            registration.inputs.fixed_image_masks = bmask_img
+                        result = registration.run(cwd=str(tmpdir)).outputs
+                        xform = nt.io.itk.ITKLinearTransform.from_filename(
+                            result.forward_transforms[0]
+                        ).to_ras(reference=fixed, moving=moving)
 
-                init_affine = dwdata.em_affines[i] if dwdata.em_affines else np.eye(4)
-                xform = registration.optimize(
-                    predicted,  # fixed
-                    data_test[0],  # moving
-                    xform_model,
-                    None,  # params0
-                    dwdata.affine,  # fixed's affine
-                    dwdata.affine,  # moving's affine
-                    starting_affine=init_affine,
-                )
-
-                # update
-                dwdata.set_transform(i, xform)
+                    # update
+                    dwdata.set_transform(i, xform)
+                    pbar.update()
 
         return dwdata.em_affines
+
+
+def _advanced_clip(
+    data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16", invert=False
+):
+    """
+    Remove outliers at both ends of the intensity distribution and fit into a given dtype.
+
+    This interface tries to emulate ANTs workflows' massaging that truncate images into
+    the 0-255 range, and applies percentiles for clipping images.
+    For image registration, normalizing the intensity into a compact range (e.g., uint8)
+    is generally advised.
+
+    To more robustly determine the clipping thresholds, data are removed of spikes
+    with a median filter.
+    Once the thresholds are calculated, the denoised data are thrown away and the thresholds
+    are applied on the original image.
+
+    """
+    import numpy as np
+    from scipy import ndimage
+    from skimage.morphology import ball
+
+    # Calculate stats on denoised version, to preempt outliers from biasing
+    denoised = ndimage.median_filter(data, footprint=ball(3))
+
+    a_min = np.percentile(denoised[denoised > 0] if nonnegative else denoised, p_min)
+    a_max = np.percentile(denoised[denoised > 0] if nonnegative else denoised, p_max)
+
+    # Clip and cast
+    data = np.clip(data, a_min=a_min, a_max=a_max)
+    data -= data.min()
+    data /= data.max()
+
+    if invert:
+        data = 1.0 - data
+
+    if dtype in ("uint8", "int16"):
+        data = np.round(255 * data).astype(dtype)
+
+    return data

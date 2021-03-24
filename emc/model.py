@@ -8,7 +8,7 @@ class ModelFactory:
     """A factory for instantiating diffusion models."""
 
     @staticmethod
-    def init(*, gtab, model="TensorModel", **kwargs):
+    def init(gtab, model="TensorModel", **kwargs):
         """
         Instatiate a diffusion model.
 
@@ -72,9 +72,9 @@ class TrivialB0Model:
 
     """
 
-    def fit(self, **kwargs):
+    def fit(self, *args, **kwargs):
         """Do nothing."""
 
-    def predict(self, **kwargs):
+    def predict(self, *args, **kwargs):
         """Return the *b=0* map."""
         return kwargs["S0"]

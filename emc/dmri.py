@@ -35,7 +35,7 @@ class DWI:
     """List of linear matrices that bring DWIs (i.e., no b=0) into alignment."""
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
-    _filepath = attr.ib(default=None)
+    _filepath = attr.ib(default=None, repr=False)
     """A path to an HDF5 file to store the whole dataset."""
 
     def __len__(self):
@@ -80,7 +80,7 @@ class DWI:
             xform = Affine(matrix=affine, reference=reference)
 
         # read original DWI data & b-vector
-        with h5py.File(self.filepath, "r") as in_file:
+        with h5py.File(self._filepath, "r") as in_file:
             root = in_file["/0"]
             dwframe = root["dataobj"][..., index]
             bvec = root["gradients"][:3, index]
@@ -133,7 +133,7 @@ class DWI:
         return retval
 
 
-def load(filename, gradients_file, b0_file=None, fmap_file=None):
+def load(filename, gradients_file=None, b0_file=None, fmap_file=None):
     """Load DWI data."""
     import nibabel as nb
 
@@ -141,11 +141,14 @@ def load(filename, gradients_file, b0_file=None, fmap_file=None):
     if filename.name.endswith(".h5"):
         return DWI.from_filename(filename)
 
+    if not gradients_file:
+        raise RuntimeError("A gradients file is necessary")
+
     img = nb.as_closest_canonical(nb.load(filename))
     retval = DWI(
         affine=img.affine,
     )
-    grad = np.loadtxt(gradients_file).T
+    grad = np.loadtxt(gradients_file, dtype="float32").T
     gradmsk = grad[-1] > 50
     retval.gradients = grad[..., gradmsk]
     retval.dataobj = img.get_fdata(dtype="float32")[..., gradmsk]

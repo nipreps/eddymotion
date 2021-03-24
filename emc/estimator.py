@@ -14,6 +14,7 @@ class EddyMotionEstimator:
         n_iter=1,
         align_kwargs=None,
         model="b0",
+        seed=None,
         **kwargs,
     ):
         r"""
@@ -35,6 +36,9 @@ class EddyMotionEstimator:
             corresponding to each gradient map.
             See :obj:`~emc.model.ModelFactory` for allowed models (and corresponding
             keywords).
+        seed : :obj:`int` or :obj:`bool`
+            Seed the random number generator (necessary when we want deterministic
+            estimation).
 
         Return
         ------
@@ -43,12 +47,15 @@ class EddyMotionEstimator:
             parameters of the deformations caused by head-motion and eddy-currents.
 
         """
+        if seed or seed == 0:
+            np.random.seed(20210324 if seed is True else seed)
+
         for _ in range(n_iter):
             for i in np.random.shuffle(range(len(dwdata))):
                 data_train, data_test = dwdata.logo_split(i)
 
                 # fit the diffusion model
-                model = ModelFactory.init(gtab=data_train[1], model=model,).fit(
+                model = ModelFactory.init(gtab=data_train[1], model=model).fit(
                     *data_train,
                     mask=dwdata.brainmask,
                     **kwargs,

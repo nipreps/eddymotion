@@ -2,8 +2,13 @@
 import numpy as np
 from dipy.align import transforms as dat
 from dipy.align import metrics as dam
-from dipy.align.imaffine import AffineRegistration
+from dipy.align.imaffine import (
+    AffineRegistration,
+    MutualInformationMetric,
+)
 from emc.model import ModelFactory
+
+dam.MutualInformationMetric = MutualInformationMetric
 
 
 class EddyMotionEstimator:
@@ -55,11 +60,14 @@ class EddyMotionEstimator:
             np.random.seed(20210324 if seed is True else seed)
 
         for _ in range(n_iter):
-            for i in np.random.shuffle(range(len(dwdata))):
+            index_order = np.arange(len(dwdata))
+            np.random.shuffle(index_order)
+            for i in index_order:
                 data_train, data_test = dwdata.logo_split(i)
 
                 # fit the diffusion model
-                model = ModelFactory.init(gtab=data_train[1], model=model).fit(
+                model = ModelFactory.init(gtab=data_train[1], model=model)
+                model.fit(
                     *data_train,
                     mask=dwdata.brainmask,
                     **kwargs,
@@ -75,18 +83,19 @@ class EddyMotionEstimator:
 
                 # run a original-to-synthetic affine registration
                 xform_model = getattr(
-                    dat,
-                    f"{align_kwargs.pop('Transform', 'Rigid')}Transform3D"
+                    dat, f"{align_kwargs.pop('Transform', 'Rigid')}Transform3D"
                 )()
                 metric_model = getattr(
-                    dam,
-                    f"{align_kwargs.pop('Metric', 'MutualInformation')}Metric"
-                )(align_kwargs.pop("nbins", 32), align_kwargs.pop("SamplingPercentage", 0.25))
+                    dam, f"{align_kwargs.pop('Metric', 'MutualInformation')}Metric"
+                )(
+                    align_kwargs.pop("nbins", 32),
+                    align_kwargs.pop("SamplingPercentage", 0.25),
+                )
                 registration = AffineRegistration(
                     metric=metric_model,
-                    level_iters=align_kwargs.pop("NumberOfIterations", 100),
-                    sigmas=align_kwargs.pop("SmoothingSigmas", 0.0),
-                    factors=align_kwargs.pop("DecimatingFactors", 0),
+                    level_iters=align_kwargs.pop("NumberOfIterations", [100]),
+                    sigmas=align_kwargs.pop("SmoothingSigmas", [0.0]),
+                    factors=align_kwargs.pop("DecimatingFactors", [0]),
                 )
 
                 init_affine = dwdata.em_affines[i] if dwdata.em_affines else np.eye(4)
@@ -94,10 +103,10 @@ class EddyMotionEstimator:
                     predicted,  # fixed
                     data_test[0],  # moving
                     xform_model,
+                    None,  # params0
                     dwdata.affine,  # fixed's affine
                     dwdata.affine,  # moving's affine
                     starting_affine=init_affine,
-                    **align_kwargs,
                 )
 
                 # update

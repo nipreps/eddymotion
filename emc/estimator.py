@@ -1,6 +1,8 @@
 """A model-based algorithm for the realignment of dMRI data."""
 import numpy as np
-from emc.utils.register import affine_registration
+from dipy.align import transforms as dat
+from dipy.align import metrics as dam
+from dipy.align.imaffine import AffineRegistration
 from emc.model import ModelFactory
 
 
@@ -47,6 +49,8 @@ class EddyMotionEstimator:
             parameters of the deformations caused by head-motion and eddy-currents.
 
         """
+        align_kwargs = align_kwargs or {}
+
         if seed or seed == 0:
             np.random.seed(20210324 if seed is True else seed)
 
@@ -70,11 +74,28 @@ class EddyMotionEstimator:
                 )
 
                 # run a original-to-synthetic affine registration
-                init_affine = dwdata.em_affines[i] if dwdata.em_affines else None
-                align_kwargs = align_kwargs or {}
-                _, xform = affine_registration(
-                    data_test[0],  # moving
+                xform_model = getattr(
+                    dat,
+                    f"{align_kwargs.pop('Transform', 'Rigid')}Transform3D"
+                )()
+                metric_model = getattr(
+                    dam,
+                    f"{align_kwargs.pop('Metric', 'MutualInformation')}Metric"
+                )(align_kwargs.pop("nbins", 32), align_kwargs.pop("SamplingPercentage", 0.25))
+                registration = AffineRegistration(
+                    metric=metric_model,
+                    level_iters=align_kwargs.pop("NumberOfIterations", 100),
+                    sigmas=align_kwargs.pop("SmoothingSigmas", 0.0),
+                    factors=align_kwargs.pop("DecimatingFactors", 0),
+                )
+
+                init_affine = dwdata.em_affines[i] if dwdata.em_affines else np.eye(4)
+                xform = registration.optimize(
                     predicted,  # fixed
+                    data_test[0],  # moving
+                    xform_model,
+                    dwdata.affine,  # fixed's affine
+                    dwdata.affine,  # moving's affine
                     starting_affine=init_affine,
                     **align_kwargs,
                 )

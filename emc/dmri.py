@@ -56,19 +56,31 @@ class DWI:
         Return
         ------
         (train_data, train_gradients) : :obj:`tuple`
-            Training DWI and corresponding gradients
+            Training DWI and corresponding gradients.
+            Training data/gradients come **from the updated dataset**.
         (test_data, test_gradients) :obj:`tuple`
             Test 3D map (one DWI orientation) and corresponding b-vector/value.
+            The test data/gradient come **from the original dataset**.
 
         """
+        if not Path(self._filepath).exists():
+            self.to_filename(self._filepath)
+
+        # read original DWI data & b-vector
+        with h5py.File(self._filepath, "r") as in_file:
+            root = in_file["/0"]
+            dwframe = np.asanyarray(root["dataobj"][..., index])
+            bframe = np.asanyarray(root["gradients"][..., index])
+
+        # if the size of the mask does not match data, cache is stale
         mask = np.zeros(len(self), dtype=bool)
         mask[index] = True
         return (
             (self.dataobj[..., ~mask], self.gradients[..., ~mask]),
-            (self.dataobj[..., mask], self.gradients[..., mask]),
+            (dwframe, bframe),
         )
 
-    def set_transform(self, index, affine, order=1):
+    def set_transform(self, index, affine, order=3):
         """Set an affine, and update data object and gradients."""
         reference = namedtuple("ImageGrid", ("shape", "affine"))(
             shape=self.dataobj.shape[:3], affine=self.affine
@@ -87,14 +99,15 @@ class DWI:
         # read original DWI data & b-vector
         with h5py.File(self._filepath, "r") as in_file:
             root = in_file["/0"]
-            dwframe = root["dataobj"][..., index]
-            bvec = root["gradients"][:3, index]
+            dwframe = np.asanyarray(root["dataobj"][..., index])
+            bvec = np.asanyarray(root["gradients"][:3, index])
 
         dwmoving = nb.Nifti1Image(dwframe, self.affine, None)
 
         # resample and update orientation at index
         self.dataobj[..., index] = np.asanyarray(
-            xform.apply(dwmoving).dataobj, dtype=self.dataobj.dtype
+            xform.apply(dwmoving, order=order).dataobj,
+            dtype=self.dataobj.dtype,
         )
 
         # invert transform transform b-vector and origin
@@ -106,7 +119,7 @@ class DWI:
 
         # update transform
         if self.em_affines is None:
-            self.em_affines = [np.eye(4)] * len(self)
+            self.em_affines = [None] * len(self)
 
         self.em_affines[index] = xform
 
@@ -139,7 +152,7 @@ class DWI:
             self.affine,
             None,
         )
-        nii.header.set_xyzt("mm")
+        nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
 
     @classmethod

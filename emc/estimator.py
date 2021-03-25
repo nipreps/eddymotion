@@ -1,4 +1,5 @@
 """A model-based algorithm for the realignment of dMRI data."""
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 from pkg_resources import resource_filename as pkg_fn
@@ -65,11 +66,11 @@ class EddyMotionEstimator:
                 dwdata.brainmask.astype("uint8"), dwdata.affine, None
             ).to_filename(bmask_img)
 
-        for _ in range(n_iter):
+        for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
             with tqdm(total=len(index_order), unit="dwi") as pbar:
-                for milestone, i in enumerate(index_order, 1):
+                for i in index_order:
                     data_train, data_test = dwdata.logo_split(i)
 
                     # fit the diffusion model
@@ -90,7 +91,9 @@ class EddyMotionEstimator:
 
                     # run a original-to-synthetic affine registration
                     with TemporaryDirectory() as tmpdir:
-                        pbar.write(f"Processing b-index <{i}> in <{tmpdir}>")
+                        pbar.write(
+                            f"Pass {i_iter}/{n_iter} | Processing b-index <{i}> in <{tmpdir}>..."
+                        )
                         tmpdir = Path(tmpdir)
                         moving = tmpdir / "moving.nii.gz"
                         fixed = tmpdir / "fixed.nii.gz"
@@ -111,7 +114,19 @@ class EddyMotionEstimator:
                         )
                         if bmask_img:
                             registration.inputs.fixed_image_masks = bmask_img
+
+                        if dwdata.em_affines and dwdata.em_affines[i]:
+                            mat_file = tmpdir / f"init{i_iter}.mat"
+                            nt.linear.Affine(
+                                matrix=dwdata.em_affines[i],
+                                reference=fixed,
+                            ).to_filename(mat_file)
+                            registration.inputs.initial_moving_transform = str(mat_file)
+
+                        # execute ants command line
                         result = registration.run(cwd=str(tmpdir)).outputs
+
+                        # read output transform
                         xform = nt.io.itk.ITKLinearTransform.from_filename(
                             result.forward_transforms[0]
                         ).to_ras(reference=fixed, moving=moving)

@@ -112,7 +112,15 @@ class TensorModel:
         kwargs = {
             k: v
             for k, v in kwargs.items()
-            if k in ("min_signal", "return_S0_hat", "fit_method", "weighting", "sigma", "jac")
+            if k
+            in (
+                "min_signal",
+                "return_S0_hat",
+                "fit_method",
+                "weighting",
+                "sigma",
+                "jac",
+            )
         }
         self._model = TensorModel(gtab, **kwargs)
 
@@ -147,7 +155,15 @@ class DKIModel:
         kwargs = {
             k: v
             for k, v in kwargs.items()
-            if k in ("min_signal", "return_S0_hat", "fit_method", "weighting", "sigma", "jac")
+            if k
+            in (
+                "min_signal",
+                "return_S0_hat",
+                "fit_method",
+                "weighting",
+                "sigma",
+                "jac",
+            )
         }
         self._model = DiffusionKurtosisModel(gtab, **kwargs)
 

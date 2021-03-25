@@ -1,7 +1,7 @@
 """Representing data in hard-disk and memory."""
 from pathlib import Path
 from collections import namedtuple
-from tempfile import mkstemp
+from tempfile import mkdtemp
 import attr
 import numpy as np
 import h5py
@@ -40,14 +40,14 @@ class DWI:
     """
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
-    _filepath = attr.ib(default=mkstemp(suffix=".h5")[1], repr=False)
+    _filepath = attr.ib(default=Path(mkdtemp()) / "em_cache.h5", repr=False)
     """A path to an HDF5 file to store the whole dataset."""
 
     def __len__(self):
         """Obtain the number of high-*b* orientations."""
         return self.gradients.shape[-1]
 
-    def logo_split(self, index):
+    def logo_split(self, index, with_b0=False):
         """
         Produce one fold of LOGO (leave-one-gradient-out).
 
@@ -78,8 +78,24 @@ class DWI:
         # if the size of the mask does not match data, cache is stale
         mask = np.zeros(len(self), dtype=bool)
         mask[index] = True
+
+        train_data = self.dataobj[..., ~mask]
+        train_gradients = self.gradients[..., ~mask]
+
+        if with_b0:
+            train_data = np.concatenate(
+                (np.asanyarray(self.bzero)[..., np.newaxis], train_data),
+                axis=-1,
+            )
+            b0vec = np.zeros((4, 1))
+            b0vec[0, 0] = 1
+            train_gradients = np.concatenate(
+                (b0vec, train_gradients),
+                axis=-1,
+            )
+
         return (
-            (self.dataobj[..., ~mask], self.gradients[..., ~mask]),
+            (train_data, train_gradients),
             (dwframe, bframe),
         )
 

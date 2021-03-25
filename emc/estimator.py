@@ -1,5 +1,4 @@
 """A model-based algorithm for the realignment of dMRI data."""
-import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 from pkg_resources import resource_filename as pkg_fn
@@ -55,6 +54,7 @@ class EddyMotionEstimator:
 
         """
         align_kwargs = align_kwargs or {}
+        reg_target_type = "dwi" if model.lower() not in ("b0", "s0") else "b0"
 
         if seed or seed == 0:
             np.random.seed(20210324 if seed is True else seed)
@@ -65,35 +65,33 @@ class EddyMotionEstimator:
             nb.Nifti1Image(
                 dwdata.brainmask.astype("uint8"), dwdata.affine, None
             ).to_filename(bmask_img)
+            kwargs["mask"] = dwdata.brainmask
+
+        kwargs["S0"] = _advanced_clip(dwdata.bzero)
 
         for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
             with tqdm(total=len(index_order), unit="dwi") as pbar:
                 for i in index_order:
-                    data_train, data_test = dwdata.logo_split(i)
-
-                    # fit the diffusion model
-                    dwmodel = ModelFactory.init(gtab=data_train[1], model=model)
-                    dwmodel.fit(
-                        *data_train,
-                        mask=dwdata.brainmask,
-                        **kwargs,
-                    )
-
-                    # generate a synthetic gradient volume
-                    predicted = dwmodel.predict(
-                        *data_test,
-                        mask=dwdata.brainmask,
-                        S0=dwdata.bzero,
-                        **kwargs,
-                    )
-
                     # run a original-to-synthetic affine registration
                     with TemporaryDirectory() as tmpdir:
                         pbar.write(
-                            f"Pass {i_iter}/{n_iter} | Processing b-index <{i}> in <{tmpdir}>..."
+                            f"Pass {i_iter}/{n_iter} | Processing b-index <{i}> in <{tmpdir}>"
                         )
+                        data_train, data_test = dwdata.logo_split(i, with_b0=True)
+
+                        # Factory creates the appropriate model and pipes arguments
+                        dwmodel = ModelFactory.init(
+                            gtab=data_train[1], model=model, **kwargs
+                        )
+
+                        # fit the model
+                        dwmodel.fit(data_train[0])
+
+                        # generate a synthetic dw volume for the test gradient
+                        predicted = dwmodel.predict(data_test[1])
+
                         tmpdir = Path(tmpdir)
                         moving = tmpdir / "moving.nii.gz"
                         fixed = tmpdir / "fixed.nii.gz"
@@ -103,17 +101,24 @@ class EddyMotionEstimator:
                             None,
                         ).to_filename(moving)
                         nb.Nifti1Image(
-                            _advanced_clip(np.squeeze(predicted)), dwdata.affine, None
+                            predicted
+                            if model.lower() in ("b0", "s0")
+                            else _advanced_clip(np.squeeze(predicted)),
+                            dwdata.affine,
+                            None,
                         ).to_filename(fixed)
                         registration = Registration(
                             terminal_output="file",
-                            from_file=pkg_fn("emc", "config/registration.json"),
+                            from_file=pkg_fn(
+                                "emc",
+                                f"config/dwi-to-{reg_target_type}_level{i_iter}.json",
+                            ),
                             fixed_image=str(fixed.absolute()),
                             moving_image=str(moving.absolute()),
                             **align_kwargs,
                         )
                         if bmask_img:
-                            registration.inputs.fixed_image_masks = bmask_img
+                            registration.inputs.fixed_image_masks = ["NULL", bmask_img]
 
                         if dwdata.em_affines and dwdata.em_affines[i] is not None:
                             mat_file = tmpdir / f"init{i_iter}.mat"

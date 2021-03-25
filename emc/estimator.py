@@ -115,12 +115,9 @@ class EddyMotionEstimator:
                         if bmask_img:
                             registration.inputs.fixed_image_masks = bmask_img
 
-                        if dwdata.em_affines and dwdata.em_affines[i]:
+                        if dwdata.em_affines and dwdata.em_affines[i] is not None:
                             mat_file = tmpdir / f"init{i_iter}.mat"
-                            nt.linear.Affine(
-                                matrix=dwdata.em_affines[i],
-                                reference=fixed,
-                            ).to_filename(mat_file)
+                            dwdata.em_affines[i].to_filename(mat_file, fmt="itk")
                             registration.inputs.initial_moving_transform = str(mat_file)
 
                         # execute ants command line

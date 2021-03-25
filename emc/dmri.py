@@ -34,7 +34,10 @@ class DWI:
     gradients = attr.ib(default=None, repr=_data_repr)
     """A 2D numpy array of the gradient table in RAS+B format."""
     em_affines = attr.ib(default=None)
-    """List of linear matrices that bring DWIs (i.e., no b=0) into alignment."""
+    """
+    List of :obj:`nitransforms.linear.Affine` objects that bring
+    DWIs (i.e., no b=0) into alignment.
+    """
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
     _filepath = attr.ib(default=mkstemp(suffix=".h5")[1], repr=False)

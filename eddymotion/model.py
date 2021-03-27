@@ -1,5 +1,7 @@
 """A factory class that adapts DIPY's dMRI models."""
 import warnings
+import concurrent.futures
+import asyncio
 import numpy as np
 from dipy.core.gradients import gradient_table
 
@@ -94,12 +96,20 @@ class TrivialB0Model:
 class DTIModel:
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel."""
 
-    __slots__ = ("_model", "_S0", "_mask")
+    __slots__ = (
+        "_model",
+        "_S0",
+        "_mask",
+        "_nb_threads",
+        "_mask_chunks",
+        "_model_chunks",
+    )
 
-    def __init__(self, gtab, S0=None, mask=None, **kwargs):
+    def __init__(self, gtab, S0=None, mask=None, nb_threads=1, **kwargs):
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 
+        self._nb_threads = nb_threads
         self._S0 = None
         if S0 is not None:
             self._S0 = np.clip(
@@ -113,6 +123,9 @@ class DTIModel:
 
         if self._mask is not None:
             self._S0 = self._S0[self._mask.astype(bool)]
+
+            # Create the mask chunks
+            self._mask_chunks = np.split(self._mask, self._nb_threads, axis=2)
 
         kwargs = {
             k: v
@@ -128,10 +141,96 @@ class DTIModel:
             )
         }
         self._model = DipyTensorModel(gtab, **kwargs)
+        # Create a TensorModel for each chunk
+        self._model_chunks = [
+            DipyTensorModel(gtab, **kwargs) for _ in range(nb_threads)
+        ]
+
+    def fit_chunk(self, data_chunk, index, **kwargs):
+        """Clean-up permitted args and kwargs, and call model's fit."""
+        self._model_chunks[index] = self._model_chunks[index].fit(
+            data_chunk, mask=self._mask_chunks[index]
+        )
+
+    async def run_fit_async(self, data, executor):
+        """Run the fit asynchronously chunk-by-chunk."""
+        print("starting fit")
+        print("creating data chunks (group of slices)")
+        data_chunks = np.split(data, self._nb_threads, axis=2)
+
+        print("creating executor tasks")
+        loop = asyncio.get_event_loop()
+        fit_tasks = [
+            loop.run_in_executor(executor, self.fit_chunk, data_chunks[i], i)
+            for i in range(self._nb_threads)
+        ]
+        print("waiting for executor tasks")
+        results = await asyncio.gather(fit_tasks)
+        print(f"results: {results}")
+
+        print("exiting")
+
+    def fit_async(self, data, **kwargs):
+        """Run the future :method:`self.run_fit_async` in an asyncio event loop."""
+        # Create a limited thread pool.
+        executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=self._nb_threads,
+        )
+
+        event_loop = asyncio.get_event_loop()
+        try:
+            event_loop.run_until_complete(
+                self.run_fit_async(data=data, executor=executor)
+            )
+        finally:
+            event_loop.close()
 
     def fit(self, data, **kwargs):
         """Call model's fit."""
         self._model = self._model.fit(data[self._mask, ...])
+
+    def predict_chunk(self, gradient_chunk, index, step=None):
+        """Propagate model parameters and call predict for chunk."""
+        return self._model_chunks[index].predict(
+            _rasb2dipy(gradient_chunk),
+            S0=self._S0,
+            step=step,
+        )
+
+    async def run_predict_async(self, gradient, executor, step=None):
+        """Run the prediction asynchronously chunk-by-chunk."""
+        print("starting predict")
+        print("creating gradient chunks (group of slices)")
+        gradient_chunks = np.split(gradient, self._nb_threads, axis=2)
+
+        print("creating executor tasks")
+        loop = asyncio.get_event_loop()
+        predict_tasks = [
+            loop.run_in_executor(
+                executor, self.predict_chunk, gradient_chunks[i], i, step
+            )
+            for i in range(self._nb_threads)
+        ]
+        print("waiting for executor tasks")
+        results = await asyncio.gather(predict_tasks)
+        print(f"results: {results}")
+
+        print("exiting")
+
+    def predict_async(self, gradient, step=None, **kwargs):
+        """Run the future :method:`self.run_predict_async` in an asyncio event loop."""
+        # Create a limited thread pool.
+        executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=self._nb_threads,
+        )
+
+        event_loop = asyncio.get_event_loop()
+        try:
+            event_loop.run_until_complete(
+                self.run_predict_async(gradient=gradient, step=step, executor=executor)
+            )
+        finally:
+            event_loop.close()
 
     def predict(self, gradient, step=None, **kwargs):
         """Propagate model parameters and call predict."""

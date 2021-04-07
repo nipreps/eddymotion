@@ -5,8 +5,6 @@ del get_versions
 
 __packagename__ = 'emc'
 __copyright__ = 'Copyright 2021, The EddyMotionCorrection developers'
-__url__ = 'https://github.com/dPys/EddyMotionCorrection'
+__url__ = 'https://github.com/nipreps/EddyMotionCorrection'
 
-DOWNLOAD_URL = (
-    'https://github.com/dPys/{name}/archive/{ver}.tar.gz'.format(
-        name=__packagename__, ver=__version__))
+DOWNLOAD_URL = f'https://github.com/nipreps/{__packagename__}/archive/{__version__}.tar.gz'

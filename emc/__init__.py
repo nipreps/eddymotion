@@ -1,5 +1,4 @@
 """Top-level package for emc"""
-import warnings as _warnings
 from .__about__ import (
     __version__,
     __copyright__,
@@ -12,10 +11,3 @@ __all__ = [
     '__copyright__',
     '__packagename__',
 ]
-
-# cmp is not used by emc, so ignore nipype-generated warnings
-_warnings.filterwarnings('ignore', r'cmp not installed')
-_warnings.filterwarnings('ignore', r'This has not been fully tested. Please report any failures.')
-_warnings.filterwarnings('ignore', r"can't resolve package from __spec__ or __package__")
-_warnings.simplefilter('ignore', DeprecationWarning)
-_warnings.simplefilter('ignore', ResourceWarning)

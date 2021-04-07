@@ -101,7 +101,7 @@ class TensorModel:
 
     def __init__(self, gtab, S0=None, mask=None, **kwargs):
         """Instantiate the wrapped tensor model."""
-        from dipy.reconst.dti import TensorModel
+        from dipy.reconst.dti import TensorModel as DipyTensorModel
 
         self._S0 = None
         if S0 is not None:
@@ -130,7 +130,7 @@ class TensorModel:
                 "jac",
             )
         }
-        self._model = TensorModel(gtab, **kwargs)
+        self._model = DipyTensorModel(gtab, **kwargs)
 
     def fit(self, data, **kwargs):
         """Call model's fit."""

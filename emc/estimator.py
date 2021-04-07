@@ -151,8 +151,8 @@ def _advanced_clip(
     For image registration, normalizing the intensity into a compact range (e.g., uint8)
     is generally advised.
 
-    To more robustly determine the clipping thresholds, data are removed of spikes
-    with a median filter.
+    To more robustly determine the clipping thresholds, spikes are removed from data with
+    a median filter.
     Once the thresholds are calculated, the denoised data are thrown away and the thresholds
     are applied on the original image.
 

@@ -44,7 +44,7 @@ class ModelFactory:
             }
 
         elif model.lower().startswith("sfm"):
-            from emc.utils.model import (
+            from eddymotion.utils.model import (
                 SFM4HMC as Model,
                 ExponentialIsotropicModel,
             )

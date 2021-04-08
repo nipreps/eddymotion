@@ -13,7 +13,7 @@ SETUP_REQUIRES += ['wheel'] if 'bdist_wheel' in sys.argv else []
 
 if __name__ == '__main__':
     setup(
-        name="emc",
+        name="eddymotion",
         use_scm_version=True,
         setup_requires=SETUP_REQUIRES,
     )

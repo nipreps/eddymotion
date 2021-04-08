@@ -7,7 +7,7 @@ import numpy as np
 import nibabel as nb
 import nitransforms as nt
 from nipype.interfaces.ants.registration import Registration
-from emc.model import ModelFactory
+from eddymotion.model import ModelFactory
 
 
 class EddyMotionEstimator:
@@ -28,7 +28,7 @@ class EddyMotionEstimator:
 
         Parameters
         ----------
-        dwdata : :obj:`~emc.dmri.DWI`
+        dwdata : :obj:`~eddymotion.dmri.DWI`
             The target DWI dataset, represented by this tool's internal
             type. The object is used in-place, and will contain the estimated
             parameters in its ``em_affines`` property, as well as the rotated
@@ -40,7 +40,7 @@ class EddyMotionEstimator:
         model : :obj:`str`
             Selects the diffusion model that will generate the registration target
             corresponding to each gradient map.
-            See :obj:`~emc.model.ModelFactory` for allowed models (and corresponding
+            See :obj:`~eddymotion.model.ModelFactory` for allowed models (and corresponding
             keywords).
         seed : :obj:`int` or :obj:`bool`
             Seed the random number generator (necessary when we want deterministic
@@ -110,7 +110,7 @@ class EddyMotionEstimator:
                         registration = Registration(
                             terminal_output="file",
                             from_file=pkg_fn(
-                                "emc",
+                                "eddymotion",
                                 f"config/dwi-to-{reg_target_type}_level{i_iter}.json",
                             ),
                             fixed_image=str(fixed.absolute()),

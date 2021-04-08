@@ -1,8 +1,8 @@
-"""Top-level package for emc."""
-from emc._version import __version__
+"""Top-level package for eddymotion."""
+from eddymotion._version import __version__
 
-__packagename__ = "emc"
-__copyright__ = "Copyright 2021, The EddyMotionCorrection developers"
+__packagename__ = "eddymotion"
+__copyright__ = "Copyright 2021, The eddymotion developers"
 __url__ = "https://github.com/nipreps/EddyMotionCorrection"
 
 DOWNLOAD_URL = (

@@ -105,7 +105,7 @@ def draw_points(gradients, ax, colormap='viridis'):
     Parameters
     ----------
     gradients : array-like shape (N, 4)
-            Contains unit vectors. Shells should be stored consecutively.
+        A 2D numpy array of the gradient table in RAS+B format.
 
     ax : the matplolib axes instance to plot in.
 
@@ -160,7 +160,8 @@ def plot_gradients(gradients, title="Shells reprojected", spacing=0.05, filename
 
     Parameters
     ----------
-    gradients : A 2D numpy array of the gradient table in RAS+B format
+    gradients : array-like shape (N, 4)
+        A 2D numpy array of the gradient table in RAS+B format.
 
     title : :obj:`string`
         Custom plot title

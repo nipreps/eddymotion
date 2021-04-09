@@ -121,14 +121,14 @@ def draw_points(gradients, ax, colormap='viridis'):
 
     # Normalize to 1 the highest bvalue
     bvals = np.copy(gradients[3, :])
-    rs = bvals / bvals.max()
+    bvals = bvals / bvals.max()
 
     # Color map depending on bvalue (for visualization)
     cmap = cm.get_cmap(colormap)
-    colors = cmap(rs)
+    colors = cmap(bvals)
 
     # Relative shell radii proportional to the inverse of bvalue (for visualization)
-    rs = np.reciprocal(rs)
+    rs = np.reciprocal(bvals)
     rs = rs / rs.max()
     rs = rs - rs.min()
     rs = rs / (rs.max() - rs.min())

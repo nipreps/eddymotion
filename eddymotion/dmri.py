@@ -186,6 +186,14 @@ class DWI:
             **kwargs,
         )
 
+    def plot_gradients(self, **kwargs):
+        """Visualize diffusion gradient."""
+        from eddymotion.viz import plot_gradients
+        return plot_gradients(
+            self.gradients,
+            **kwargs
+        )
+
     @classmethod
     def from_filename(cls, filename):
         """Read an HDF5 file from disk."""

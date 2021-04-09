@@ -140,11 +140,11 @@ def draw_points(gradients, ax, colormap='viridis'):
     # Render all gradient direction of all b-values
     circles = draw_circles(vects, rs)
     ax.add_collection(
-            art3d.Poly3DCollection(
-                    circles,
-                    facecolors=colors,
-                    linewidth=0
-            )
+        art3d.Poly3DCollection(
+            circles,
+            facecolors=colors,
+            linewidth=0
+        )
     )
 
     max_val = 0.6

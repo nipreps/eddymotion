@@ -94,7 +94,7 @@ def draw_circles(positions, rs):
     return circles
 
 
-def draw_points(gradients, ax, colormap='viridis'):
+def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
     """
     Draw the vectors on a shell.
 
@@ -108,6 +108,12 @@ def draw_points(gradients, ax, colormap='viridis'):
         A 2D numpy array of the gradient table in RAS+B format.
 
     ax : the matplolib axes instance to plot in.
+
+    rad_min : :obj:`float` between 0 and 1
+        Minimum radius of the circle that renders a gradient direction
+
+    rad_max : :obj:`float` between 0 and 1
+        Maximum radius of the circle that renders a gradient direction
 
     colormap : matplotlib colormap name
     """
@@ -130,15 +136,17 @@ def draw_points(gradients, ax, colormap='viridis'):
     # Relative shell radii proportional to the inverse of bvalue (for visualization)
     rs = np.reciprocal(bvals)
     rs = rs / rs.max()
+
+    # Readjust radius of the circle given the minimum and maximal allowed values.
     rs = rs - rs.min()
     rs = rs / (rs.max() - rs.min())
-    rs = rs * (0.7 - 0.4) + 0.4
+    rs = rs * (rad_max - rad_min) + rad_min
 
-    vects = np.copy(gradients[:3, :].T, )
-    vects[vects[:, 2] < 0] *= -1
+    bvecs = np.copy(gradients[:3, :].T, )
+    bvecs[bvecs[:, 2] < 0] *= -1
 
     # Render all gradient direction of all b-values
-    circles = draw_circles(vects, rs)
+    circles = draw_circles(bvecs, rs)
     ax.add_collection(
         art3d.Poly3DCollection(
             circles,

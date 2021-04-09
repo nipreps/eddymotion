@@ -174,6 +174,38 @@ class DWI:
         nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
 
+    def plot_mosaic(self, index=None, **kwargs):
+        """Visualize one direction of the dMRI dataset."""
+        from nilearn.plotting import plot_anat
+        import matplotlib.pyplot as plt
+
+        plt.rcParams.update(
+            {
+                "text.usetex": True,
+                "font.family": "sans-serif",
+                "font.sans-serif": ["Helvetica"],
+            }
+        )
+
+        affine = np.diag(nb.affines.voxel_sizes(self.affine).tolist() + [1])
+        affine[:3, 3] = -1.0 * (affine[:3, :3] @ ((np.array(self.bzero.shape) - 1) * 0.5))
+
+        datamap = self.bzero if index is None else self.dataobj[..., index]
+        vmax = kwargs.pop("vmax", None) or np.percentile(datamap, 98)
+        cut_coords = kwargs.pop("cut_coords", None) or (0, 0, 0)
+
+        return plot_anat(
+            nb.Nifti1Image(datamap, affine, None),
+            vmax=vmax,
+            cut_coords=cut_coords,
+            title=r"Reference $b$=0"
+            if index is None
+            else f"""\
+$b$={self.gradients[3, index].astype(int)}, \
+$\\vec{{b}}$ = ({', '.join(str(v) for v in self.gradients[:3, index])})""",
+            **kwargs,
+        )
+
     @classmethod
     def from_filename(cls, filename):
         """Read an HDF5 file from disk."""

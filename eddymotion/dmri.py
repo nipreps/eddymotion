@@ -142,7 +142,7 @@ class DWI:
 
         self.em_affines[index] = xform
 
-    def to_filename(self, filename):
+    def to_filename(self, filename, compression=None, compression_opts=None):
         """Write an HDF5 file to disk."""
         filename = Path(filename)
         if not filename.name.endswith(".h5"):
@@ -162,6 +162,8 @@ class DWI:
                     root.create_dataset(
                         f.name,
                         data=value,
+                        compression=compression,
+                        compression_opts=compression_opts,
                     )
 
     def to_nifti(self, filename):
@@ -188,7 +190,9 @@ class DWI:
         )
 
         affine = np.diag(nb.affines.voxel_sizes(self.affine).tolist() + [1])
-        affine[:3, 3] = -1.0 * (affine[:3, :3] @ ((np.array(self.bzero.shape) - 1) * 0.5))
+        affine[:3, 3] = -1.0 * (
+            affine[:3, :3] @ ((np.array(self.bzero.shape) - 1) * 0.5)
+        )
 
         datamap = self.bzero if index is None else self.dataobj[..., index]
         vmax = kwargs.pop("vmax", None) or np.percentile(datamap, 98)
@@ -211,8 +215,8 @@ $\\vec{{b}}$ = ({', '.join(str(v) for v in self.gradients[:3, index])})""",
         """Read an HDF5 file from disk."""
         with h5py.File(filename, "r") as in_file:
             root = in_file["/0"]
-            retval = cls(**{k: v for k, v in root.items()})
-        return retval
+            data = {k: np.asanyarray(v) for k, v in root.items()}
+        return cls(**data)
 
 
 def load(

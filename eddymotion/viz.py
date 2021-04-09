@@ -77,20 +77,20 @@ def draw_circles(positions, rs):
     by the Nipreps developers.
     """
     # a circle centered at [1, 0, 0] with radius r
-    M = 20
-    t = np.linspace(0, 2 * np.pi, M)
+    m = 20
+    t = np.linspace(0, 2 * np.pi, m)
 
-    nbPoints = positions.shape[0]
-    circles = np.zeros((nbPoints, M, 3))
+    nb_points = positions.shape[0]
+    circles = np.zeros((nb_points, m, 3))
     for i in range(positions.shape[0]):
-        circleX = np.zeros((20, 3))
+        circle_x = np.zeros((20, 3))
         dots_radius = np.sqrt(rs[i]) * 0.04
-        circleX[:, 1] = dots_radius * np.cos(t)
-        circleX[:, 2] = dots_radius * np.sin(t)
+        circle_x[:, 1] = dots_radius * np.cos(t)
+        circle_x[:, 2] = dots_radius * np.sin(t)
         norm = np.sqrt((positions[i] ** 2).sum())
         point = positions[i] / norm
-        R1 = rotation_matrix(np.asarray([1, 0, 0]), point)
-        circles[i] = positions[i] + np.dot(R1, circleX.T).T
+        r1 = rotation_matrix(np.asarray([1, 0, 0]), point)
+        circles[i] = positions[i] + np.dot(r1, circle_x.T).T
     return circles
 
 

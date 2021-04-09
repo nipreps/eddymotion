@@ -1,19 +1,8 @@
-# General
-include CHANGES.rst
-include LICENSE
-include AUTHORS.rst
-include CONTRIBUTING.rst
-include README.rst
+recursive-exclude .circleci/ *
+recursive-exclude .docker/ *
+recursive-exclude .github/ *
+recursive-exclude .git/ *
+recursive-exclude docs/ *
 
-recursive-include emc/config *
-recursive-include emc/interfaces *
-recursive-include emc/utils *
-recursive-include emc/workflows *
-recursive-include * *.yaml
-recursive-include * *.json
-recursive-exclude * *__pycache__
-recursive-exclude * *.py[co]
-
-# versioneer
-include versioneer.py
-include emc/_version.py
+exclude .*
+exclude Dockerfile

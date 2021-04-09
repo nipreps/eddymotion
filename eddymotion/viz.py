@@ -44,7 +44,7 @@ def rotation_matrix(u, v):
     """
     Returns a rotation matrix R s.t. Ru = v.
 
-    Extracted from code of Emmanuel Caruyer
+    Extracted from the code of Emmanuel Caruyer
     (https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py).
     """
     # the axis is given by the product u x v
@@ -72,9 +72,9 @@ def draw_circles(positions, rs):
     """
     Draw circular patches (lying on a sphere) at given positions.
 
-    Extracted from code of Emmanuel Caruyer
+    Adapted from the code of Emmanuel Caruyer
     (https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py)
-    and modified by the Nipreps developers.
+    by the Nipreps developers.
     """
     # a circle centered at [1, 0, 0] with radius r
     M = 20
@@ -98,9 +98,9 @@ def draw_points(gradients, ax, colormap='viridis'):
     """
     Draw the vectors on a shell.
 
-    Extracted from code of Emmanuel Caruyer
+    Adapted from the code of Emmanuel Caruyer
     (https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py)
-    and modified by the Nipreps developers.
+    by the Nipreps developers.
 
     Parameters
     ----------
@@ -160,11 +160,18 @@ def plot_gradients(gradients, title="Shells reprojected", spacing=0.05, filename
 
     Parameters
     ----------
-    gradients
-    title
-    spacing
-    filename
-    kwargs
+    gradients : A 2D numpy array of the gradient table in RAS+B format
+
+    title : :obj:`string`
+        Custom plot title
+
+    spacing : :obj:`float`
+        Parameter to adjust plot spacing
+
+    filename : :obj:`string`
+        Path to save the plot
+
+    kwargs : extra args given to :obj:`eddymotion.viz.draw_points()`
     """
     from matplotlib import pyplot as plt
 

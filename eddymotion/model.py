@@ -18,7 +18,7 @@ class ModelFactory:
             An array representing the gradient table in RAS+B format.
         model : :obj:`str`
             Diffusion model.
-            Options: ``"3DShore"``, ``"SFM"``, ``"Tensor"``, ``"S0"``
+            Options: ``"3DShore"``, ``"SFM"``, ``"DTI"``, ``"DKI"``, ``"S0"``
 
         Return
         ------
@@ -53,11 +53,8 @@ class ModelFactory:
                 "isotropic": ExponentialIsotropicModel,
             }
 
-        elif model.lower().startswith("tensor"):
-            Model = TensorModel
-
-        elif model.lower().startswith("dki"):
-            Model = DKIModel
+        elif model.lower() in ("dti", "dki"):
+            Model = DTIModel if model.lower() == "dti" else DKIModel
 
         else:
             raise NotImplementedError(f"Unsupported model <{model}>.")
@@ -94,7 +91,7 @@ class TrivialB0Model:
         return self._S0
 
 
-class TensorModel:
+class DTIModel:
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel."""
 
     __slots__ = ("_model", "_S0", "_mask")

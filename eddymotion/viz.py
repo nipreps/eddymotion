@@ -162,7 +162,12 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
     ax.axis("off")
 
 
-def plot_gradients(gradients, title="Shells reprojected", spacing=0.05, filename=None, **kwargs):
+def plot_gradients(gradients,
+                   title="Shells reprojected",
+                   figsize=(9.0, 9.0),
+                   spacing=0.05,
+                   filename=None,
+                   **kwargs):
     """
     Draw the vectors on a unit sphere with color code for multiple b-value.
 
@@ -173,6 +178,9 @@ def plot_gradients(gradients, title="Shells reprojected", spacing=0.05, filename
 
     title : :obj:`string`
         Custom plot title
+
+    figsize : tuple
+        Tuple of two numbers defining the plot figure size
 
     spacing : :obj:`float`
         Parameter to adjust plot spacing
@@ -185,7 +193,7 @@ def plot_gradients(gradients, title="Shells reprojected", spacing=0.05, filename
     from matplotlib import pyplot as plt
 
     # Figure initialization
-    fig = plt.figure(figsize=(9.0, 9.0))
+    fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111, projection='3d')
     plt.subplots_adjust(bottom=spacing,
                         top=1 - spacing,

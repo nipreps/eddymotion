@@ -95,18 +95,8 @@ class EddyMotionEstimator:
                         tmpdir = Path(tmpdir)
                         moving = tmpdir / "moving.nii.gz"
                         fixed = tmpdir / "fixed.nii.gz"
-                        nb.Nifti1Image(
-                            _advanced_clip(np.squeeze(data_test[0])),
-                            dwdata.affine,
-                            None,
-                        ).to_filename(moving)
-                        nb.Nifti1Image(
-                            predicted
-                            if model.lower() in ("b0", "s0")
-                            else _advanced_clip(np.squeeze(predicted)),
-                            dwdata.affine,
-                            None,
-                        ).to_filename(fixed)
+                        _to_nifti(data_test[0], dwdata.affine, moving)
+                        _to_nifti(predicted, dwdata.affine, fixed, clip=reg_target_type == "dwi")
                         registration = Registration(
                             terminal_output="file",
                             from_file=pkg_fn(
@@ -179,3 +169,16 @@ def _advanced_clip(
         data = np.round(255 * data).astype(dtype)
 
     return data
+
+
+def _to_nifti(
+    data, affine, filename, clip=True
+):
+    data = np.squeeze(data)
+    if clip:
+        data = _advanced_clip(data)
+    nb.Nifti1Image(
+        data,
+        affine,
+        None,
+    ).to_filename(filename)

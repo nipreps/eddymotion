@@ -53,11 +53,8 @@ class ModelFactory:
                 "isotropic": ExponentialIsotropicModel,
             }
 
-        elif model.lower().startswith("dti"):
-            Model = DTIModel
-
-        elif model.lower().startswith("dki"):
-            Model = DKIModel
+        elif model.lower() in ("dti", "dki"):
+            Model = DTIModel if model.lower() == "dti" else DKIModel
 
         else:
             raise NotImplementedError(f"Unsupported model <{model}>.")

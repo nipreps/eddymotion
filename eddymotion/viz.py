@@ -35,7 +35,6 @@ $\\vec{{b}}$ = ({', '.join(str(v) for v in gradient[:3])})""",
     )
 
 
-_epsi = 1.0e-9
 
 
 def rotation_matrix(u, v):
@@ -67,8 +66,8 @@ def rotation_matrix(u, v):
 
     """
     # the axis is given by the product u x v
-    u = u / np.sqrt((u ** 2).sum())
-    v = v / np.sqrt((v ** 2).sum())
+    u = u / np.linalg.norm(u)
+    v = v / np.linalg.norm(v)
     w = np.asarray(
         [
             u[1] * v[2] - u[2] * v[1],
@@ -76,13 +75,13 @@ def rotation_matrix(u, v):
             u[0] * v[1] - u[1] * v[0],
         ]
     )
-    if (w ** 2).sum() < _epsi:
+    if (w ** 2).sum() < (np.finfo(w.dtype).eps * 10):
         # The vectors u and v are collinear
         return np.eye(3)
 
     # computes sine and cosine
-    c = np.dot(u, v)
-    s = np.sqrt((w ** 2).sum())
+    c = u @ v
+    s = np.linalg.norm(w)
 
     w = w / s
     P = np.outer(w, w)
@@ -133,7 +132,7 @@ def draw_circles(positions, radius, n_samples=20):
         dots_radius = np.sqrt(radius[i]) * 0.04
         circle_x[:, 1] = dots_radius * np.cos(t)
         circle_x[:, 2] = dots_radius * np.sin(t)
-        norm = np.sqrt((positions[i] ** 2).sum())
+        norm = np.linalg.norm(positions[i])
         point = positions[i] / norm
         r1 = rotation_matrix(np.asarray([1, 0, 0]), point)
         circles[i] = positions[i] + np.dot(r1, circle_x.T).T
@@ -216,8 +215,8 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap="viridis"):
 
 def plot_gradients(
     gradients,
-    title="Shells reprojected",
-    figsize=(9.0, 9.0),
+    title=None,
+    ax=None,
     spacing=0.05,
     filename=None,
     **kwargs,
@@ -231,8 +230,8 @@ def plot_gradients(
         A 2D numpy array of the gradient table in RAS+B format.
     title : :obj:`string`
         Custom plot title
-    figsize : tuple
-        Tuple of two numbers defining the plot figure size
+    ax : :obj:`matplotlib.axes.Axis`
+        A figure's axis to plot on.
     spacing : :obj:`float`
         Parameter to adjust plot spacing
     filename : :obj:`string`
@@ -243,16 +242,16 @@ def plot_gradients(
     from matplotlib import pyplot as plt
 
     # Figure initialization
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111, projection="3d")
+    if ax is None:
+        figsize = kwargs.pop("figsize", (9.0, 9.0))
+        fig = plt.figure(figsize=figsize)
+        ax = fig.add_subplot(111, projection="3d")
     plt.subplots_adjust(bottom=spacing, top=1 - spacing, wspace=2 * spacing)
 
     # Visualization after re-projecting all shells to the unit sphere
     draw_points(gradients, ax, **kwargs)
 
-    # Add title
-    plt.suptitle(title)
+    if title:
+        plt.suptitle(title)
 
-    # Save the figure if a filename is provided
-    if filename is not None:
-        plt.savefig(filename, dpi=200)
+    return ax

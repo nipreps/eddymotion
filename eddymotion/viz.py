@@ -139,7 +139,7 @@ def draw_circles(positions, radius, n_samples=20):
     return circles
 
 
-def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap="viridis"):
+def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, cmap="viridis"):
     """
     Draw the vectors on a shell.
 
@@ -168,7 +168,7 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap="viridis"):
         Minimum radius of the circle that renders a gradient direction
     rad_max : :obj:`float` between 0 and 1
         Maximum radius of the circle that renders a gradient direction
-    colormap : :obj:`matplotlib.pyplot.cm.ColorMap`
+    cmap : :obj:`matplotlib.pyplot.cm.ColorMap`
         matplotlib colormap name
 
     """
@@ -184,8 +184,10 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap="viridis"):
     bvals = np.copy(gradients[3, :])
     bvals = bvals / bvals.max()
 
+    if isinstance(cmap, (str, bytes)):
+        cmap = cm.get_cmap(cmap)
+
     # Color map depending on bvalue (for visualization)
-    cmap = cm.get_cmap(colormap)
     colors = cmap(bvals)
 
     # Relative shell radii proportional to the inverse of bvalue (for visualization)

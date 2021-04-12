@@ -17,9 +17,7 @@ def plot_dwi(dataobj, affine, gradient=None, **kwargs):
     )
 
     affine = np.diag(nb.affines.voxel_sizes(affine).tolist() + [1])
-    affine[:3, 3] = -1.0 * (
-        affine[:3, :3] @ ((np.array(dataobj.shape) - 1) * 0.5)
-    )
+    affine[:3, 3] = -1.0 * (affine[:3, :3] @ ((np.array(dataobj.shape) - 1) * 0.5))
 
     vmax = kwargs.pop("vmax", None) or np.percentile(dataobj, 98)
     cut_coords = kwargs.pop("cut_coords", None) or (0, 0, 0)
@@ -41,18 +39,43 @@ _epsi = 1.0e-9
 
 
 def rotation_matrix(u, v):
-    """
-    Returns a rotation matrix R s.t. Ru = v.
+    r"""
+    Calculate the rotation matrix *R* such that :math:`R \cdot \mathbf{u} = \mathbf{v}`.
 
-    Extracted from the code of Emmanuel Caruyer
-    (https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py).
+    Extracted from `Emmanuel Caruyer's code
+    <https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py>`__,
+    which is distributed under the revised BSD License:
+
+    Copyright (c) 2013-2015, Emmanuel Caruyer
+    All rights reserved.
+
+    .. admonition :: List of changes
+
+        Only minimal updates to leverage Numpy.
+
+    Parameters
+    ----------
+    u : :obj:`numpy.ndarray`
+        A vector.
+    v : :obj:`numpy.ndarray`
+        A vector.
+
+    Returns
+    -------
+    R : :obj:`numpy.ndarray`
+        The rotation matrix.
+
     """
     # the axis is given by the product u x v
     u = u / np.sqrt((u ** 2).sum())
     v = v / np.sqrt((v ** 2).sum())
-    w = np.asarray([u[1] * v[2] - u[2] * v[1],
-                    u[2] * v[0] - u[0] * v[2],
-                    u[0] * v[1] - u[1] * v[0]])
+    w = np.asarray(
+        [
+            u[1] * v[2] - u[2] * v[1],
+            u[2] * v[0] - u[0] * v[2],
+            u[0] * v[1] - u[1] * v[0],
+        ]
+    )
     if (w ** 2).sum() < _epsi:
         # The vectors u and v are collinear
         return np.eye(3)
@@ -68,23 +91,46 @@ def rotation_matrix(u, v):
     return R
 
 
-def draw_circles(positions, rs):
-    """
+def draw_circles(positions, radius, n_samples=20):
+    r"""
     Draw circular patches (lying on a sphere) at given positions.
 
-    Adapted from the code of Emmanuel Caruyer
-    (https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py)
-    by the Nipreps developers.
+    Adapted from from `Emmanuel Caruyer's code
+    <https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py>`__,
+    which is distributed under the revised BSD License:
+
+    Copyright (c) 2013-2015, Emmanuel Caruyer
+    All rights reserved.
+
+    .. admonition :: List of changes
+
+        Modified to take the full list of normalized bvecs and corresponding circle
+        radii instead of taking the list of bvecs and radii for a specific shell
+        (*b*-value).
+
+    Parameters
+    ----------
+    positions : :obj:`numpy.ndarray`
+        An array :math:`N \times 3` of 3D cartesian positions.
+    radius : :obj:`float`
+        The reference radius (or, the radius in single-shell plots)
+    n_samples : :obj:`int`
+        The number of samples on the sphere.
+
+    Returns
+    -------
+    circles : :obj:`numpy.ndarray`
+        Circular patches
+
     """
     # a circle centered at [1, 0, 0] with radius r
-    m = 20
-    t = np.linspace(0, 2 * np.pi, m)
+    t = np.linspace(0, 2 * np.pi, n_samples)
 
     nb_points = positions.shape[0]
-    circles = np.zeros((nb_points, m, 3))
+    circles = np.zeros((nb_points, n_samples, 3))
     for i in range(positions.shape[0]):
-        circle_x = np.zeros((20, 3))
-        dots_radius = np.sqrt(rs[i]) * 0.04
+        circle_x = np.zeros((n_samples, 3))
+        dots_radius = np.sqrt(radius[i]) * 0.04
         circle_x[:, 1] = dots_radius * np.cos(t)
         circle_x[:, 2] = dots_radius * np.sin(t)
         norm = np.sqrt((positions[i] ** 2).sum())
@@ -94,28 +140,38 @@ def draw_circles(positions, rs):
     return circles
 
 
-def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
+def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap="viridis"):
     """
     Draw the vectors on a shell.
 
-    Adapted from the code of Emmanuel Caruyer
-    (https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py)
-    by the Nipreps developers.
+    Adapted from from `Emmanuel Caruyer's code
+    <https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py>`__,
+    which is distributed under the revised BSD License:
+
+    Copyright (c) 2013-2015, Emmanuel Caruyer
+    All rights reserved.
+
+    .. admonition :: List of changes
+
+        * The input is a single 2D numpy array of the gradient table in RAS+B format
+        * The scaling of the circle radius for each bvec proportional to the inverse of
+          the bvals. A minimum/maximal value for the radii can be specified.
+        * Circles for each bvec are drawn at once instead of looping over the shells.
+        * Some variables have been renamed (like vects to bvecs)
 
     Parameters
     ----------
     gradients : array-like shape (N, 4)
         A 2D numpy array of the gradient table in RAS+B format.
-
-    ax : the matplolib axes instance to plot in.
-
+    ax : :obj:`matplotlib.axes.Axis`
+        The matplolib axes instance to plot in.
     rad_min : :obj:`float` between 0 and 1
         Minimum radius of the circle that renders a gradient direction
-
     rad_max : :obj:`float` between 0 and 1
         Maximum radius of the circle that renders a gradient direction
+    colormap : :obj:`matplotlib.pyplot.cm.ColorMap`
+        matplotlib colormap name
 
-    colormap : matplotlib colormap name
     """
     from matplotlib.pyplot import cm
     from mpl_toolkits.mplot3d import art3d
@@ -142,18 +198,14 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
     rs = rs / (rs.max() - rs.min())
     rs = rs * (rad_max - rad_min) + rad_min
 
-    bvecs = np.copy(gradients[:3, :].T, )
+    bvecs = np.copy(
+        gradients[:3, :].T,
+    )
     bvecs[bvecs[:, 2] < 0] *= -1
 
     # Render all gradient direction of all b-values
     circles = draw_circles(bvecs, rs)
-    ax.add_collection(
-        art3d.Poly3DCollection(
-            circles,
-            facecolors=colors,
-            linewidth=0
-        )
-    )
+    ax.add_collection(art3d.Poly3DCollection(circles, facecolors=colors, linewidth=0))
 
     max_val = 0.6
     ax.set_xlim(-max_val, max_val)
@@ -162,12 +214,14 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
     ax.axis("off")
 
 
-def plot_gradients(gradients,
-                   title="Shells reprojected",
-                   figsize=(9.0, 9.0),
-                   spacing=0.05,
-                   filename=None,
-                   **kwargs):
+def plot_gradients(
+    gradients,
+    title="Shells reprojected",
+    figsize=(9.0, 9.0),
+    spacing=0.05,
+    filename=None,
+    **kwargs,
+):
     """
     Draw the vectors on a unit sphere with color code for multiple b-value.
 
@@ -175,29 +229,23 @@ def plot_gradients(gradients,
     ----------
     gradients : array-like shape (N, 4)
         A 2D numpy array of the gradient table in RAS+B format.
-
     title : :obj:`string`
         Custom plot title
-
     figsize : tuple
         Tuple of two numbers defining the plot figure size
-
     spacing : :obj:`float`
         Parameter to adjust plot spacing
-
     filename : :obj:`string`
         Path to save the plot
-
     kwargs : extra args given to :obj:`eddymotion.viz.draw_points()`
+
     """
     from matplotlib import pyplot as plt
 
     # Figure initialization
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111, projection='3d')
-    plt.subplots_adjust(bottom=spacing,
-                        top=1 - spacing,
-                        wspace=2 * spacing)
+    ax = fig.add_subplot(111, projection="3d")
+    plt.subplots_adjust(bottom=spacing, top=1 - spacing, wspace=2 * spacing)
 
     # Visualization after re-projecting all shells to the unit sphere
     draw_points(gradients, ax, **kwargs)

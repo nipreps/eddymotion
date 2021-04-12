@@ -17,9 +17,7 @@ def plot_dwi(dataobj, affine, gradient=None, **kwargs):
     )
 
     affine = np.diag(nb.affines.voxel_sizes(affine).tolist() + [1])
-    affine[:3, 3] = -1.0 * (
-        affine[:3, :3] @ ((np.array(dataobj.shape) - 1) * 0.5)
-    )
+    affine[:3, 3] = -1.0 * (affine[:3, :3] @ ((np.array(dataobj.shape) - 1) * 0.5))
 
     vmax = kwargs.pop("vmax", None) or np.percentile(dataobj, 98)
     cut_coords = kwargs.pop("cut_coords", None) or (0, 0, 0)
@@ -50,9 +48,13 @@ def rotation_matrix(u, v):
     # the axis is given by the product u x v
     u = u / np.sqrt((u ** 2).sum())
     v = v / np.sqrt((v ** 2).sum())
-    w = np.asarray([u[1] * v[2] - u[2] * v[1],
-                    u[2] * v[0] - u[0] * v[2],
-                    u[0] * v[1] - u[1] * v[0]])
+    w = np.asarray(
+        [
+            u[1] * v[2] - u[2] * v[1],
+            u[2] * v[0] - u[0] * v[2],
+            u[0] * v[1] - u[1] * v[0],
+        ]
+    )
     if (w ** 2).sum() < _epsi:
         # The vectors u and v are collinear
         return np.eye(3)
@@ -94,7 +96,7 @@ def draw_circles(positions, rs):
     return circles
 
 
-def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
+def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap="viridis"):
     """
     Draw the vectors on a shell.
 
@@ -142,18 +144,14 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
     rs = rs / (rs.max() - rs.min())
     rs = rs * (rad_max - rad_min) + rad_min
 
-    bvecs = np.copy(gradients[:3, :].T, )
+    bvecs = np.copy(
+        gradients[:3, :].T,
+    )
     bvecs[bvecs[:, 2] < 0] *= -1
 
     # Render all gradient direction of all b-values
     circles = draw_circles(bvecs, rs)
-    ax.add_collection(
-        art3d.Poly3DCollection(
-            circles,
-            facecolors=colors,
-            linewidth=0
-        )
-    )
+    ax.add_collection(art3d.Poly3DCollection(circles, facecolors=colors, linewidth=0))
 
     max_val = 0.6
     ax.set_xlim(-max_val, max_val)
@@ -162,12 +160,14 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, colormap='viridis'):
     ax.axis("off")
 
 
-def plot_gradients(gradients,
-                   title="Shells reprojected",
-                   figsize=(9.0, 9.0),
-                   spacing=0.05,
-                   filename=None,
-                   **kwargs):
+def plot_gradients(
+    gradients,
+    title="Shells reprojected",
+    figsize=(9.0, 9.0),
+    spacing=0.05,
+    filename=None,
+    **kwargs,
+):
     """
     Draw the vectors on a unit sphere with color code for multiple b-value.
 
@@ -194,10 +194,8 @@ def plot_gradients(gradients,
 
     # Figure initialization
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111, projection='3d')
-    plt.subplots_adjust(bottom=spacing,
-                        top=1 - spacing,
-                        wspace=2 * spacing)
+    ax = fig.add_subplot(111, projection="3d")
+    plt.subplots_adjust(bottom=spacing, top=1 - spacing, wspace=2 * spacing)
 
     # Visualization after re-projecting all shells to the unit sphere
     draw_points(gradients, ax, **kwargs)

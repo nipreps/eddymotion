@@ -21,6 +21,7 @@ class EddyMotionEstimator:
         align_kwargs=None,
         model="b0",
         seed=None,
+        n_threads=1,
         **kwargs,
     ):
         r"""
@@ -45,6 +46,8 @@ class EddyMotionEstimator:
         seed : :obj:`int` or :obj:`bool`
             Seed the random number generator (necessary when we want deterministic
             estimation).
+        n_threads : :obj:`int`
+            Number of threads to fit chunk-by-chunk the data .
 
         Return
         ------
@@ -68,6 +71,8 @@ class EddyMotionEstimator:
             kwargs["mask"] = dwdata.brainmask
 
         kwargs["S0"] = _advanced_clip(dwdata.bzero)
+
+        kwargs["n_threads"] = n_threads
 
         for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))

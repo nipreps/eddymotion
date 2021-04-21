@@ -21,7 +21,7 @@ class EddyMotionEstimator:
         align_kwargs=None,
         model="b0",
         seed=None,
-        n_threads=1,
+        n_threads=None,
         **kwargs,
     ):
         r"""
@@ -72,7 +72,7 @@ class EddyMotionEstimator:
 
         kwargs["S0"] = _advanced_clip(dwdata.bzero)
 
-        kwargs["n_threads"] = n_threads
+        kwargs["n_threads"] = n_threads or cpu_count()
 
         for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))

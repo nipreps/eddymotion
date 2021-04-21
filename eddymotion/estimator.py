@@ -69,6 +69,9 @@ class EddyMotionEstimator:
 
         kwargs["S0"] = _advanced_clip(dwdata.bzero)
 
+        if "n_threads" in kwargs:
+            align_kwargs["num_threads"] = kwargs["n_threads"]
+
         for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)

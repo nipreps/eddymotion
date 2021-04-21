@@ -1,4 +1,5 @@
 """A factory class that adapts DIPY's dMRI models."""
+from os import cpu_count
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
@@ -109,15 +110,12 @@ class DTIModel:
         "_model_chunks"
     )
 
-    def __init__(self, gtab, S0=None, mask=None, nb_threads=1, **kwargs):
+    def __init__(self, gtab, S0=None, mask=None, **kwargs):
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 
-        for k, v in kwargs.items():
-            if k == 'n_threads':
-                self._n_threads = v
-            else:
-                self._n_threads = 1
+        n_threads = kwargs.get("n_threads", 0) or 0
+        self._n_threads = n_threads if n_threads > 0 else cpu_count()
 
         self._S0 = None
         self._S0_chunks = None

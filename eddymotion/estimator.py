@@ -1,4 +1,5 @@
 """A model-based algorithm for the realignment of dMRI data."""
+from os import cpu_count
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 from pkg_resources import resource_filename as pkg_fn

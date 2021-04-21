@@ -101,41 +101,28 @@ class TrivialB0Model:
 class DTIModel:
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel."""
 
-    __slots__ = (
-        "_S0",
-        "_mask",
-        "_n_threads",
-        "_S0_chunks",
-        "_mask_chunks",
-        "_model_chunks"
-    )
+    __slots__ = ("_model", "_S0", "_mask")
 
     def __init__(self, gtab, S0=None, mask=None, **kwargs):
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 
-        n_threads = kwargs.get("n_threads", 0) or 0
-        self._n_threads = n_threads if n_threads > 0 else cpu_count()
+        n_threads = kwargs.pop("n_threads", 0) or 0
+        n_threads = n_threads if n_threads > 0 else cpu_count()
 
         self._S0 = None
-        self._S0_chunks = None
         if S0 is not None:
             self._S0 = np.clip(
                 S0.astype("float32") / S0.max(),
                 a_min=1e-5,
                 a_max=1.0,
             )
-            self._S0_chunks = np.split(S0, self._n_threads, axis=2)
-
-        self._mask = None
-        self._mask_chunks = None
-        if mask is None and S0 is not None:
+        self._mask = mask
+        if mask is None and self._S0 is not None:
             self._mask = self._S0 > np.percentile(self._S0, 35)
-            self._mask_chunks = np.split(self._mask, self._n_threads, axis=2)
 
-        if self._mask is not None:
+        if self._mask is not None and self._S0 is not None:
             self._S0 = self._S0[self._mask.astype(bool)]
-            self._S0_chunks = np.split(self._S0, self._n_threads, axis=2)
 
         kwargs = {
             k: v
@@ -150,12 +137,7 @@ class DTIModel:
                 "jac",
             )
         }
-
-        # Create a TensorModel for each chunk
-        self._model_chunks = [
-            DipyTensorModel(gtab, **kwargs)
-            for _ in range(self._n_threads)
-        ]
+        self._model = [DipyTensorModel(gtab, **kwargs)] * n_threads
 
     @staticmethod
     def fit_chunk(model_chunk, data_chunk):

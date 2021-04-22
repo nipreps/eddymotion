@@ -1,4 +1,4 @@
-# EddyMotionCorrection
+# eddymotion: estimating head-motion and deformations derived from eddy-currents in diffusion MRI data
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4680599.svg)](https://doi.org/10.5281/zenodo.4680599)
 

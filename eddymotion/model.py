@@ -1,7 +1,14 @@
 """A factory class that adapts DIPY's dMRI models."""
+from os import cpu_count
 import warnings
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
+import nest_asyncio
+
 import numpy as np
 from dipy.core.gradients import gradient_table
+
+nest_asyncio.apply()
 
 
 class ModelFactory:
@@ -100,6 +107,9 @@ class DTIModel:
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 
+        n_threads = kwargs.pop("n_threads", 0) or 0
+        n_threads = n_threads if n_threads > 0 else cpu_count()
+
         self._S0 = None
         if S0 is not None:
             self._S0 = np.clip(
@@ -107,12 +117,13 @@ class DTIModel:
                 a_min=1e-5,
                 a_max=1.0,
             )
-        self._mask = mask
-        if mask is None and S0 is not None:
+
+        self._mask = mask > 0 if mask is not None else None
+        if self._mask is None and self._S0 is not None:
             self._mask = self._S0 > np.percentile(self._S0, 35)
 
-        if self._mask is not None:
-            self._S0 = self._S0[self._mask.astype(bool)]
+        if self._S0 is not None:
+            self._S0 = self._S0[self._mask]
 
         kwargs = {
             k: v
@@ -127,26 +138,77 @@ class DTIModel:
                 "jac",
             )
         }
-        self._model = DipyTensorModel(gtab, **kwargs)
+        self._model = [DipyTensorModel(gtab, **kwargs)] * n_threads
 
     def fit(self, data, **kwargs):
-        """Call model's fit."""
-        self._model = self._model.fit(data[self._mask, ...])
+        """Fit the model chunk-by-chunk asynchronously."""
+        _nthreads = len(self._model)
+
+        # All-true mask if not available
+        if self._mask is None:
+            self._mask = np.ones(data.shape[:3], dtype=bool)
+
+        # Apply mask (ensures data is now 2D)
+        data = data[self._mask, ...]
+
+        # Split data into chunks of group of slices
+        data_chunks = np.array_split(data, _nthreads)
+
+        # Run asyncio tasks in a limited thread pool.
+        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
+            loop = asyncio.new_event_loop()
+
+            fit_tasks = [
+                loop.run_in_executor(
+                    executor,
+                    _model_fit,
+                    model,
+                    data,
+                )
+                for model, data in zip(self._model, data_chunks)
+            ]
+
+            try:
+                self._model = loop.run_until_complete(asyncio.gather(*fit_tasks))
+            finally:
+                loop.close()
+
+    @staticmethod
+    def _predict_sub(submodel, gradient, S0_chunk, step):
+        """Call predict for chunk and return the predicted diffusion signal."""
+        return submodel.predict(gradient, S0=S0_chunk, step=step)
 
     def predict(self, gradient, step=None, **kwargs):
-        """Propagate model parameters and call predict."""
-        predicted = np.squeeze(
-            self._model.predict(
-                _rasb2dipy(gradient),
-                S0=self._S0,
-                step=step,
-            )
-        )
-        if predicted.ndim == 3:
-            return predicted
+        """Predict asynchronously chunk-by-chunk the diffusion signal."""
+        _nthreads = len(self._model)
+        S0 = [None] * _nthreads
+        if self._S0 is not None:
+            S0 = np.array_split(self._S0, _nthreads)
 
+        # Run asyncio tasks in a limited thread pool.
+        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
+            loop = asyncio.new_event_loop()
+
+            predict_tasks = [
+                loop.run_in_executor(
+                    executor,
+                    self._predict_sub,
+                    model,
+                    _rasb2dipy(gradient),
+                    S0_chunk,
+                    step,
+                )
+                for model, S0_chunk in zip(self._model, S0)
+            ]
+
+            try:
+                predicted = loop.run_until_complete(asyncio.gather(*predict_tasks))
+            finally:
+                loop.close()
+
+        predicted = np.squeeze(np.concatenate(predicted, axis=0))
         retval = np.zeros_like(self._mask, dtype="float32")
-        retval[self._mask, ...] = predicted
+        retval[self._mask] = predicted
         return retval
 
 
@@ -224,3 +286,7 @@ def _rasb2dipy(gradient):
         warnings.filterwarnings("ignore", category=UserWarning)
         retval = gradient_table(gradient[3, :], gradient[:3, :].T)
     return retval
+
+
+def _model_fit(model, data):
+    return model.fit(data)

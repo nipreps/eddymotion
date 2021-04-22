@@ -1,5 +1,4 @@
 """A model-based algorithm for the realignment of dMRI data."""
-from os import cpu_count
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 from pkg_resources import resource_filename as pkg_fn
@@ -22,7 +21,6 @@ class EddyMotionEstimator:
         align_kwargs=None,
         model="b0",
         seed=None,
-        n_threads=None,
         **kwargs,
     ):
         r"""
@@ -47,8 +45,6 @@ class EddyMotionEstimator:
         seed : :obj:`int` or :obj:`bool`
             Seed the random number generator (necessary when we want deterministic
             estimation).
-        n_threads : :obj:`int`
-            Number of threads to fit chunk-by-chunk the data .
 
         Return
         ------
@@ -73,7 +69,8 @@ class EddyMotionEstimator:
 
         kwargs["S0"] = _advanced_clip(dwdata.bzero)
 
-        kwargs["n_threads"] = n_threads or cpu_count()
+        if "n_threads" in kwargs:
+            align_kwargs["num_threads"] = kwargs["n_threads"]
 
         for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))

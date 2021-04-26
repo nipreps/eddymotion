@@ -90,6 +90,7 @@ class TrivialB0Model:
         """Return the *b=0* map."""
         return self._S0
 
+
 class AverageDWModel:
     """A trivial model that returns an average map."""
 
@@ -101,11 +102,12 @@ class AverageDWModel:
 
     def fit(self, data, **kwargs):
         """Calculate the average."""
-        self._data =  data.mean(-1)
+        self._data = data.mean(-1)
 
     def predict(self, gradient, **kwargs):
         """Return the average map."""
         return self._data
+
 
 class DTIModel:
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel."""

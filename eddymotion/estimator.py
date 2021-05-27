@@ -54,7 +54,11 @@ class EddyMotionEstimator:
 
         """
         align_kwargs = align_kwargs or {}
-        reg_target_type = "dwi" if model.lower() not in ("b0", "s0") else "b0"
+        reg_target_type = (
+            "dwi"
+            if model.lower() not in ("b0", "s0", "avg", "average", "mean")
+            else "b0"
+        )
 
         if seed or seed == 0:
             np.random.seed(20210324 if seed is True else seed)
@@ -99,7 +103,13 @@ class EddyMotionEstimator:
                         moving = tmpdir / "moving.nii.gz"
                         fixed = tmpdir / "fixed.nii.gz"
                         _to_nifti(data_test[0], dwdata.affine, moving)
-                        _to_nifti(predicted, dwdata.affine, fixed, clip=reg_target_type == "dwi")
+                        _to_nifti(
+                            predicted,
+                            dwdata.affine,
+                            fixed,
+                            clip=reg_target_type == "dwi",
+                        )
+
                         registration = Registration(
                             terminal_output="file",
                             from_file=pkg_fn(
@@ -174,9 +184,7 @@ def _advanced_clip(
     return data
 
 
-def _to_nifti(
-    data, affine, filename, clip=True
-):
+def _to_nifti(data, affine, filename, clip=True):
     data = np.squeeze(data)
     if clip:
         data = _advanced_clip(data)

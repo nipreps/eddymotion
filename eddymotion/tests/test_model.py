@@ -26,6 +26,7 @@ import numpy as np
 from eddymotion import model
 from eddymotion.dmri import DWI
 
+
 def test_trivial_model():
     """Check the implementation of the trivial B0 model."""
 
@@ -44,9 +45,9 @@ def test_trivial_model():
 
 def test_two_initialisations(pkg_datadir):
     """Check that the two different initialisations result in the same models"""
-    
+
     # Load test data
-    dmri_dataset = DWI.from_filename((pkg_datadir,"/data/dwi.h5"))
+    dmri_dataset = DWI.from_filename((pkg_datadir, "/data/dwi.h5"))
 
     # Split data into test and train set
     data_train, data_test = dmri_dataset.logo_split(10)
@@ -57,8 +58,8 @@ def test_two_initialisations(pkg_datadir):
         S0=dmri_dataset.bzero,
         th_low=100,
         th_high=1000,
-        bias = True,
-        stat = 'mean'
+        bias=True,
+        stat="mean",
     )
     model1.fit(data_train[0])
     predicted1 = model1.predict(data_test[1])
@@ -70,8 +71,8 @@ def test_two_initialisations(pkg_datadir):
         S0=dmri_dataset.bzero,
         th_low=100,
         th_high=1000,
-        bias = True,
-        stat = 'mean'
+        bias=True,
+        stat="mean",
     )
     model2.fit(data_train[0])
     predicted2 = model2.predict(data_test[1])

@@ -136,7 +136,7 @@ class AverageDWModel:
 
     def fit(self, data, **kwargs):
         """Calculate the average."""
-        # Select the interval of b-values for which DWIs will be averages
+        # Select the interval of b-values for which DWIs will be averaged
         b_mask = (self._gtab[3, ...] >= self._th_low) & (
             self._gtab[3, ...] <= self._th_high
         )

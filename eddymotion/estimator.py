@@ -144,6 +144,7 @@ class EddyMotionEstimator:
 
         return dwdata.em_affines
 
+
 def _to_nifti(data, affine, filename, clip=True):
     data = np.squeeze(data)
     if clip:

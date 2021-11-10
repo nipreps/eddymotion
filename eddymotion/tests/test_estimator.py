@@ -50,7 +50,7 @@ def test_ANTs_config_b0(pkg_datadir, tmpdir):
         T = from_matvec(euler2mat(x=1 / x, y=1 / y, z=1 / z), [a / 5, b / 5, c / 5])
         xfm = nt.linear.Affine(T, reference=pkg_datadir / "b0.nii.gz")
 
-        (~xfm).apply(pkg_datadir / "b0.nii.gz").to_filename(tmpdir / "moving.nii.gy")
+        (~xfm).apply(pkg_datadir / "b0.nii.gz").to_filename(tmpdir / "moving.nii.gz")
 
         moving = tmpdir / "moving.nii.gz"
         fixed = pkg_datadir / "b0.nii.gz"

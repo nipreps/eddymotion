@@ -43,6 +43,52 @@ def test_trivial_model():
     assert np.all(_S0 == tmodel.predict((1, 0, 0)))
 
 
+def test_average_model():
+    """Check the implementation of the average DW model."""
+
+    # Should not allow initialization without a B0
+    with pytest.raises(ValueError):
+        model.TrivialB0Model(gtab=np.eye(4))
+
+    gtab = np.array(
+        [
+            [-0.31, 0.933, 0.785, 25],
+            [0.25, 0.565, 0.21, 500],
+            [-0.861, -0.464, 0.564, 1000],
+            [0.307, -0.766, 0.677, 1000],
+            [0.736, 0.013, 0.774, 2000],
+        ]
+    )
+
+    gtab_w25 = gtab[1:, :]
+    gtab_1000 = gtab[2:3, :]
+    gtab_2000 = gtab[2:, :]
+
+    tmodel_mean = model.AverageDWModels(gtab=gtab, bias=False, stat="mean")
+    tmodel_median = model.AverageDWModels(gtab=gtab, bias=False, stat="median")
+    tmodel_1000 = model.AverageDWModels(
+        gtab=gtab, bias=False, th_high=1000, th_low=1000
+    )
+    tmodel_2000 = model.AverageDWModels(
+        gtab=gtab, bias=False, th_high=2000, th_low=1000
+    )
+
+    # Verify that fit function returns nothing
+    assert tmodel_mean.fit() is None
+
+    tmodel_median.fit()
+    tmodel_1000.fit()
+    tmodel_2000.fit()
+
+    # Verify that the right statistics is applied and that the model discard b-values < 50
+    assert np.all(tmodel_mean.predict() == np.mean(gtab_w25[:, :2], axis=0))
+    assert np.all(tmodel_median.predict() == np.median(gtab_w25[:, :2], axis=0))
+
+    # Verify that the threshold for b-value selection works as expected
+    assert np.all(tmodel_1000.predict() == np.median(gtab_1000[:, :2], axis=0))
+    assert np.all(tmodel_2000.predict() == np.median(gtab_2000[:, :2], axis=0))
+
+
 def test_two_initialisations(pkg_datadir):
     """Check that the two different initialisations result in the same models"""
 

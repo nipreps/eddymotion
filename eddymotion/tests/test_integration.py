@@ -64,7 +64,7 @@ def test_proximity_estimator_trivial_model(pkg_datadir):
             nit.io.itk.ITKLinearTransform.from_filename(
                 str(pkg_datadir / f'b0.motion-{i + 220}.tfm')
             ).to_ras(reference=fixed_b0_img, moving=moving_b0_img),
-            reference=(pkg_datadir / 'b0.nii.gz')
+            reference=fixed_b0_img
         )
         assert np.all(
             abs(xfm.map(xfm.reference.ndcoords.T) - xfm2.map(xfm.reference.ndcoords.T)) < 0.3

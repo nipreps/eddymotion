@@ -42,10 +42,10 @@ def test_proximity_estimator_trivial_model(pkg_datadir):
         skip_header=0
     ).T
     _DWI = DWI(
-            dataobj=_moving_b0s_data,
-            affine=_affine,
-            bzero=_b0,
-            gradients=_gradients,
+        dataobj=_moving_b0s_data,
+        affine=_affine,
+        bzero=_b0,
+        gradients=_gradients,
     )
 
     estimator = EddyMotionEstimator()

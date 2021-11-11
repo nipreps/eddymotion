@@ -30,7 +30,7 @@ import nitransforms as nit
 
 
 def test_proximity_estimator_trivial_model(pkg_datadir):
-    """Check the proximity of transforms estimated by `EddyMotionEstimator` with a trivial B0 model."""
+    """Check the proximity of transforms estimated by the estimator with a trivial B0 model."""
     _img = nb.load((pkg_datadir / 'b0.moving.nii.gz'))
     _moving_b0s_data = _img.get_fdata()[..., 1:]
     _b0 = _img.get_fdata()[..., 0]

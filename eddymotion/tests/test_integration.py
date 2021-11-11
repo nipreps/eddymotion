@@ -67,5 +67,5 @@ def test_proximity_estimator_trivial_model(pkg_datadir):
             reference=fixed_b0_img
         )
         assert np.all(
-            abs(xfm.map(xfm.reference.ndcoords.T) - xfm2.map(xfm.reference.ndcoords.T)) < 0.3
+            abs(xfm.map(xfm.reference.ndcoords.T) - xfm2.map(xfm.reference.ndcoords.T)) < 0.4
         )

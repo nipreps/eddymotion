@@ -21,3 +21,51 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Integration tests."""
+
+import pytest  # noqa
+import numpy as np
+import nibabel as nb
+from eddymotion.dmri import DWI
+from eddymotion.estimator import EddyMotionEstimator
+import nitransforms as nit
+
+
+def test_proximity_estimator_trivial_model(pkg_datadir):
+    """Check the proximity of the transforms estimated by :obj:`~eddymotion.estimator.EddyMotionEstimator` with a trivial B0 model."""
+    _img = nb.load((pkg_datadir / 'b0.moving.nii.gz'))
+    _moving_b0s_data = _img.get_fdata()[..., 1:]
+    _b0 = _img.get_fdata()[..., 0]
+    _affine = _img.affine.copy()
+    _gradients = np.genfromtxt(
+        fname=str(pkg_datadir / 'gradients.moving.tsv'),
+        delimiter="\t",
+        skip_header=0
+    ).T
+    _DWI = DWI(
+            dataobj=_moving_b0s_data,
+            affine=_affine,
+            bzero=_b0,
+            gradients=_gradients,
+    )
+
+    estimator = EddyMotionEstimator()
+    em_affines = estimator.fit(
+        dwdata=_DWI,
+        n_iter=1,
+        model="b0",
+        align_kwargs=None,
+        seed=None
+    )
+
+    for i, xfm in enumerate(em_affines):
+        fixed_b0_img = nb.Nifti1Image(_b0, affine=_affine)
+        moving_b0_img = nb.Nifti1Image(_moving_b0s_data[..., i], affine=_affine)
+        xfm2 = nit.linear.Affine(
+            nit.io.itk.ITKLinearTransform.from_filename(
+                str(pkg_datadir / f'b0.motion-{i + 220}.tfm')
+            ).to_ras(reference=fixed_b0_img, moving=moving_b0_img),
+            reference=(pkg_datadir / 'b0.nii.gz')
+        )
+        assert np.all(
+            abs(xfm.map(xfm.reference.ndcoords.T) - xfm2.map(xfm.reference.ndcoords.T)) < 0.3
+        )

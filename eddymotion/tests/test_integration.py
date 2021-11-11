@@ -22,7 +22,6 @@
 #
 """Integration tests."""
 
-import pytest  # noqa
 import numpy as np
 import nibabel as nb
 from eddymotion.dmri import DWI

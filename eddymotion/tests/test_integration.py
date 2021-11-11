@@ -57,13 +57,12 @@ def test_proximity_estimator_trivial_model(pkg_datadir):
         seed=None
     )
 
+    ref_xfms = np.load((pkg_datadir / "b0.moving.transforms.npy"))
+
     for i, xfm in enumerate(em_affines):
         fixed_b0_img = nb.Nifti1Image(_b0, affine=_affine)
-        moving_b0_img = nb.Nifti1Image(_moving_b0s_data[..., i], affine=_affine)
         xfm2 = nit.linear.Affine(
-            nit.io.itk.ITKLinearTransform.from_filename(
-                str(pkg_datadir / f'b0.motion-{i + 220}.tfm')
-            ).to_ras(reference=fixed_b0_img, moving=moving_b0_img),
+            ref_xfms[..., i],
             reference=fixed_b0_img
         )
         assert np.all(

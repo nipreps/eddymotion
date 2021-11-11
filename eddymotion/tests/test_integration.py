@@ -57,8 +57,10 @@ def test_proximity_estimator_trivial_model(pkg_datadir):
         seed=None
     )
 
+    # Load reference transforms originally applied
     ref_xfms = np.load((pkg_datadir / "b0.moving.transforms.npy"))
 
+    # For each moved b0 volume
     for i, xfm in enumerate(em_affines):
         fixed_b0_img = nb.Nifti1Image(_b0, affine=_affine)
         xfm2 = nit.linear.Affine(

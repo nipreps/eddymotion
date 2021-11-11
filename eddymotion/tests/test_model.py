@@ -46,9 +46,6 @@ def test_trivial_model():
 def test_average_model():
     """Check the implementation of the average DW model."""
 
-    # Should not allow initialization without a B0
-    with pytest.raises(ValueError):
-        model.TrivialB0Model(gtab=np.eye(4))
 
     gtab = np.array(
         [

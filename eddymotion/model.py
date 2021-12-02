@@ -334,28 +334,6 @@ class DKIModel:
         return retval
 
 
-def _rasb2dipy(gradient):
-    gradient = np.asanyarray(gradient)
-    if gradient.ndim == 1:
-        if gradient.size != 4:
-            raise ValueError("Missing gradient information.")
-        gradient = gradient[..., np.newaxis]
-
-    if gradient.shape[0] != 4:
-        gradient = gradient.T
-    elif gradient.shape == (4, 4):
-        print("Warning: make sure gradient information is not transposed!")
-
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=UserWarning)
-        retval = gradient_table(gradient[3, :], gradient[:3, :].T)
-    return retval
-
-
-def _model_fit(model, data):
-    return model.fit(data)
-
-
 class SparseFascicleModel:
     """
     A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel.
@@ -366,7 +344,6 @@ class SparseFascicleModel:
     def __init__(self, gtab, S0=None, mask=None, solver=None, **kwargs):
         """Instantiate the wrapped model."""
         from dipy.reconst.sfm import SparseFascicleModel
-        from sklearn.gaussian_process import GaussianProcessRegressor
 
         self._S0 = None
         if S0 is not None:
@@ -408,3 +385,25 @@ class SparseFascicleModel:
         retval = np.zeros_like(self._mask, dtype="float32")
         retval[self._mask, ...] = predicted
         return retval
+
+
+def _rasb2dipy(gradient):
+    gradient = np.asanyarray(gradient)
+    if gradient.ndim == 1:
+        if gradient.size != 4:
+            raise ValueError("Missing gradient information.")
+        gradient = gradient[..., np.newaxis]
+
+    if gradient.shape[0] != 4:
+        gradient = gradient.T
+    elif gradient.shape == (4, 4):
+        print("Warning: make sure gradient information is not transposed!")
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning)
+        retval = gradient_table(gradient[3, :], gradient[:3, :].T)
+    return retval
+
+
+def _model_fit(model, data):
+    return model.fit(data)

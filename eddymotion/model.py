@@ -55,12 +55,11 @@ class ModelFactory:
 
         elif model.lower() in ("sfm", "gp"):
             Model = SparseFascicleModel
-            if model.lower() == "sfm":
-                param = {
-                    "solver": "ElasticNet",
-                    "isotropic": ExponentialIsotropicModel,
-                }
-            else:
+            param = {
+                "solver": "ElasticNet",
+                "isotropic": ExponentialIsotropicModel,
+            }
+            if model.lower() == "gp":
                 from sklearn.gaussian_process import GaussianProcessRegressor
 
                 param = {"solver": GaussianProcessRegressor}

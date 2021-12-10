@@ -55,10 +55,14 @@ class ModelFactory:
 
         elif model.lower() in ("sfm", "gp"):
             Model = SparseFascicleModel
-            param = {
-                "solver": "ElasticNet",
-                "isotropic": ExponentialIsotropicModel,
-            }
+            param = {"solver": "ElasticNet"}
+
+            from dipy.core.gradients import check_multi_b
+            multi_b = check_multi_b(gtab, 2, non_zero=False)
+            if multi_b:
+                from dipy.reconst.sfm import ExponentialIsotropicModel
+                param.update({"isotropic": ExponentialIsotropicModel})
+
             if model.lower() == "gp":
                 from sklearn.gaussian_process import GaussianProcessRegressor
 

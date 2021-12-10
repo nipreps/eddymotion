@@ -6,7 +6,7 @@ import asyncio
 import nest_asyncio
 
 import numpy as np
-from dipy.core.gradients import gradient_table
+from dipy.core.gradients import check_multi_b, gradient_table
 
 nest_asyncio.apply()
 
@@ -57,16 +57,14 @@ class ModelFactory:
             Model = SparseFascicleModel
             param = {"solver": "ElasticNet"}
 
-            from dipy.core.gradients import check_multi_b
+            if model.lower() == "gp":
+                from sklearn.gaussian_process import GaussianProcessRegressor
+                param = {"solver": GaussianProcessRegressor}
+
             multi_b = check_multi_b(gtab, 2, non_zero=False)
             if multi_b:
                 from dipy.reconst.sfm import ExponentialIsotropicModel
                 param.update({"isotropic": ExponentialIsotropicModel})
-
-            if model.lower() == "gp":
-                from sklearn.gaussian_process import GaussianProcessRegressor
-
-                param = {"solver": GaussianProcessRegressor}
 
         elif model.lower() in ("dti", "dki"):
             Model = DTIModel if model.lower() == "dti" else DKIModel

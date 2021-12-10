@@ -6,7 +6,7 @@ import asyncio
 import nest_asyncio
 
 import numpy as np
-from dipy.core.gradients import gradient_table
+from dipy.core.gradients import check_multi_b, gradient_table
 
 nest_asyncio.apply()
 
@@ -25,7 +25,7 @@ class ModelFactory:
             An array representing the gradient table in RAS+B format.
         model : :obj:`str`
             Diffusion model.
-            Options: ``"3DShore"``, ``"SFM"``, ``"DTI"``, ``"DKI"``, ``"S0"``
+            Options: ``"3DShore"``, ``"SFM"``, ``"GP"``, ``"DTI"``, ``"DKI"``, ``"S0"``
 
         Return
         ------
@@ -53,15 +53,18 @@ class ModelFactory:
                 "lambdaL": 1e-8,
             }
 
-        elif model.lower().startswith("sfm"):
-            from eddymotion.utils.model import (
-                SFM4HMC as Model,
-                ExponentialIsotropicModel,
-            )
+        elif model.lower() in ("sfm", "gp"):
+            Model = SparseFascicleModel
+            param = {"solver": "ElasticNet"}
 
-            param = {
-                "isotropic": ExponentialIsotropicModel,
-            }
+            if model.lower() == "gp":
+                from sklearn.gaussian_process import GaussianProcessRegressor
+                param = {"solver": GaussianProcessRegressor}
+
+            multi_b = check_multi_b(gtab, 2, non_zero=False)
+            if multi_b:
+                from dipy.reconst.sfm import ExponentialIsotropicModel
+                param.update({"isotropic": ExponentialIsotropicModel})
 
         elif model.lower() in ("dti", "dki"):
             Model = DTIModel if model.lower() == "dti" else DKIModel
@@ -311,6 +314,59 @@ class DKIModel:
             )
         }
         self._model = DiffusionKurtosisModel(gtab, **kwargs)
+
+    def fit(self, data, **kwargs):
+        """Clean-up permitted args and kwargs, and call model's fit."""
+        self._model = self._model.fit(data[self._mask, ...])
+
+    def predict(self, gradient, **kwargs):
+        """Propagate model parameters and call predict."""
+        predicted = np.squeeze(
+            self._model.predict(
+                _rasb2dipy(gradient),
+                S0=self._S0,
+            )
+        )
+        if predicted.ndim == 3:
+            return predicted
+
+        retval = np.zeros_like(self._mask, dtype="float32")
+        retval[self._mask, ...] = predicted
+        return retval
+
+
+class SparseFascicleModel:
+    """
+    A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel.
+    """
+
+    __slots__ = ("_model", "_S0", "_mask", "_solver")
+
+    def __init__(self, gtab, S0=None, mask=None, solver=None, **kwargs):
+        """Instantiate the wrapped model."""
+        from dipy.reconst.sfm import SparseFascicleModel
+
+        self._S0 = None
+        if S0 is not None:
+            self._S0 = np.clip(
+                S0.astype("float32") / S0.max(),
+                a_min=1e-5,
+                a_max=1.0,
+            )
+
+        self._mask = mask
+        if mask is None and S0 is not None:
+            self._mask = self._S0 > np.percentile(self._S0, 35)
+
+        if self._mask is not None:
+            self._S0 = self._S0[self._mask.astype(bool)]
+
+        self._solver = solver
+        if solver is None:
+            self._solver = "ElasticNet"
+
+        kwargs = {k: v for k, v in kwargs.items() if k in ("solver",)}
+        self._model = SparseFascicleModel(gtab, **kwargs)
 
     def fit(self, data, **kwargs):
         """Clean-up permitted args and kwargs, and call model's fit."""

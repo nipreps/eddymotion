@@ -301,7 +301,6 @@ class DTIModel:
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 
         self._S0 = None
-        self._parallel = parallel
 
         if S0 is not None:
             self._S0 = np.clip(

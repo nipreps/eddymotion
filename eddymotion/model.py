@@ -142,7 +142,7 @@ class ModelFactory:
     """A factory for instantiating diffusion models."""
 
     @staticmethod
-    def init(gtab, model="DTI", parallel=True, **kwargs):
+    def init(gtab, model="DTI", **kwargs):
         """
         Instatiate a diffusion model.
 

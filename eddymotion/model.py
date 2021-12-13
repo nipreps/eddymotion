@@ -296,7 +296,7 @@ class DTIModel:
 
     __slots__ = ("_model", "_S0", "_mask")
 
-    def __init__(self, gtab, parallel=False, S0=None, mask=None, **kwargs):
+    def __init__(self, gtab, S0=None, mask=None, **kwargs):
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 

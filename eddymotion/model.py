@@ -12,7 +12,7 @@ from dipy.core.gradients import check_multi_b, gradient_table
 nest_asyncio.apply()
 
 
-def get_run_cls(init_cls, parallel, n_threads=1):
+def get_run_cls(init_cls, omp_threads=None):
     if parallel is True:
         init_cls._model = [init_cls._model] * n_threads
         return _AsyncFitPredict(init_cls)

@@ -340,7 +340,7 @@ class DTIModel:
 class DKIModel:
     """A wrapper of :obj:`dipy.reconst.dki.DiffusionKurtosisModel."""
 
-    __slots__ = ("_model", "_parallel", "_S0", "_mask")
+    __slots__ = ("_model", "_S0", "_mask")
 
     def __init__(self, gtab, parallel=False, S0=None, mask=None, **kwargs):
         """Instantiate the wrapped tensor model."""

@@ -91,7 +91,7 @@ class EddyMotionEstimator:
 
                         # Factory creates the appropriate model and pipes arguments
                         dwmodel = ModelFactory.init(
-                            gtab=data_train[1], model=model, n_threads=omp_nthreads,
+                            gtab=data_train[1], model=model, omp_nthreads=omp_nthreads,
                             **kwargs
                         )
 

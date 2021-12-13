@@ -199,9 +199,7 @@ class ModelFactory:
         else:
             raise NotImplementedError(f"Unsupported model <{model}>.")
 
-        n_threads = kwargs.pop("n_threads", 0) or 0
-        n_threads = n_threads if n_threads > 0 else cpu_count()
-
+        omp_nthreads = kwargs.pop("omp_nthreads", None)
         param.update(kwargs)
         return get_run_cls(Model(gtab, **param), parallel, n_threads)
 

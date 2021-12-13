@@ -4,7 +4,6 @@ import warnings
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import nest_asyncio
-from abc import abstractmethod
 
 import numpy as np
 from dipy.core.gradients import check_multi_b, gradient_table

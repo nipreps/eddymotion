@@ -30,7 +30,6 @@ class _SerialFitPredict:
         self._mask = init_cls._mask
         self._S0 = init_cls._S0
 
-    @abstractmethod
     def fit(self, data, **kwargs):
         """Clean-up permitted args and kwargs, and call model's fit."""
         self._model = self._model.fit(data[self._mask, ...])

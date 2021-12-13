@@ -3,7 +3,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
-from scipy.io import loadmat, savemat
 import numpy as np
 import nibabel as nb
 import nitransforms as nt

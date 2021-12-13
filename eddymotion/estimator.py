@@ -3,6 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
+from scipy.io import loadmat, savemat
 import numpy as np
 import nibabel as nb
 import nitransforms as nt
@@ -20,6 +21,8 @@ class EddyMotionEstimator:
         n_iter=1,
         align_kwargs=None,
         model="b0",
+        parallel=True,
+        n_threads=2,
         seed=None,
         **kwargs,
     ):
@@ -90,7 +93,8 @@ class EddyMotionEstimator:
 
                         # Factory creates the appropriate model and pipes arguments
                         dwmodel = ModelFactory.init(
-                            gtab=data_train[1], model=model, **kwargs
+                            gtab=data_train[1], model=model, parallel=parallel,
+                            n_threads=n_threads, **kwargs
                         )
 
                         # fit the model
@@ -132,6 +136,10 @@ class EddyMotionEstimator:
                         result = registration.run(cwd=str(tmpdir)).outputs
 
                         # read output transform
+                        aff_dict = loadmat(result.forward_transforms[0])
+                        aff_dict['AffineTransform_float_3_3'] = \
+                            aff_dict.pop('AffineTransform_double_3_3')
+                        savemat(result.forward_transforms[0], aff_dict)
                         xform = nt.io.itk.ITKLinearTransform.from_filename(
                             result.forward_transforms[0]
                         ).to_ras(reference=fixed, moving=moving)

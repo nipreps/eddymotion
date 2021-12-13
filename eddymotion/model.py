@@ -201,7 +201,7 @@ class ModelFactory:
 
         omp_nthreads = kwargs.pop("omp_nthreads", None)
         param.update(kwargs)
-        return get_run_cls(Model(gtab, **param), parallel, n_threads)
+        return get_run_cls(Model(gtab, **param), omp_nthreads)
 
 
 class TrivialB0Model:

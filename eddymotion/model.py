@@ -60,7 +60,6 @@ class _AsyncFitPredict:
         self._mask = init_cls._mask
         self._S0 = init_cls._S0
 
-    @abstractmethod
     def fit(self, data, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
         _nthreads = len(self._model)

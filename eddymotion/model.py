@@ -15,7 +15,7 @@ nest_asyncio.apply()
 def get_run_cls(init_cls, omp_threads=None):
     omp_nthreads = omp_nthreads or cpu_count()
     if omp_nthreads > 1:
-        init_cls._model = [init_cls._model] * n_threads
+        init_cls._model = [init_cls._model] * omp_nthreads
         return _AsyncFitPredict(init_cls)
     else:
         return _SerialFitPredict(init_cls)

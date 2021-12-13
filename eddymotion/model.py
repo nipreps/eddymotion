@@ -347,8 +347,6 @@ class DKIModel:
         from dipy.reconst.dki import DiffusionKurtosisModel
 
         self._S0 = None
-        self._parallel = parallel
-
         if S0 is not None:
             self._S0 = np.clip(
                 S0.astype("float32") / S0.max(),

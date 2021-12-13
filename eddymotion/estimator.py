@@ -135,10 +135,6 @@ class EddyMotionEstimator:
                         result = registration.run(cwd=str(tmpdir)).outputs
 
                         # read output transform
-                        aff_dict = loadmat(result.forward_transforms[0])
-                        aff_dict['AffineTransform_float_3_3'] = \
-                            aff_dict.pop('AffineTransform_double_3_3')
-                        savemat(result.forward_transforms[0], aff_dict)
                         xform = nt.io.itk.ITKLinearTransform.from_filename(
                             result.forward_transforms[0]
                         ).to_ras(reference=fixed, moving=moving)

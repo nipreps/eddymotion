@@ -17,8 +17,7 @@ def get_run_cls(init_cls, omp_threads=None):
     if omp_nthreads > 1:
         init_cls._model = [init_cls._model] * omp_nthreads
         return _AsyncFitPredict(init_cls)
-    else:
-        return _SerialFitPredict(init_cls)
+    return _SerialFitPredict(init_cls)
 
 
 class _SerialFitPredict:

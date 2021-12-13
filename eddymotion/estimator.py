@@ -21,8 +21,7 @@ class EddyMotionEstimator:
         n_iter=1,
         align_kwargs=None,
         model="b0",
-        parallel=True,
-        n_threads=2,
+        omp_nthreads=None,
         seed=None,
         **kwargs,
     ):

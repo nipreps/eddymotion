@@ -20,6 +20,7 @@ class EddyMotionEstimator:
         n_iter=1,
         align_kwargs=None,
         model="b0",
+        omp_nthreads=None,
         seed=None,
         **kwargs,
     ):
@@ -90,7 +91,8 @@ class EddyMotionEstimator:
 
                         # Factory creates the appropriate model and pipes arguments
                         dwmodel = ModelFactory.init(
-                            gtab=data_train[1], model=model, **kwargs
+                            gtab=data_train[1], model=model, omp_nthreads=omp_nthreads,
+                            **kwargs
                         )
 
                         # fit the model

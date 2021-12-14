@@ -11,6 +11,129 @@ from dipy.core.gradients import check_multi_b, gradient_table
 nest_asyncio.apply()
 
 
+def get_run_cls(init_cls, omp_threads=None):
+    omp_nthreads = omp_nthreads or cpu_count()
+    if omp_nthreads > 1:
+        init_cls._model = [init_cls._model] * omp_nthreads
+        return _AsyncFitPredict(init_cls)
+    return _SerialFitPredict(init_cls)
+
+
+class _SerialFitPredict:
+    """Base fit and predict methods for all models in eddymotion."""
+
+    __slots__ = ("_model", "_mask", "_S0",)
+
+    def __init__(self, init_cls):
+        self._model = init_cls._model
+        self._mask = init_cls._mask
+        self._S0 = init_cls._S0
+
+    def fit(self, data, **kwargs):
+        """Clean-up permitted args and kwargs, and call model's fit."""
+        self._model = self._model.fit(data[self._mask, ...])
+
+    def predict(self, gradient, step=None, **kwargs):
+        """Propagate model parameters and call predict."""
+        predicted = np.squeeze(
+            self._model.predict(
+                _rasb2dipy(gradient),
+                S0=self._S0,
+            )
+        )
+        if predicted.ndim == 3:
+            return predicted
+
+        retval = np.zeros_like(self._mask, dtype="float32")
+        retval[self._mask, ...] = predicted
+        return retval
+
+
+class _AsyncFitPredict:
+    """Parallel Asynchronous fit and predict methods for all models in
+    eddymotion."""
+
+    __slots__ = ("_model", "_mask", "_S0",)
+
+    def __init__(self, init_cls):
+        self._model = init_cls._model
+        self._mask = init_cls._mask
+        self._S0 = init_cls._S0
+
+    def fit(self, data, **kwargs):
+        """Fit the model chunk-by-chunk asynchronously"""
+        _nthreads = len(self._model)
+
+        # All-true mask if not available
+        if self._mask is None:
+            self._mask = np.ones(data.shape[:3], dtype=bool)
+
+        # Apply mask (ensures data is now 2D)
+        data = data[self._mask, ...]
+
+        # Split data into chunks of group of slices
+        data_chunks = np.array_split(data, _nthreads)
+
+        # Run asyncio tasks in a limited thread pool
+        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
+            loop = asyncio.new_event_loop()
+
+            fit_tasks = [
+                loop.run_in_executor(
+                    executor,
+                    _model_fit,
+                    model,
+                    data,
+                )
+                for model, data in zip(self._model, data_chunks)
+            ]
+
+            try:
+                self._model = loop.run_until_complete(
+                    asyncio.gather(*fit_tasks))
+            finally:
+                loop.close()
+
+    @staticmethod
+    def _predict_sub(submodel, gradient, S0_chunk, step):
+        """Call predict for chunk and return the predicted diffusion signal."""
+        return submodel.predict(gradient, S0=S0_chunk, step=step)
+
+    def predict(self, gradient, step=None, **kwargs):
+        """Predict asynchronously chunk-by-chunk the diffusion signal."""
+        _nthreads = len(self._model)
+        S0 = [None] * _nthreads
+        if self._S0 is not None:
+            S0 = np.array_split(self._S0, _nthreads)
+
+        # Run asyncio tasks in a limited thread pool
+        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
+            loop = asyncio.new_event_loop()
+
+            predict_tasks = [
+                loop.run_in_executor(
+                    executor,
+                    self._predict_sub,
+                    model,
+                    _rasb2dipy(gradient),
+                    S0_chunk,
+                    step,
+                )
+                for model, S0_chunk in zip(self._model, S0)
+            ]
+
+            try:
+                predicted = loop.run_until_complete(
+                    asyncio.gather(*predict_tasks))
+            finally:
+                loop.close()
+
+        predicted = np.squeeze(np.concatenate(predicted, axis=0))
+        retval = np.zeros_like(self._mask, dtype="float32")
+        retval[self._mask] = predicted
+        return retval
+
+
 class ModelFactory:
     """A factory for instantiating diffusion models."""
 
@@ -25,7 +148,8 @@ class ModelFactory:
             An array representing the gradient table in RAS+B format.
         model : :obj:`str`
             Diffusion model.
-            Options: ``"3DShore"``, ``"SFM"``, ``"GP"``, ``"DTI"``, ``"DKI"``, ``"S0"``
+            Options: ``"3DShore"``, ``"SFM"``, ``"GP"``, ``"DTI"``,
+            ``"DKI"``, ``"S0"``
 
         Return
         ------
@@ -72,8 +196,9 @@ class ModelFactory:
         else:
             raise NotImplementedError(f"Unsupported model <{model}>.")
 
+        omp_nthreads = kwargs.pop("omp_nthreads", None)
         param.update(kwargs)
-        return Model(gtab, **param)
+        return get_run_cls(Model(gtab, **param), omp_nthreads)
 
 
 class TrivialB0Model:
@@ -172,10 +297,8 @@ class DTIModel:
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 
-        n_threads = kwargs.pop("n_threads", 0) or 0
-        n_threads = n_threads if n_threads > 0 else cpu_count()
-
         self._S0 = None
+
         if S0 is not None:
             self._S0 = np.clip(
                 S0.astype("float32") / S0.max(),
@@ -203,78 +326,8 @@ class DTIModel:
                 "jac",
             )
         }
-        self._model = [DipyTensorModel(gtab, **kwargs)] * n_threads
 
-    def fit(self, data, **kwargs):
-        """Fit the model chunk-by-chunk asynchronously."""
-        _nthreads = len(self._model)
-
-        # All-true mask if not available
-        if self._mask is None:
-            self._mask = np.ones(data.shape[:3], dtype=bool)
-
-        # Apply mask (ensures data is now 2D)
-        data = data[self._mask, ...]
-
-        # Split data into chunks of group of slices
-        data_chunks = np.array_split(data, _nthreads)
-
-        # Run asyncio tasks in a limited thread pool.
-        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
-            loop = asyncio.new_event_loop()
-
-            fit_tasks = [
-                loop.run_in_executor(
-                    executor,
-                    _model_fit,
-                    model,
-                    data,
-                )
-                for model, data in zip(self._model, data_chunks)
-            ]
-
-            try:
-                self._model = loop.run_until_complete(asyncio.gather(*fit_tasks))
-            finally:
-                loop.close()
-
-    @staticmethod
-    def _predict_sub(submodel, gradient, S0_chunk, step):
-        """Call predict for chunk and return the predicted diffusion signal."""
-        return submodel.predict(gradient, S0=S0_chunk, step=step)
-
-    def predict(self, gradient, step=None, **kwargs):
-        """Predict asynchronously chunk-by-chunk the diffusion signal."""
-        _nthreads = len(self._model)
-        S0 = [None] * _nthreads
-        if self._S0 is not None:
-            S0 = np.array_split(self._S0, _nthreads)
-
-        # Run asyncio tasks in a limited thread pool.
-        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
-            loop = asyncio.new_event_loop()
-
-            predict_tasks = [
-                loop.run_in_executor(
-                    executor,
-                    self._predict_sub,
-                    model,
-                    _rasb2dipy(gradient),
-                    S0_chunk,
-                    step,
-                )
-                for model, S0_chunk in zip(self._model, S0)
-            ]
-
-            try:
-                predicted = loop.run_until_complete(asyncio.gather(*predict_tasks))
-            finally:
-                loop.close()
-
-        predicted = np.squeeze(np.concatenate(predicted, axis=0))
-        retval = np.zeros_like(self._mask, dtype="float32")
-        retval[self._mask] = predicted
-        return retval
+        self._model = DipyTensorModel(gtab, **kwargs)
 
 
 class DKIModel:
@@ -313,26 +366,8 @@ class DKIModel:
                 "jac",
             )
         }
+
         self._model = DiffusionKurtosisModel(gtab, **kwargs)
-
-    def fit(self, data, **kwargs):
-        """Clean-up permitted args and kwargs, and call model's fit."""
-        self._model = self._model.fit(data[self._mask, ...])
-
-    def predict(self, gradient, **kwargs):
-        """Propagate model parameters and call predict."""
-        predicted = np.squeeze(
-            self._model.predict(
-                _rasb2dipy(gradient),
-                S0=self._S0,
-            )
-        )
-        if predicted.ndim == 3:
-            return predicted
-
-        retval = np.zeros_like(self._mask, dtype="float32")
-        retval[self._mask, ...] = predicted
-        return retval
 
 
 class SparseFascicleModel:
@@ -340,7 +375,7 @@ class SparseFascicleModel:
     A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel.
     """
 
-    __slots__ = ("_model", "_S0", "_mask", "_solver")
+    __slots__ = ("_model", "_parallel", "_S0", "_mask", "_solver")
 
     def __init__(self, gtab, S0=None, mask=None, solver=None, **kwargs):
         """Instantiate the wrapped model."""
@@ -366,26 +401,8 @@ class SparseFascicleModel:
             self._solver = "ElasticNet"
 
         kwargs = {k: v for k, v in kwargs.items() if k in ("solver",)}
+
         self._model = SparseFascicleModel(gtab, **kwargs)
-
-    def fit(self, data, **kwargs):
-        """Clean-up permitted args and kwargs, and call model's fit."""
-        self._model = self._model.fit(data[self._mask, ...])
-
-    def predict(self, gradient, **kwargs):
-        """Propagate model parameters and call predict."""
-        predicted = np.squeeze(
-            self._model.predict(
-                _rasb2dipy(gradient),
-                S0=self._S0,
-            )
-        )
-        if predicted.ndim == 3:
-            return predicted
-
-        retval = np.zeros_like(self._mask, dtype="float32")
-        retval[self._mask, ...] = predicted
-        return retval
 
 
 def _rasb2dipy(gradient):

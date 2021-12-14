@@ -377,8 +377,7 @@ class SparseFascicleModel:
 
     __slots__ = ("_model", "_parallel", "_S0", "_mask", "_solver")
 
-    def __init__(self, gtab, parallel=False, S0=None, mask=None, solver=None,
-                 **kwargs):
+    def __init__(self, gtab, S0=None, mask=None, solver=None, **kwargs):
         """Instantiate the wrapped model."""
         from dipy.reconst.sfm import SparseFascicleModel
 

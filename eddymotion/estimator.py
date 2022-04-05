@@ -8,7 +8,6 @@ import nibabel as nb
 import nitransforms as nt
 from nipype.interfaces.ants.registration import Registration
 from eddymotion.model import ModelFactory
-from eddymotion.nifti import _to_nifti
 
 
 class EddyMotionEstimator:
@@ -185,3 +184,14 @@ def _advanced_clip(
         data = np.round(255 * data).astype(dtype)
 
     return data
+
+
+def _to_nifti(data, affine, filename, clip=True):
+    data = np.squeeze(data)
+    if clip:
+        data = _advanced_clip(data)
+    nb.Nifti1Image(
+        data,
+        affine,
+        None,
+    ).to_filename(filename)

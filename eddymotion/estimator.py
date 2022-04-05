@@ -145,16 +145,6 @@ class EddyMotionEstimator:
         return dwdata.em_affines
 
 
-def _to_nifti(data, affine, filename, clip=True):
-    data = np.squeeze(data)
-    if clip:
-        data = _advanced_clip(data)
-    nb.Nifti1Image(
-        data,
-        affine,
-        None,
-    ).to_filename(filename)
-
 def _advanced_clip(
     data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16", invert=False
 ):
@@ -194,3 +184,14 @@ def _advanced_clip(
         data = np.round(255 * data).astype(dtype)
 
     return data
+
+
+def _to_nifti(data, affine, filename, clip=True):
+    data = np.squeeze(data)
+    if clip:
+        data = _advanced_clip(data)
+    nb.Nifti1Image(
+        data,
+        affine,
+        None,
+    ).to_filename(filename)

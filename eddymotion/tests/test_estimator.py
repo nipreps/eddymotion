@@ -29,6 +29,8 @@ import nitransforms as nt
 from nibabel.eulerangles import euler2mat
 from nibabel.affines import from_matvec
 from nipype.interfaces.ants.registration import Registration
+from eddymotion.dmri import DWI
+from eddymotion.nifti import _to_nifti
 
 
 @pytest.mark.parametrize("r_x", [0.0, 0.01, 0.1, 0.3])
@@ -42,6 +44,10 @@ def test_ANTs_config_b0(pkg_datadir, tmpdir, r_x, r_y, r_z, t_x, t_y, t_z):
     gives a good estimate of known affine"""
 
     fixed = pkg_datadir / "b0.nii.gz"
+
+    dwdata = DWI.from_filename((pkg_datadir, "/data/dwi.h5"))
+    fixed = tmpdir / "b0.nii.gz"
+    _to_nifti(dwdata.bzero, dwdata.affine, fixed)
     moving = tmpdir / "moving.nii.gz"
     tmpdir.chdir()
     T = from_matvec(euler2mat(x=r_x, y=r_y, z=r_z), (t_x, t_y, t_z))

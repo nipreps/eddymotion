@@ -35,8 +35,6 @@ $\\vec{{b}}$ = ({', '.join(str(v) for v in gradient[:3])})""",
     )
 
 
-
-
 def rotation_matrix(u, v):
     r"""
     Calculate the rotation matrix *R* such that :math:`R \cdot \mathbf{u} = \mathbf{v}`.
@@ -75,7 +73,7 @@ def rotation_matrix(u, v):
             u[0] * v[1] - u[1] * v[0],
         ]
     )
-    if (w ** 2).sum() < (np.finfo(w.dtype).eps * 10):
+    if (w**2).sum() < (np.finfo(w.dtype).eps * 10):
         # The vectors u and v are collinear
         return np.eye(3)
 

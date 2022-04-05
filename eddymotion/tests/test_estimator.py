@@ -26,34 +26,34 @@ import numpy as np
 import pytest
 
 import nitransforms as nt
+import nibabel as nb
 from nibabel.eulerangles import euler2mat
 from nibabel.affines import from_matvec
 from nipype.interfaces.ants.registration import Registration
 from eddymotion.dmri import DWI
-from eddymotion.nifti import _to_nifti
 
 
-@pytest.mark.parametrize("r_x", [0.0, 0.01, 0.1, 0.3])
-@pytest.mark.parametrize("r_y", [0.0, 0.01, 0.1, 0.3])
-@pytest.mark.parametrize("r_z", [0.0, 0.01, 0.1, 0.3])
-@pytest.mark.parametrize("t_x", [0.0, 0.5, 1.0])
-@pytest.mark.parametrize("t_y", [0.0, 0.5, 1.0])
-@pytest.mark.parametrize("t_z", [0.0, 0.5, 1.0])
-def test_ANTs_config_b0(pkg_datadir, tmpdir, r_x, r_y, r_z, t_x, t_y, t_z):
+@pytest.mark.parametrize("r_x", [0.0, 0.1, 0.3])
+@pytest.mark.parametrize("r_y", [0.0, 0.1, 0.3])
+@pytest.mark.parametrize("r_z", [0.0, 0.1, 0.3])
+@pytest.mark.parametrize("t_x", [0.0, 1.0])
+@pytest.mark.parametrize("t_y", [0.0, 1.0])
+@pytest.mark.parametrize("t_z", [0.0, 1.0])
+def test_ANTs_config_b0(pkg_datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
     """Check that the registration parameters for b=0
     gives a good estimate of known affine"""
 
-    fixed = pkg_datadir / "b0.nii.gz"
+    fixed = tmp_path / "b0.nii.gz"
+    moving = tmp_path / "moving.nii.gz"
 
-    dwdata = DWI.from_filename((pkg_datadir, "/data/dwi.h5"))
-    fixed = tmpdir / "b0.nii.gz"
-    _to_nifti(dwdata.bzero, dwdata.affine, fixed)
-    moving = tmpdir / "moving.nii.gz"
-    tmpdir.chdir()
+    dwdata = DWI.from_filename(pkg_datadir / "dwi.h5")
+    b0nii = nb.Nifti1Image(dwdata.bzero, dwdata.affine, None)
+    b0nii.to_filename(fixed)
+
     T = from_matvec(euler2mat(x=r_x, y=r_y, z=r_z), (t_x, t_y, t_z))
-    xfm = nt.linear.Affine(T, reference=fixed)
+    xfm = nt.linear.Affine(T, reference=b0nii)
 
-    (~xfm).apply(fixed).to_filename(moving)
+    (~xfm).apply(b0nii, reference=b0nii).to_filename(moving)
 
     registration = Registration(
         terminal_output="file",
@@ -64,11 +64,13 @@ def test_ANTs_config_b0(pkg_datadir, tmpdir, r_x, r_y, r_z, t_x, t_y, t_z):
         fixed_image=str(fixed.absolute()),
         moving_image=str(moving.absolute()),
     )
-    result = registration.run(cwd=str(tmpdir)).outputs
-    xform = nt.io.itk.ITKLinearTransform.from_filename(
-        result.forward_transforms[0]
-    ).to_ras(reference=fixed, moving=moving)
-
-    assert np.all(
-        abs(xfm.map(xfm.reference.ncoords) - xform.map(xfm.reference.ncoords)) < 0.1
+    result = registration.run(cwd=str(tmp_path)).outputs
+    xform = nt.linear.Affine(
+        nt.io.itk.ITKLinearTransform.from_filename(result.forward_transforms[0]).to_ras(),
+        reference=b0nii,
     )
+
+    coords = xfm.reference.ndcoords.T
+    assert np.sqrt(
+        ((xfm.map(coords) - xform.map(coords))**2).sum(1)
+    ).mean() < 0.2

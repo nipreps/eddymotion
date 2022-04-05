@@ -34,20 +34,18 @@ from nibabel.affines import from_matvec
 from nipype.interfaces.ants.registration import Registration
 
 
-def test_ANTs_config_b0(pkg_datadir, tmpdir):
+@pytest.mark.parametrize("r_x", [0.0, 0.01, 0.1, 0.3])
+@pytest.mark.parametrize("r_y", [0.0, 0.01, 0.1, 0.3])
+@pytest.mark.parametrize("r_z", [0.0, 0.01, 0.1, 0.3])
+@pytest.mark.parametrize("t_x", [0.0, 0.5, 1.0])
+@pytest.mark.parametrize("t_y", [0.0, 0.5, 1.0])
+@pytest.mark.parametrize("t_z", [0.0, 0.5, 1.0])
+def test_ANTs_config_b0(pkg_datadir, tmpdir, r_x, r_y, r_z, t_x, t_y, t_z):
     """Check that the registration parameters for b=0
     gives a good estimate of known affine"""
 
     tmpdir.chdir()
-    for i in range(100):
-        # Generate test transfrom with random small parameters
-        x = random.randint(0, 1000)
-        y = random.randint(0, 1000)
-        z = random.randint(0, 1000)
-        a = random.randint(0, 20)
-        b = random.randint(0, 20)
-        c = random.randint(0, 20)
-        T = from_matvec(euler2mat(x=1 / x, y=1 / y, z=1 / z), [a / 5, b / 5, c / 5])
+    T = from_matvec(euler2mat(x=r_x, y=r_y, z=r_z), (t_x, t_y, t_z))
         xfm = nt.linear.Affine(T, reference=pkg_datadir / "b0.nii.gz")
 
         (~xfm).apply(pkg_datadir / "b0.nii.gz").to_filename(tmpdir / "moving.nii.gz")

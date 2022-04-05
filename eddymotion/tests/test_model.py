@@ -46,7 +46,6 @@ def test_trivial_model():
 def test_average_model():
     """Check the implementation of the average DW model."""
 
-
     gtab = np.array(
         [
             [-0.31, 0.933, 0.785, 25],

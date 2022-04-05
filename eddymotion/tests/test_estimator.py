@@ -41,14 +41,14 @@ def test_ANTs_config_b0(pkg_datadir, tmpdir, r_x, r_y, r_z, t_x, t_y, t_z):
     """Check that the registration parameters for b=0
     gives a good estimate of known affine"""
 
+    fixed = pkg_datadir / "b0.nii.gz"
+    moving = tmpdir / "moving.nii.gz"
     tmpdir.chdir()
     T = from_matvec(euler2mat(x=r_x, y=r_y, z=r_z), (t_x, t_y, t_z))
-    xfm = nt.linear.Affine(T, reference=pkg_datadir / "b0.nii.gz")
+    xfm = nt.linear.Affine(T, reference=fixed)
 
-    (~xfm).apply(pkg_datadir / "b0.nii.gz").to_filename(tmpdir / "moving.nii.gz")
+    (~xfm).apply(fixed).to_filename(moving)
 
-    moving = tmpdir / "moving.nii.gz"
-    fixed = pkg_datadir / "b0.nii.gz"
     registration = Registration(
         terminal_output="file",
         from_file=pkg_fn(

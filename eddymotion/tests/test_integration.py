@@ -26,46 +26,43 @@ import numpy as np
 import nibabel as nb
 from eddymotion.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
-import nitransforms as nit
+import nitransforms as nt
 
 
-def test_proximity_estimator_trivial_model(pkg_datadir):
+def test_proximity_estimator_trivial_model(pkg_datadir, tmp_path):
     """Check the proximity of transforms estimated by the estimator with a trivial B0 model."""
-    _img = nb.load((pkg_datadir / 'b0.moving.nii.gz'))
-    _moving_b0s_data = _img.get_fdata()[..., 1:]
-    _b0 = _img.get_fdata()[..., 0]
-    _affine = _img.affine.copy()
-    _gradients = np.genfromtxt(
-        fname=str(pkg_datadir / 'gradients.moving.tsv'),
-        delimiter="\t",
-        skip_header=0
-    ).T
-    _DWI = DWI(
-        dataobj=_moving_b0s_data,
-        affine=_affine,
-        bzero=_b0,
-        gradients=_gradients,
+
+    dwdata = DWI.from_filename(pkg_datadir / "dwi.h5")
+    b0nii = nb.Nifti1Image(dwdata.bzero, dwdata.affine, None)
+
+    xfms = nt.linear.load(
+        pkg_datadir / "head-motion-parameters.aff12.1D",
+        fmt="afni",
+    )
+    xfms.reference = b0nii
+
+    # Generate a dataset with 10 b-zeros and motion
+    dwi_motion = DWI(
+        dataobj=(~xfms).apply(b0nii, reference=b0nii).dataobj,
+        affine=b0nii.affine,
+        bzero=dwdata.bzero,
+        gradients=dwdata.gradients[..., :10],
+        brainmask=dwdata.brainmask,
     )
 
     estimator = EddyMotionEstimator()
     em_affines = estimator.fit(
-        dwdata=_DWI,
+        dwdata=dwi_motion,
         n_iter=1,
         model="b0",
         align_kwargs=None,
         seed=None
     )
 
-    # Load reference transforms originally applied
-    ref_xfms = np.load((pkg_datadir / "b0.moving.transforms.npy"))
-
     # For each moved b0 volume
-    for i, xfm in enumerate(em_affines):
-        fixed_b0_img = nb.Nifti1Image(_b0, affine=_affine)
-        xfm2 = nit.linear.Affine(
-            ref_xfms[..., i],
-            reference=fixed_b0_img
-        )
-        assert np.all(
-            abs(xfm.map(xfm.reference.ndcoords.T) - xfm2.map(xfm.reference.ndcoords.T)) < 0.4
-        )
+    coords = xfms.reference.ndcoords.T
+    for i, est in enumerate(em_affines):
+        xfm = nt.linear.Affine(xfms.matrix[i], reference=b0nii)
+        assert np.sqrt(
+            ((xfm.map(coords) - est.map(coords))**2).sum(1)
+        ).mean() < 0.2

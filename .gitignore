@@ -113,3 +113,6 @@ ENV/
 
 #kubernetes stuff
 kubernetes/jobs/
+
+# VSCode settings
+.vscode/

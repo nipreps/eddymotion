@@ -23,3 +23,9 @@ as easy as possible.
 As part of such efforts, we maintain some 
 `tips and guidelines for developers <https://www.nipreps.org/devs/devenv/>`__
 to help minimize your burden if you want to modify the software.
+
+
+.. automodule:: eddymotion.model
+.. automodule:: eddymotion.estimator
+.. automodule:: eddymotion.dmri
+.. automodule:: eddymotion.viz

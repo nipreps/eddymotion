@@ -1,12 +1,19 @@
-"""A model-based algorithm for the realignment of dMRI data."""
+"""
+A model-based algorithm for the realignment of dMRI data.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: EddyMotionEstimator
+"""
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
-from pkg_resources import resource_filename as pkg_fn
-from tqdm import tqdm
-import numpy as np
+
 import nibabel as nb
 import nitransforms as nt
+import numpy as np
 from nipype.interfaces.ants.registration import Registration
+from pkg_resources import resource_filename as pkg_fn
+from tqdm import tqdm
+
 from eddymotion.model import ModelFactory
 
 
@@ -87,12 +94,16 @@ class EddyMotionEstimator:
                         pbar.write(
                             f"Pass {i_iter}/{n_iter} | Processing b-index <{i}> in <{tmpdir}>"
                         )
-                        data_train, data_test = dwdata.logo_split(i, with_b0=True)
+                        data_train, data_test = dwdata.logo_split(
+                            i, with_b0=True
+                        )
 
                         # Factory creates the appropriate model and pipes arguments
                         dwmodel = ModelFactory.init(
-                            gtab=data_train[1], model=model, omp_nthreads=omp_nthreads,
-                            **kwargs
+                            gtab=data_train[1],
+                            model=model,
+                            omp_nthreads=omp_nthreads,
+                            **kwargs,
                         )
 
                         # fit the model
@@ -123,12 +134,22 @@ class EddyMotionEstimator:
                             **align_kwargs,
                         )
                         if bmask_img:
-                            registration.inputs.fixed_image_masks = ["NULL", bmask_img]
+                            registration.inputs.fixed_image_masks = [
+                                "NULL",
+                                bmask_img,
+                            ]
 
-                        if dwdata.em_affines and dwdata.em_affines[i] is not None:
+                        if (
+                            dwdata.em_affines
+                            and dwdata.em_affines[i] is not None
+                        ):
                             mat_file = tmpdir / f"init{i_iter}.mat"
-                            dwdata.em_affines[i].to_filename(mat_file, fmt="itk")
-                            registration.inputs.initial_moving_transform = str(mat_file)
+                            dwdata.em_affines[i].to_filename(
+                                mat_file, fmt="itk"
+                            )
+                            registration.inputs.initial_moving_transform = str(
+                                mat_file
+                            )
 
                         # execute ants command line
                         result = registration.run(cwd=str(tmpdir)).outputs
@@ -169,8 +190,12 @@ def _advanced_clip(
     # Calculate stats on denoised version, to preempt outliers from biasing
     denoised = ndimage.median_filter(data, footprint=ball(3))
 
-    a_min = np.percentile(denoised[denoised > 0] if nonnegative else denoised, p_min)
-    a_max = np.percentile(denoised[denoised > 0] if nonnegative else denoised, p_max)
+    a_min = np.percentile(
+        denoised[denoised > 0] if nonnegative else denoised, p_min
+    )
+    a_max = np.percentile(
+        denoised[denoised > 0] if nonnegative else denoised, p_max
+    )
 
     # Clip and cast
     data = np.clip(data, a_min=a_min, a_max=a_max)

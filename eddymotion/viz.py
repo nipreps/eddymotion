@@ -1,12 +1,20 @@
-"""Visualization utilities."""
-import numpy as np
+"""
+Visualization utilities.
+
+.. autofunction:: plot_dwi
+.. autofunction:: rotation_matrix
+.. autofunction:: draw_circles
+.. autofunction:: draw_points
+.. autofunction:: plot_gradients
+"""
 import nibabel as nb
+import numpy as np
 
 
 def plot_dwi(dataobj, affine, gradient=None, **kwargs):
     """Plot a DW map."""
-    from nilearn.plotting import plot_anat
     import matplotlib.pyplot as plt
+    from nilearn.plotting import plot_anat
 
     plt.rcParams.update(
         {
@@ -17,7 +25,9 @@ def plot_dwi(dataobj, affine, gradient=None, **kwargs):
     )
 
     affine = np.diag(nb.affines.voxel_sizes(affine).tolist() + [1])
-    affine[:3, 3] = -1.0 * (affine[:3, :3] @ ((np.array(dataobj.shape) - 1) * 0.5))
+    affine[:3, 3] = -1.0 * (
+        affine[:3, :3] @ ((np.array(dataobj.shape) - 1) * 0.5)
+    )
 
     vmax = kwargs.pop("vmax", None) or np.percentile(dataobj, 98)
     cut_coords = kwargs.pop("cut_coords", None) or (0, 0, 0)
@@ -204,7 +214,9 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, cmap="viridis"):
 
     # Render all gradient direction of all b-values
     circles = draw_circles(bvecs, rs)
-    ax.add_collection(art3d.Poly3DCollection(circles, facecolors=colors, linewidth=0))
+    ax.add_collection(
+        art3d.Poly3DCollection(circles, facecolors=colors, linewidth=0)
+    )
 
     max_val = 0.6
     ax.set_xlim(-max_val, max_val)

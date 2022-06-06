@@ -14,6 +14,7 @@ Contents
 
    installation
    usage
+   theory
    workflows
    outputs
    faq

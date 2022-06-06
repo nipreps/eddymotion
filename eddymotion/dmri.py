@@ -1,11 +1,16 @@
-"""Representing data in hard-disk and memory."""
-from pathlib import Path
+"""
+Representing data in hard-disk and memory.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DWI
+"""
 from collections import namedtuple
+from pathlib import Path
 from tempfile import mkdtemp
+
 import attr
-import numpy as np
 import h5py
 import nibabel as nb
+import numpy as np
 from nitransforms.linear import Affine
 
 
@@ -181,6 +186,7 @@ class DWI:
     def plot_mosaic(self, index=None, **kwargs):
         """Visualize one direction of the dMRI dataset."""
         from eddymotion.viz import plot_dwi
+
         return plot_dwi(
             self.bzero if index is None else self.dataobj[..., index],
             self.affine,
@@ -191,10 +197,8 @@ class DWI:
     def plot_gradients(self, **kwargs):
         """Visualize diffusion gradient."""
         from eddymotion.viz import plot_gradients
-        return plot_gradients(
-            self.gradients,
-            **kwargs
-        )
+
+        return plot_gradients(self.gradients, **kwargs)
 
     @classmethod
     def from_filename(cls, filename):
@@ -206,7 +210,11 @@ class DWI:
 
 
 def load(
-    filename, gradients_file=None, b0_file=None, brainmask_file=None, fmap_file=None
+    filename,
+    gradients_file=None,
+    b0_file=None,
+    brainmask_file=None,
+    fmap_file=None,
 ):
     """Load DWI data."""
     filename = Path(filename)

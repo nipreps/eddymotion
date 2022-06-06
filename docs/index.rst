@@ -16,6 +16,7 @@ Contents
    usage
    theory
    workflows
+   notebooks/index
    outputs
    faq
    api

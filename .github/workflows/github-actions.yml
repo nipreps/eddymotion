@@ -1,14 +1,5 @@
 name: Contribution checks
-
-on:
-  push:
-    branches:
-      - main
-      - maint/*
-  pull_request:
-    branches:
-      - main
-      - maint/*
+on: [push, pull_request]
 
 defaults:
   run:
@@ -19,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-latest']
+        os: ["ubuntu-latest"]
         python-version: [3.9]
 
     steps:

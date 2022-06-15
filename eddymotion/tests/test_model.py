@@ -21,8 +21,9 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Unit tests exercising models."""
-import pytest
 import numpy as np
+import pytest
+
 from eddymotion import model
 from eddymotion.dmri import DWI
 

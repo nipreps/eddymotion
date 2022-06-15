@@ -22,11 +22,12 @@
 #
 """Integration tests."""
 
-import numpy as np
 import nibabel as nb
+import nitransforms as nt
+import numpy as np
+
 from eddymotion.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
-import nitransforms as nt
 
 
 def test_proximity_estimator_trivial_model(pkg_datadir, tmp_path):
@@ -52,17 +53,11 @@ def test_proximity_estimator_trivial_model(pkg_datadir, tmp_path):
 
     estimator = EddyMotionEstimator()
     em_affines = estimator.fit(
-        dwdata=dwi_motion,
-        n_iter=1,
-        model="b0",
-        align_kwargs=None,
-        seed=None
+        dwdata=dwi_motion, n_iter=1, model="b0", align_kwargs=None, seed=None
     )
 
     # For each moved b0 volume
     coords = xfms.reference.ndcoords.T
     for i, est in enumerate(em_affines):
         xfm = nt.linear.Affine(xfms.matrix[i], reference=b0nii)
-        assert np.sqrt(
-            ((xfm.map(coords) - est.map(coords))**2).sum(1)
-        ).mean() < 0.2
+        assert np.sqrt(((xfm.map(coords) - est.map(coords)) ** 2).sum(1)).mean() < 0.2

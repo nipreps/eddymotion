@@ -1,10 +1,10 @@
 """A factory class that adapts DIPY's dMRI models."""
-from os import cpu_count
+import asyncio
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-import asyncio
-import nest_asyncio
+from os import cpu_count
 
+import nest_asyncio
 import numpy as np
 from dipy.core.gradients import check_multi_b, gradient_table
 
@@ -22,7 +22,11 @@ def get_run_cls(init_cls, omp_nthreads=None):
 class _SerialFitPredict:
     """Base fit and predict methods for all models in eddymotion."""
 
-    __slots__ = ("_model", "_mask", "_S0",)
+    __slots__ = (
+        "_model",
+        "_mask",
+        "_S0",
+    )
 
     def __init__(self, init_cls):
         self._model = init_cls._model
@@ -53,7 +57,11 @@ class _AsyncFitPredict:
     """Parallel Asynchronous fit and predict methods for all models in
     eddymotion."""
 
-    __slots__ = ("_model", "_mask", "_S0",)
+    __slots__ = (
+        "_model",
+        "_mask",
+        "_S0",
+    )
 
     def __init__(self, init_cls):
         self._model = init_cls._model
@@ -89,8 +97,7 @@ class _AsyncFitPredict:
             ]
 
             try:
-                self._model = loop.run_until_complete(
-                    asyncio.gather(*fit_tasks))
+                self._model = loop.run_until_complete(asyncio.gather(*fit_tasks))
             finally:
                 loop.close()
 
@@ -123,8 +130,7 @@ class _AsyncFitPredict:
             ]
 
             try:
-                predicted = loop.run_until_complete(
-                    asyncio.gather(*predict_tasks))
+                predicted = loop.run_until_complete(asyncio.gather(*predict_tasks))
             finally:
                 loop.close()
 
@@ -183,11 +189,13 @@ class ModelFactory:
 
             if model.lower() == "gp":
                 from sklearn.gaussian_process import GaussianProcessRegressor
+
                 param = {"solver": GaussianProcessRegressor}
 
             multi_b = check_multi_b(gtab, 2, non_zero=False)
             if multi_b:
                 from dipy.reconst.sfm import ExponentialIsotropicModel
+
                 param.update({"isotropic": ExponentialIsotropicModel})
 
         elif model.lower() in ("dti", "dki"):

@@ -161,25 +161,25 @@ but those accepted fastest will follow a workflow similar to the following:
   with the goal of the work you're going to carry out.<br />
   [This blog][link_pushpullblog] is a nice explanation of why putting this work in up front
   is so useful to everyone involved.
-  
+
 1. **[Fork][link_fork] the [EddyMotionCorrection repository][link_EddyMotionCorrection] to your profile.**<br />
   This is now your own unique copy of *EddyMotionCorrection*.
   Changes here won't effect anyone else's work, so it's a safe space to explore edits to the code!
-  
+
 1. **[Clone][link_clone] your forked EddyMotionCorrection repository to your machine/computer.**<br />
   While you can edit files [directly on github][link_githubedit], sometimes the changes
   you want to make will be complex and you will want to use a [text editor][link_texteditor]
   that you have installed on your local machine/computer.
-  (One great text editor is [vscode][link_vscode]).<br />  
-  In order to work on the code locally, you must clone your forked repository.<br />  
+  (One great text editor is [vscode][link_vscode]).<br />
+  In order to work on the code locally, you must clone your forked repository.<br />
   To keep up with changes in the EddyMotionCorrection repository,
   add the ["upstream" EddyMotionCorrection repository as a remote][link_addremote]
-  to your locally cloned repository.  
+  to your locally cloned repository.
     ```Shell
     git remote add upstream https://github.com/nipreps/EddyMotionCorrection.git
     ```
-    Make sure to [keep your fork up to date][link_updateupstreamwiki] with the upstream repository.<br />  
-    For example, to update your master branch on your local cloned repository:  
+    Make sure to [keep your fork up to date][link_updateupstreamwiki] with the upstream repository.<br />
+    For example, to update your master branch on your local cloned repository:
       ```Shell
       git fetch upstream
       git checkout master
@@ -214,12 +214,12 @@ but those accepted fastest will follow a workflow similar to the following:
       pre-commit install
     ```
     Once the pre-commit hooks are installed and configured, each commit you'll make will be followed by a few simple styling "tests".
-    
+
 1. **Submit a [pull request][link_pullrequest].**<br />
    A member of the development team will review your changes to confirm
    that they can be merged into the main code base.<br />
    Pull request titles should begin with a descriptive prefix
-   (for example, `ENH: Adding Gibbs unringing step`):  
+   (for example, `ENH: Adding Gibbs unringing step`):
      * `ENH`: enhancements or new features ([example][enh_ex])
      * `FIX`: bug fixes ([example][fix_ex])
      * `TST`: new or updated tests ([example][tst_ex])
@@ -235,7 +235,7 @@ but those accepted fastest will follow a workflow similar to the following:
    The reviewers will take special care in assisting you to address their comments, as well as dealing with conflicts
    and other tricky situations that could emerge from distributed development.
    And if you don't make the requested changes, we might ask
-   [@bedevere-bot](https://github.com/search?q=commenter%3Abedevere-bot+soft+cushions) 
+   [@bedevere-bot](https://github.com/search?q=commenter%3Abedevere-bot+soft+cushions)
    to [poke you with soft cushions!](https://youtu.be/XnS49c9KZw8?t=1m7s)
 
 ## EddyMotionCorrection coding style guide

@@ -1,12 +1,12 @@
 """Visualization utilities."""
-import numpy as np
 import nibabel as nb
+import numpy as np
 
 
 def plot_dwi(dataobj, affine, gradient=None, **kwargs):
     """Plot a DW map."""
-    from nilearn.plotting import plot_anat
     import matplotlib.pyplot as plt
+    from nilearn.plotting import plot_anat
 
     plt.rcParams.update(
         {

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Update and sort the creators list of the zenodo record."""
+import json
 import sys
 from pathlib import Path
-import json
+
 from fuzzywuzzy import fuzz, process
 
 # These ORCIDs should go last
@@ -77,7 +78,7 @@ def get_git_lines(fname="line-contributors.txt"):
     if not lines and git_line_summary_path:
         print("Running git-line-summary on repo")
         lines = sp.check_output([git_line_summary_path]).decode().splitlines()
-        lines = [l for l in lines if "Not Committed Yet" not in l]
+        lines = [line for line in lines if "Not Committed Yet" not in line]
         contrib_file.write_text("\n".join(lines))
 
     if not lines:

@@ -21,15 +21,15 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Unit tests exercising the estimator."""
-from pkg_resources import resource_filename as pkg_fn
+import nibabel as nb
+import nitransforms as nt
 import numpy as np
 import pytest
-
-import nitransforms as nt
-import nibabel as nb
-from nibabel.eulerangles import euler2mat
 from nibabel.affines import from_matvec
+from nibabel.eulerangles import euler2mat
 from nipype.interfaces.ants.registration import Registration
+from pkg_resources import resource_filename as pkg_fn
+
 from eddymotion.dmri import DWI
 
 
@@ -66,11 +66,11 @@ def test_ANTs_config_b0(pkg_datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
     )
     result = registration.run(cwd=str(tmp_path)).outputs
     xform = nt.linear.Affine(
-        nt.io.itk.ITKLinearTransform.from_filename(result.forward_transforms[0]).to_ras(),
+        nt.io.itk.ITKLinearTransform.from_filename(
+            result.forward_transforms[0]
+        ).to_ras(),
         reference=b0nii,
     )
 
     coords = xfm.reference.ndcoords.T
-    assert np.sqrt(
-        ((xfm.map(coords) - xform.map(coords))**2).sum(1)
-    ).mean() < 0.2
+    assert np.sqrt(((xfm.map(coords) - xform.map(coords)) ** 2).sum(1)).mean() < 0.2

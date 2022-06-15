@@ -207,6 +207,14 @@ but those accepted fastest will follow a workflow similar to the following:
   Once you are satisfied with your local changes, [add/commit/push them][link_add_commit_push]
   to the branch on your forked repository.
 
+1. **Make sure your changes follow the project's styling configurations**.  <br />
+  To allow for continous integration and collaboration with other members of the community, it's important to keep stable styling configurations for a project. To make sure you follow these standard, run the following commands:
+    ```Shell
+      pip install pre-commit
+      pre-commit install
+    ```
+    Once the pre-commit hooks are installed and configured, each commit you'll make will be followed by a few simple styling "tests".
+    
 1. **Submit a [pull request][link_pullrequest].**<br />
    A member of the development team will review your changes to confirm
    that they can be merged into the main code base.<br />

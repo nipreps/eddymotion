@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Generate an author list for a new paper or abstract."""
+import json
 import sys
 from pathlib import Path
-import json
-from update_zenodo import get_git_lines, sort_contributors
 
+from update_zenodo import get_git_lines, sort_contributors
 
 # These authors should go last
 AUTHORS_LAST = ["Rokem, Ariel", "Esteban, Oscar"]

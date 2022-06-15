@@ -23,8 +23,9 @@
 """py.test configuration."""
 import os
 from pathlib import Path
-import numpy
+
 import nibabel
+import numpy
 import pytest
 
 test_data_env = os.getenv("TEST_DATA_HOME", str(Path.home() / "eddy-tests"))

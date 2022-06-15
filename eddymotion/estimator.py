@@ -1,12 +1,14 @@
 """A model-based algorithm for the realignment of dMRI data."""
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
-from pkg_resources import resource_filename as pkg_fn
-from tqdm import tqdm
-import numpy as np
+
 import nibabel as nb
 import nitransforms as nt
+import numpy as np
 from nipype.interfaces.ants.registration import Registration
+from pkg_resources import resource_filename as pkg_fn
+from tqdm import tqdm
+
 from eddymotion.model import ModelFactory
 
 
@@ -91,8 +93,10 @@ class EddyMotionEstimator:
 
                         # Factory creates the appropriate model and pipes arguments
                         dwmodel = ModelFactory.init(
-                            gtab=data_train[1], model=model, omp_nthreads=omp_nthreads,
-                            **kwargs
+                            gtab=data_train[1],
+                            model=model,
+                            omp_nthreads=omp_nthreads,
+                            **kwargs,
                         )
 
                         # fit the model

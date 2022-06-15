@@ -23,8 +23,10 @@
 """Test _version.py."""
 import sys
 from collections import namedtuple
-from pkg_resources import DistributionNotFound
 from importlib import reload
+
+from pkg_resources import DistributionNotFound
+
 import eddymotion
 
 

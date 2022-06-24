@@ -8,8 +8,8 @@ build/**/*
 build
 dist/**/*
 dist
-eddymotion.egg-info/**/*
-eddymotion.egg-info
+src/eddymotion.egg-info/**/*
+src/eddymotion.egg-info
 .eggs/**/*
 .eggs
 

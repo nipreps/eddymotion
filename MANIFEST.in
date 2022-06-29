@@ -2,7 +2,9 @@ recursive-exclude .circleci/ *
 recursive-exclude .docker/ *
 recursive-exclude .github/ *
 recursive-exclude .git/ *
+recursive-exclude .maint/ *
 recursive-exclude docs/ *
+recursive-exclude tests/ *
 
 exclude .*
 exclude Dockerfile

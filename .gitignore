@@ -115,4 +115,4 @@ ENV/
 kubernetes/jobs/
 
 # Version files
-*_version.py
+src/eddymotion/_version.py

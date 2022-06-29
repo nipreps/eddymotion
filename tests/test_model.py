@@ -61,12 +61,12 @@ def test_average_model():
     gtab_1000 = gtab[2:3, :]
     gtab_2000 = gtab[2:, :]
 
-    tmodel_mean = model.AverageDWModels(gtab=gtab, bias=False, stat="mean")
-    tmodel_median = model.AverageDWModels(gtab=gtab, bias=False, stat="median")
-    tmodel_1000 = model.AverageDWModels(
+    tmodel_mean = model.AverageDWModel(gtab=gtab, bias=False, stat="mean")
+    tmodel_median = model.AverageDWModel(gtab=gtab, bias=False, stat="median")
+    tmodel_1000 = model.AverageDWModel(
         gtab=gtab, bias=False, th_high=1000, th_low=1000
     )
-    tmodel_2000 = model.AverageDWModels(
+    tmodel_2000 = model.AverageDWModel(
         gtab=gtab, bias=False, th_high=2000, th_low=1000
     )
 
@@ -90,7 +90,7 @@ def test_two_initialisations(pkg_datadir):
     """Check that the two different initialisations result in the same models"""
 
     # Load test data
-    dmri_dataset = DWI.from_filename((pkg_datadir, "/data/dwi.h5"))
+    dmri_dataset = DWI.from_filename(pkg_datadir / "dwi.h5")
 
     # Split data into test and train set
     data_train, data_test = dmri_dataset.logo_split(10)

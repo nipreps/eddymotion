@@ -1,0 +1,7 @@
+attrs >= 20.1.0
+furo ~= 2021.10.09
+matplotlib >= 2.2.0
+packaging
+sphinx ~= 4.2
+sphinxcontrib-apidoc
+sphinxcontrib-napoleon

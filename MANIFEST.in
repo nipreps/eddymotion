@@ -4,7 +4,9 @@ recursive-exclude .github/ *
 recursive-exclude .git/ *
 recursive-exclude .maint/ *
 recursive-exclude docs/ *
-recursive-exclude tests/ *
+recursive-exclude test/ *
 
 exclude .*
 exclude Dockerfile
+
+recursive-include src/eddymotion/config *.*

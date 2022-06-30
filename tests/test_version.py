@@ -22,16 +22,14 @@
 #
 """Test _version.py."""
 import sys
-from collections import namedtuple
 from importlib import reload
-
-from pkg_resources import DistributionNotFound
+from pkg_resources import get_distribution
 
 import eddymotion
 
 
 def test_version_scm0(monkeypatch):
-    """Retrieve the version via setuptools_scm."""
+    """Retrieve the version via __version__."""
 
     class _version:
         __version__ = "10.0.0"
@@ -41,26 +39,6 @@ def test_version_scm0(monkeypatch):
     assert eddymotion.__version__ == "10.0.0"
 
 
-def test_version_scm1(monkeypatch):
+def test_version_scm1():
     """Retrieve the version via pkg_resources."""
-    monkeypatch.setitem(sys.modules, "eddymotion._version", None)
-
-    def _dist(name):
-        Distribution = namedtuple("Distribution", ["name", "version"])
-        return Distribution(name, "success")
-
-    monkeypatch.setattr("pkg_resources.get_distribution", _dist)
-    reload(eddymotion)
-    assert eddymotion.__version__ == "success"
-
-
-def test_version_scm2(monkeypatch):
-    """Check version could not be interpolated."""
-    monkeypatch.setitem(sys.modules, "eddymotion._version", None)
-
-    def _raise(name):
-        raise DistributionNotFound("No get_distribution mock")
-
-    monkeypatch.setattr("pkg_resources.get_distribution", _raise)
-    reload(eddymotion)
-    assert eddymotion.__version__ == "unknown"
+    assert get_distribution("eddymotion").version != "0.0"

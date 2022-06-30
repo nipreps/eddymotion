@@ -14,16 +14,16 @@ src/eddymotion.egg-info
 .eggs
 
 # housekeeping tools
-.maintenance/**/*
-.maintenance
-get_version.py
-tox.ini
+.maint/**/*
+.maint
 
 # pip installs
 src/**/*
 src/
 
 # git
+.git_archival.txt
+.gitattributes
 .gitignore
 .git/**/*
 .git
@@ -38,11 +38,17 @@ out/
 .idea
 
 # CI, etc.
+tox.ini
 .circleci
 .circleci/**/*
+.github
+.github/**/*
+.pytest_cache
+.pytest_cache/**/*
 .codecov.yml
 .coveragerc
 .pep8speaks.yml
+.pre-commit-config.yaml
 .readthedocs.yml
 .travis.yml
 .zenodo.json

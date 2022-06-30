@@ -1,0 +1,7 @@
+eddymotion.estimator module
+===========================
+
+.. automodule:: eddymotion.estimator
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -59,8 +59,8 @@ class DWI:
         with_b0 : :obj:`bool`
             Insert the *b=0* reference at the beginning of the training dataset.
 
-        Return
-        ------
+        Returns
+        -------
         (train_data, train_gradients) : :obj:`tuple`
             Training DWI and corresponding gradients.
             Training data/gradients come **from the updated dataset**.

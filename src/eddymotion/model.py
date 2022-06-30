@@ -297,7 +297,7 @@ class AverageDWModel:
 
 
 class DTIModel:
-    """A wrapper of :obj:`dipy.reconst.dti.TensorModel."""
+    """A wrapper of :obj:`dipy.reconst.dti.TensorModel`."""
 
     __slots__ = ("_model", "_S0", "_mask")
 
@@ -339,7 +339,7 @@ class DTIModel:
 
 
 class DKIModel:
-    """A wrapper of :obj:`dipy.reconst.dki.DiffusionKurtosisModel."""
+    """A wrapper of :obj:`dipy.reconst.dki.DiffusionKurtosisModel`."""
 
     __slots__ = ("_model", "_S0", "_mask")
 
@@ -380,7 +380,7 @@ class DKIModel:
 
 class SparseFascicleModel:
     """
-    A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel.
+    A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel`.
     """
 
     __slots__ = ("_model", "_parallel", "_S0", "_mask", "_solver")

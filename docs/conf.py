@@ -34,6 +34,7 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinxcontrib.apidoc",
 ]
@@ -46,6 +47,7 @@ autodoc_mock_imports = [
     "nibabel",
     "nilearn",
     "nipy",
+    "nipype",
     "nitime",
     "nitransforms",
     "numpy",
@@ -230,14 +232,15 @@ apidoc_extra_args = ["--module-first", "-d 1", "-T"]
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3/", None),
-    "numpy": ("https://numpy.org/doc/stable/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
     "bids": ("https://bids-standard.github.io/pybids/", None),
+    "dipy": ("https://dipy.org/documentation/latest/", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
     "nibabel": ("https://nipy.org/nibabel/", None),
     "nipype": ("https://nipype.readthedocs.io/en/latest/", None),
     "niworkflows": ("https://www.nipreps.org/niworkflows/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "python": ("https://docs.python.org/3/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "smriprep": ("https://www.nipreps.org/smriprep/", None),
     "templateflow": ("https://www.templateflow.org/python-client", None),
 }

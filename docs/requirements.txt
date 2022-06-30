@@ -4,4 +4,3 @@ matplotlib >= 2.2.0
 packaging
 sphinx ~= 4.2
 sphinxcontrib-apidoc
-sphinxcontrib-napoleon

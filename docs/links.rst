@@ -6,3 +6,4 @@
 .. _ANTs: https://stnava.github.io/ANTs/
 .. _AFNI: https://afni.nimh.nih.gov/
 .. _FreeSurfer: https://surfer.nmr.mgh.harvard.edu/
+.. _DIPY: https://dipy.org/

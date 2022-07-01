@@ -7,5 +7,5 @@ Contents
     :maxdepth: 3
 
     installation
-    api
+    developers
     changes

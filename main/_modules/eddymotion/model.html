@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.model - eddymotion 0.1.6.dev5+g08b0cc1 documentation</title>
+        <title>eddymotion.model - eddymotion 0.1.7.dev4+gd210330 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.6.dev5+g08b0cc1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev4+gd210330 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.6.dev5 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev4 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.6.dev5 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev4 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -203,12 +203,12 @@
 <span></span><span class="sd">"""A factory class that adapts DIPY's dMRI models."""</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">cpu_count</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="k">import</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">cpu_count</span>
 
 <span class="kn">import</span> <span class="nn">nest_asyncio</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">dipy.core.gradients</span> <span class="kn">import</span> <span class="n">check_multi_b</span><span class="p">,</span> <span class="n">gradient_table</span>
+<span class="kn">from</span> <span class="nn">dipy.core.gradients</span> <span class="k">import</span> <span class="n">check_multi_b</span><span class="p">,</span> <span class="n">gradient_table</span>
 
 <span class="n">nest_asyncio</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
 
@@ -230,7 +230,7 @@
         <span class="s2">"_S0"</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cls</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_mask</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_S0</span>
@@ -265,7 +265,7 @@
         <span class="s2">"_S0"</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cls</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_mask</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_S0</span>
@@ -376,7 +376,7 @@
         <span class="n">param</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"3dshore"</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">dipy.reconst.shore</span> <span class="kn">import</span> <span class="n">ShoreModel</span> <span class="k">as</span> <span class="n">Model</span>
+            <span class="kn">from</span> <span class="nn">dipy.reconst.shore</span> <span class="k">import</span> <span class="n">ShoreModel</span> <span class="k">as</span> <span class="n">Model</span>
 
             <span class="n">param</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">"radial_order"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
@@ -390,13 +390,13 @@
             <span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"solver"</span><span class="p">:</span> <span class="s2">"ElasticNet"</span><span class="p">}</span>
 
             <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"gp"</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
+                <span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="k">import</span> <span class="n">GaussianProcessRegressor</span>
 
                 <span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"solver"</span><span class="p">:</span> <span class="n">GaussianProcessRegressor</span><span class="p">}</span>
 
             <span class="n">multi_b</span> <span class="o">=</span> <span class="n">check_multi_b</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">non_zero</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">multi_b</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">dipy.reconst.sfm</span> <span class="kn">import</span> <span class="n">ExponentialIsotropicModel</span>
+                <span class="kn">from</span> <span class="nn">dipy.reconst.sfm</span> <span class="k">import</span> <span class="n">ExponentialIsotropicModel</span>
 
                 <span class="n">param</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"isotropic"</span><span class="p">:</span> <span class="n">ExponentialIsotropicModel</span><span class="p">})</span>
 
@@ -404,7 +404,7 @@
             <span class="n">Model</span> <span class="o">=</span> <span class="n">DTIModel</span> <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"dti"</span> <span class="k">else</span> <span class="n">DKIModel</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported model &lt;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&gt;."</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">f</span><span class="s2">"Unsupported model &lt;</span><span class="si">{model}</span><span class="s2">&gt;."</span><span class="p">)</span>
 
         <span class="n">omp_nthreads</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"omp_nthreads"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
@@ -424,7 +424,7 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_S0"</span><span class="p">,)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Implement object initialization."""</span>
         <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"S0 must be provided"</span><span class="p">)</span>
@@ -444,7 +444,7 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_data"</span><span class="p">,</span> <span class="s2">"_gtab"</span><span class="p">,</span> <span class="s2">"_th_low"</span><span class="p">,</span> <span class="s2">"_th_high"</span><span class="p">,</span> <span class="s2">"_bias"</span><span class="p">,</span> <span class="s2">"_stat"</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Implement object initialization.</span>
 
@@ -503,9 +503,9 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_model"</span><span class="p">,</span> <span class="s2">"_S0"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Instantiate the wrapped tensor model."""</span>
-        <span class="kn">from</span> <span class="nn">dipy.reconst.dti</span> <span class="kn">import</span> <span class="n">TensorModel</span> <span class="k">as</span> <span class="n">DipyTensorModel</span>
+        <span class="kn">from</span> <span class="nn">dipy.reconst.dti</span> <span class="k">import</span> <span class="n">TensorModel</span> <span class="k">as</span> <span class="n">DipyTensorModel</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -545,9 +545,9 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_model"</span><span class="p">,</span> <span class="s2">"_S0"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Instantiate the wrapped tensor model."""</span>
-        <span class="kn">from</span> <span class="nn">dipy.reconst.dki</span> <span class="kn">import</span> <span class="n">DiffusionKurtosisModel</span>
+        <span class="kn">from</span> <span class="nn">dipy.reconst.dki</span> <span class="k">import</span> <span class="n">DiffusionKurtosisModel</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -587,9 +587,9 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_model"</span><span class="p">,</span> <span class="s2">"_parallel"</span><span class="p">,</span> <span class="s2">"_S0"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">,</span> <span class="s2">"_solver"</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Instantiate the wrapped model."""</span>
-        <span class="kn">from</span> <span class="nn">dipy.reconst.sfm</span> <span class="kn">import</span> <span class="n">SparseFascicleModel</span>
+        <span class="kn">from</span> <span class="nn">dipy.reconst.sfm</span> <span class="k">import</span> <span class="n">SparseFascicleModel</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

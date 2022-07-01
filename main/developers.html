@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="eddymotion.dmri module" href="api/eddymotion.dmri.html" /><link rel="prev" title="Installation" href="installation.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>For developers - eddymotion 0.1.7.dev5+g459f54b documentation</title>
+        <title>For developers - eddymotion 0.1.7.dev6+gd9fff43 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">eddymotion 0.1.7.dev5+g459f54b documentation</div></a>
+      <a href="index.html"><div class="brand">eddymotion 0.1.7.dev6+gd9fff43 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev5 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev6 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev5 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev6 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -213,14 +213,15 @@ Before delving into the code, please make sure you have read all the guidelines 
 With GitHub Pages, the documentation is posted under <a class="reference external" href="https://www.nipreps.org/eddymotion">https://www.nipreps.org/eddymotion</a>.
 We maintain versioned documentation, by storing git tags under <code class="docutils literal notranslate"><span class="pre">&lt;major&gt;.&lt;minor&gt;/</span></code> folders, i.e., we do not archive every patch release, but only every minor release.
 In other words, folder <code class="docutils literal notranslate"><span class="pre">0.1/</span></code> of the documentation tree contains the documents for the latest release within the <em>0.1.x</em> series.
-With every commit (or merge commit) to <code class="docutils literal notranslate"><span class="pre">main</span></code>, the <em>development</em> version of the documentation under the folder <code class="docutils literal notranslate"><span class="pre">main/</span></code> is updated too.</p>
+With every commit (or merge commit) to <code class="docutils literal notranslate"><span class="pre">main</span></code>, the <em>development</em> version of the documentation under the folder <code class="docutils literal notranslate"><span class="pre">main/</span></code> is updated too.
+The <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch is automatically maintained with <a class="reference external" href="https://github.com/nipreps/eddymotion/blob/main/.github/workflows/docs-build-update.yml">a GitHub Action</a>.
+Please, do not commit manually to <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code>.</p>
 <p>To build the documentation locally, you first need to make sure that <code class="docutils literal notranslate"><span class="pre">setuptools_scm[toml]</span> <span class="pre">&gt;=</span> <span class="pre">6.2</span></code> is installed in your environment and then:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd &lt;eddymotion-repository&gt;/
 $ python -m setuptools_scm  # This will generate ``src/eddymotion/_version.py``
 $ make -C docs/ html
 </pre></div>
 </div>
-<p>Please, do not commit manually to <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code>.</p>
 </section>
 <section id="library-api-application-program-interface">
 <h2>Library API (application program interface)<a class="headerlink" href="#library-api-application-program-interface" title="Permalink to this headline">¶</a></h2>

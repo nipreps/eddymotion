@@ -12,14 +12,14 @@ With GitHub Pages, the documentation is posted under https://www.nipreps.org/edd
 We maintain versioned documentation, by storing git tags under ``<major>.<minor>/`` folders, i.e., we do not archive every patch release, but only every minor release.
 In other words, folder ``0.1/`` of the documentation tree contains the documents for the latest release within the *0.1.x* series.
 With every commit (or merge commit) to ``main``, the *development* version of the documentation under the folder ``main/`` is updated too.
+The ``gh-pages`` branch is automatically maintained with `a GitHub Action <https://github.com/nipreps/eddymotion/blob/main/.github/workflows/docs-build-update.yml>`__.
+Please, do not commit manually to ``gh-pages``.
 
 To build the documentation locally, you first need to make sure that ``setuptools_scm[toml] >= 6.2`` is installed in your environment and then::
 
   $ cd <eddymotion-repository>/
   $ python -m setuptools_scm  # This will generate ``src/eddymotion/_version.py``
   $ make -C docs/ html
-
-Please, do not commit manually to ``gh-pages``.
 
 Library API (application program interface)
 -------------------------------------------

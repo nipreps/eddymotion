@@ -26,3 +26,7 @@ More recently, Cieslak et al.3 integrated both approaches in *SHORELine*, by
 *Eddymotion* is an open implementation of eddy-current and head-motion correction that builds upon
 the work of ``eddy`` and *SHORELine*, while generalizing these methods to multiple acquisition schemes
 (single-shell, multi-shell, and diffusion spectrum imaging) using diffusion models available with DIPY5.
+
+
+.. image:: docs/_static/eddymotion-flowchart.svg
+   :alt: The eddymotion flowchart

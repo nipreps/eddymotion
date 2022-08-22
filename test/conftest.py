@@ -28,15 +28,14 @@ import nibabel
 import numpy
 import pytest
 
-test_data_env = os.getenv("TEST_DATA_HOME", str(Path.home() / "eddy-tests"))
+test_data_env = os.getenv("TEST_DATA_HOME", str(Path.home() / "eddymotion-tests"))
 test_output_dir = os.getenv("TEST_OUTPUT_DIR")
 test_workdir = os.getenv("TEST_WORK_DIR")
-data_dir = Path(__file__).parent / "tests" / "data"
 
 
 def pytest_report_header(config):
     return f"""\
-TEST_DATA_HOME={test_data_env}s
+TEST_DATA_HOME={test_data_env}.
 TEST_OUTPUT_DIR={test_output_dir or '<unset> (output files will be discarded)'}.
 TEST_WORK_DIR={test_workdir or '<unset> (intermediate files will be discarded)'}.
 """
@@ -61,9 +60,3 @@ def outdir():
 def datadir():
     """Return a data path outside the package's structure (i.e., large datasets)."""
     return Path(test_data_env)
-
-
-@pytest.fixture
-def pkg_datadir():
-    """Return a data path inside the package's structure (i.e., small, empty files)."""
-    return data_dir

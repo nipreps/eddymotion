@@ -240,7 +240,7 @@ class TrivialB0Model:
 class AverageDWModel:
     """A trivial model that returns an average map."""
 
-    __slots__ = ("_data", "_gtab", "_th_low", "_th_high", "_bias", "_stat")
+    __slots__ = ("_data", "_th_low", "_th_high", "_bias", "_stat")
 
     def __init__(self, gtab, **kwargs):
         r"""
@@ -264,18 +264,19 @@ class AverageDWModel:
             Whether the summary statistic to apply is ``"mean"`` or ``"median"``.
 
         """
-        self._gtab = gtab
         self._th_low = kwargs.get("th_low", 50)
-        self._th_high = kwargs.get("th_high", self._gtab[3, ...].max())
+        self._th_high = kwargs.get("th_high", 10000)
         self._bias = kwargs.get("bias", True)
         self._stat = kwargs.get("stat", "median")
 
     def fit(self, data, **kwargs):
         """Calculate the average."""
+        gtab = kwargs.pop("gtab", None)
         # Select the interval of b-values for which DWIs will be averaged
-        b_mask = (self._gtab[3, ...] >= self._th_low) & (
-            self._gtab[3, ...] <= self._th_high
-        )
+        b_mask = (
+            (gtab[3] >= self._th_low)
+            & (gtab[3] <= self._th_high)
+        ) if gtab is not None else np.ones((data.shape[-1], ), dtype=bool)
         shells = data[..., b_mask]
 
         # Regress out global signal differences

@@ -39,14 +39,14 @@ from eddymotion.dmri import DWI
 @pytest.mark.parametrize("t_x", [0.0, 1.0])
 @pytest.mark.parametrize("t_y", [0.0, 1.0])
 @pytest.mark.parametrize("t_z", [0.0, 1.0])
-def test_ANTs_config_b0(pkg_datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
+def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
     """Check that the registration parameters for b=0
     gives a good estimate of known affine"""
 
     fixed = tmp_path / "b0.nii.gz"
     moving = tmp_path / "moving.nii.gz"
 
-    dwdata = DWI.from_filename(pkg_datadir / "dwi.h5")
+    dwdata = DWI.from_filename(datadir / "dwi.h5")
     b0nii = nb.Nifti1Image(dwdata.bzero, dwdata.affine, None)
     b0nii.to_filename(fixed)
 

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.model - eddymotion 0.1.7.dev10+g96627b2 documentation</title>
+        <title>eddymotion.model - eddymotion 0.1.7.dev12+gb0ffc33 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev10+g96627b2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev12+gb0ffc33 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev10 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev12 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev10 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev12 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -442,7 +442,7 @@
 <div class="viewcode-block" id="AverageDWModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.AverageDWModel">[docs]</a><span class="k">class</span> <span class="nc">AverageDWModel</span><span class="p">:</span>
     <span class="sd">"""A trivial model that returns an average map."""</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_data"</span><span class="p">,</span> <span class="s2">"_gtab"</span><span class="p">,</span> <span class="s2">"_th_low"</span><span class="p">,</span> <span class="s2">"_th_high"</span><span class="p">,</span> <span class="s2">"_bias"</span><span class="p">,</span> <span class="s2">"_stat"</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_data"</span><span class="p">,</span> <span class="s2">"_th_low"</span><span class="p">,</span> <span class="s2">"_th_high"</span><span class="p">,</span> <span class="s2">"_bias"</span><span class="p">,</span> <span class="s2">"_stat"</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">"""</span>
@@ -466,18 +466,19 @@
 <span class="sd">            Whether the summary statistic to apply is ``"mean"`` or ``"median"``.</span>
 
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gtab</span> <span class="o">=</span> <span class="n">gtab</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_th_low</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"th_low"</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_th_high</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"th_high"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_th_high</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"th_high"</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bias</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"bias"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stat"</span><span class="p">,</span> <span class="s2">"median"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AverageDWModel.fit"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.AverageDWModel.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Calculate the average."""</span>
+        <span class="n">gtab</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"gtab"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="c1"># Select the interval of b-values for which DWIs will be averaged</span>
-        <span class="n">b_mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_low</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_high</span>
-        <span class="p">)</span>
+        <span class="n">b_mask</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_low</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_high</span><span class="p">)</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">gtab</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="n">shells</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">b_mask</span><span class="p">]</span>
 
         <span class="c1"># Regress out global signal differences</span>

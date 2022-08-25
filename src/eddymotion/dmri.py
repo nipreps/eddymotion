@@ -41,12 +41,15 @@ class DWI:
     """
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
-    _filepath = attr.ib(default=Path(mkdtemp()) / "em_cache.h5", repr=False)
+    _filepath = attr.ib(
+        factory=lambda: Path(mkdtemp()) / "em_cache.h5",
+        repr=False,
+    )
     """A path to an HDF5 file to store the whole dataset."""
 
     def __len__(self):
         """Obtain the number of high-*b* orientations."""
-        return self.gradients.shape[-1]
+        return self.dataobj.shape[-1]
 
     def logo_split(self, index, with_b0=False):
         """
@@ -201,7 +204,9 @@ class DWI:
         """Read an HDF5 file from disk."""
         with h5py.File(filename, "r") as in_file:
             root = in_file["/0"]
-            data = {k: np.asanyarray(v) for k, v in root.items()}
+            data = {
+                k: np.asanyarray(v) for k, v in root.items() if not k.startswith("_")
+            }
         return cls(**data)
 
 

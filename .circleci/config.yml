@@ -113,15 +113,13 @@ jobs:
             source ~/.bashrc
             conda activate base
             
-            python --version
-
-            # if [[ ! -d "${TEST_DATA_HOME}" ]]; then
-            #   datalad install -rg -J4 https://gin.g-node.org/nipreps-data/fmriprep-test-data.git ${TEST_DATA_HOME}
-            # else
-            #   cd ${TEST_DATA_HOME}
-            #   datalad update --merge -r .
-            #   datalad get -r -J4 *
-            # fi
+            if [[ ! -d "${TEST_DATA_HOME}" ]]; then
+              datalad install -rg --source=https://gin.g-node.org/nipreps-data/tests-eddymotion.git ${TEST_DATA_HOME}
+            else
+              cd ${TEST_DATA_HOME}
+              datalad update --merge -r .
+              datalad get -r -J4 *
+            fi
 
       - save_cache:
           key: data-v1-{{ .Branch }}-{{ .Revision }}
@@ -133,6 +131,10 @@ jobs:
           command: |
             source ~/.bashrc
             conda activate base
+
+            pushd /tmp/src/eddymotion
+            python -m setuptools_scm
+            popd
             
             pytest --doctest-modules /tmp/src/eddymotion/src /tmp/src/eddymotion/test
 

@@ -1,0 +1,160 @@
+version: 2
+jobs:
+  tests:
+    machine: # executor type
+      image: ubuntu-2004:202010-01
+
+    environment:
+      MINICONDA_URL: "https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh"
+      CONDA_PATH: "/tmp/conda"
+      TEST_DATA_HOME: "/tmp/tests-data"
+
+    working_directory: /tmp/tests
+    steps:
+      - checkout:
+          path: /tmp/src/eddymotion
+
+      - restore_cache:
+          keys:
+            - deps-v2-{{ .Branch }}-{{ .Revision }}
+            - deps-v2--{{ .Revision }}
+            - deps-v2-{{ .Branch }}-
+            - deps-v2-main-
+            - deps-v2-
+
+      - run: 
+          name: Install Miniconda
+          command: |
+            if [[ ! -d "${CONDA_PATH}" ]]; then
+              curl -sL ${MINICONDA_URL} > $HOME/Miniconda.sh
+              sh $HOME/Miniconda.sh -b -p ${CONDA_PATH}
+
+              # Add conda-forge
+              ${CONDA_PATH}/bin/conda config --add channels conda-forge
+
+              # Install mamba
+              ${CONDA_PATH}/bin/conda install -y -n base mamba
+
+              # Install environment
+              ${CONDA_PATH}/bin/mamba install -y -n base \
+                      attrs=21.4 \
+                      codecov=2.1 \
+                      colorclass=2.2 \
+                      coverage=6.3 \
+                      curl=7.83 \
+                      datalad=0.16 \
+                      dipy=1.5 \
+                      flake8=4.0 \
+                      git=2.35 \
+                      graphviz=3.0 \
+                      h5py=3.6 \
+                      indexed_gzip=1.6 \
+                      jinja2=3.1 \
+                      libxml2=2.9 \
+                      libxslt=1.1 \
+                      lockfile=0.12 \
+                      matplotlib=3.5 \
+                      mkl=2022.1 \
+                      mkl-service=2.4 \
+                      nibabel=3.2 \
+                      nilearn=0.9 \
+                      nipype=1.8 \
+                      nitime=0.9 \
+                      nodejs=16 \
+                      numpy=1.22 \
+                      packaging=21.3 \
+                      pandas=1.4 \
+                      pandoc=2.18 \
+                      pbr=5.9 \
+                      pip=22.0 \
+                      pockets=0.9 \
+                      psutil=5.9 \
+                      pydot=1.4 \
+                      pytest=7.1 \
+                      pytest-cov=3.0 \
+                      pytest-env=0.6 \
+                      pytest-xdist=2.5 \
+                      pyyaml=6.0 \
+                      requests=2.27 \
+                      scikit-image=0.19 \
+                      scikit-learn=1.1 \
+                      scipy=1.8 \
+                      seaborn=0.11 \
+                      setuptools=62.3 \
+                      sphinx=4.5 \
+                      sphinx_rtd_theme=1.0 \
+                      svgutils=0.3 \
+                      toml=0.10 \
+                      traits=6.3 \
+                      zlib=1.2 \
+                      zstd=1.5
+            fi
+
+            ${CONDA_PATH}/bin/conda init bash
+
+            git config --global user.name "First Last"
+            git config --global user.email "email@domain.com"
+
+      - save_cache:
+          key: deps-v2-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /tmp/conda
+
+      - restore_cache:
+          keys:
+            - data-v1-{{ .Branch }}-{{ .Revision }}
+            - data-v1--{{ .Revision }}
+            - data-v1-{{ .Branch }}-
+            - data-v1-main-
+            - data-v1-
+      - run: 
+          name: Pull down test data
+          command: |
+            source ~/.bashrc
+            conda activate base
+            
+            python --version
+
+            # if [[ ! -d "${TEST_DATA_HOME}" ]]; then
+            #   datalad install -rg -J4 https://gin.g-node.org/nipreps-data/fmriprep-test-data.git ${TEST_DATA_HOME}
+            # else
+            #   cd ${TEST_DATA_HOME}
+            #   datalad update --merge -r .
+            #   datalad get -r -J4 *
+            # fi
+
+      - save_cache:
+          key: data-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /tmp/tests-data
+
+      - run:
+          name: Run tests
+          command: |
+            source ~/.bashrc
+            conda activate base
+            
+            pytest --doctest-modules /tmp/src/eddymotion/src /tmp/src/eddymotion/test
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - tests:
+          filters:
+            branches:
+              ignore:
+                - /docs?\/.*/
+            tags:
+              only: /.*/
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 10 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - tests

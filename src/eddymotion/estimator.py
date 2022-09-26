@@ -10,7 +10,7 @@ from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
 from eddymotion.model import ModelFactory
-
+import ants
 
 class EddyMotionEstimator:
     """Estimates rigid-body head-motion and distortions derived from eddy-currents."""
@@ -116,34 +116,32 @@ class EddyMotionEstimator:
                             clip=reg_target_type == "dwi",
                         )
 
-                        registration = Registration(
-                            terminal_output="file",
-                            from_file=pkg_fn(
-                                "eddymotion",
-                                f"config/dwi-to-{reg_target_type}_level{i_iter}.json",
-                            ),
-                            fixed_image=str(fixed.absolute()),
-                            moving_image=str(moving.absolute()),
-                            **align_kwargs,
-                        )
+                        moving_nii = nb.load(moving)
+                        moving_ants = ants.from_nibabel(moving_nii)
+
+                        fixed_nii = nb.load(fixed)
+                        fixed_ants = ants.from_nibabel(fixed_nii)
+
+                        registration_kwargs = dict(fixed=fixed_ants, moving=moving_ants)
+
                         if bmask_img:
-                            registration.inputs.fixed_image_masks = ["NULL", bmask_img]
+                            bmask_nii = nb.load(bmask_img)
+                            bmask_ants = ants.from_nibabel(bmask_nii)
+                            registration_kwargs['mask'] = bmask_ants
 
                         if dwdata.em_affines and dwdata.em_affines[i] is not None:
                             mat_file = tmpdir / f"init{i_iter}.mat"
                             dwdata.em_affines[i].to_filename(mat_file, fmt="itk")
-                            registration.inputs.initial_moving_transform = str(mat_file)
+                            registration_kwargs['initial_transform'] = str(mat_file)
 
-                        # execute ants command line
-                        result = registration.run(cwd=str(tmpdir)).outputs
+                        registration_ants = ants.registration(**registration_kwargs)
 
-                        # read output transform
-                        xform = nt.io.itk.ITKLinearTransform.from_filename(
-                            result.forward_transforms[0]
-                        ).to_ras(reference=fixed, moving=moving)
-
+                        xform_ants = nt.io.itk.ITKLinearTransform.from_filename(
+                            registration_ants['fwdtransforms'][1]
+                            ).to_ras(reference=fixed, moving=moving)
+                        
                     # update
-                    dwdata.set_transform(i, xform)
+                    dwdata.set_transform(i, xform_ants)
                     pbar.update()
 
         return dwdata.em_affines

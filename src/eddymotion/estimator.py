@@ -5,12 +5,11 @@ from tempfile import TemporaryDirectory, mkstemp
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
-from nipype.interfaces.ants.registration import Registration
-from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
 from eddymotion.model import ModelFactory
 import ants
+
 
 class EddyMotionEstimator:
     """Estimates rigid-body head-motion and distortions derived from eddy-currents."""
@@ -138,8 +137,8 @@ class EddyMotionEstimator:
 
                         xform_ants = nt.io.itk.ITKLinearTransform.from_filename(
                             registration_ants['fwdtransforms'][1]
-                            ).to_ras(reference=fixed, moving=moving)
-                        
+                        ).to_ras(reference=fixed, moving=moving)
+
                     # update
                     dwdata.set_transform(i, xform_ants)
                     pbar.update()

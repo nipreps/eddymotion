@@ -104,21 +104,10 @@ class EddyMotionEstimator:
                         # generate a synthetic dw volume for the test gradient
                         predicted = dwmodel.predict(data_test[1])
 
-                        tmpdir = Path(tmpdir)
-                        moving = tmpdir / "moving.nii.gz"
-                        fixed = tmpdir / "fixed.nii.gz"
-                        _to_nifti(data_test[0], dwdata.affine, moving)
-                        _to_nifti(
-                            predicted,
-                            dwdata.affine,
-                            fixed,
-                            clip=reg_target_type == "dwi",
-                        )
-
-                        moving_nii = nb.load(moving)
+                        moving_nii = nb.Nifti1Image(data_test[0], dwdata.affine)
                         moving_ants = ants.from_nibabel(moving_nii)
 
-                        fixed_nii = nb.load(fixed)
+                        fixed_nii = nb.Nifti1Image(predicted, dwdata.affine)
                         fixed_ants = ants.from_nibabel(fixed_nii)
 
                         registration_kwargs = dict(fixed=fixed_ants, moving=moving_ants)
@@ -137,7 +126,7 @@ class EddyMotionEstimator:
 
                         xform_ants = nt.io.itk.ITKLinearTransform.from_filename(
                             registration_ants['fwdtransforms'][1]
-                        ).to_ras(reference=fixed, moving=moving)
+                        ).to_ras(reference=fixed_nii, moving=moving_nii)
 
                     # update
                     dwdata.set_transform(i, xform_ants)

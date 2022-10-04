@@ -9,6 +9,9 @@ from tqdm import tqdm
 
 from eddymotion.model import ModelFactory
 import ants
+import ants.utils.process_args as ants_utils
+import json
+from eddymotion.utils import antsimage_from_path
 
 
 class EddyMotionEstimator:
@@ -110,19 +113,27 @@ class EddyMotionEstimator:
                         fixed_nii = nb.Nifti1Image(predicted, dwdata.affine)
                         fixed_ants = ants.from_nibabel(fixed_nii)
 
+                        #registration_kwargs = json.loads('config/dwi-to-dwi_level1.json')
+                        #registration_kwargs['moving'] = moving_ants
+                        #registration_kwargs['fixed'] = fixed_ants
                         registration_kwargs = dict(fixed=fixed_ants, moving=moving_ants)
 
                         if bmask_img:
-                            bmask_nii = nb.load(bmask_img)
-                            bmask_ants = ants.from_nibabel(bmask_nii)
-                            registration_kwargs['mask'] = bmask_ants
+                            registration_kwargs['mask'] = bmask_img
 
                         if dwdata.em_affines and dwdata.em_affines[i] is not None:
                             mat_file = tmpdir / f"init{i_iter}.mat"
                             dwdata.em_affines[i].to_filename(mat_file, fmt="itk")
                             registration_kwargs['initial_transform'] = str(mat_file)
 
+                        for key in registration_kwargs:
+                            registration_kwargs[key] = antsimage_from_path(registration_kwargs[key])
+
+                        #registration_kwargs = ants_utils._int_antsProcessArguments(registration_kwargs)
                         registration_ants = ants.registration(**registration_kwargs)
+                        
+                        #processed_args = utils._int_antsProcessArguments(args)
+                        #libfn = utils.get_lib_fn("antsRegistration")
 
                         xform_ants = nt.io.itk.ITKLinearTransform.from_filename(
                             registration_ants['fwdtransforms'][1]

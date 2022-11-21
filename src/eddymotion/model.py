@@ -44,6 +44,9 @@ class ModelFactory:
         if model.lower() in ("avg", "average", "mean"):
             return AverageDWModel(gtab=gtab, **kwargs)
 
+        if model.lower() in ("TrivialDKI"):
+            return TrivialDKIModel(gtab, **kwargs)
+
         # Generate a GradientTable object for DIPY
         gtab = _rasb2dipy(gtab)
         param = {}
@@ -191,6 +194,95 @@ class TrivialB0Model:
             raise ValueError("S0 must be provided")
 
         self._S0 = S0
+
+    def fit(self, *args, **kwargs):
+        """Do nothing."""
+
+    def predict(self, gradient, **kwargs):
+        """Return the *b=0* map."""
+        return self._S0
+
+
+class TrivialDKIModel:
+    """
+    A trivial model that returns a *b=0* map always.
+
+    Implements the interface of :obj:`dipy.reconst.base.ReconstModel`.
+    Instead of inheriting from the abstract base, this implementation
+    follows type adaptation principles, as it is easier to maintain
+    and to read (see https://www.youtube.com/watch?v=3MNVP9-hglc).
+
+    """
+
+    __slots__ = ("_S0", "_mask", "_data")
+
+    def __init__(self, gtab, S0=None, mask=None, b_max=4000, **kwargs):
+        """Instantiate the wrapped tensor model."""
+        from dipy.reconst.dki import DiffusionKurtosisModel
+
+        self._S0 = None
+        if S0 is not None:
+            self._S0 = np.clip(
+                S0.astype("float32") / S0.max(),
+                a_min=1e-5,
+                a_max=1.0,
+            )
+        self._mask = mask
+        if mask is None and S0 is not None:
+            self._mask = self._S0 > np.percentile(self._S0, 35)
+
+        if self._mask is not None:
+            self._S0 = self._S0[self._mask.astype(bool)]
+
+        kwargs = {
+            k: v
+            for k, v in kwargs.items()
+            if k
+            in (
+                "min_signal",
+                "return_S0_hat",
+                "fit_method",
+                "weighting",
+                "sigma",
+                "jac",
+            )
+        }
+
+        _model = DiffusionKurtosisModel(gtab, **kwargs)
+
+        _nthreads = len(self._model)
+
+        # All-true mask if not available
+        if self._mask is None:
+            self._mask = np.ones(data.shape[:3], dtype=bool)
+
+        # Apply mask (ensures data is now 2D)
+        data = data[self._mask, ...]
+
+        # Split data into chunks of group of slices
+        data_chunks = np.array_split(data, _nthreads)
+
+        # Run asyncio tasks in a limited thread pool
+        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
+            loop = asyncio.new_event_loop()
+
+            fit_tasks = [
+                loop.run_in_executor(
+                    executor,
+                    _model_fit,
+                    model,
+                    data,
+                )
+                for model, data in zip(self._model, data_chunks)
+            ]
+
+            try:
+                self._model = loop.run_until_complete(asyncio.gather(*fit_tasks))
+            finally:
+                loop.close()
+
+        self._data = _model.predict()
+
 
     def fit(self, *args, **kwargs):
         """Do nothing."""

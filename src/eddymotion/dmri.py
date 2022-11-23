@@ -41,10 +41,7 @@ class DWI:
     """
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
-    _filepath = attr.ib(
-        factory=lambda: Path(mkdtemp()) / "em_cache.h5",
-        repr=False,
-    )
+    _filepath = attr.ib(factory=lambda: Path(mkdtemp()) / "em_cache.h5", repr=False,)
     """A path to an HDF5 file to store the whole dataset."""
 
     def __len__(self):
@@ -90,15 +87,11 @@ class DWI:
 
         if with_b0:
             train_data = np.concatenate(
-                (np.asanyarray(self.bzero)[..., np.newaxis], train_data),
-                axis=-1,
+                (np.asanyarray(self.bzero)[..., np.newaxis], train_data), axis=-1,
             )
             b0vec = np.zeros((4, 1))
             b0vec[0, 0] = 1
-            train_gradients = np.concatenate(
-                (b0vec, train_gradients),
-                axis=-1,
-            )
+            train_gradients = np.concatenate((b0vec, train_gradients), axis=-1,)
 
         return (
             (train_data, train_gradients),
@@ -131,8 +124,7 @@ class DWI:
 
         # resample and update orientation at index
         self.dataobj[..., index] = np.asanyarray(
-            xform.apply(dwmoving, order=order).dataobj,
-            dtype=self.dataobj.dtype,
+            xform.apply(dwmoving, order=order).dataobj, dtype=self.dataobj.dtype,
         )
 
         # invert transform transform b-vector and origin
@@ -174,11 +166,7 @@ class DWI:
 
     def to_nifti(self, filename):
         """Write a NIfTI 1.0 file to disk."""
-        nii = nb.Nifti1Image(
-            self.dataobj,
-            self.affine,
-            None,
-        )
+        nii = nb.Nifti1Image(self.dataobj, self.affine, None,)
         nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
 
@@ -211,35 +199,51 @@ class DWI:
 
 
 def load(
-    filename, gradients_file=None, b0_file=None, brainmask_file=None, fmap_file=None
+    filename,
+    gradients_file=None,
+    b0_file=None,
+    brainmask_file=None,
+    fmap_file=None,
+    bvec_file=None,
+    bval_file=None,
+    b0_thres=50,
 ):
     """Load DWI data."""
     filename = Path(filename)
     if filename.name.endswith(".h5"):
         return DWI.from_filename(filename)
 
-    if not gradients_file:
+    if gradients_file:
+        grad = np.loadtxt(gradients_file, dtype="float32").T
+    elif bvec_file and bval_file:
+        grad = np.vstack(
+            (
+                np.loadtxt(bvec_file, dtype="float32"),
+                np.loadtxt(bval_file, dtype="float32"),
+            )
+        )
+    else:
         raise RuntimeError("A gradients file is necessary")
 
-    img = nb.as_closest_canonical(nb.load(filename))
-    retval = DWI(
-        affine=img.affine,
-    )
-    grad = np.loadtxt(gradients_file, dtype="float32").T
-    gradmsk = grad[-1] > 50
+    img = nb.load(filename)
+    fulldata = img.get_fdata(dtype="float32")
+    retval = DWI(affine=img.affine,)
+    gradmsk = grad[-1] > b0_thres
     retval.gradients = grad[..., gradmsk]
-    retval.dataobj = img.get_fdata(dtype="float32")[..., gradmsk]
+    retval.dataobj = fulldata[..., gradmsk]
 
     if b0_file:
-        b0img = nb.as_closest_canonical(nb.load(b0_file))
+        b0img = nb.load(b0_file)
         retval.bzero = np.asanyarray(b0img.dataobj)
+    elif np.any(~gradmsk):
+        retval.bzero = np.median(fulldata[..., ~gradmsk], axis=3)
 
     if brainmask_file:
-        mask = nb.as_closest_canonical(nb.load(brainmask_file))
+        mask = nb.load(brainmask_file)
         retval.brainmask = np.asanyarray(mask.dataobj)
 
     if fmap_file:
-        fmapimg = nb.as_closest_canonical(nb.load(fmap_file))
+        fmapimg = nb.load(fmap_file)
         retval.fieldmap = fmapimg.get_fdata(fmapimg, dtype="float32")
 
     return retval

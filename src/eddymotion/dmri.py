@@ -235,7 +235,7 @@ def load(
     if b0_file:
         b0img = nb.load(b0_file)
         retval.bzero = np.asanyarray(b0img.dataobj)
-    elif np.any(~gradmsk):
+    elif not np.all(gradmsk):
         retval.bzero = np.median(fulldata[..., ~gradmsk], axis=3)
 
     if brainmask_file:

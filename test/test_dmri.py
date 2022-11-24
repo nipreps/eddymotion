@@ -21,3 +21,41 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Unit tests exercising the dMRI data structure."""
+import pytest
+import numpy as np
+from eddymotion.dmri import load
+
+
+def test_load(datadir, tmp_path):
+    """Check that the registration parameters for b=0
+    gives a good estimate of known affine"""
+
+    dwi_h5 = load(datadir / "dwi.h5")
+    dwi_nifti_path = tmp_path / "dwi.nii.gz"
+    gradients_path = tmp_path / "dwi.tsv"
+    bvecs_path = tmp_path / "dwi.bvecs"
+    bvals_path = tmp_path / "dwi.bvals"
+
+    grad_table = np.vstack((np.zeros(4), dwi_h5.gradients))
+
+    dwiobj.to_nifti(dwi_nifti_path, insert_b0=True)
+    np.savetxt(str(gradients_path), grad_table.T)
+    np.savetxt(str(bvecs_path), grad_table[:3])
+    np.savetxt(str(bvals_path), grad_table[-1])
+
+    with pytest.raises(RuntimeError):
+        load(dwi_nifti_path)
+
+    # Try loading NIfTI + gradients table
+    dwi_from_nifti1 = load(dwi_nifti_path, gradients_file=gradients_path)
+
+    assert np.allclose(dwi_h5.dataobj, dwi_from_nifti1.dataobj)
+    assert np.allclose(dwi_h5.bzero, dwi_from_nifti1.bzero)
+    assert np.allclose(dwi_h5.gradients, dwi_from_nifti1.gradients)
+
+    # Try loading NIfTI + b-vecs/vals
+    dwi_from_nifti2 = load(dwi_nifti_path, bvec_file=bvecs_path, bval_file=bvals_path,)
+
+    assert np.allclose(dwi_h5.dataobj, dwi_from_nifti2.dataobj)
+    assert np.allclose(dwi_h5.bzero, dwi_from_nifti2.bzero)
+    assert np.allclose(dwi_h5.gradients, dwi_from_nifti2.gradients)

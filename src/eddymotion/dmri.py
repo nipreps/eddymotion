@@ -2,6 +2,7 @@
 from collections import namedtuple
 from pathlib import Path
 from tempfile import mkdtemp
+from warnings import warn
 
 import attr
 import h5py
@@ -164,11 +165,15 @@ class DWI:
                         compression_opts=compression_opts,
                     )
 
-    def to_nifti(self, filename):
+    def to_nifti(self, filename, insert_b0=False):
         """Write a NIfTI 1.0 file to disk."""
-        nii = nb.Nifti1Image(self.dataobj, self.affine, None,)
+        data = self.dataobj if not insert_b0 else np.stack((
+            self.bzero[..., np.newaxis], self.dataobj,
+        ))
+        nii = nb.Nifti1Image(data, self.affine, None)
         nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
+        return
 
     def plot_mosaic(self, index=None, **kwargs):
         """Visualize one direction of the dMRI dataset."""
@@ -215,6 +220,12 @@ def load(
 
     if gradients_file:
         grad = np.loadtxt(gradients_file, dtype="float32").T
+
+        if bvec_file and bval_file:
+            warn(
+                "Gradients table file and b-vec/val files are defined; "
+                "dismissing b-vec/val files."
+            )
     elif bvec_file and bval_file:
         grad = np.vstack(
             (

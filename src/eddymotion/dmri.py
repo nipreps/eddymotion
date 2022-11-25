@@ -2,6 +2,7 @@
 from collections import namedtuple
 from pathlib import Path
 from tempfile import mkdtemp
+from warnings import warn
 
 import attr
 import h5py
@@ -172,13 +173,12 @@ class DWI:
                         compression_opts=compression_opts,
                     )
 
-    def to_nifti(self, filename):
+    def to_nifti(self, filename, insert_b0=False):
         """Write a NIfTI 1.0 file to disk."""
-        nii = nb.Nifti1Image(
-            self.dataobj,
-            self.affine,
-            None,
-        )
+        data = self.dataobj if not insert_b0 else np.concatenate((
+            self.bzero[..., np.newaxis], self.dataobj
+        ), axis=-1)
+        nii = nb.Nifti1Image(data, self.affine, None)
         nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
 
@@ -211,35 +211,57 @@ class DWI:
 
 
 def load(
-    filename, gradients_file=None, b0_file=None, brainmask_file=None, fmap_file=None
+    filename,
+    gradients_file=None,
+    b0_file=None,
+    brainmask_file=None,
+    fmap_file=None,
+    bvec_file=None,
+    bval_file=None,
+    b0_thres=50,
 ):
     """Load DWI data."""
     filename = Path(filename)
     if filename.name.endswith(".h5"):
         return DWI.from_filename(filename)
 
-    if not gradients_file:
+    if gradients_file:
+        grad = np.loadtxt(gradients_file, dtype="float32").T
+
+        if bvec_file and bval_file:
+            warn(
+                "Gradients table file and b-vec/val files are defined; "
+                "dismissing b-vec/val files."
+            )
+    elif bvec_file and bval_file:
+        grad = np.vstack(
+            (
+                np.loadtxt(bvec_file, dtype="float32"),
+                np.loadtxt(bval_file, dtype="float32"),
+            )
+        )
+    else:
         raise RuntimeError("A gradients file is necessary")
 
-    img = nb.as_closest_canonical(nb.load(filename))
-    retval = DWI(
-        affine=img.affine,
-    )
-    grad = np.loadtxt(gradients_file, dtype="float32").T
-    gradmsk = grad[-1] > 50
+    img = nb.load(filename)
+    fulldata = img.get_fdata(dtype="float32")
+    retval = DWI(affine=img.affine,)
+    gradmsk = grad[-1] > b0_thres
     retval.gradients = grad[..., gradmsk]
-    retval.dataobj = img.get_fdata(dtype="float32")[..., gradmsk]
+    retval.dataobj = fulldata[..., gradmsk]
 
     if b0_file:
-        b0img = nb.as_closest_canonical(nb.load(b0_file))
+        b0img = nb.load(b0_file)
         retval.bzero = np.asanyarray(b0img.dataobj)
+    elif not np.all(gradmsk):
+        retval.bzero = np.median(fulldata[..., ~gradmsk], axis=3)
 
     if brainmask_file:
-        mask = nb.as_closest_canonical(nb.load(brainmask_file))
+        mask = nb.load(brainmask_file)
         retval.brainmask = np.asanyarray(mask.dataobj)
 
     if fmap_file:
-        fmapimg = nb.as_closest_canonical(nb.load(fmap_file))
+        fmapimg = nb.load(fmap_file)
         retval.fieldmap = fmapimg.get_fdata(fmapimg, dtype="float32")
 
     return retval

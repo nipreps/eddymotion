@@ -28,7 +28,6 @@
     [ 0.001 ]
   ],
   "transforms": [ "Rigid", "Affine" ],
-  "use_estimate_learning_rate_once": [ false, true ],
   "use_histogram_matching": [ true, true ],
   "verbose": true,
   "winsorize_lower_quantile": 0.0001,

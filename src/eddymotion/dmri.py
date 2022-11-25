@@ -167,13 +167,12 @@ class DWI:
 
     def to_nifti(self, filename, insert_b0=False):
         """Write a NIfTI 1.0 file to disk."""
-        data = self.dataobj if not insert_b0 else np.stack((
-            self.bzero[..., np.newaxis], self.dataobj,
-        ))
+        data = self.dataobj if not insert_b0 else np.concatenate((
+            self.bzero[..., np.newaxis], self.dataobj
+        ), axis=-1)
         nii = nb.Nifti1Image(data, self.affine, None)
         nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
-        return
 
     def plot_mosaic(self, index=None, **kwargs):
         """Visualize one direction of the dMRI dataset."""

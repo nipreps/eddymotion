@@ -36,9 +36,9 @@ def test_load(datadir, tmp_path):
     bvecs_path = tmp_path / "dwi.bvecs"
     bvals_path = tmp_path / "dwi.bvals"
 
-    grad_table = np.vstack((np.zeros(4), dwi_h5.gradients))
+    grad_table = np.hstack((np.zeros((4, 1)), dwi_h5.gradients))
 
-    dwiobj.to_nifti(dwi_nifti_path, insert_b0=True)
+    dwi_h5.to_nifti(dwi_nifti_path, insert_b0=True)
     np.savetxt(str(gradients_path), grad_table.T)
     np.savetxt(str(bvecs_path), grad_table[:3])
     np.savetxt(str(bvals_path), grad_table[-1])

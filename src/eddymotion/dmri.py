@@ -42,7 +42,10 @@ class DWI:
     """
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
-    _filepath = attr.ib(factory=lambda: Path(mkdtemp()) / "em_cache.h5", repr=False,)
+    _filepath = attr.ib(
+        factory=lambda: Path(mkdtemp()) / "em_cache.h5",
+        repr=False,
+    )
     """A path to an HDF5 file to store the whole dataset."""
 
     def __len__(self):
@@ -88,11 +91,15 @@ class DWI:
 
         if with_b0:
             train_data = np.concatenate(
-                (np.asanyarray(self.bzero)[..., np.newaxis], train_data), axis=-1,
+                (np.asanyarray(self.bzero)[..., np.newaxis], train_data),
+                axis=-1,
             )
             b0vec = np.zeros((4, 1))
             b0vec[0, 0] = 1
-            train_gradients = np.concatenate((b0vec, train_gradients), axis=-1,)
+            train_gradients = np.concatenate(
+                (b0vec, train_gradients),
+                axis=-1,
+            )
 
         return (
             (train_data, train_gradients),
@@ -125,7 +132,8 @@ class DWI:
 
         # resample and update orientation at index
         self.dataobj[..., index] = np.asanyarray(
-            xform.apply(dwmoving, order=order).dataobj, dtype=self.dataobj.dtype,
+            xform.apply(dwmoving, order=order).dataobj,
+            dtype=self.dataobj.dtype,
         )
 
         # invert transform transform b-vector and origin

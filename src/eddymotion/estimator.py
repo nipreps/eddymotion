@@ -82,32 +82,35 @@ class EddyMotionEstimator:
         for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
-            with tqdm(total=len(index_order), unit="dwi") as pbar:
-                for i in index_order:
+
+            # Factory creates the appropriate model and pipes arguments
+            dwmodel = ModelFactory.init(
+                gtab=dwdata.gradients,
+                model=model,
+                omp_nthreads=omp_nthreads,
+                **kwargs,
+            )
+
+            with TemporaryDirectory() as tmpdir:
+                print(f"Processing in <{tmpdir}>")
+                with tqdm(total=len(index_order), unit="dwi") as pbar:
                     # run a original-to-synthetic affine registration
-                    with TemporaryDirectory() as tmpdir:
-                        pbar.write(
-                            f"Pass {i_iter}/{n_iter} | Processing b-index <{i}> in <{tmpdir}>"
+                    for i in index_order:
+                        pbar.set_description_str(
+                            f"Pass {i_iter}/{n_iter} | Fit and predict b-index <{i}>"
                         )
                         data_train, data_test = dwdata.logo_split(i, with_b0=True)
 
-                        # Factory creates the appropriate model and pipes arguments
-                        dwmodel = ModelFactory.init(
-                            gtab=data_train[1],
-                            model=model,
-                            omp_nthreads=omp_nthreads,
-                            **kwargs,
-                        )
-
                         # fit the model
-                        dwmodel.fit(data_train[0])
+                        dwmodel.fit(data_train[0], gtab=data_train[1])
 
                         # generate a synthetic dw volume for the test gradient
                         predicted = dwmodel.predict(data_test[1])
 
+                        # prepare data for running ANTs
                         tmpdir = Path(tmpdir)
-                        moving = tmpdir / "moving.nii.gz"
-                        fixed = tmpdir / "fixed.nii.gz"
+                        moving = tmpdir / f"moving{i:05d}.nii.gz"
+                        fixed = tmpdir / f"fixed{i:05d}.nii.gz"
                         _to_nifti(data_test[0], dwdata.affine, moving)
                         _to_nifti(
                             predicted,
@@ -116,6 +119,9 @@ class EddyMotionEstimator:
                             clip=reg_target_type == "dwi",
                         )
 
+                        pbar.set_description_str(
+                            f"Pass {i_iter}/{n_iter} | Realign b-index <{i}>"
+                        )
                         registration = Registration(
                             terminal_output="file",
                             from_file=pkg_fn(
@@ -130,7 +136,7 @@ class EddyMotionEstimator:
                             registration.inputs.fixed_image_masks = ["NULL", bmask_img]
 
                         if dwdata.em_affines and dwdata.em_affines[i] is not None:
-                            mat_file = tmpdir / f"init{i_iter}.mat"
+                            mat_file = tmpdir / f"init_{i_iter}_{i:05d}.mat"
                             dwdata.em_affines[i].to_filename(mat_file, fmt="itk")
                             registration.inputs.initial_moving_transform = str(mat_file)
 
@@ -142,9 +148,9 @@ class EddyMotionEstimator:
                             result.forward_transforms[0]
                         ).to_ras(reference=fixed, moving=moving)
 
-                    # update
-                    dwdata.set_transform(i, xform)
-                    pbar.update()
+                        # update
+                        dwdata.set_transform(i, xform)
+                        pbar.update()
 
         return dwdata.em_affines
 
@@ -194,8 +200,11 @@ def _to_nifti(data, affine, filename, clip=True):
     data = np.squeeze(data)
     if clip:
         data = _advanced_clip(data)
-    nb.Nifti1Image(
+    nii = nb.Nifti1Image(
         data,
         affine,
         None,
-    ).to_filename(filename)
+    )
+    nii.header.set_sform(affine, code=1)
+    nii.header.set_qform(affine, code=1)
+    nii.to_filename(filename)

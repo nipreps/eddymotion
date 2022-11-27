@@ -252,15 +252,23 @@ class TrivialDKIModel:
             )
         }
 
+        if b_max and b_max > 1000:
+            # Saturate b-values at b_max, since signal stops dropping
+            gtab[-1, gtab[-1] > b_max] = b_max
+            # A possibly good alternative is completely remove very high b-values
+            # bval_mask = gtab[-1] < b_max
+            # data = data[..., bval_mask]
+            # gtab = gtab[:, bval_mask]
+
         self._model = DiffusionKurtosisModel(_rasb2dipy(gtab), **kwargs)
         self._model = self._model.fit(data[self._mask, ...])
-
 
     def fit(self, *args, **kwargs):
         """Do nothing."""
 
     def predict(self, gradient, step=None, **kwargs):
         """Propagate model parameters and call predict."""
+
         predicted = np.squeeze(
             self._model.predict(
                 _rasb2dipy(gradient),

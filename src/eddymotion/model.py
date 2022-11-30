@@ -166,9 +166,9 @@ class BaseModel:
                     chunk_idx = model_futures[future]
                     predicted[chunk_idx] = future.result()
 
-            predicted = np.vstack(predicted)
+            predicted = np.hstack(predicted)
 
-        if self._mask:
+        if self._mask is not None:
             retval = np.zeros_like(self._mask, dtype="float32")
             retval[self._mask, ...] = predicted
         else:

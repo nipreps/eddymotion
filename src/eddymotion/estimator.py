@@ -5,13 +5,14 @@ from tempfile import TemporaryDirectory, mkstemp
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
+from nipype.interfaces.ants.registration import Registration
+from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
 from eddymotion.model import ModelFactory
-import ants
-import ants.utils.process_args as ants_utils
-import json
-from eddymotion.utils import antsimage_from_path
+
+import pickle
+import sys
 
 
 class EddyMotionEstimator:
@@ -30,7 +31,6 @@ class EddyMotionEstimator:
     ):
         r"""
         Estimate head-motion and Eddy currents.
-
         Parameters
         ----------
         dwdata : :obj:`~eddymotion.dmri.DWI`
@@ -50,13 +50,11 @@ class EddyMotionEstimator:
         seed : :obj:`int` or :obj:`bool`
             Seed the random number generator (necessary when we want deterministic
             estimation).
-
         Return
         ------
         affines : :obj:`list` of :obj:`numpy.ndarray`
             A list of :math:`4 \times 4` affine matrices encoding the estimated
             parameters of the deformations caused by head-motion and eddy-currents.
-
         """
         align_kwargs = align_kwargs or {}
         reg_target_type = (
@@ -81,17 +79,21 @@ class EddyMotionEstimator:
         if "n_threads" in kwargs:
             align_kwargs["num_threads"] = kwargs["n_threads"]
 
-        for i_iter in range(1, n_iter + 1):
-            index_order = np.arange(len(dwdata))
-            np.random.shuffle(index_order)
-            with tqdm(total=len(index_order), unit="dwi") as pbar:
-                for i in index_order:
+        with TemporaryDirectory() as tmpdir:
+            for i_iter in range(1, n_iter + 1):
+                index_order = np.arange(len(dwdata))
+                np.random.shuffle(index_order)
+                with tqdm(total=len(index_order), unit="dwi") as pbar:
+                    for ind, i in enumerate(index_order): # 4) Parallelize with joblib
                     # run a original-to-synthetic affine registration
-                    with TemporaryDirectory() as tmpdir:
+                    #with TemporaryDirectory() as tmpdir:
                         pbar.write(
                             f"Pass {i_iter}/{n_iter} | Processing b-index <{i}> in <{tmpdir}>"
                         )
-                        data_train, data_test = dwdata.logo_split(i, with_b0=True)
+                        if ind < 3:
+                            with open(f'dwdata6/dwdata_{ind}_{i}.pickle', 'wb') as f:
+                                pickle.dump(dwdata, f)
+                        data_train, data_test = dwdata.logo_split(i, with_b0=True) # 3) Call as logo_split(dwdata), look at API for splitters for scikit learn
 
                         # Factory creates the appropriate model and pipes arguments
                         dwmodel = ModelFactory.init(
@@ -107,41 +109,47 @@ class EddyMotionEstimator:
                         # generate a synthetic dw volume for the test gradient
                         predicted = dwmodel.predict(data_test[1])
 
-                        moving_nii = nb.Nifti1Image(data_test[0], dwdata.affine)
-                        moving_ants = ants.from_nibabel(moving_nii)
+                        tmpdir = Path(tmpdir)
+                        moving = tmpdir / "moving.nii.gz"
+                        fixed = tmpdir / "fixed.nii.gz"
+                        _to_nifti(data_test[0], dwdata.affine, moving)
+                        _to_nifti(
+                            predicted,
+                            dwdata.affine,
+                            fixed,
+                            clip=reg_target_type == "dwi",
+                        )
 
-                        fixed_nii = nb.Nifti1Image(predicted, dwdata.affine)
-                        fixed_ants = ants.from_nibabel(fixed_nii)
-
-                        #registration_kwargs = json.loads('config/dwi-to-dwi_level1.json')
-                        #registration_kwargs['moving'] = moving_ants
-                        #registration_kwargs['fixed'] = fixed_ants
-                        registration_kwargs = dict(fixed=fixed_ants, moving=moving_ants)
-
+                        registration = Registration(
+                            terminal_output="file",
+                            from_file=pkg_fn(
+                                "eddymotion",
+                                f"config/dwi-to-{reg_target_type}_level{i_iter}.json",
+                            ),
+                            fixed_image=str(fixed.absolute()),
+                            moving_image=str(moving.absolute()),
+                            **align_kwargs,
+                        )
                         if bmask_img:
-                            registration_kwargs['mask'] = bmask_img
+                            registration.inputs.fixed_image_masks = ["NULL", bmask_img]
 
                         if dwdata.em_affines and dwdata.em_affines[i] is not None:
                             mat_file = tmpdir / f"init{i_iter}.mat"
                             dwdata.em_affines[i].to_filename(mat_file, fmt="itk")
-                            registration_kwargs['initial_transform'] = str(mat_file)
+                            registration.inputs.initial_moving_transform = str(mat_file)
 
-                        for key in registration_kwargs:
-                            registration_kwargs[key] = antsimage_from_path(registration_kwargs[key])
+                        # execute ants command line
+                        result = registration.run(cwd=str(tmpdir)).outputs
 
-                        #registration_kwargs = ants_utils._int_antsProcessArguments(registration_kwargs)
-                        registration_ants = ants.registration(**registration_kwargs)
-                        
-                        #processed_args = utils._int_antsProcessArguments(args)
-                        #libfn = utils.get_lib_fn("antsRegistration")
+                        # read output transform
+                        xform = nt.io.itk.ITKLinearTransform.from_filename(
+                            result.forward_transforms[0]
+                        ).to_ras(reference=fixed, moving=moving)
+                        # (end context manager)
 
-                        xform_ants = nt.io.itk.ITKLinearTransform.from_filename(
-                            registration_ants['fwdtransforms'][1]
-                        ).to_ras(reference=fixed_nii, moving=moving_nii)
-
-                    # update
-                    dwdata.set_transform(i, xform_ants)
-                    pbar.update()
+                        # update
+                        dwdata.set_transform(i, xform)
+                        pbar.update()
 
         return dwdata.em_affines
 
@@ -151,17 +159,14 @@ def _advanced_clip(
 ):
     """
     Remove outliers at both ends of the intensity distribution and fit into a given dtype.
-
     This interface tries to emulate ANTs workflows' massaging that truncate images into
     the 0-255 range, and applies percentiles for clipping images.
     For image registration, normalizing the intensity into a compact range (e.g., uint8)
     is generally advised.
-
     To more robustly determine the clipping thresholds, spikes are removed from data with
     a median filter.
     Once the thresholds are calculated, the denoised data are thrown away and the thresholds
     are applied on the original image.
-
     """
     import numpy as np
     from scipy import ndimage

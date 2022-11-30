@@ -9,6 +9,8 @@ import nibabel as nb
 import numpy as np
 from nitransforms.linear import Affine
 
+import sys
+
 
 def _data_repr(value):
     if value is None:
@@ -75,7 +77,7 @@ class DWI:
         if not Path(self._filepath).exists():
             self.to_filename(self._filepath)
 
-        # read original DWI data & b-vector
+        # read original DWI data & b-vector - 2) Move this so it is not called on every iteration
         with h5py.File(self._filepath, "r") as in_file:
             root = in_file["/0"]
             dwframe = np.asanyarray(root["dataobj"][..., index])

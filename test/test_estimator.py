@@ -27,10 +27,9 @@ import numpy as np
 import pytest
 from nibabel.affines import from_matvec
 from nibabel.eulerangles import euler2mat
-from nipype.interfaces.ants.registration import Registration
-from pkg_resources import resource_filename as pkg_fn
 
 from eddymotion.dmri import DWI
+import ants
 
 
 @pytest.mark.parametrize("r_x", [0.0, 0.1, 0.3])
@@ -55,19 +54,15 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
 
     (~xfm).apply(b0nii, reference=b0nii).to_filename(moving)
 
-    registration = Registration(
-        terminal_output="file",
-        from_file=pkg_fn(
-            "eddymotion",
-            "config/dwi-to-b0_level1.json",
-        ),
-        fixed_image=str(fixed.absolute()),
-        moving_image=str(moving.absolute()),
-    )
-    result = registration.run(cwd=str(tmp_path)).outputs
+    moving_ants = ants.from_nibabel(nb.load(moving))
+    fixed_ants = ants.from_nibabel(nb.load(fixed))
+
+    registration_kwargs = dict(fixed=fixed_ants, moving=moving_ants)
+    registration_ants = ants.registration(**registration_kwargs)
+
     xform = nt.linear.Affine(
         nt.io.itk.ITKLinearTransform.from_filename(
-            result.forward_transforms[0]
+            registration_ants['fwdtransforms'][1]
         ).to_ras(),
         reference=b0nii,
     )

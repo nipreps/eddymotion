@@ -82,7 +82,7 @@ class _AsyncFitPredict:
         # Split data into chunks of group of slices
         data_chunks = np.array_split(data, _nthreads)
 
-        # Run asyncio tasks in a limited thread pool
+        # Run asyncio tasks in a limited thread pool - 1) Replace with joblib
         with ThreadPoolExecutor(max_workers=_nthreads) as executor:
             loop = asyncio.new_event_loop()
 

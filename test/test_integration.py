@@ -69,7 +69,7 @@ def test_proximity_estimator_trivial_model(datadir, tmp_path):
 
     # Uncomment to see the moved dataset
     # moved_nii.to_filename(tmp_path / "test.nii.gz")
-    # xfms.apply(moved_nii).to_filename(tmp_path / "ground_truth.nii.gz")
+    # xfms.apply(moved_nii).to_filename(tmp_path / "ground_truth.nii.gz")s
 
     # Wrap into dataset object
     dwi_motion = DWI(

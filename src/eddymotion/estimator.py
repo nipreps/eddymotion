@@ -34,6 +34,7 @@ from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
 from eddymotion.model import ModelFactory
+from eddymotion.dmri import logo_split
 
 
 class EddyMotionEstimator:
@@ -150,7 +151,7 @@ class EddyMotionEstimator:
                         pbar.set_description_str(
                             f"Pass {i_iter + 1}/{n_iter} | Fit and predict b-index <{i}>"
                         )
-                        data_train, data_test = dwdata.logo_split(i, with_b0=True)
+                        data_train, data_test = logo_split(dwdata, i, with_b0=True)
                         grad_str = f"{i}, {data_test[1][:3]}, b={int(data_test[1][3])}"
                         pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
 

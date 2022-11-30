@@ -39,7 +39,7 @@ def _data_repr(value):
     return f"<{'x'.join(str(v) for v in value.shape)} ({value.dtype})>"
 
 
-def logo_split(dwdata, dwframe, bframe, index, with_b0=False):
+def logo_split(dwdata, index, with_b0=False):
     """
     Produce one fold of LOGO (leave-one-gradient-out).
 
@@ -62,6 +62,14 @@ def logo_split(dwdata, dwframe, bframe, index, with_b0=False):
         The test data/gradient come **from the original dataset**.
 
     """
+    if not Path(dwdata._filepath).exists():
+        dwdata.to_filename(dwdata._filepath)
+
+    # read original DWI data & b-vector
+    with h5py.File(dwdata._filepath, "r") as in_file:
+        root = in_file["/0"]
+        dwframe = np.asanyarray(root["dataobj"][..., index])
+        bframe = np.asanyarray(root["gradients"][..., index])
 
     # if the size of the mask does not match data, cache is stale
     mask = np.zeros(len(dwdata), dtype=bool)
@@ -123,16 +131,7 @@ class DWI:
         """Obtain the number of high-*b* orientations."""
         return self.dataobj.shape[-1]
 
-    def set_data(self):
-        # Generate dwframe and bframe
-        if not Path(self._filepath).exists():
-            self.to_filename(self._filepath)
-
-        # read original DWI data & b-vector
-        with h5py.File(self._filepath, "r") as in_file:
-            self._root = in_file["/0"]
-
-    def set_transform(self, dwframe, bvec, index, affine, order=3):
+    def set_transform(self, index, affine, order=3):
         """Set an affine, and update data object and gradients."""
         reference = namedtuple("ImageGrid", ("shape", "affine"))(
             shape=self.dataobj.shape[:3], affine=self.affine
@@ -144,6 +143,15 @@ class DWI:
             raise NotImplementedError
         else:
             xform = Affine(matrix=affine, reference=reference)
+
+        if not Path(self._filepath).exists():
+            self.to_filename(self._filepath)
+
+        # read original DWI data & b-vector
+        with h5py.File(self._filepath, "r") as in_file:
+            root = in_file["/0"]
+            dwframe = np.asanyarray(root["dataobj"][..., index])
+            bvec = np.asanyarray(root["gradients"][:3, index])
 
         dwmoving = nb.Nifti1Image(dwframe, self.affine, None)
 

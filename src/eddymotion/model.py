@@ -1,143 +1,20 @@
 """A factory class that adapts DIPY's dMRI models."""
-import asyncio
 import warnings
-from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from os import cpu_count
 
-import nest_asyncio
 import numpy as np
 from dipy.core.gradients import check_multi_b, gradient_table
 
-nest_asyncio.apply()
+
+def _exec_fit(model, data):
+    return model.fit(data)
 
 
-def get_run_cls(init_cls, omp_nthreads=None):
-    omp_nthreads = omp_nthreads or cpu_count()
-    if omp_nthreads > 1:
-        init_cls._model = [init_cls._model] * omp_nthreads
-        return _AsyncFitPredict(init_cls)
-    return _SerialFitPredict(init_cls)
-
-
-class _SerialFitPredict:
-    """Base fit and predict methods for all models in eddymotion."""
-
-    __slots__ = (
-        "_model",
-        "_mask",
-        "_S0",
-    )
-
-    def __init__(self, init_cls):
-        self._model = init_cls._model
-        self._mask = init_cls._mask
-        self._S0 = init_cls._S0
-
-    def fit(self, data, **kwargs):
-        """Clean-up permitted args and kwargs, and call model's fit."""
-        self._model = self._model.fit(data[self._mask, ...])
-
-    def predict(self, gradient, step=None, **kwargs):
-        """Propagate model parameters and call predict."""
-        predicted = np.squeeze(
-            self._model.predict(
-                _rasb2dipy(gradient),
-                S0=self._S0,
-            )
-        )
-        if predicted.ndim == 3:
-            return predicted
-
-        retval = np.zeros_like(self._mask, dtype="float32")
-        retval[self._mask, ...] = predicted
-        return retval
-
-
-class _AsyncFitPredict:
-    """Parallel Asynchronous fit and predict methods for all models in
-    eddymotion."""
-
-    __slots__ = (
-        "_model",
-        "_mask",
-        "_S0",
-    )
-
-    def __init__(self, init_cls):
-        self._model = init_cls._model
-        self._mask = init_cls._mask
-        self._S0 = init_cls._S0
-
-    def fit(self, data, **kwargs):
-        """Fit the model chunk-by-chunk asynchronously"""
-        _nthreads = len(self._model)
-
-        # All-true mask if not available
-        if self._mask is None:
-            self._mask = np.ones(data.shape[:3], dtype=bool)
-
-        # Apply mask (ensures data is now 2D)
-        data = data[self._mask, ...]
-
-        # Split data into chunks of group of slices
-        data_chunks = np.array_split(data, _nthreads)
-
-        # Run asyncio tasks in a limited thread pool
-        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
-            loop = asyncio.new_event_loop()
-
-            fit_tasks = [
-                loop.run_in_executor(
-                    executor,
-                    _model_fit,
-                    model,
-                    data,
-                )
-                for model, data in zip(self._model, data_chunks)
-            ]
-
-            try:
-                self._model = loop.run_until_complete(asyncio.gather(*fit_tasks))
-            finally:
-                loop.close()
-
-    @staticmethod
-    def _predict_sub(submodel, gradient, S0_chunk, step):
-        """Call predict for chunk and return the predicted diffusion signal."""
-        return submodel.predict(gradient, S0=S0_chunk, step=step)
-
-    def predict(self, gradient, step=None, **kwargs):
-        """Predict asynchronously chunk-by-chunk the diffusion signal."""
-        _nthreads = len(self._model)
-        S0 = [None] * _nthreads
-        if self._S0 is not None:
-            S0 = np.array_split(self._S0, _nthreads)
-
-        # Run asyncio tasks in a limited thread pool
-        with ThreadPoolExecutor(max_workers=_nthreads) as executor:
-            loop = asyncio.new_event_loop()
-
-            predict_tasks = [
-                loop.run_in_executor(
-                    executor,
-                    self._predict_sub,
-                    model,
-                    _rasb2dipy(gradient),
-                    S0_chunk,
-                    step,
-                )
-                for model, S0_chunk in zip(self._model, S0)
-            ]
-
-            try:
-                predicted = loop.run_until_complete(asyncio.gather(*predict_tasks))
-            finally:
-                loop.close()
-
-        predicted = np.squeeze(np.concatenate(predicted, axis=0))
-        retval = np.zeros_like(self._mask, dtype="float32")
-        retval[self._mask] = predicted
-        return retval
+def _exec_predict(model, gradient, **kwargs):
+    """Propagate model parameters and call predict."""
+    return np.squeeze(model.predict(gradient, S0=kwargs.pop("S0", None)))
 
 
 class ModelFactory:
@@ -204,9 +81,100 @@ class ModelFactory:
         else:
             raise NotImplementedError(f"Unsupported model <{model}>.")
 
-        omp_nthreads = kwargs.pop("omp_nthreads", None)
         param.update(kwargs)
-        return get_run_cls(Model(gtab, **param), omp_nthreads)
+        return Model(gtab, **param)
+
+
+class BaseModel:
+    """
+    Defines the interface and default methods.
+
+    """
+
+    __slots__ = (
+        "_model",
+        "_mask",
+        "_S0",
+        "_models",
+        "_datashape",
+    )
+
+    def __init__(self):
+        self._model = None
+        self._mask = None
+        self._S0 = None
+        self._models = None
+
+    def fit(self, data, omp_nthreads=None, **kwargs):
+        """Fit the model chunk-by-chunk asynchronously"""
+        omp_nthreads = (
+            omp_nthreads if omp_nthreads and omp_nthreads > 0 else cpu_count()
+        )
+
+        self._datashape = data.shape
+
+        # Select voxels within mask or just unravel 3D if no mask
+        data = (
+            data[self._mask, ...]
+            if self._mask is not None
+            else data.reshape(-1, data.shape[-1])
+        )
+
+        # One single CPU - linear execution (full model)
+        if omp_nthreads == 1:
+            self._model, _ = _exec_fit(data)
+            return
+
+        # Split data into chunks of group of slices
+        data_chunks = np.array_split(data, omp_nthreads)
+
+        self._models = [None] * omp_nthreads
+        # Run asyncio tasks in a limited thread pool
+        with ThreadPoolExecutor(max_workers=omp_nthreads) as executor:
+            model_futures = {
+                executor.submit(_exec_fit, deepcopy(self._model), dblock): i
+                for i, dblock in enumerate(data_chunks)
+            }
+            for future in as_completed(model_futures):
+                chunk_idx = model_futures[future]
+                self._models[chunk_idx] = future.result()
+
+        self._model = None  # Preempt further actions on the model
+
+    def predict(self, gradient, **kwargs):
+        """Predict asynchronously chunk-by-chunk the diffusion signal."""
+        gradient = _rasb2dipy(gradient)
+
+        omp_nthreads = len(self._models) if self._model is None and self._models else 1
+
+        if omp_nthreads == 1:
+            predicted = _exec_predict(self._model, gradient, S0=self._S0, **kwargs)
+        else:
+            S0 = [None] * omp_nthreads
+            if S0 is not None:
+                S0 = np.array_split(self._S0, omp_nthreads)
+
+            predicted = [None] * omp_nthreads
+            with ThreadPoolExecutor(max_workers=omp_nthreads) as executor:
+                model_futures = {
+                    executor.submit(
+                        _exec_predict, model, gradient, S0=S0[i], **kwargs
+                    ): i
+                    for i, model in enumerate(self._models)
+                }
+                for future in as_completed(model_futures):
+                    chunk_idx = model_futures[future]
+                    predicted[chunk_idx] = future.result()
+
+            predicted = np.hstack(predicted)
+
+        if self._mask is not None:
+            retval = np.zeros_like(self._mask, dtype="float32")
+            retval[self._mask, ...] = predicted
+        else:
+            retval = predicted.reshape(self._datashape[:-1])
+
+        return retval
 
 
 class TrivialB0Model:
@@ -274,9 +242,10 @@ class AverageDWModel:
         gtab = kwargs.pop("gtab", None)
         # Select the interval of b-values for which DWIs will be averaged
         b_mask = (
-            (gtab[3] >= self._th_low)
-            & (gtab[3] <= self._th_high)
-        ) if gtab is not None else np.ones((data.shape[-1], ), dtype=bool)
+            ((gtab[3] >= self._th_low) & (gtab[3] <= self._th_high))
+            if gtab is not None
+            else np.ones((data.shape[-1],), dtype=bool)
+        )
         shells = data[..., b_mask]
 
         # Regress out global signal differences
@@ -297,23 +266,19 @@ class AverageDWModel:
         return self._data
 
 
-class DTIModel:
+class DTIModel(BaseModel):
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel`."""
-
-    __slots__ = ("_model", "_S0", "_mask")
 
     def __init__(self, gtab, S0=None, mask=None, **kwargs):
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dti import TensorModel as DipyTensorModel
 
+        super().__init__()
+
         self._S0 = None
 
         if S0 is not None:
-            self._S0 = np.clip(
-                S0.astype("float32") / S0.max(),
-                a_min=1e-5,
-                a_max=1.0,
-            )
+            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
 
         self._mask = mask > 0 if mask is not None else None
         if self._mask is None and self._S0 is not None:
@@ -339,22 +304,18 @@ class DTIModel:
         self._model = DipyTensorModel(gtab, **kwargs)
 
 
-class DKIModel:
+class DKIModel(BaseModel):
     """A wrapper of :obj:`dipy.reconst.dki.DiffusionKurtosisModel`."""
-
-    __slots__ = ("_model", "_S0", "_mask")
 
     def __init__(self, gtab, S0=None, mask=None, **kwargs):
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dki import DiffusionKurtosisModel
 
+        super().__init__()
+
         self._S0 = None
         if S0 is not None:
-            self._S0 = np.clip(
-                S0.astype("float32") / S0.max(),
-                a_min=1e-5,
-                a_max=1.0,
-            )
+            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
         self._mask = mask
         if mask is None and S0 is not None:
             self._mask = self._S0 > np.percentile(self._S0, 35)
@@ -379,24 +340,22 @@ class DKIModel:
         self._model = DiffusionKurtosisModel(gtab, **kwargs)
 
 
-class SparseFascicleModel:
+class SparseFascicleModel(BaseModel):
     """
     A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel`.
     """
 
-    __slots__ = ("_model", "_parallel", "_S0", "_mask", "_solver")
+    __slots__ = ("_solver", )
 
     def __init__(self, gtab, S0=None, mask=None, solver=None, **kwargs):
         """Instantiate the wrapped model."""
         from dipy.reconst.sfm import SparseFascicleModel
 
+        super().__init__()
+
         self._S0 = None
         if S0 is not None:
-            self._S0 = np.clip(
-                S0.astype("float32") / S0.max(),
-                a_min=1e-5,
-                a_max=1.0,
-            )
+            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
 
         self._mask = mask
         if mask is None and S0 is not None:

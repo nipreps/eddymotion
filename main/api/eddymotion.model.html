@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.viz module" href="eddymotion.viz.html" /><link rel="prev" title="eddymotion.estimator module" href="eddymotion.estimator.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.model module - eddymotion 0.1.7.dev28+gb171b46 documentation</title>
+        <title>eddymotion.model module - eddymotion 0.1.7.dev31+gaafc1a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 0.1.7.dev28+gb171b46 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 0.1.7.dev31+gaafc1a0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev28 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev31 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev28 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev31 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -220,15 +220,31 @@
 </dd></dl>
 </dd></dl>
 <dl class="py class">
+<dt class="sig sig-object py" id="eddymotion.model.BaseModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.</span></span><span class="sig-name descname"><span class="pre">BaseModel</span></span><a class="reference internal" href="../_modules/eddymotion/model.html#BaseModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.BaseModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Defines the interface and default methods.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.BaseModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omp_nthreads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model.html#BaseModel.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.BaseModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the model chunk-by-chunk asynchronously</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.BaseModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradient</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model.html#BaseModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.BaseModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict asynchronously chunk-by-chunk the diffusion signal.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
 <dt class="sig sig-object py" id="eddymotion.model.DKIModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.</span></span><span class="sig-name descname"><span class="pre">DKIModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model.html#DKIModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.DKIModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#eddymotion.model.BaseModel" title="eddymotion.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">eddymotion.model.BaseModel</span></code></a></p>
 <p>A wrapper of <a class="reference external" href="https://dipy.org/documentation/1.5.0/objects.inv/reference/dipy.reconst/#dipy.reconst.dki.DiffusionKurtosisModel" title="(in dipy v1.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dipy.reconst.dki.DiffusionKurtosisModel</span></code></a>.</p>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="eddymotion.model.DTIModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.</span></span><span class="sig-name descname"><span class="pre">DTIModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model.html#DTIModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.DTIModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#eddymotion.model.BaseModel" title="eddymotion.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">eddymotion.model.BaseModel</span></code></a></p>
 <p>A wrapper of <a class="reference external" href="https://dipy.org/documentation/1.5.0/objects.inv/reference/dipy.reconst/#dipy.reconst.dti.TensorModel" title="(in dipy v1.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dipy.reconst.dti.TensorModel</span></code></a>.</p>
 </dd></dl>
 <dl class="py class">
@@ -261,7 +277,7 @@ Options: <code class="docutils literal notranslate"><span class="pre">"3DShore"<
 <dl class="py class">
 <dt class="sig sig-object py" id="eddymotion.model.SparseFascicleModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.</span></span><span class="sig-name descname"><span class="pre">SparseFascicleModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model.html#SparseFascicleModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.SparseFascicleModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#eddymotion.model.BaseModel" title="eddymotion.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">eddymotion.model.BaseModel</span></code></a></p>
 <p>A wrapper of <a class="reference external" href="https://dipy.org/documentation/1.5.0/objects.inv/reference/dipy.reconst/#dipy.reconst.sfm.SparseFascicleModel" title="(in dipy v1.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dipy.reconst.sfm.SparseFascicleModel</span></code></a>.</p>
 </dd></dl>
 <dl class="py class">
@@ -284,10 +300,6 @@ and to read (see <a class="reference external" href="https://www.youtube.com/wat
 <dd><p>Return the <em>b=0</em> map.</p>
 </dd></dl>
 </dd></dl>
-<dl class="py function">
-<dt class="sig sig-object py" id="eddymotion.model.get_run_cls">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.</span></span><span class="sig-name descname"><span class="pre">get_run_cls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omp_nthreads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model.html#get_run_cls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.get_run_cls" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 </section>
 
         </article>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.model - eddymotion 0.1.7.dev28+gb171b46 documentation</title>
+        <title>eddymotion.model - eddymotion 0.1.7.dev31+gaafc1a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev28+gb171b46 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev31+gaafc1a0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev28 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev31 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev28 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev31 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -201,145 +201,22 @@
         <article role="main">
           <h1>Source code for eddymotion.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""A factory class that adapts DIPY's dMRI models."""</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="k">import</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="k">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">cpu_count</span>
 
-<span class="kn">import</span> <span class="nn">nest_asyncio</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">dipy.core.gradients</span> <span class="k">import</span> <span class="n">check_multi_b</span><span class="p">,</span> <span class="n">gradient_table</span>
 
-<span class="n">nest_asyncio</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">_exec_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_run_cls"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.get_run_cls">[docs]</a><span class="k">def</span> <span class="nf">get_run_cls</span><span class="p">(</span><span class="n">init_cls</span><span class="p">,</span> <span class="n">omp_nthreads</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">omp_nthreads</span> <span class="o">=</span> <span class="n">omp_nthreads</span> <span class="ow">or</span> <span class="n">cpu_count</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">omp_nthreads</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">init_cls</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="p">[</span><span class="n">init_cls</span><span class="o">.</span><span class="n">_model</span><span class="p">]</span> <span class="o">*</span> <span class="n">omp_nthreads</span>
-        <span class="k">return</span> <span class="n">_AsyncFitPredict</span><span class="p">(</span><span class="n">init_cls</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_SerialFitPredict</span><span class="p">(</span><span class="n">init_cls</span><span class="p">)</span></div>
-
-
-<span class="k">class</span> <span class="nc">_SerialFitPredict</span><span class="p">:</span>
-    <span class="sd">"""Base fit and predict methods for all models in eddymotion."""</span>
-
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"_model"</span><span class="p">,</span>
-        <span class="s2">"_mask"</span><span class="p">,</span>
-        <span class="s2">"_S0"</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cls</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_mask</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_S0</span>
-
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Clean-up permitted args and kwargs, and call model's fit."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
-
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Propagate model parameters and call predict."""</span>
-        <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
-                <span class="n">_rasb2dipy</span><span class="p">(</span><span class="n">gradient</span><span class="p">),</span>
-                <span class="n">S0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_S0</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">predicted</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">predicted</span>
-
-        <span class="n">retval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
-        <span class="n">retval</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">predicted</span>
-        <span class="k">return</span> <span class="n">retval</span>
-
-
-<span class="k">class</span> <span class="nc">_AsyncFitPredict</span><span class="p">:</span>
-    <span class="sd">"""Parallel Asynchronous fit and predict methods for all models in</span>
-<span class="sd">    eddymotion."""</span>
-
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"_model"</span><span class="p">,</span>
-        <span class="s2">"_mask"</span><span class="p">,</span>
-        <span class="s2">"_S0"</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cls</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_mask</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">init_cls</span><span class="o">.</span><span class="n">_S0</span>
-
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Fit the model chunk-by-chunk asynchronously"""</span>
-        <span class="n">_nthreads</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
-
-        <span class="c1"># All-true mask if not available</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-
-        <span class="c1"># Apply mask (ensures data is now 2D)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-
-        <span class="c1"># Split data into chunks of group of slices</span>
-        <span class="n">data_chunks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_nthreads</span><span class="p">)</span>
-
-        <span class="c1"># Run asyncio tasks in a limited thread pool</span>
-        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">_nthreads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-
-            <span class="n">fit_tasks</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
-                    <span class="n">executor</span><span class="p">,</span>
-                    <span class="n">_model_fit</span><span class="p">,</span>
-                    <span class="n">model</span><span class="p">,</span>
-                    <span class="n">data</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">data_chunks</span><span class="p">)</span>
-            <span class="p">]</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">fit_tasks</span><span class="p">))</span>
-            <span class="k">finally</span><span class="p">:</span>
-                <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_predict_sub</span><span class="p">(</span><span class="n">submodel</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">S0_chunk</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-        <span class="sd">"""Call predict for chunk and return the predicted diffusion signal."""</span>
-        <span class="k">return</span> <span class="n">submodel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="n">S0_chunk</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Predict asynchronously chunk-by-chunk the diffusion signal."""</span>
-        <span class="n">_nthreads</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
-        <span class="n">S0</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">_nthreads</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_S0</span><span class="p">,</span> <span class="n">_nthreads</span><span class="p">)</span>
-
-        <span class="c1"># Run asyncio tasks in a limited thread pool</span>
-        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">_nthreads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-
-            <span class="n">predict_tasks</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
-                    <span class="n">executor</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_predict_sub</span><span class="p">,</span>
-                    <span class="n">model</span><span class="p">,</span>
-                    <span class="n">_rasb2dipy</span><span class="p">(</span><span class="n">gradient</span><span class="p">),</span>
-                    <span class="n">S0_chunk</span><span class="p">,</span>
-                    <span class="n">step</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">S0_chunk</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">S0</span><span class="p">)</span>
-            <span class="p">]</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">predicted</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">predict_tasks</span><span class="p">))</span>
-            <span class="k">finally</span><span class="p">:</span>
-                <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-        <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">predicted</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
-        <span class="n">retval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
-        <span class="n">retval</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">predicted</span>
-        <span class="k">return</span> <span class="n">retval</span>
+<span class="k">def</span> <span class="nf">_exec_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">"""Propagate model parameters and call predict."""</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"S0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)))</span>
 
 
 <div class="viewcode-block" id="ModelFactory"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.ModelFactory">[docs]</a><span class="k">class</span> <span class="nc">ModelFactory</span><span class="p">:</span>
@@ -406,9 +283,100 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">f</span><span class="s2">"Unsupported model &lt;</span><span class="si">{model}</span><span class="s2">&gt;."</span><span class="p">)</span>
 
-        <span class="n">omp_nthreads</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"omp_nthreads"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">get_run_cls</span><span class="p">(</span><span class="n">Model</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">),</span> <span class="n">omp_nthreads</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BaseModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.BaseModel">[docs]</a><span class="k">class</span> <span class="nc">BaseModel</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Defines the interface and default methods.</span>
+
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"_model"</span><span class="p">,</span>
+        <span class="s2">"_mask"</span><span class="p">,</span>
+        <span class="s2">"_S0"</span><span class="p">,</span>
+        <span class="s2">"_models"</span><span class="p">,</span>
+        <span class="s2">"_datashape"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BaseModel.fit"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.BaseModel.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">omp_nthreads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Fit the model chunk-by-chunk asynchronously"""</span>
+        <span class="n">omp_nthreads</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">omp_nthreads</span> <span class="k">if</span> <span class="n">omp_nthreads</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">cpu_count</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datashape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Select voxels within mask or just unravel 3D if no mask</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>
+
+        <span class="c1"># One single CPU - linear execution (full model)</span>
+        <span class="k">if</span> <span class="n">omp_nthreads</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_exec_fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Split data into chunks of group of slices</span>
+        <span class="n">data_chunks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">omp_nthreads</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">omp_nthreads</span>
+        <span class="c1"># Run asyncio tasks in a limited thread pool</span>
+        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">omp_nthreads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">model_futures</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_exec_fit</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">),</span> <span class="n">dblock</span><span class="p">):</span> <span class="n">i</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dblock</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_chunks</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">model_futures</span><span class="p">):</span>
+                <span class="n">chunk_idx</span> <span class="o">=</span> <span class="n">model_futures</span><span class="p">[</span><span class="n">future</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">[</span><span class="n">chunk_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Preempt further actions on the model</span></div>
+
+<div class="viewcode-block" id="BaseModel.predict"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.BaseModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Predict asynchronously chunk-by-chunk the diffusion signal."""</span>
+        <span class="n">gradient</span> <span class="o">=</span> <span class="n">_rasb2dipy</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
+
+        <span class="n">omp_nthreads</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="k">else</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">omp_nthreads</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">predicted</span> <span class="o">=</span> <span class="n">_exec_predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_S0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">S0</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">omp_nthreads</span>
+            <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_S0</span><span class="p">,</span> <span class="n">omp_nthreads</span><span class="p">)</span>
+
+            <span class="n">predicted</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">omp_nthreads</span>
+            <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">omp_nthreads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                <span class="n">model_futures</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="n">_exec_predict</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="n">S0</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="p">):</span> <span class="n">i</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">model_futures</span><span class="p">):</span>
+                    <span class="n">chunk_idx</span> <span class="o">=</span> <span class="n">model_futures</span><span class="p">[</span><span class="n">future</span><span class="p">]</span>
+                    <span class="n">predicted</span><span class="p">[</span><span class="n">chunk_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+            <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">predicted</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
+            <span class="n">retval</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">predicted</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="n">predicted</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datashape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">retval</span></div></div>
 
 
 <div class="viewcode-block" id="TrivialB0Model"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.TrivialB0Model">[docs]</a><span class="k">class</span> <span class="nc">TrivialB0Model</span><span class="p">:</span>
@@ -476,9 +444,10 @@
         <span class="n">gtab</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"gtab"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="c1"># Select the interval of b-values for which DWIs will be averaged</span>
         <span class="n">b_mask</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_low</span><span class="p">)</span>
-            <span class="o">&amp;</span> <span class="p">(</span><span class="n">gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_high</span><span class="p">)</span>
-        <span class="p">)</span> <span class="k">if</span> <span class="n">gtab</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="p">((</span><span class="n">gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_low</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gtab</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_th_high</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">gtab</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">shells</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">b_mask</span><span class="p">]</span>
 
         <span class="c1"># Regress out global signal differences</span>
@@ -499,23 +468,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span></div></div>
 
 
-<div class="viewcode-block" id="DTIModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.DTIModel">[docs]</a><span class="k">class</span> <span class="nc">DTIModel</span><span class="p">:</span>
+<div class="viewcode-block" id="DTIModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.DTIModel">[docs]</a><span class="k">class</span> <span class="nc">DTIModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">"""A wrapper of :obj:`dipy.reconst.dti.TensorModel`."""</span>
-
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_model"</span><span class="p">,</span> <span class="s2">"_S0"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Instantiate the wrapped tensor model."""</span>
         <span class="kn">from</span> <span class="nn">dipy.reconst.dti</span> <span class="k">import</span> <span class="n">TensorModel</span> <span class="k">as</span> <span class="n">DipyTensorModel</span>
 
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
-                <span class="n">S0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="n">S0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
-                <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
-                <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">S0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="n">S0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -541,22 +506,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">DipyTensorModel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DKIModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.DKIModel">[docs]</a><span class="k">class</span> <span class="nc">DKIModel</span><span class="p">:</span>
+<div class="viewcode-block" id="DKIModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.DKIModel">[docs]</a><span class="k">class</span> <span class="nc">DKIModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">"""A wrapper of :obj:`dipy.reconst.dki.DiffusionKurtosisModel`."""</span>
-
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_model"</span><span class="p">,</span> <span class="s2">"_S0"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Instantiate the wrapped tensor model."""</span>
         <span class="kn">from</span> <span class="nn">dipy.reconst.dki</span> <span class="k">import</span> <span class="n">DiffusionKurtosisModel</span>
 
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
-                <span class="n">S0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="n">S0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
-                <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
-                <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">S0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="n">S0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">mask</span>
         <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_S0</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>
@@ -581,24 +542,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">DiffusionKurtosisModel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SparseFascicleModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.SparseFascicleModel">[docs]</a><span class="k">class</span> <span class="nc">SparseFascicleModel</span><span class="p">:</span>
+<div class="viewcode-block" id="SparseFascicleModel"><a class="viewcode-back" href="../../api/eddymotion.model.html#eddymotion.model.SparseFascicleModel">[docs]</a><span class="k">class</span> <span class="nc">SparseFascicleModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel`.</span>
 <span class="sd">    """</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_model"</span><span class="p">,</span> <span class="s2">"_parallel"</span><span class="p">,</span> <span class="s2">"_S0"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">,</span> <span class="s2">"_solver"</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_solver"</span><span class="p">,</span> <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Instantiate the wrapped model."""</span>
         <span class="kn">from</span> <span class="nn">dipy.reconst.sfm</span> <span class="k">import</span> <span class="n">SparseFascicleModel</span>
 
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
-                <span class="n">S0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="n">S0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
-                <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
-                <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">S0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="n">S0</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">mask</span>
         <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">S0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

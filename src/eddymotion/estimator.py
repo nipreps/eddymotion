@@ -35,7 +35,6 @@ from tqdm import tqdm
 
 from eddymotion.dmri import logo_split
 from eddymotion.model import ModelFactory
-from eddymotion.dmri import logo_split
 
 
 class EddyMotionEstimator:

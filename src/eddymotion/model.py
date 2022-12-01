@@ -203,7 +203,7 @@ class TrivialB0Model:
         return self._S0
 
 
-class TrivialDKIModel:
+class TrivialDKIModel(BaseModel):
     """
     A trivial model that returns a *b=0* map always.
 
@@ -219,6 +219,8 @@ class TrivialDKIModel:
     def __init__(self, gtab, data, S0=None, mask=None, b_max=4000, **kwargs):
         """Instantiate the wrapped tensor model."""
         from dipy.reconst.dki import DiffusionKurtosisModel
+
+        super().__init__()
 
         self._S0 = None
         if S0 is not None:
@@ -261,26 +263,10 @@ class TrivialDKIModel:
             # gtab = gtab[:, bval_mask]
 
         self._model = DiffusionKurtosisModel(_rasb2dipy(gtab), **kwargs)
-        self._model = self._model.fit(data[self._mask, ...])
+        super().fit(data, **kwargs)
 
     def fit(self, *args, **kwargs):
         """Do nothing."""
-
-    def predict(self, gradient, step=None, **kwargs):
-        """Propagate model parameters and call predict."""
-
-        predicted = np.squeeze(
-            self._model.predict(
-                _rasb2dipy(gradient),
-                S0=self._S0,
-            )
-        )
-        if predicted.ndim == 3:
-            return predicted
-
-        retval = np.zeros_like(self._mask, dtype="float32")
-        retval[self._mask, ...] = predicted
-        return retval
 
 
 class AverageDWModel:

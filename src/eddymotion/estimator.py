@@ -33,8 +33,8 @@ from nitransforms.linear import Affine
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
-from eddymotion.model import ModelFactory
 from eddymotion.dmri import logo_split
+from eddymotion.model import ModelFactory
 
 
 class EddyMotionEstimator:

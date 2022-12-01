@@ -83,13 +83,16 @@ class EddyMotionEstimator:
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
 
-            # Factory creates the appropriate model and pipes arguments
-            dwmodel = ModelFactory.init(
-                gtab=dwdata.gradients,
-                model=model,
-                omp_nthreads=omp_nthreads,
-                **kwargs,
-            )
+            dwmodel = None
+            single_model = model.lower() in ("b0", "s0", "avg", "average", "mean")
+            if single_model:
+                # Factory creates the appropriate model and pipes arguments
+                dwmodel = ModelFactory.init(
+                    gtab=dwdata.gradients,
+                    model=model,
+                    omp_nthreads=omp_nthreads,
+                    **kwargs,
+                )
 
             with TemporaryDirectory() as tmpdir:
                 print(f"Processing in <{tmpdir}>")
@@ -101,8 +104,17 @@ class EddyMotionEstimator:
                         )
                         data_train, data_test = dwdata.logo_split(i, with_b0=True)
 
-                        # fit the model
-                        dwmodel.fit(data_train[0], gtab=data_train[1])
+                        if not single_model:  # A true LOGO estimator
+                            # Factory creates the appropriate model and pipes arguments
+                            dwmodel = ModelFactory.init(
+                                gtab=dwdata.gradients,
+                                model=model,
+                                omp_nthreads=omp_nthreads,
+                                **kwargs,
+                            )
+
+                            # fit the model
+                            dwmodel.fit(data_train[0], gtab=data_train[1])
 
                         # generate a synthetic dw volume for the test gradient
                         predicted = dwmodel.predict(data_test[1])

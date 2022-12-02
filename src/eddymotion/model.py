@@ -9,7 +9,8 @@ from dipy.core.gradients import check_multi_b, gradient_table
 
 
 def _exec_fit(model, data):
-    return model.fit(data)
+    retval = model.fit(data)
+    return retval
 
 
 def _exec_predict(model, gradient, **kwargs):
@@ -31,8 +32,7 @@ class ModelFactory:
             An array representing the gradient table in RAS+B format.
         model : :obj:`str`
             Diffusion model.
-            Options: ``"3DShore"``, ``"SFM"``, ``"GP"``, ``"DTI"``,
-            ``"DKI"``, ``"S0"``
+            Options: ``"DTI"``, ``"DKI"``, ``"S0"``, ``"AverageDW"``
 
         Return
         ------
@@ -122,7 +122,7 @@ class BaseModel:
 
         # One single CPU - linear execution (full model)
         if omp_nthreads == 1:
-            self._model, _ = _exec_fit(data)
+            self._model = _exec_fit(self._model, data)
             return
 
         # Split data into chunks of group of slices
@@ -151,7 +151,7 @@ class BaseModel:
             predicted = _exec_predict(self._model, gradient, S0=self._S0, **kwargs)
         else:
             S0 = [None] * omp_nthreads
-            if S0 is not None:
+            if self._S0 is not None:
                 S0 = np.array_split(self._S0, omp_nthreads)
 
             predicted = [None] * omp_nthreads
@@ -302,6 +302,10 @@ class DTIModel(BaseModel):
         }
 
         self._model = DipyTensorModel(gtab, **kwargs)
+
+    def predict(self, gradient, **kwargs):
+        """Ensure no unsupported kwargs are passed."""
+        return super().predict(gradient)
 
 
 class DKIModel(BaseModel):

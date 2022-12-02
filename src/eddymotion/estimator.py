@@ -76,8 +76,8 @@ class EddyMotionEstimator:
 
         kwargs["S0"] = _advanced_clip(dwdata.bzero)
 
-        if "n_threads" in kwargs:
-            align_kwargs["num_threads"] = kwargs["n_threads"]
+        if "num_threads" not in align_kwargs and omp_nthreads is not None:
+            align_kwargs["num_threads"] = omp_nthreads
 
         for i_iter in range(1, n_iter + 1):
             index_order = np.arange(len(dwdata))
@@ -107,14 +107,17 @@ class EddyMotionEstimator:
                         if not single_model:  # A true LOGO estimator
                             # Factory creates the appropriate model and pipes arguments
                             dwmodel = ModelFactory.init(
-                                gtab=dwdata.gradients,
+                                gtab=data_train[1],
                                 model=model,
                                 omp_nthreads=omp_nthreads,
                                 **kwargs,
                             )
 
                             # fit the model
-                            dwmodel.fit(data_train[0], gtab=data_train[1])
+                            dwmodel.fit(
+                                data_train[0],
+                                omp_nthreads=omp_nthreads,
+                            )
 
                         # generate a synthetic dw volume for the test gradient
                         predicted = dwmodel.predict(data_test[1])

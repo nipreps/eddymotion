@@ -84,18 +84,18 @@ class EddyMotionEstimator:
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
 
-            if model.lower().startswith("trivialdki"):
+            if model.lower().startswith("fulldki"):
                 kwargs["data"] = dwdata.dataobj
 
             single_model = (
-                model.lower() in ("b0", "s0", "avg", "average", "mean", "trivialdki")
+                model.lower() in ("b0", "s0", "avg", "average", "mean", "fulldki")
             )
 
             # Factory creates the appropriate model and pipes arguments
             dwmodel = ModelFactory.init(
                 gtab=dwdata.gradients,
                 model=model,
-                omp_nthreads=omp_nthreads,
+                n_jobs=n_jobs,
                 **kwargs,
             ) if single_model else None
 
@@ -108,6 +108,8 @@ class EddyMotionEstimator:
                             f"Pass {i_iter + 1}/{n_iter} | Fit and predict b-index <{i}>"
                         )
                         data_train, data_test = dwdata.logo_split(i, with_b0=True)
+                        grad_str = f"{i}, {data_test[1][:3]}, b={int(data_test[1][3])}"
+                        pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
 
                         if not single_model:  # A true LOGO estimator
                             # Factory creates the appropriate model and pipes arguments
@@ -164,12 +166,18 @@ class EddyMotionEstimator:
                         result = registration.run(cwd=str(tmpdir)).outputs
 
                         # read output transform
-                        xform = nt.io.itk.ITKLinearTransform.from_filename(
-                            result.forward_transforms[0]
-                        ).to_ras(reference=fixed, moving=moving)
+                        xform = nt.linear.Affine(
+                            nt.io.itk.ITKLinearTransform.from_filename(
+                                result.forward_transforms[0]
+                            ).to_ras(reference=fixed, moving=moving),
+                        )
+                        # debugging: generate aligned file for testing
+                        xform.apply(moving, reference=fixed).to_filename(
+                            tmpdir / f"aligned{i:05d}_{int(data_test[1][3]):04d}.nii.gz"
+                        )
 
                         # update
-                        dwdata.set_transform(i, xform)
+                        dwdata.set_transform(i, xform.matrix)
                         pbar.update()
 
         return dwdata.em_affines

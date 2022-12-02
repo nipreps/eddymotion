@@ -141,7 +141,7 @@ class EddyMotionEstimator:
                             terminal_output="file",
                             from_file=pkg_fn(
                                 "eddymotion",
-                                f"config/dwi-to-{reg_target_type}_level{i_iter}.json",
+                                f"config/dwi-to-{reg_target_type}_level{i_iter - 1}.json",
                             ),
                             fixed_image=str(fixed.absolute()),
                             moving_image=str(moving.absolute()),

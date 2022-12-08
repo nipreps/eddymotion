@@ -19,9 +19,8 @@ class EddyMotionEstimator:
     def fit(
         dwdata,
         *,
-        n_iter=1,
         align_kwargs=None,
-        model="b0",
+        models=("b0", ),
         omp_nthreads=None,
         n_jobs=None,
         seed=None,
@@ -58,11 +57,6 @@ class EddyMotionEstimator:
 
         """
         align_kwargs = align_kwargs or {}
-        reg_target_type = (
-            "dwi"
-            if model.lower() not in ("b0", "s0", "avg", "average", "mean")
-            else "b0"
-        )
 
         if seed or seed == 0:
             np.random.seed(20210324 if seed is True else seed)
@@ -80,7 +74,13 @@ class EddyMotionEstimator:
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
 
-        for i_iter in range(1, n_iter + 1):
+        n_iter = len(models)
+        for i_iter, model in enumerate(models):
+            reg_target_type = (
+                "dwi"
+                if model.lower() not in ("b0", "s0", "avg", "average", "mean")
+                else "b0"
+            )
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
 
@@ -101,7 +101,7 @@ class EddyMotionEstimator:
                     # run a original-to-synthetic affine registration
                     for i in index_order:
                         pbar.set_description_str(
-                            f"Pass {i_iter}/{n_iter} | Fit and predict b-index <{i}>"
+                            f"Pass {i_iter + 1}/{n_iter} | Fit and predict b-index <{i}>"
                         )
                         data_train, data_test = dwdata.logo_split(i, with_b0=True)
 
@@ -136,13 +136,13 @@ class EddyMotionEstimator:
                         )
 
                         pbar.set_description_str(
-                            f"Pass {i_iter}/{n_iter} | Realign b-index <{i}>"
+                            f"Pass {i_iter + 1}/{n_iter} | Realign b-index <{i}>"
                         )
                         registration = Registration(
                             terminal_output="file",
                             from_file=pkg_fn(
                                 "eddymotion",
-                                f"config/dwi-to-{reg_target_type}_level{i_iter - 1}.json",
+                                f"config/dwi-to-{reg_target_type}_level{i_iter}.json",
                             ),
                             fixed_image=str(fixed.absolute()),
                             moving_image=str(moving.absolute()),

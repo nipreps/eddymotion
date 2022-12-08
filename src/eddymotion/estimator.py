@@ -23,6 +23,7 @@ class EddyMotionEstimator:
         align_kwargs=None,
         model="b0",
         omp_nthreads=None,
+        n_jobs=None,
         seed=None,
         **kwargs,
     ):
@@ -90,7 +91,7 @@ class EddyMotionEstimator:
                 dwmodel = ModelFactory.init(
                     gtab=dwdata.gradients,
                     model=model,
-                    omp_nthreads=omp_nthreads,
+                    n_jobs=n_jobs,
                     **kwargs,
                 )
 
@@ -109,14 +110,14 @@ class EddyMotionEstimator:
                             dwmodel = ModelFactory.init(
                                 gtab=data_train[1],
                                 model=model,
-                                omp_nthreads=omp_nthreads,
+                                n_jobs=n_jobs,
                                 **kwargs,
                             )
 
                             # fit the model
                             dwmodel.fit(
                                 data_train[0],
-                                omp_nthreads=omp_nthreads,
+                                n_jobs=n_jobs,
                             )
 
                         # generate a synthetic dw volume for the test gradient

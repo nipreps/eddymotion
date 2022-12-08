@@ -61,7 +61,7 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
         terminal_output="file",
         from_file=pkg_fn(
             "eddymotion",
-            "config/dwi-to-b0_level1.json",
+            "config/dwi-to-b0_level0.json",
         ),
         fixed_image=str(fixed.absolute()),
         moving_image=str(moving.absolute()),

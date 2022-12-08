@@ -1,21 +1,19 @@
 """A factory class that adapts DIPY's dMRI models."""
 import warnings
-from copy import deepcopy
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from os import cpu_count
+from joblib import Parallel, delayed
 
 import numpy as np
 from dipy.core.gradients import check_multi_b, gradient_table
 
 
-def _exec_fit(model, data):
+def _exec_fit(model, data, chunk=None):
     retval = model.fit(data)
-    return retval
+    return retval, chunk
 
 
-def _exec_predict(model, gradient, **kwargs):
+def _exec_predict(model, gradient, chunk=None, **kwargs):
     """Propagate model parameters and call predict."""
-    return np.squeeze(model.predict(gradient, S0=kwargs.pop("S0", None)))
+    return np.squeeze(model.predict(gradient, S0=kwargs.pop("S0", None))), chunk
 
 
 class ModelFactory:
@@ -105,11 +103,9 @@ class BaseModel:
         self._S0 = None
         self._models = None
 
-    def fit(self, data, omp_nthreads=None, **kwargs):
+    def fit(self, data, n_jobs=None, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
-        omp_nthreads = (
-            omp_nthreads if omp_nthreads and omp_nthreads > 0 else cpu_count()
-        )
+        n_jobs = n_jobs or 1
 
         self._datashape = data.shape
 
@@ -121,23 +117,23 @@ class BaseModel:
         )
 
         # One single CPU - linear execution (full model)
-        if omp_nthreads == 1:
-            self._model = _exec_fit(self._model, data)
+        if n_jobs == 1:
+            self._model, _ = _exec_fit(self._model, data)
             return
 
         # Split data into chunks of group of slices
-        data_chunks = np.array_split(data, omp_nthreads)
+        data_chunks = np.array_split(data, n_jobs)
 
-        self._models = [None] * omp_nthreads
-        # Run asyncio tasks in a limited thread pool
-        with ThreadPoolExecutor(max_workers=omp_nthreads) as executor:
-            model_futures = {
-                executor.submit(_exec_fit, deepcopy(self._model), dblock): i
-                for i, dblock in enumerate(data_chunks)
-            }
-            for future in as_completed(model_futures):
-                chunk_idx = model_futures[future]
-                self._models[chunk_idx] = future.result()
+        self._models = [None] * n_jobs
+
+        # Parallelize process with joblib
+        with Parallel(n_jobs=n_jobs) as executor:
+            results = executor(
+                delayed(_exec_fit)(self._model, dchunk, i)
+                for i, dchunk in enumerate(data_chunks)
+            )
+        for submodel, index in results:
+            self._models[index] = submodel
 
         self._model = None  # Preempt further actions on the model
 
@@ -145,26 +141,25 @@ class BaseModel:
         """Predict asynchronously chunk-by-chunk the diffusion signal."""
         gradient = _rasb2dipy(gradient)
 
-        omp_nthreads = len(self._models) if self._model is None and self._models else 1
+        n_models = len(self._models) if self._model is None and self._models else 1
 
-        if omp_nthreads == 1:
-            predicted = _exec_predict(self._model, gradient, S0=self._S0, **kwargs)
+        if n_models == 1:
+            predicted, _ = _exec_predict(self._model, gradient, S0=self._S0, **kwargs)
         else:
-            S0 = [None] * omp_nthreads
+            S0 = [None] * n_models
             if self._S0 is not None:
-                S0 = np.array_split(self._S0, omp_nthreads)
+                S0 = np.array_split(self._S0, n_models)
 
-            predicted = [None] * omp_nthreads
-            with ThreadPoolExecutor(max_workers=omp_nthreads) as executor:
-                model_futures = {
-                    executor.submit(
-                        _exec_predict, model, gradient, S0=S0[i], **kwargs
-                    ): i
+            predicted = [None] * n_models
+
+            # Parallelize process with joblib
+            with Parallel(n_jobs=n_models) as executor:
+                results = executor(
+                    delayed(_exec_predict)(model, gradient, S0=S0[i], chunk=i, **kwargs)
                     for i, model in enumerate(self._models)
-                }
-                for future in as_completed(model_futures):
-                    chunk_idx = model_futures[future]
-                    predicted[chunk_idx] = future.result()
+                )
+            for subprediction, index in results:
+                predicted[index] = subprediction
 
             predicted = np.hstack(predicted)
 

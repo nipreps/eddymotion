@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.estimator - eddymotion 0.1.7.dev39+g57e5849 documentation</title>
+        <title>eddymotion.estimator - eddymotion 0.1.7.dev45+gfc477ef documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev39+g57e5849 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev45+gfc477ef documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev39 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev45 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev39 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev45 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -201,17 +201,17 @@
         <article role="main">
           <h1>Source code for eddymotion.estimator</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""A model-based algorithm for the realignment of dMRI data."""</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">tempfile</span> <span class="k">import</span> <span class="n">TemporaryDirectory</span><span class="p">,</span> <span class="n">mkstemp</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">TemporaryDirectory</span><span class="p">,</span> <span class="n">mkstemp</span>
 
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nb</span>
 <span class="kn">import</span> <span class="nn">nitransforms</span> <span class="k">as</span> <span class="nn">nt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">nipype.interfaces.ants.registration</span> <span class="k">import</span> <span class="n">Registration</span>
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_filename</span> <span class="k">as</span> <span class="n">pkg_fn</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">nipype.interfaces.ants.registration</span> <span class="kn">import</span> <span class="n">Registration</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span> <span class="k">as</span> <span class="n">pkg_fn</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span> <span class="nn">eddymotion.model</span> <span class="k">import</span> <span class="n">ModelFactory</span>
+<span class="kn">from</span> <span class="nn">eddymotion.model</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 
 
 <div class="viewcode-block" id="EddyMotionEstimator"><a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator">[docs]</a><span class="k">class</span> <span class="nc">EddyMotionEstimator</span><span class="p">:</span>
@@ -225,6 +225,7 @@
         <span class="n">align_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">model</span><span class="o">=</span><span class="s2">"b0"</span><span class="p">,</span>
         <span class="n">omp_nthreads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -292,17 +293,17 @@
                 <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
                     <span class="n">gtab</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span>
                     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-                    <span class="n">omp_nthreads</span><span class="o">=</span><span class="n">omp_nthreads</span><span class="p">,</span>
+                    <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">"Processing in &lt;</span><span class="si">{tmpdir}</span><span class="s2">&gt;"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing in &lt;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">index_order</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"dwi"</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
                     <span class="c1"># run a original-to-synthetic affine registration</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_order</span><span class="p">:</span>
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
-                            <span class="n">f</span><span class="s2">"Pass </span><span class="si">{i_iter}</span><span class="s2">/</span><span class="si">{n_iter}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{i}</span><span class="s2">&gt;"</span>
+                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
                         <span class="p">)</span>
                         <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">logo_split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -311,14 +312,14 @@
                             <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
                                 <span class="n">gtab</span><span class="o">=</span><span class="n">data_train</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                                 <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-                                <span class="n">omp_nthreads</span><span class="o">=</span><span class="n">omp_nthreads</span><span class="p">,</span>
+                                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
                                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
                             <span class="p">)</span>
 
                             <span class="c1"># fit the model</span>
                             <span class="n">dwmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
                                 <span class="n">data_train</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                <span class="n">omp_nthreads</span><span class="o">=</span><span class="n">omp_nthreads</span><span class="p">,</span>
+                                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
                             <span class="p">)</span>
 
                         <span class="c1"># generate a synthetic dw volume for the test gradient</span>
@@ -326,8 +327,8 @@
 
                         <span class="c1"># prepare data for running ANTs</span>
                         <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
-                        <span class="n">moving</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="n">f</span><span class="s2">"moving</span><span class="si">{i:05d}</span><span class="s2">.nii.gz"</span>
-                        <span class="n">fixed</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="n">f</span><span class="s2">"fixed</span><span class="si">{i:05d}</span><span class="s2">.nii.gz"</span>
+                        <span class="n">moving</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"moving</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz"</span>
+                        <span class="n">fixed</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"fixed</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz"</span>
                         <span class="n">_to_nifti</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">moving</span><span class="p">)</span>
                         <span class="n">_to_nifti</span><span class="p">(</span>
                             <span class="n">predicted</span><span class="p">,</span>
@@ -337,13 +338,13 @@
                         <span class="p">)</span>
 
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
-                            <span class="n">f</span><span class="s2">"Pass </span><span class="si">{i_iter}</span><span class="s2">/</span><span class="si">{n_iter}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{i}</span><span class="s2">&gt;"</span>
+                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
                         <span class="p">)</span>
                         <span class="n">registration</span> <span class="o">=</span> <span class="n">Registration</span><span class="p">(</span>
                             <span class="n">terminal_output</span><span class="o">=</span><span class="s2">"file"</span><span class="p">,</span>
                             <span class="n">from_file</span><span class="o">=</span><span class="n">pkg_fn</span><span class="p">(</span>
                                 <span class="s2">"eddymotion"</span><span class="p">,</span>
-                                <span class="n">f</span><span class="s2">"config/dwi-to-</span><span class="si">{reg_target_type}</span><span class="s2">_level{i_iter - 1}.json"</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">"config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s2">.json"</span><span class="p">,</span>
                             <span class="p">),</span>
                             <span class="n">fixed_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fixed</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
                             <span class="n">moving_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">moving</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
@@ -353,7 +354,7 @@
                             <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image_masks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"NULL"</span><span class="p">,</span> <span class="n">bmask_img</span><span class="p">]</span>
 
                         <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="n">mat_file</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="n">f</span><span class="s2">"init_</span><span class="si">{i_iter}</span><span class="s2">_</span><span class="si">{i:05d}</span><span class="s2">.mat"</span>
+                            <span class="n">mat_file</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"init_</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.mat"</span>
                             <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">mat_file</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"itk"</span><span class="p">)</span>
                             <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">initial_moving_transform</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mat_file</span><span class="p">)</span>
 
@@ -390,8 +391,8 @@
 
 <span class="sd">    """</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-    <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">ndimage</span>
-    <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="k">import</span> <span class="n">ball</span>
+    <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
+    <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span>
 
     <span class="c1"># Calculate stats on denoised version, to preempt outliers from biasing</span>
     <span class="n">denoised</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>

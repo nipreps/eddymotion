@@ -6,14 +6,14 @@ import numpy as np
 from dipy.core.gradients import check_multi_b, gradient_table
 
 
-def _exec_fit(model, data, block=None):
+def _exec_fit(model, data, chunk=None):
     retval = model.fit(data)
-    return retval, block
+    return retval, chunk
 
 
-def _exec_predict(model, gradient, block=None, **kwargs):
+def _exec_predict(model, gradient, chunk=None, **kwargs):
     """Propagate model parameters and call predict."""
-    return np.squeeze(model.predict(gradient, S0=kwargs.pop("S0", None))), block
+    return np.squeeze(model.predict(gradient, S0=kwargs.pop("S0", None))), chunk
 
 
 class ModelFactory:
@@ -129,8 +129,8 @@ class BaseModel:
         # Parallelize process with joblib
         with Parallel(n_jobs=n_jobs) as executor:
             results = executor(
-                delayed(_exec_fit)(self._model, dblock, i)
-                for i, dblock in enumerate(data_chunks)
+                delayed(_exec_fit)(self._model, dchunk, i)
+                for i, dchunk in enumerate(data_chunks)
             )
         for submodel, index in results:
             self._models[index] = submodel
@@ -155,7 +155,7 @@ class BaseModel:
             # Parallelize process with joblib
             with Parallel(n_jobs=n_models) as executor:
                 results = executor(
-                    delayed(_exec_predict)(model, gradient, S0=S0[i], block=i, **kwargs)
+                    delayed(_exec_predict)(model, gradient, S0=S0[i], chunk=i, **kwargs)
                     for i, model in enumerate(self._models)
                 )
             for subprediction, index in results:

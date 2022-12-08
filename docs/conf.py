@@ -42,6 +42,7 @@ extensions = [
 autodoc_mock_imports = [
     "dipy",
     "h5py",
+    "joblib",
     "matplotlib",
     "nest_asyncio",
     "nibabel",

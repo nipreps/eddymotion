@@ -223,6 +223,7 @@ class EddyMotionEstimator:
                                     matrix=dwdata.em_affines[i], reference=reference
                                 )
                             mat_file = tmp_dir / f"init_{i_iter}_{i:05d}.mat"
+
                             initial_xform.to_filename(mat_file, fmt="itk")
                             registration.inputs.initial_moving_transform = str(mat_file)
 

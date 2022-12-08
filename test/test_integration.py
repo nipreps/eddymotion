@@ -82,7 +82,7 @@ def test_proximity_estimator_trivial_model(datadir, tmp_path):
 
     estimator = EddyMotionEstimator()
     em_affines = estimator.fit(
-        dwdata=dwi_motion, n_iter=1, model=("b0", ), align_kwargs=None, seed=None
+        dwdata=dwi_motion, models=("b0", ), align_kwargs=None, seed=None
     )
 
     # Uncomment to see the realigned dataset

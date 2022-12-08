@@ -93,8 +93,6 @@ class EddyMotionEstimator:
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
 
-        orig = dwdata
-
         n_iter = len(models)
         for i_iter, model in enumerate(models):
             reg_target_type = (
@@ -153,8 +151,8 @@ class EddyMotionEstimator:
                         pbar.set_description_str(
                             f"Pass {i_iter + 1}/{n_iter} | Fit and predict b-index <{i}>"
                         )
-                        dwframe = np.asanyarray(orig.dataobj[..., i])
-                        bframe = np.asanyarray(orig.gradients[..., i])
+                        dwframe = np.asanyarray(dwdata.dataobj[..., i])
+                        bframe = np.asanyarray(dwdata.gradients[..., i])
                         data_train, data_test = logo_split(
                             dwdata, dwframe, bframe, i, with_b0=True
                         )

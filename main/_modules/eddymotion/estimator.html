@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.estimator - eddymotion 0.1.7.dev45+gfc477ef documentation</title>
+        <title>eddymotion.estimator - eddymotion 0.1.7.dev48+g90360ae documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev45+gfc477ef documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev48+g90360ae documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev45 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev48 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev45 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev48 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -221,9 +221,8 @@
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
         <span class="n">dwdata</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">n_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">align_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">model</span><span class="o">=</span><span class="s2">"b0"</span><span class="p">,</span>
+        <span class="n">models</span><span class="o">=</span><span class="p">(</span><span class="s2">"b0"</span><span class="p">,</span> <span class="p">),</span>
         <span class="n">omp_nthreads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -260,11 +259,6 @@
 
 <span class="sd">        """</span>
         <span class="n">align_kwargs</span> <span class="o">=</span> <span class="n">align_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="n">reg_target_type</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">"dwi"</span>
-            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"b0"</span><span class="p">,</span> <span class="s2">"s0"</span><span class="p">,</span> <span class="s2">"avg"</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">)</span>
-            <span class="k">else</span> <span class="s2">"b0"</span>
-        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span><span class="p">)</span>
@@ -282,7 +276,13 @@
         <span class="k">if</span> <span class="s2">"num_threads"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_kwargs</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">"num_threads"</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_nthreads</span>
 
-        <span class="k">for</span> <span class="n">i_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i_iter</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
+            <span class="n">reg_target_type</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">"dwi"</span>
+                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"b0"</span><span class="p">,</span> <span class="s2">"s0"</span><span class="p">,</span> <span class="s2">"avg"</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">)</span>
+                <span class="k">else</span> <span class="s2">"b0"</span>
+            <span class="p">)</span>
             <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
 
@@ -303,7 +303,7 @@
                     <span class="c1"># run a original-to-synthetic affine registration</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_order</span><span class="p">:</span>
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
+                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
                         <span class="p">)</span>
                         <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">logo_split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -338,13 +338,13 @@
                         <span class="p">)</span>
 
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
+                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
                         <span class="p">)</span>
                         <span class="n">registration</span> <span class="o">=</span> <span class="n">Registration</span><span class="p">(</span>
                             <span class="n">terminal_output</span><span class="o">=</span><span class="s2">"file"</span><span class="p">,</span>
                             <span class="n">from_file</span><span class="o">=</span><span class="n">pkg_fn</span><span class="p">(</span>
                                 <span class="s2">"eddymotion"</span><span class="p">,</span>
-                                <span class="sa">f</span><span class="s2">"config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s2">.json"</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">"config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">.json"</span><span class="p">,</span>
                             <span class="p">),</span>
                             <span class="n">fixed_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fixed</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
                             <span class="n">moving_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">moving</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>

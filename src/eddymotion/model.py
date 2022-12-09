@@ -1,7 +1,7 @@
 """A factory class that adapts DIPY's dMRI models."""
 import warnings
 from joblib import Parallel, delayed
-
+import timeit
 import numpy as np
 from dipy.core.gradients import check_multi_b, gradient_table
 
@@ -43,6 +43,9 @@ class ModelFactory:
 
         if model.lower() in ("avg", "average", "mean"):
             return AverageDWModel(gtab=gtab, **kwargs)
+
+        if model.lower().startswith("fulldki"):
+            return FullDKIModel(gtab, **kwargs)
 
         # Generate a GradientTable object for DIPY
         gtab = _rasb2dipy(gtab)
@@ -87,6 +90,11 @@ class BaseModel:
     """
     Defines the interface and default methods.
 
+    Implements the interface of :obj:`dipy.reconst.base.ReconstModel`.
+    Instead of inheriting from the abstract base, this implementation
+    follows type adaptation principles, as it is easier to maintain
+    and to read (see https://www.youtube.com/watch?v=3MNVP9-hglc).
+
     """
 
     __slots__ = (
@@ -116,6 +124,9 @@ class BaseModel:
             else data.reshape(-1, data.shape[-1])
         )
 
+        # Get timestamp to evaluate performance
+        start_time = timeit.default_timer()
+
         # One single CPU - linear execution (full model)
         if n_jobs == 1:
             self._model, _ = _exec_fit(self._model, data)
@@ -134,6 +145,11 @@ class BaseModel:
             )
         for submodel, index in results:
             self._models[index] = submodel
+
+        print(
+            f"Multi-threaded ({n_jobs}) execution -- elapsed time "
+            f"{timeit.default_timer() - start_time} s."
+        )
 
         self._model = None  # Preempt further actions on the model
 
@@ -173,15 +189,7 @@ class BaseModel:
 
 
 class TrivialB0Model:
-    """
-    A trivial model that returns a *b=0* map always.
-
-    Implements the interface of :obj:`dipy.reconst.base.ReconstModel`.
-    Instead of inheriting from the abstract base, this implementation
-    follows type adaptation principles, as it is easier to maintain
-    and to read (see https://www.youtube.com/watch?v=3MNVP9-hglc).
-
-    """
+    """A trivial model that returns a *b=0* map always."""
 
     __slots__ = ("_S0",)
 
@@ -198,6 +206,79 @@ class TrivialB0Model:
     def predict(self, gradient, **kwargs):
         """Return the *b=0* map."""
         return self._S0
+
+
+class FullDKIModel(BaseModel):
+    """
+    A DKI model fitted on all data (i.e., no leave-out).
+
+    In order to speed up optimization, this model fits DKI tensors only once using
+    the full dataset.
+
+    """
+
+    __slots__ = ("_S0", "_mask", "_model", "_b_max")
+
+    def __init__(self, gtab, data, S0=None, mask=None, b_max=4000, **kwargs):
+        """Instantiate the wrapped tensor model."""
+        from dipy.reconst.dki import DiffusionKurtosisModel
+
+        super().__init__()
+
+        self._S0 = None
+        if S0 is not None:
+            self._S0 = np.clip(
+                S0.astype("float32") / S0.max(),
+                a_min=1e-5,
+                a_max=1.0,
+            )
+        self._mask = mask
+        if mask is None and S0 is not None:
+            self._mask = self._S0 > np.percentile(self._S0, 35)
+
+        # All-true mask if not available
+        if self._mask is None:
+            self._mask = np.ones(data.shape[:3], dtype=bool)
+
+        if self._mask is not None:
+            self._S0 = self._S0[self._mask.astype(bool)]
+
+        # Extract number of threads before we clean kwargs
+        n_jobs = kwargs.pop("n_jobs", None)
+        kwargs = {
+            k: v
+            for k, v in kwargs.items()
+            if k
+            in (
+                "min_signal",
+                "return_S0_hat",
+                "fit_method",
+                "weighting",
+                "sigma",
+                "jac",
+            )
+        }
+        # kwargs["model_S0"] = None
+
+        if b_max and b_max > 1000:
+            # Saturate b-values at b_max, since signal stops dropping
+            gtab[-1, gtab[-1] > b_max] = b_max
+            # A possibly good alternative is completely remove very high b-values
+            # bval_mask = gtab[-1] < b_max
+            # data = data[..., bval_mask]
+            # gtab = gtab[:, bval_mask]
+            self._b_max = b_max
+
+        self._model = DiffusionKurtosisModel(_rasb2dipy(gtab), **kwargs)
+        super().fit(data, n_jobs=n_jobs, **kwargs)
+
+    def fit(self, *args, **kwargs):
+        """Do nothing."""
+
+    def predict(self, gradient, **kwargs):
+        """Ensure only acceptable arguments are passed."""
+        gradient[-1] = min(gradient[-1], self._b_max)
+        return super().predict(gradient)
 
 
 class AverageDWModel:
@@ -340,9 +421,7 @@ class DKIModel(BaseModel):
 
 
 class SparseFascicleModel(BaseModel):
-    """
-    A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel`.
-    """
+    """A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel`."""
 
     __slots__ = ("_solver", )
 

@@ -84,20 +84,23 @@ class EddyMotionEstimator:
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
 
-            if model.lower().startswith("fulldki"):
-                kwargs["data"] = dwdata.dataobj
-
             single_model = (
-                model.lower() in ("b0", "s0", "avg", "average", "mean", "fulldki")
+                model.lower() in ("b0", "s0", "avg", "average", "mean")
+                or model.lower().startswith("full")
             )
 
-            # Factory creates the appropriate model and pipes arguments
-            dwmodel = ModelFactory.init(
-                gtab=dwdata.gradients,
-                model=model,
-                n_jobs=n_jobs,
-                **kwargs,
-            ) if single_model else None
+            dwmodel = None
+            if single_model:
+                if model.lower().startswith("full"):
+                    model = model[4:]
+
+                # Factory creates the appropriate model and pipes arguments
+                dwmodel = ModelFactory.init(
+                    gtab=dwdata.gradients,
+                    model=model,
+                    **kwargs,
+                )
+                dwmodel.fit(dwdata.dataobj, n_jobs=n_jobs)
 
             with TemporaryDirectory() as tmpdir:
                 print(f"Processing in <{tmpdir}>")

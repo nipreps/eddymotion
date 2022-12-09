@@ -1,9 +1,8 @@
 """A factory class that adapts DIPY's dMRI models."""
 import warnings
 from joblib import Parallel, delayed
-import timeit
 import numpy as np
-from dipy.core.gradients import check_multi_b, gradient_table
+from dipy.core.gradients import gradient_table
 
 
 def _exec_fit(model, data, chunk=None):
@@ -44,46 +43,12 @@ class ModelFactory:
         if model.lower() in ("avg", "average", "mean"):
             return AverageDWModel(gtab=gtab, **kwargs)
 
-        if model.lower().startswith("fulldki"):
-            return FullDKIModel(gtab, **kwargs)
-
         # Generate a GradientTable object for DIPY
-        gtab = _rasb2dipy(gtab)
-        param = {}
+        if model.lower() in ("dti", "dki"):
+            Model = globals()[f"{model.upper()}Model"]
+            return Model(gtab, **kwargs)
 
-        if model.lower().startswith("3dshore"):
-            from dipy.reconst.shore import ShoreModel as Model
-
-            param = {
-                "radial_order": 6,
-                "zeta": 700,
-                "lambdaN": 1e-8,
-                "lambdaL": 1e-8,
-            }
-
-        elif model.lower() in ("sfm", "gp"):
-            Model = SparseFascicleModel
-            param = {"solver": "ElasticNet"}
-
-            if model.lower() == "gp":
-                from sklearn.gaussian_process import GaussianProcessRegressor
-
-                param = {"solver": GaussianProcessRegressor}
-
-            multi_b = check_multi_b(gtab, 2, non_zero=False)
-            if multi_b:
-                from dipy.reconst.sfm import ExponentialIsotropicModel
-
-                param.update({"isotropic": ExponentialIsotropicModel})
-
-        elif model.lower() in ("dti", "dki"):
-            Model = DTIModel if model.lower() == "dti" else DKIModel
-
-        else:
-            raise NotImplementedError(f"Unsupported model <{model}>.")
-
-        param.update(kwargs)
-        return Model(gtab, **param)
+        raise NotImplementedError(f"Unsupported model <{model}>.")
 
 
 class BaseModel:
@@ -101,15 +66,48 @@ class BaseModel:
         "_model",
         "_mask",
         "_S0",
+        "_b_max",
         "_models",
         "_datashape",
     )
+    _modelargs = tuple()
 
-    def __init__(self):
-        self._model = None
-        self._mask = None
+    def __init__(self, gtab, S0=None, mask=None, b_max=None, **kwargs):
+        """Base initialization."""
+
+        # Setup B0 map
         self._S0 = None
-        self._models = None
+        if S0 is not None:
+            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
+
+        # Setup brain mask
+        self._mask = mask
+        if mask is None and S0 is not None:
+            self._mask = self._S0 > np.percentile(self._S0, 35)
+
+        # Cap b-values, if requested
+        self._b_max = None
+        if b_max and b_max > 1000:
+            # Saturate b-values at b_max, since signal stops dropping
+            gtab[-1, gtab[-1] > b_max] = b_max
+            # A possibly good alternative is completely remove very high b-values
+            # bval_mask = gtab[-1] < b_max
+            # data = data[..., bval_mask]
+            # gtab = gtab[:, bval_mask]
+            self._b_max = b_max
+
+        kwargs = {k: v for k, v in kwargs.items() if k in self._modelargs}
+
+        model_str = getattr(self, "_model_class", None)
+        if not model_str:
+            raise TypeError("No model defined")
+
+        from importlib import import_module
+
+        module_name, class_name = model_str.rsplit(".", 1)
+        self._model = getattr(
+            import_module(module_name), class_name
+        )(_rasb2dipy(gtab), **kwargs)
 
     def fit(self, data, n_jobs=None, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
@@ -123,9 +121,6 @@ class BaseModel:
             if self._mask is not None
             else data.reshape(-1, data.shape[-1])
         )
-
-        # Get timestamp to evaluate performance
-        start_time = timeit.default_timer()
 
         # One single CPU - linear execution (full model)
         if n_jobs == 1:
@@ -146,25 +141,32 @@ class BaseModel:
         for submodel, index in results:
             self._models[index] = submodel
 
-        print(
-            f"Multi-threaded ({n_jobs}) execution -- elapsed time "
-            f"{timeit.default_timer() - start_time} s."
-        )
-
         self._model = None  # Preempt further actions on the model
 
     def predict(self, gradient, **kwargs):
         """Predict asynchronously chunk-by-chunk the diffusion signal."""
+        if self._b_max is not None:
+            gradient[-1] = min(gradient[-1], self._b_max)
+
         gradient = _rasb2dipy(gradient)
+
+        S0 = None
+        if self._S0 is not None:
+            S0 = (
+                self._S0[self._mask, ...]
+                if self._mask is not None
+                else self._S0.reshape(-1, self._S0.shape[-1])
+            )
 
         n_models = len(self._models) if self._model is None and self._models else 1
 
         if n_models == 1:
-            predicted, _ = _exec_predict(self._model, gradient, S0=self._S0, **kwargs)
+            predicted, _ = _exec_predict(self._model, gradient, S0=S0, **kwargs)
         else:
-            S0 = [None] * n_models
-            if self._S0 is not None:
-                S0 = np.array_split(self._S0, n_models)
+            S0 = (
+                np.array_split(S0, n_models) if S0 is not None
+                else [None] * n_models
+            )
 
             predicted = [None] * n_models
 
@@ -206,79 +208,6 @@ class TrivialB0Model:
     def predict(self, gradient, **kwargs):
         """Return the *b=0* map."""
         return self._S0
-
-
-class FullDKIModel(BaseModel):
-    """
-    A DKI model fitted on all data (i.e., no leave-out).
-
-    In order to speed up optimization, this model fits DKI tensors only once using
-    the full dataset.
-
-    """
-
-    __slots__ = ("_S0", "_mask", "_model", "_b_max")
-
-    def __init__(self, gtab, data, S0=None, mask=None, b_max=4000, **kwargs):
-        """Instantiate the wrapped tensor model."""
-        from dipy.reconst.dki import DiffusionKurtosisModel
-
-        super().__init__()
-
-        self._S0 = None
-        if S0 is not None:
-            self._S0 = np.clip(
-                S0.astype("float32") / S0.max(),
-                a_min=1e-5,
-                a_max=1.0,
-            )
-        self._mask = mask
-        if mask is None and S0 is not None:
-            self._mask = self._S0 > np.percentile(self._S0, 35)
-
-        # All-true mask if not available
-        if self._mask is None:
-            self._mask = np.ones(data.shape[:3], dtype=bool)
-
-        if self._mask is not None:
-            self._S0 = self._S0[self._mask.astype(bool)]
-
-        # Extract number of threads before we clean kwargs
-        n_jobs = kwargs.pop("n_jobs", None)
-        kwargs = {
-            k: v
-            for k, v in kwargs.items()
-            if k
-            in (
-                "min_signal",
-                "return_S0_hat",
-                "fit_method",
-                "weighting",
-                "sigma",
-                "jac",
-            )
-        }
-        # kwargs["model_S0"] = None
-
-        if b_max and b_max > 1000:
-            # Saturate b-values at b_max, since signal stops dropping
-            gtab[-1, gtab[-1] > b_max] = b_max
-            # A possibly good alternative is completely remove very high b-values
-            # bval_mask = gtab[-1] < b_max
-            # data = data[..., bval_mask]
-            # gtab = gtab[:, bval_mask]
-            self._b_max = b_max
-
-        self._model = DiffusionKurtosisModel(_rasb2dipy(gtab), **kwargs)
-        super().fit(data, n_jobs=n_jobs, **kwargs)
-
-    def fit(self, *args, **kwargs):
-        """Do nothing."""
-
-    def predict(self, gradient, **kwargs):
-        """Ensure only acceptable arguments are passed."""
-        gradient[-1] = min(gradient[-1], self._b_max)
-        return super().predict(gradient)
 
 
 class AverageDWModel:
@@ -345,110 +274,22 @@ class AverageDWModel:
 class DTIModel(BaseModel):
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel`."""
 
-    def __init__(self, gtab, S0=None, mask=None, **kwargs):
-        """Instantiate the wrapped tensor model."""
-        from dipy.reconst.dti import TensorModel as DipyTensorModel
-
-        super().__init__()
-
-        self._S0 = None
-
-        if S0 is not None:
-            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
-
-        self._mask = mask > 0 if mask is not None else None
-        if self._mask is None and self._S0 is not None:
-            self._mask = self._S0 > np.percentile(self._S0, 35)
-
-        if self._S0 is not None:
-            self._S0 = self._S0[self._mask]
-
-        kwargs = {
-            k: v
-            for k, v in kwargs.items()
-            if k
-            in (
-                "min_signal",
-                "return_S0_hat",
-                "fit_method",
-                "weighting",
-                "sigma",
-                "jac",
-            )
-        }
-
-        self._model = DipyTensorModel(gtab, **kwargs)
-
-    def predict(self, gradient, **kwargs):
-        """Ensure no unsupported kwargs are passed."""
-        return super().predict(gradient)
+    _modelargs = (
+        "min_signal",
+        "return_S0_hat",
+        "fit_method",
+        "weighting",
+        "sigma",
+        "jac",
+    )
+    _model_class = "dipy.reconst.dti.TensorModel"
 
 
 class DKIModel(BaseModel):
     """A wrapper of :obj:`dipy.reconst.dki.DiffusionKurtosisModel`."""
 
-    def __init__(self, gtab, S0=None, mask=None, **kwargs):
-        """Instantiate the wrapped tensor model."""
-        from dipy.reconst.dki import DiffusionKurtosisModel
-
-        super().__init__()
-
-        self._S0 = None
-        if S0 is not None:
-            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
-        self._mask = mask
-        if mask is None and S0 is not None:
-            self._mask = self._S0 > np.percentile(self._S0, 35)
-
-        if self._mask is not None:
-            self._S0 = self._S0[self._mask.astype(bool)]
-
-        kwargs = {
-            k: v
-            for k, v in kwargs.items()
-            if k
-            in (
-                "min_signal",
-                "return_S0_hat",
-                "fit_method",
-                "weighting",
-                "sigma",
-                "jac",
-            )
-        }
-
-        self._model = DiffusionKurtosisModel(gtab, **kwargs)
-
-
-class SparseFascicleModel(BaseModel):
-    """A wrapper of :obj:`dipy.reconst.sfm.SparseFascicleModel`."""
-
-    __slots__ = ("_solver", )
-
-    def __init__(self, gtab, S0=None, mask=None, solver=None, **kwargs):
-        """Instantiate the wrapped model."""
-        from dipy.reconst.sfm import SparseFascicleModel
-
-        super().__init__()
-
-        self._S0 = None
-        if S0 is not None:
-            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
-
-        self._mask = mask
-        if mask is None and S0 is not None:
-            self._mask = self._S0 > np.percentile(self._S0, 35)
-
-        if self._mask is not None:
-            self._S0 = self._S0[self._mask.astype(bool)]
-
-        self._solver = solver
-        if solver is None:
-            self._solver = "ElasticNet"
-
-        kwargs = {k: v for k, v in kwargs.items() if k in ("solver",)}
-
-        self._model = SparseFascicleModel(gtab, **kwargs)
+    _modelargs = DTIModel._modelargs
+    _model_class = "dipy.reconst.dki.DiffusionKurtosisModel"
 
 
 def _rasb2dipy(gradient):
@@ -467,7 +308,3 @@ def _rasb2dipy(gradient):
         warnings.filterwarnings("ignore", category=UserWarning)
         retval = gradient_table(gradient[3, :], gradient[:3, :].T)
     return retval
-
-
-def _model_fit(model, data):
-    return model.fit(data)

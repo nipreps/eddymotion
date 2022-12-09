@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.estimator - eddymotion 0.1.7.dev50+g899a927 documentation</title>
+        <title>eddymotion.estimator - eddymotion 0.1.7.dev56+g5426311 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev50+g899a927 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev56+g5426311 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev50 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev56 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev50 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev56 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -286,16 +286,20 @@
             <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
 
-            <span class="n">dwmodel</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">single_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"b0"</span><span class="p">,</span> <span class="s2">"s0"</span><span class="p">,</span> <span class="s2">"avg"</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">single_model</span><span class="p">:</span>
-                <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
-                <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
-                    <span class="n">gtab</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span>
-                    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-                    <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"fulldki"</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span>
+
+            <span class="n">single_model</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"b0"</span><span class="p">,</span> <span class="s2">"s0"</span><span class="p">,</span> <span class="s2">"avg"</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"fulldki"</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
+            <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+                <span class="n">gtab</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">if</span> <span class="n">single_model</span> <span class="k">else</span> <span class="kc">None</span>
 
             <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing in &lt;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
@@ -306,6 +310,8 @@
                             <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
                         <span class="p">)</span>
                         <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">logo_split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">grad_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">, b=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">"</span>
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">grad_str</span><span class="si">}</span><span class="s2">], </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> jobs"</span><span class="p">)</span>
 
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">single_model</span><span class="p">:</span>  <span class="c1"># A true LOGO estimator</span>
                             <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
@@ -362,12 +368,18 @@
                         <span class="n">result</span> <span class="o">=</span> <span class="n">registration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">))</span><span class="o">.</span><span class="n">outputs</span>
 
                         <span class="c1"># read output transform</span>
-                        <span class="n">xform</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">ITKLinearTransform</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span>
-                            <span class="n">result</span><span class="o">.</span><span class="n">forward_transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                        <span class="p">)</span><span class="o">.</span><span class="n">to_ras</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span><span class="o">=</span><span class="n">moving</span><span class="p">)</span>
+                        <span class="n">xform</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">Affine</span><span class="p">(</span>
+                            <span class="n">nt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">ITKLinearTransform</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span>
+                                <span class="n">result</span><span class="o">.</span><span class="n">forward_transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">to_ras</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span><span class="o">=</span><span class="n">moving</span><span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="c1"># debugging: generate aligned file for testing</span>
+                        <span class="n">xform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">moving</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span>
+                            <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"aligned</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.nii.gz"</span>
+                        <span class="p">)</span>
 
                         <span class="c1"># update</span>
-                        <span class="n">dwdata</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xform</span><span class="p">)</span>
+                        <span class="n">dwdata</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xform</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
                         <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span></div></div>

@@ -44,7 +44,7 @@ class ModelFactory:
             return AverageDWModel(gtab=gtab, **kwargs)
 
         # Generate a GradientTable object for DIPY
-        if model.lower() in ("dti", "dki"):
+        if model.lower() in ("dti", "dki", "shore"):
             Model = globals()[f"{model.upper()}Model"]
             return Model(gtab, **kwargs)
 
@@ -285,11 +285,28 @@ class DTIModel(BaseModel):
     _model_class = "dipy.reconst.dti.TensorModel"
 
 
-class DKIModel(BaseModel):
+class DKIModel(DTIModel):
     """A wrapper of :obj:`dipy.reconst.dki.DiffusionKurtosisModel`."""
 
-    _modelargs = DTIModel._modelargs
     _model_class = "dipy.reconst.dki.DiffusionKurtosisModel"
+
+
+class SHOREModel(BaseModel):
+    """A wrapper of :obj:`dipy.reconst.shore.ShoreModel`."""
+
+    _modelargs = (
+        "radial_order",
+        "zeta",
+        "lambdaN",
+        "lambdaL",
+        "tau",
+        "constrain_e0",
+        "positive_constraint",
+        "pos_grid",
+        "pos_radius",
+        "cvxpy_solver",
+    )
+    _model_class = "dipy.reconst.shore.ShoreModel"
 
 
 def _rasb2dipy(gradient):

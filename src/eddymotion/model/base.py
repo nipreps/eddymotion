@@ -293,6 +293,82 @@ class AverageDWModel:
         return self._data
 
 
+class PETModel:
+    """A PET imaging realignment model based on B-Spline approximation."""
+
+    __slots__ = ("_t", "_x0", "_x1", "_order", "_coeff", "_mask", "_shape")
+
+    def __init__(self, timepoints, n_ctrl=None, mask=None, order=3, **kwargs):
+        """
+        Create the B-Spline interpolating matrix.
+
+        Parameters:
+        -----------
+        timepoints : :obj:`list`
+            The timing (in sec) of each PET volume.
+            E.g., ``[20.,   40.,   60.,  120.,  180.,  240.,  360.,  480.,  600.,
+            900., 1200., 1800., 2400., 3000.]``
+
+        n_ctrl : :obj:`int`
+            Number of B-Spline control points. If `None`, then one control point every
+            six timepoints will be used. The less control points, the smoother is the
+            model.
+
+        """
+        self._order = order
+        self._mask = mask
+
+        x = np.array(timepoints)
+        self._x0 = x[0]
+        x -= self._x0
+
+        self._x1 = x[-1]
+        x /= self._x1
+
+        # Calculate index coordinates in the B-Spline grid
+        n_ctrl = n_ctrl or (len(timepoints) // 6) + 1
+        x *= n_ctrl
+
+        # B-Spline knots
+        self._t = np.linspace(-2.0, float(n_ctrl) + 2.0, n_ctrl + 4)
+
+    def fit(self, data, timepoints, *args, **kwargs):
+        """Do nothing."""
+        from scipy.interpolate import BSpline
+        from scipy.sparse.linalg import cg
+
+        self._shape = data.shape[:3]
+
+        # Convert data into V (voxels) x T (timepoints)
+        data = (
+            data.reshape((-1, data.shape[-1]))
+            if self._mask is None else data[self._mask]
+        )
+
+        x = (np.array(timepoints) - self._x0) / self._x1
+        A = BSpline.design_matrix(x, self._t, k=self._order)
+
+        self._coeff, _ = cg(A.T @ A, A.T @ data)
+
+    def predict(self, timepoint, **kwargs):
+        """Return the *b=0* map."""
+        from scipy.interpolate import BSpline
+
+        x = (timepoint - self._x0) / self._x1
+        A = BSpline.design_matrix(x, self._t, k=self._order)
+
+        # A is 1 (num. timepoints) x C (num. coeff)
+        # self._coeff is C (num. coeff) x V (num. voxels)
+        predicted = (A @ self._coeff).T
+
+        if self._mask is None:
+            return predicted.reshape(self._shape)
+
+        retval = np.zeros(self._shape, dtype="float32")
+        retval[self._mask] = predicted
+        return retval
+
+
 class DTIModel(BaseModel):
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel`."""
 

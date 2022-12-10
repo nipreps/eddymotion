@@ -138,8 +138,8 @@ class PET:
 def load(
     filename,
     brainmask_file=None,
-    volume_timings=None,
-    volume_spacings=None,
+    frame_times=None,
+    frame_duration=None,
 ):
     """Load PET data."""
     filename = Path(filename)
@@ -152,16 +152,20 @@ def load(
         affine=img.affine,
     )
 
-    if volume_timings is not None:
-        retval.timepoints = np.array(volume_timings)
-    elif volume_spacings:
-        x = np.array([
-            np.sum(volume_spacings[:i])
-            for i in range(1, len(volume_spacings) + 1)
+    if frame_times is not None:
+        retval.timepoints = np.array(frame_times, dtype="float32")
+    elif frame_duration:
+        retval.timepoints = np.array([
+            np.sum(frame_duration[:i])
+            for i in range(1, len(frame_duration) + 1)
         ])
-        retval.timepoints = x - x[0]
     else:
         raise RuntimeError("Volume timings are necessary")
+
+    assert len(retval.timepoints) == retval.dataobj.shape[-1]
+
+    # Base at t=0 sec.
+    retval.timepoints = retval.timepoints - retval.timepoints[0]
 
     if brainmask_file:
         mask = nb.load(brainmask_file)

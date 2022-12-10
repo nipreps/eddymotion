@@ -321,11 +321,9 @@ class PETModel:
         self._mask = mask
 
         self._x = np.array(timepoints, dtype="float32")
-        self._x -= self._x[0]
-        self._x /= self._x[-1]
 
         # Calculate index coordinates in the B-Spline grid
-        self._n_ctrl = n_ctrl or (len(timepoints) // 8) + 1
+        self._n_ctrl = n_ctrl or (len(timepoints) // 4) + 1
 
         # B-Spline knots
         self._t = np.arange(-3, float(self._n_ctrl) + 4, dtype="float32")
@@ -337,11 +335,9 @@ class PETModel:
 
         n_jobs = kwargs.pop("n_jobs", None) or 1
 
-        timepoints = kwargs.get("timepoints", None)
+        timepoints = kwargs.get("timepoints", None) or self._x
         x = (
             (np.array(timepoints, dtype="float32") - self._x[0]) / self._x[-1]
-            if timepoints is not None
-            else self._x
         ) * self._n_ctrl
 
         self._shape = data.shape[:3]
@@ -360,8 +356,7 @@ class PETModel:
         # One single CPU - linear execution (full model)
         if n_jobs == 1:
             self._coeff = np.array([
-                cg(ATdotA, AT @ v)[0]
-                for v in data
+                cg(ATdotA, AT @ v)[0] for v in data
             ])
             return
 
@@ -372,18 +367,18 @@ class PETModel:
                 for v in data
             )
 
-        self._coeff = np.array(results)
+        self._coeff = np.array([r[0] for r in results])
 
     def predict(self, timepoint, **kwargs):
         """Return the *b=0* map."""
         from scipy.interpolate import BSpline
 
-        x = (timepoint - self._x0) / self._x1
+        x = ((timepoint - self._x[0]) / self._x[-1]) * self._n_ctrl
         A = BSpline.design_matrix(x, self._t, k=self._order)
 
         # A is 1 (num. timepoints) x C (num. coeff)
         # self._coeff is V (num. voxels) x K - 4
-        predicted = (A @ self._coeff).T
+        predicted = np.squeeze(A @ self._coeff.T)
 
         if self._mask is None:
             return predicted.reshape(self._shape)

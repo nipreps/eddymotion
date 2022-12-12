@@ -329,7 +329,7 @@ class PETModel:
         self._t = np.arange(-3, float(self._n_ctrl) + 4, dtype="float32")
 
     def fit(self, data, *args, **kwargs):
-        """Do nothing."""
+        """Fit the model."""
         from scipy.interpolate import BSpline
         from scipy.sparse.linalg import cg
 

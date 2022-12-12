@@ -24,16 +24,18 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 from dataclasses import dataclass
-from typing import Any
+from typing import Optional, Dict
 
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
+
 from nipype.interfaces.ants.registration import Registration
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
 from eddymotion.model import ModelFactory
+from eddymotion.dmri import DWI
 
 
 class EddyMotionEstimator:
@@ -98,13 +100,13 @@ class EddyMotionEstimator:
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
 
-        astore = AlignStore(dwdata, reg_target_type, bmask_img, align_kwargs)
-
         n_iter = len(models)
         for i_iter, model in enumerate(models):
             reg_target_type = (
                 "dwi" if model.lower() not in ("b0", "s0", "avg", "average", "mean") else "b0"
             )
+            astore = AlignStore(dwdata, reg_target_type, bmask_img, align_kwargs)
+
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
 
@@ -187,18 +189,24 @@ class EddyMotionEstimator:
 
 @dataclass
 class AlignStore:
-    dwdata: Any
-    reg_target_type: Any
-    bmask_img: Any
-    align_kwargs: Any
+    dwdata: DWI
+    reg_target_type: str
+    bmask_img: Optional[str]
+    align_kwargs: Dict
 
-    def fit(self, tmpdir, data_test, fixed, moving):
+    def fit(
+        self,
+        tmpdir: Path,
+        data_test: np.ndarray,
+        fixed: Path,
+        moving: Path,
+    ):
         self.data_test = data_test
         self.fixed = fixed
         self.moving = moving
         self.tmpdir = tmpdir
 
-    def transform(self, b_ix, i_iter):
+    def transform(self, b_ix: int, i_iter: int) -> nt.linear.Affine:
         registration = Registration(
             terminal_output="file",
             from_file=pkg_fn(

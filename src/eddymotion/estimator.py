@@ -142,7 +142,7 @@ class EddyMotionEstimator:
                         )
                         data_train, data_test = dwdata.logo_split(b_ix, with_b0=True)
                         grad_str = f"{b_ix}, {data_test[1][:3]}, b={int(data_test[1][3])}"
-                        pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
+                        pbar.set_descriptio_str(f"[{grad_str}], {n_jobs} jobs")
 
                         if not single_model:  # A true LOGO estimator
                             # Factory creates the appropriate model and pipes arguments

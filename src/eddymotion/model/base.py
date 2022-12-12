@@ -146,8 +146,11 @@ class BaseModel:
 
         # Add fourth axis to mask if missing
         mask = (
-            self._mask[..., None] if self._mask is not None and self._mask.ndim == 3 else self._mask
+            self._mask[..., None]
+            if self._mask is not None and self._mask.ndim == 3
+            else self._mask
         )
+
         # Select voxels within mask or just unravel 3D if no mask
         data = (
             np.ma.masked_array(data, mask=np.broadcast_to(mask, data.shape)).data

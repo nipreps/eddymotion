@@ -109,8 +109,11 @@ class EddyMotionEstimator:
             if hasattr(dwdata, "gradients"):
                 kwargs["gtab"] = dwdata.gradients
 
-            if hasattr(dwdata, "timepoints"):
-                kwargs["timepoints"] = dwdata.timepoints
+            if hasattr(dwdata, "frame_time"):
+                kwargs["timepoints"] = dwdata.frame_time
+
+            if hasattr(dwdata, "total_duration"):
+                kwargs["xlim"] = dwdata.total_duration
 
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)

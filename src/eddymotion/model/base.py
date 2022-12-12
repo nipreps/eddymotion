@@ -295,9 +295,9 @@ class AverageDWModel:
 class PETModel:
     """A PET imaging realignment model based on B-Spline approximation."""
 
-    __slots__ = ("_t", "_x", "_order", "_coeff", "_mask", "_shape", "_n_ctrl")
+    __slots__ = ("_t", "_x", "_xlim", "_order", "_coeff", "_mask", "_shape", "_n_ctrl")
 
-    def __init__(self, timepoints=None, n_ctrl=None, mask=None, order=3, **kwargs):
+    def __init__(self, timepoints=None, xlim=None, n_ctrl=None, mask=None, order=3, **kwargs):
         """
         Create the B-Spline interpolating matrix.
 
@@ -305,8 +305,8 @@ class PETModel:
         -----------
         timepoints : :obj:`list`
             The timing (in sec) of each PET volume.
-            E.g., ``[20.,   40.,   60.,  120.,  180.,  240.,  360.,  480.,  600.,
-            900., 1200., 1800., 2400., 3000.]``
+            E.g., ``[15.,   45.,   75.,  105.,  135.,  165.,  210.,  270.,  330.,
+            420.,  540.,  750., 1050., 1350., 1650., 1950., 2250., 2550.]``
 
         n_ctrl : :obj:`int`
             Number of B-Spline control points. If `None`, then one control point every
@@ -314,13 +314,19 @@ class PETModel:
             model.
 
         """
-        if timepoints is None:
+        if timepoints is None or xlim is None:
             raise TypeError("timepoints must be provided in initialization")
 
         self._order = order
         self._mask = mask
 
         self._x = np.array(timepoints, dtype="float32")
+        self._xlim = xlim
+
+        if self._x[0] < 1e-2:
+            raise ValueError("First frame midpoint should not be zero or negative")
+        if self._x[-1] > (self._xlim - 1e-2):
+            raise ValueError("Last frame midpoint should not be equal or greater than duration")
 
         # Calculate index coordinates in the B-Spline grid
         self._n_ctrl = n_ctrl or (len(timepoints) // 4) + 1
@@ -336,9 +342,7 @@ class PETModel:
         n_jobs = kwargs.pop("n_jobs", None) or 1
 
         timepoints = kwargs.get("timepoints", None) or self._x
-        x = (
-            (np.array(timepoints, dtype="float32") - self._x[0]) / self._x[-1]
-        ) * self._n_ctrl
+        x = (np.array(timepoints, dtype="float32") / self._xlim) * self._n_ctrl
 
         self._shape = data.shape[:3]
 
@@ -373,7 +377,8 @@ class PETModel:
         """Return the *b=0* map."""
         from scipy.interpolate import BSpline
 
-        x = ((timepoint - self._x[0]) / self._x[-1]) * self._n_ctrl
+        # Project sample timing into B-Spline coordinates
+        x = (timepoint / self._xlim) * self._n_ctrl
         A = BSpline.design_matrix(x, self._t, k=self._order)
 
         # A is 1 (num. timepoints) x C (num. coeff)

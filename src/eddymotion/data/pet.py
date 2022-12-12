@@ -48,8 +48,11 @@ class PET:
     """Best affine for RAS-to-voxel conversion of coordinates (NIfTI header)."""
     brainmask = attr.ib(default=None, repr=_data_repr)
     """A boolean ndarray object containing a corresponding brainmask."""
-    timepoints = attr.ib(default=None, repr=_data_repr)
-    """A 1D numpy array with the timing of each sample."""
+    frame_time = attr.ib(default=None, repr=_data_repr)
+    """A 1D numpy array with the midpoint timing of each sample."""
+    total_duration = attr.ib(default=None, repr=_data_repr)
+    """A float number represaenting the total duration of acquisition."""
+
     em_affines = attr.ib(default=None)
     """
     List of :obj:`nitransforms.linear.Affine` objects that bring
@@ -138,7 +141,7 @@ class PET:
 def load(
     filename,
     brainmask_file=None,
-    frame_times=None,
+    frame_time=None,
     frame_duration=None,
 ):
     """Load PET data."""
@@ -152,20 +155,22 @@ def load(
         affine=img.affine,
     )
 
-    if frame_times is not None:
-        retval.timepoints = np.array(frame_times, dtype="float32")
-    elif frame_duration:
-        retval.timepoints = np.array([
-            np.sum(frame_duration[:i])
-            for i in range(1, len(frame_duration) + 1)
-        ])
-    else:
-        raise RuntimeError("Volume timings are necessary")
+    if frame_time is None:
+        raise RuntimeError(
+            "Start time of frames is mandatory (see https://bids-specification.readthedocs.io/"
+            "en/stable/glossary.html#objects.metadata.FrameTimesStart)"
+        )
 
-    assert len(retval.timepoints) == retval.dataobj.shape[-1]
+    frame_time = np.array(frame_time, dtype="float32") - frame_time[0]
+    if frame_duration is None:
+        frame_duration = np.diff(frame_time)
+        if len(frame_duration) == (retval.dataobj.shape[-1] - 1):
+            frame_duration = np.append(frame_duration, frame_duration[-1])
 
-    # Base at t=0 sec.
-    retval.timepoints = retval.timepoints - retval.timepoints[0]
+    retval.total_duration = frame_time[-1] + frame_duration[-1]
+    retval.frame_time = frame_time + 0.5 * np.array(frame_duration, dtype="float32")
+
+    assert len(retval.frame_time) == retval.dataobj.shape[-1]
 
     if brainmask_file:
         mask = nb.load(brainmask_file)

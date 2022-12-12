@@ -40,7 +40,7 @@ def _data_repr(value):
 
 @attr.s(slots=True)
 class PET:
-    """Data representation structure for dMRI data."""
+    """Data representation structure for PET data."""
 
     dataobj = attr.ib(default=None, repr=_data_repr)
     """A numpy ndarray object for the data array, without *b=0* volumes."""

@@ -21,10 +21,11 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """A model-based algorithm for the realignment of dMRI data."""
+import gc
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
-from dataclasses import dataclass, field
-from typing import Optional, Dict
+from dataclasses import dataclass
+from typing import Optional, Dict, Union, List, Tuple
 
 import nibabel as nb
 import nitransforms as nt
@@ -100,16 +101,14 @@ class EddyMotionEstimator:
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
 
-        aligner = Aligner(dwdata, reg_target_type, bmask_img, align_kwargs)
+        aligner = Aligner(dwdata, bmask_img, align_kwargs, models)
 
         n_iter = len(models)
         for i_iter, model in enumerate(models):
-            reg_target_type = (
-                "dwi" if model.lower() not in ("b0", "s0", "avg", "average", "mean") else "b0"
-            )
-
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
+
+            aligner.set_model_iter(i_iter)
 
             single_model = model.lower() in (
                 "b0",
@@ -136,11 +135,6 @@ class EddyMotionEstimator:
                 print(f"Processing in <{tmpdir}>")
 
                 with tqdm(total=len(index_order), unit="dwi") as pbar:
-
-                    # Initialize the ANTs registration object for the current model iteration
-                    tmpdir = Path(tmpdir)
-                    aligner.fit(tmpdir, data_test, fixed, moving, i_iter)
-
                     # run a original-to-synthetic affine registration
                     for b_ix in index_order:
                         pbar.set_description_str(
@@ -165,27 +159,22 @@ class EddyMotionEstimator:
                                 n_jobs=n_jobs,
                             )
 
-                        # prepare data for running ANTs
-                        moving = tmpdir / f"moving{b_ix:05d}.nii.gz"
-                        fixed = tmpdir / f"fixed{b_ix:05d}.nii.gz"
-                        _to_nifti(data_test[0], dwdata.affine, moving)
-                        _to_nifti(
-                            dwmodel.predict(
-                                data_test[1]
-                            ),  # generate a synthetic dw volume for the test gradient
-                            dwdata.affine,
-                            fixed,
-                            clip=reg_target_type == "dwi",
-                        )
-
+                        # predict the gradient
+                        predicted = dwmodel.predict(data_test[1])
                         pbar.set_description_str(
                             f"Pass {i_iter + 1}/{n_iter} | Realign b-index <{b_ix}>"
                         )
-                        xform = aligner.transform(b_ix)
+
+                        # Initialize the ANTs registration object for the current model iteration
+                        xform = aligner.transform(Path(tmpdir), data_test, b_ix, predicted)
 
                         # update
                         dwdata.set_transform(b_ix, xform.matrix)
                         pbar.update()
+
+                        # free memory
+                        del xform, predicted, data_train, data_test, dwmodel
+                        gc.collect()
 
         return dwdata.em_affines
 
@@ -198,94 +187,97 @@ class Aligner:
     ----------
     dwdata : :obj:`~eddymotion.data.DWI`
         The DWI data object.
-    reg_target_type : :obj:`str`
-        The type of target image to use for registration. Either ``dwi`` or ``b0``.
     bmask_img : :obj:`str`
         Path to a brain mask image.
     align_kwargs : :obj:`dict`
         Additional keyword arguments to pass to the ANTs registration call.
-    transforms : :obj:`dict`
-        A dictionary of :obj:`~eddymotion.data.Transform` objects, keyed by
-        the b-index of the gradient.
+    models : :obj:`list` of :obj:`str`
+        List of model names.
 
     """
 
     dwdata: DWI
-    reg_target_type: str
     bmask_img: Optional[str]
     align_kwargs: Dict
-    transforms: Dict = field(default_factory=Dict, init=False)
+    models: Union[List[str], Tuple[str]]
 
-    def fit(
-        self,
-        tmpdir: Path,
-        data_test: np.ndarray,
-        fixed: Path,
-        moving: Path,
-        i_iter: int,
-    ):
-        """Initialize ANTs registration object.
+    def set_model_iter(self, i_iter: int) -> None:
+        """Set the model iteration."""
+        self._model_iter = i_iter
 
-        Parameters
-        ----------
-        tmpdir : :obj:`pathlib.Path`
-            Path to a temporary directory.
-        data_test : :obj:`numpy.ndarray`
-            The test data.
-        fixed : :obj:`pathlib.Path`
-            Path to the fixed image.
-        moving : :obj:`pathlib.Path`
-            Path to the moving image.
-        i_iter : :obj:`int`
-            The current model index iteration.
+    @property
+    def model(self) -> str:
+        """Return the model name."""
+        return self.models[self._model_iter]
 
-        """
-        self.data_test = data_test
-        self.fixed = fixed
-        self.moving = moving
-        self.tmpdir = tmpdir
-        self.i_iter = i_iter
-        self.registration = Registration(
-            terminal_output="file",
-            from_file=pkg_fn(
-                "eddymotion",
-                f"config/dwi-to-{self.reg_target_type}_level{self.i_iter}.json",
-            ),
-            fixed_image=str(self.fixed.absolute()),
-            moving_image=str(self.moving.absolute()),
-            **self.align_kwargs,
+    @property
+    def reg_target_type(self) -> str:
+        """Return the registration target type."""
+        return (
+            "dwi"
+            if self.models[self._model_iter].lower() not in ("b0", "s0", "avg", "average", "mean")
+            else "b0"
         )
-        if self.bmask_img:
-            self.registration.inputs.fixed_image_masks = ["NULL", self.bmask_img]
 
-    def transform(self, b_ix: int) -> nt.linear.Affine:
+    def transform(
+        self, basedir: Path, data_test: np.ndarray, b_ix: int, predicted: np.ndarray
+    ) -> nt.linear.Affine:
         """Run ANTs registration and return the resulting transform.
 
         Parameters
         ----------
+        basedir : :obj:`pathlib.Path`
+            Path to a working directory.
+        data_test : :obj:`numpy.ndarray`
+            The test data.
         b_ix : :obj:`int`
             The index of the current gradient.
+        predicted : :obj:`numpy.ndarray`
+            The predicted dw volume for the test gradient.
 
         """
 
+        if self.bmask_img:
+            self.registration.inputs.fixed_image_masks = ["NULL", self.bmask_img]
+
+        # prepare data for running ANTs
+        moving = basedir / f"moving{b_ix:05d}.nii.gz"
+        fixed = basedir / f"fixed{b_ix:05d}.nii.gz"
+        _to_nifti(data_test[0], self.dwdata.affine, moving)
+        _to_nifti(
+            predicted,  # generate a synthetic dw volume for the test gradient
+            self.dwdata.affine,
+            fixed,
+            clip=self.reg_target_type == "dwi",
+        )
+
+        self.registration = Registration(
+            terminal_output="file",
+            from_file=pkg_fn(
+                "eddymotion",
+                f"config/dwi-to-{self.reg_target_type}_level{self._model_iter}.json",
+            ),
+            fixed_image=str(fixed.absolute()),
+            moving_image=str(moving.absolute()),
+            **self.align_kwargs,
+        )
+
         if self.dwdata.em_affines and self.dwdata.em_affines[b_ix] is not None:
-            mat_file = self.tmpdir / f"init_{self.i_iter}_{b_ix:05d}.mat"
+            mat_file = basedir / f"init_{self._model_iter}_{b_ix:05d}.mat"
             self.dwdata.em_affines[b_ix].to_filename(mat_file, fmt="itk")
             self.registration.inputs.initial_moving_transform = str(mat_file)
 
         # read output transform
         xform = nt.linear.Affine(
             nt.io.itk.ITKLinearTransform.from_filename(
-                self.registration.run(cwd=str(self.tmpdir)).outputs.forward_transforms[0]
-            ).to_ras(reference=self.fixed, moving=self.moving),
+                self.registration.run(cwd=str(basedir)).outputs.forward_transforms[0]
+            ).to_ras(reference=fixed, moving=moving),
         )
         # debugging: generate aligned file for testing
-        xform.apply(self.moving, reference=self.fixed).to_filename(
-            self.tmpdir / f"aligned{b_ix:05d}_{int(self.data_test[1][3]):04d}.nii.gz"
+        xform.apply(moving, reference=fixed).to_filename(
+            basedir / f"aligned{b_ix:05d}_{int(data_test[1][3]):04d}.nii.gz"
         )
 
-        # Store the transform for reference
-        self.transforms[b_ix] = xform
         return xform
 
 

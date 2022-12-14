@@ -173,7 +173,7 @@ class EddyMotionEstimator:
                         pbar.update()
 
                         # free memory
-                        del xform, predicted, data_train, data_test, dwmodel
+                        del xform, predicted, data_train, data_test
                         gc.collect()
 
         return dwdata.em_affines

@@ -20,13 +20,19 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Top-level package for eddymotion."""
-from eddymotion._version import __version__
+"""Data models."""
+from eddymotion.model.base import (
+    ModelFactory,
+    AverageDWModel,
+    DKIModel,
+    DTIModel,
+    TrivialB0Model,
+)
 
-__packagename__ = "eddymotion"
-__copyright__ = "Copyright 2021, The eddymotion developers"
-__url__ = "https://github.com/nipreps/EddyMotionCorrection"
-
-DOWNLOAD_URL = (
-    f"https://github.com/nipreps/{__packagename__}/archive/{__version__}.tar.gz"
+__all__ = (
+    "ModelFactory",
+    "AverageDWModel",
+    "DKIModel",
+    "DTIModel",
+    "TrivialB0Model",
 )

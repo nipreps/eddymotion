@@ -23,7 +23,7 @@
 """Unit tests exercising the dMRI data structure."""
 import pytest
 import numpy as np
-from eddymotion.dmri import load
+from eddymotion.data.dmri import load
 
 
 def test_load(datadir, tmp_path):

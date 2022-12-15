@@ -53,18 +53,6 @@ def lovo_split(data, index):
     train_data = data.dataobj[..., ~mask]
     train_gradients = data.gradients[..., ~mask]
 
-    if with_b0:
-        train_data = np.concatenate(
-            (np.asanyarray(dwdata.bzero)[..., np.newaxis], train_data),
-            axis=-1,
-        )
-        b0vec = np.zeros((4, 1))
-        b0vec[0, 0] = 1
-        train_gradients = np.concatenate(
-            (b0vec, train_gradients),
-            axis=-1,
-        )
-
     return (
         (train_data, train_gradients),
         (data.dataobj[..., mask], data.gradients[..., mask]),

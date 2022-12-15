@@ -69,5 +69,5 @@ def lovo_split(data, index):
 
     return (
         (train_data, train_gradients),
-        (dwframe, bframe),
+        (data.dataobj[..., mask], data.gradients[..., mask]),
     )

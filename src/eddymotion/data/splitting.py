@@ -47,7 +47,7 @@ def lovo_split(data, index):
     """
 
     # if the size of the mask does not match data, cache is stale
-    mask = np.zeros(len(dwdata), dtype=bool)
+    mask = np.zeros(len(data), dtype=bool)
     mask[index] = True
 
     train_data = data.dataobj[..., ~mask]

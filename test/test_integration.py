@@ -26,7 +26,7 @@ import nibabel as nb
 import nitransforms as nt
 import numpy as np
 
-from eddymotion.dmri import DWI
+from eddymotion.data.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
 
 

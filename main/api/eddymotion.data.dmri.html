@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.estimator module" href="eddymotion.estimator.html" /><link rel="prev" title="For developers" href="../developers.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.estimator module" href="eddymotion.estimator.html" /><link rel="prev" title="eddymotion.data package" href="eddymotion.data.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.dmri module - eddymotion 0.1.7.dev58+gcc5f547 documentation</title>
+        <title>eddymotion.data.dmri module - eddymotion 0.1.7.dev62+g3dc7423 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 0.1.7.dev58+gcc5f547 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 0.1.7.dev62+g3dc7423 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev58 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev62 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev58 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev62 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -167,9 +167,16 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../developers.html">For developers</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">eddymotion.dmri module</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="eddymotion.data.html">eddymotion.data package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">eddymotion.data.dmri module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">eddymotion.data.dmri module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.estimator.html">eddymotion.estimator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eddymotion.model.html">eddymotion.model module</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="eddymotion.model.html">eddymotion.model package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="eddymotion.model.base.html">eddymotion.model.base module</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.viz.html">eddymotion.viz module</a></li>
 </ul>
 </li>
@@ -200,60 +207,60 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-eddymotion.dmri">
-<span id="eddymotion-dmri-module"></span><h1>eddymotion.dmri module<a class="headerlink" href="#module-eddymotion.dmri" title="Permalink to this headline">¶</a></h1>
+          <section id="module-eddymotion.data.dmri">
+<span id="eddymotion-data-dmri-module"></span><h1>eddymotion.data.dmri module<a class="headerlink" href="#module-eddymotion.data.dmri" title="Permalink to this headline">¶</a></h1>
 <p>Representing data in hard-disk and memory.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.dmri.</span></span><span class="sig-name descname"><span class="pre">DWI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brainmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bzero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">em_affines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fieldmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">NOTHING</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.data.dmri.</span></span><span class="sig-name descname"><span class="pre">DWI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brainmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bzero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">em_affines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fieldmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">NOTHING</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Data representation structure for dMRI data.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.affine">
-<span class="sig-name descname"><span class="pre">affine</span></span><a class="headerlink" href="#eddymotion.dmri.DWI.affine" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.affine">
+<span class="sig-name descname"><span class="pre">affine</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.affine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Best affine for RAS-to-voxel conversion of coordinates (NIfTI header).</p>
 </dd></dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.brainmask">
-<span class="sig-name descname"><span class="pre">brainmask</span></span><a class="headerlink" href="#eddymotion.dmri.DWI.brainmask" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.brainmask">
+<span class="sig-name descname"><span class="pre">brainmask</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.brainmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>A boolean ndarray object containing a corresponding brainmask.</p>
 </dd></dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.bzero">
-<span class="sig-name descname"><span class="pre">bzero</span></span><a class="headerlink" href="#eddymotion.dmri.DWI.bzero" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.bzero">
+<span class="sig-name descname"><span class="pre">bzero</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.bzero" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <em>b=0</em> reference map, preferably obtained by some smart averaging.
 If the <span class="math notranslate nohighlight">\(B_0\)</span> fieldmap is set, this <em>b=0</em> reference map should also
 be unwarped.</p>
 </dd></dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.dataobj">
-<span class="sig-name descname"><span class="pre">dataobj</span></span><a class="headerlink" href="#eddymotion.dmri.DWI.dataobj" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.dataobj">
+<span class="sig-name descname"><span class="pre">dataobj</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.dataobj" title="Permalink to this definition">¶</a></dt>
 <dd><p>A numpy ndarray object for the data array, without <em>b=0</em> volumes.</p>
 </dd></dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.em_affines">
-<span class="sig-name descname"><span class="pre">em_affines</span></span><a class="headerlink" href="#eddymotion.dmri.DWI.em_affines" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.em_affines">
+<span class="sig-name descname"><span class="pre">em_affines</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.em_affines" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of <code class="xref py py-obj docutils literal notranslate"><span class="pre">nitransforms.linear.Affine</span></code> objects that bring
 DWIs (i.e., no b=0) into alignment.</p>
 </dd></dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.fieldmap">
-<span class="sig-name descname"><span class="pre">fieldmap</span></span><a class="headerlink" href="#eddymotion.dmri.DWI.fieldmap" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.fieldmap">
+<span class="sig-name descname"><span class="pre">fieldmap</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.fieldmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>A 3D displacements field to unwarp susceptibility distortions.</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.from_filename">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI.from_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI.from_filename" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.from_filename">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.from_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.from_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read an HDF5 file from disk.</p>
 </dd></dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.gradients">
-<span class="sig-name descname"><span class="pre">gradients</span></span><a class="headerlink" href="#eddymotion.dmri.DWI.gradients" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.gradients">
+<span class="sig-name descname"><span class="pre">gradients</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.gradients" title="Permalink to this definition">¶</a></dt>
 <dd><p>A 2D numpy array of the gradient table in RAS+B format.</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.logo_split">
-<span class="sig-name descname"><span class="pre">logo_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_b0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI.logo_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI.logo_split" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.logo_split">
+<span class="sig-name descname"><span class="pre">logo_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_b0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.logo_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.logo_split" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce one fold of LOGO (leave-one-gradient-out).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -274,34 +281,34 @@ The test data/gradient come <strong>from the original dataset</strong>.</p></li>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.plot_gradients">
-<span class="sig-name descname"><span class="pre">plot_gradients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI.plot_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI.plot_gradients" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.plot_gradients">
+<span class="sig-name descname"><span class="pre">plot_gradients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.plot_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.plot_gradients" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visualize diffusion gradient.</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.plot_mosaic">
-<span class="sig-name descname"><span class="pre">plot_mosaic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI.plot_mosaic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI.plot_mosaic" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.plot_mosaic">
+<span class="sig-name descname"><span class="pre">plot_mosaic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.plot_mosaic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.plot_mosaic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visualize one direction of the dMRI dataset.</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.set_transform">
-<span class="sig-name descname"><span class="pre">set_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI.set_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI.set_transform" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.set_transform">
+<span class="sig-name descname"><span class="pre">set_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.set_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.set_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set an affine, and update data object and gradients.</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.to_filename">
-<span class="sig-name descname"><span class="pre">to_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI.to_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI.to_filename" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.to_filename">
+<span class="sig-name descname"><span class="pre">to_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.to_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.to_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write an HDF5 file to disk.</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.dmri.DWI.to_nifti">
-<span class="sig-name descname"><span class="pre">to_nifti</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_b0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#DWI.to_nifti"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.DWI.to_nifti" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.to_nifti">
+<span class="sig-name descname"><span class="pre">to_nifti</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_b0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.to_nifti"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.to_nifti" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a NIfTI 1.0 file to disk.</p>
 </dd></dl>
 </dd></dl>
 <dl class="py function">
-<dt class="sig sig-object py" id="eddymotion.dmri.load">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.dmri.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradients_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b0_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brainmask_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmap_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bvec_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bval_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b0_thres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/dmri.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.dmri.load" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.data.dmri.load">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.data.dmri.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradients_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b0_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brainmask_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmap_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bvec_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bval_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b0_thres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load DWI data.</p>
 </dd></dl>
 </section>
@@ -320,14 +327,14 @@ The test data/gradient come <strong>from the original dataset</strong>.</p></li>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../developers.html">
+          <a class="prev-page" href="eddymotion.data.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">For developers</div>
+                <div class="title">eddymotion.data package</div>
                 
               </div>
             </a>
@@ -339,7 +346,7 @@ The test data/gradient come <strong>from the original dataset</strong>.</p></li>
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="../_sources/api/eddymotion.dmri.rst.txt"
+            <a class="muted-link" href="../_sources/api/eddymotion.data.dmri.rst.txt"
                rel="nofollow">
               Show Source
             </a>

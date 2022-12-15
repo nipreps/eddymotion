@@ -1,7 +1,7 @@
-eddymotion.model package
-========================
+eddymotion.data package
+=======================
 
-.. automodule:: eddymotion.model
+.. automodule:: eddymotion.data
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,4 +12,4 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
-   eddymotion.model.base
+   eddymotion.data.dmri

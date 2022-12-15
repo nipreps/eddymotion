@@ -153,9 +153,6 @@ class EddyMotionEstimator:
                         )
                         data_train, data_test = logo_split(dwdata, i)
 
-                        grad_str = f"{i}, {data_test[1][:3]}, b={int(data_test[1][3])}"
-                        pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
-
                         if not single_model:  # A true LOGO estimator
                             if hasattr(dwdata, "gradients"):
                                 kwargs["gtab"] = data_train[1]

@@ -83,7 +83,7 @@ class DWI:
         with h5py.File(self._filepath, "r") as in_file:
             self._root = in_file["/0"]
 
-    def set_transform(self, dwframe, bvec, index, affine, order=3):
+    def set_transform(self, index, affine, order=3):
         """Set an affine, and update data object and gradients."""
         reference = namedtuple("ImageGrid", ("shape", "affine"))(
             shape=self.dataobj.shape[:3], affine=self.affine
@@ -95,6 +95,9 @@ class DWI:
             raise NotImplementedError
         else:
             xform = Affine(matrix=affine, reference=reference)
+
+        dwframe = np.asanyarray(self.dataobj[..., index])
+        bvec = np.asanyarray(self.gradients[:3, index])
 
         dwmoving = nb.Nifti1Image(dwframe, self.affine, None)
 

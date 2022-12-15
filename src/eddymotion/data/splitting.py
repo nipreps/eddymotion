@@ -34,8 +34,6 @@ def lovo_split(data, index):
         DWI object
     index : :obj:`int`
         Index of the DWI orientation to be left out in this fold.
-    with_b0 : :obj:`bool`
-        Insert the *b=0* reference at the beginning of the training dataset.
 
     Returns
     -------

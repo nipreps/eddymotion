@@ -52,7 +52,7 @@ def lovo_split(data, index):
     mask = np.zeros(len(dwdata), dtype=bool)
     mask[index] = True
 
-    train_data = dwdata.dataobj[..., ~mask]
+    train_data = data.dataobj[..., ~mask]
     train_gradients = dwdata.gradients[..., ~mask]
 
     if with_b0:

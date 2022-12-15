@@ -24,7 +24,7 @@
 import numpy as np
 
 
-def lovo_split(dwdata, dwframe, bframe, index, with_b0=False):
+def lovo_split(data, index):
     """
     Produce one fold of LOVO (leave-one-volume-out).
 

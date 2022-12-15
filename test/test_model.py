@@ -25,6 +25,7 @@ import numpy as np
 import pytest
 
 from eddymotion import model
+from eddymotion.data.splitting import lovo_split
 from eddymotion.data.dmri import DWI
 
 
@@ -94,7 +95,7 @@ def test_two_initialisations(datadir):
     dmri_dataset = DWI.from_filename(datadir / "dwi.h5")
 
     # Split data into test and train set
-    data_train, data_test = dmri_dataset.logo_split(10)
+    data_train, data_test = lovo_split(dmri_dataset, 10)
 
     # Direct initialisation
     model1 = model.AverageDWModel(

@@ -39,55 +39,6 @@ def _data_repr(value):
     return f"<{'x'.join(str(v) for v in value.shape)} ({value.dtype})>"
 
 
-def logo_split(dwdata, dwframe, bframe, index, with_b0=False):
-    """
-    Produce one fold of LOGO (leave-one-gradient-out).
-
-    Parameters
-    ----------
-    dwdata : :obj:`DWI`
-        DWI object
-    index : :obj:`int`
-        Index of the DWI orientation to be left out in this fold.
-    with_b0 : :obj:`bool`
-        Insert the *b=0* reference at the beginning of the training dataset.
-
-    Returns
-    -------
-    (train_data, train_gradients) : :obj:`tuple`
-        Training DWI and corresponding gradients.
-        Training data/gradients come **from the updated dataset**.
-    (test_data, test_gradients) :obj:`tuple`
-        Test 3D map (one DWI orientation) and corresponding b-vector/value.
-        The test data/gradient come **from the original dataset**.
-
-    """
-
-    # if the size of the mask does not match data, cache is stale
-    mask = np.zeros(len(dwdata), dtype=bool)
-    mask[index] = True
-
-    train_data = dwdata.dataobj[..., ~mask]
-    train_gradients = dwdata.gradients[..., ~mask]
-
-    if with_b0:
-        train_data = np.concatenate(
-            (np.asanyarray(dwdata.bzero)[..., np.newaxis], train_data),
-            axis=-1,
-        )
-        b0vec = np.zeros((4, 1))
-        b0vec[0, 0] = 1
-        train_gradients = np.concatenate(
-            (b0vec, train_gradients),
-            axis=-1,
-        )
-
-    return (
-        (train_data, train_gradients),
-        (dwframe, bframe),
-    )
-
-
 @attr.s(slots=True)
 class DWI:
     """Data representation structure for dMRI data."""

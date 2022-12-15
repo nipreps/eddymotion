@@ -33,7 +33,7 @@ from nitransforms.linear import Affine
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
-from eddymotion.dmri import logo_split
+from eddymotion.data.splitting import lovo_split as logo_split
 from eddymotion.model import ModelFactory
 
 

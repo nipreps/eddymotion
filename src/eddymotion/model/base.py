@@ -25,7 +25,6 @@ import warnings
 from joblib import Parallel, delayed
 import numpy as np
 from dipy.core.gradients import gradient_table
-from importlib import import_module
 
 
 def _exec_fit(model, data, chunk=None):
@@ -60,7 +59,6 @@ class ModelFactory:
             An model object compliant with DIPY's interface.
 
         """
-
         if model.lower() in ("s0", "b0"):
             return TrivialB0Model(gtab=gtab, S0=kwargs.pop("S0"))
 
@@ -86,38 +84,31 @@ class BaseModel:
 
     """
 
-    __slots__ = ("_model", "_mask", "_S0", "_b_max", "_models", "_datashape", "_n_models")
+    __slots__ = (
+        "_model",
+        "_mask",
+        "_S0",
+        "_b_max",
+        "_models",
+        "_datashape",
+    )
     _modelargs = tuple()
 
     def __init__(self, gtab, S0=None, mask=None, b_max=None, **kwargs):
         """Base initialization."""
 
+        # Setup B0 map
+        self._S0 = None
+        if S0 is not None:
+            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
+
         # Setup brain mask
         self._mask = mask
-        if "mask" in kwargs:
-            self._mask = kwargs.pop("mask")
         if mask is None and S0 is not None:
             self._mask = self._S0 > np.percentile(self._S0, 35)
 
-        # Setup B0 map
-        if "S0" in kwargs:
-            S0 = kwargs.pop("S0")
-        if S0 is not None:
-            self._S0 = np.clip(
-                S0.astype("float32") / S0.max(),
-                a_min=1e-5,
-                a_max=1.0,
-            )
-            # Select voxels within mask or just unravel 3D if no mask
-            self._S0 = (
-                np.ma.masked_array(self._S0, mask=np.broadcast_to(self._mask, self._S0.shape)).data
-                if self._mask is not None
-                else self._S0.reshape(-1, self._S0.shape[-1])
-            )
-
         # Cap b-values, if requested
-        if "b_max" in kwargs:
-            b_max = kwargs.pop("b_max")
+        self._b_max = None
         if b_max and b_max > 1000:
             # Saturate b-values at b_max, since signal stops dropping
             gtab[-1, gtab[-1] > b_max] = b_max
@@ -126,8 +117,6 @@ class BaseModel:
             # data = data[..., bval_mask]
             # gtab = gtab[:, bval_mask]
             self._b_max = b_max
-        else:
-            self._b_max = None
 
         kwargs = {k: v for k, v in kwargs.items() if k in self._modelargs}
 
@@ -135,8 +124,12 @@ class BaseModel:
         if not model_str:
             raise TypeError("No model defined")
 
+        from importlib import import_module
+
         module_name, class_name = model_str.rsplit(".", 1)
-        self._model = getattr(import_module(module_name), class_name)(_rasb2dipy(gtab), **kwargs)
+        self._model = getattr(
+            import_module(module_name), class_name
+        )(_rasb2dipy(gtab), **kwargs)
 
     def fit(self, data, n_jobs=None, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
@@ -144,14 +137,10 @@ class BaseModel:
 
         self._datashape = data.shape
 
-        # Add fourth axis to mask if missing
-        mask = (
-            self._mask[..., None] if self._mask is not None and self._mask.ndim == 3 else self._mask
-        )
         # Select voxels within mask or just unravel 3D if no mask
         data = (
-            np.ma.masked_array(data, mask=np.broadcast_to(mask, data.shape)).data
-            if mask is not None
+            data[self._mask, ...]
+            if self._mask is not None
             else data.reshape(-1, data.shape[-1])
         )
 
@@ -160,24 +149,21 @@ class BaseModel:
             self._model, _ = _exec_fit(self._model, data)
             return
 
+        # Split data into chunks of group of slices
+        data_chunks = np.array_split(data, n_jobs)
+
         self._models = [None] * n_jobs
 
         # Parallelize process with joblib
-        # Split data into chunks of group of slices
         with Parallel(n_jobs=n_jobs) as executor:
             results = executor(
                 delayed(_exec_fit)(self._model, dchunk, i)
-                for i, dchunk in enumerate(np.array_split(data, n_jobs))
+                for i, dchunk in enumerate(data_chunks)
             )
-        if results:
-            for submodel, index in results:
-                self._models[index] = submodel
-        else:
-            raise RuntimeError("No results from parallel execution across data chunks.")
+        for submodel, index in results:
+            self._models[index] = submodel
 
         self._model = None  # Preempt further actions on the model
-
-        self._n_models = len(self._models) if self._model is None and self._models else 1
 
     def predict(self, gradient, **kwargs):
         """Predict asynchronously chunk-by-chunk the diffusion signal."""
@@ -186,40 +172,44 @@ class BaseModel:
 
         gradient = _rasb2dipy(gradient)
 
-        if self._n_models == 1:
-            S0 = self._S0
+        S0 = None
+        if self._S0 is not None:
+            S0 = (
+                self._S0[self._mask, ...]
+                if self._mask is not None
+                else self._S0.reshape(-1, self._S0.shape[-1])
+            )
+
+        n_models = len(self._models) if self._model is None and self._models else 1
+
+        if n_models == 1:
             predicted, _ = _exec_predict(self._model, gradient, S0=S0, **kwargs)
         else:
             S0 = (
-                np.array_split(self._S0, self._n_models)
-                if self._S0 is not None
-                else [None] * self._n_models
+                np.array_split(S0, n_models) if S0 is not None
+                else [None] * n_models
             )
 
-            predicted = [None] * self._n_models
+            predicted = [None] * n_models
 
             # Parallelize process with joblib
-            with Parallel(n_jobs=self._n_models) as executor:
+            with Parallel(n_jobs=n_models) as executor:
                 results = executor(
                     delayed(_exec_predict)(model, gradient, S0=S0[i], chunk=i, **kwargs)
                     for i, model in enumerate(self._models)
                 )
+            for subprediction, index in results:
+                predicted[index] = subprediction
 
-            if results:
-                predicted = np.vstack([r[0] for r in results])
-                if self._mask is not None:
-                    retval = np.zeros_like(self._mask, dtype="float32")
-                    if self._mask.ndim == 3:
-                        mask = self._mask.reshape(-1)
-                        retval = retval.reshape(-1)
-                    retval[mask] = predicted.reshape(-1)
-                    retval = retval.reshape(self._datashape[:-1])
-                else:
-                    retval = predicted.reshape(self._datashape[:-1])
-                return retval
+            predicted = np.hstack(predicted)
 
-            else:
-                raise RuntimeError("No results from parallel execution across data chunks.")
+        if self._mask is not None:
+            retval = np.zeros_like(self._mask, dtype="float32")
+            retval[self._mask, ...] = predicted
+        else:
+            retval = predicted.reshape(self._datashape[:-1])
+
+        return retval
 
 
 class TrivialB0Model:

@@ -83,16 +83,6 @@ class EddyMotionEstimator:
         if seed or seed == 0:
             np.random.seed(20210324 if seed is True else seed)
 
-        bmask_img = None
-        if dwdata.brainmask is not None:
-            _, bmask_img = mkstemp(suffix="_bmask.nii.gz")
-            nb.Nifti1Image(
-                dwdata.brainmask.astype("uint8"), dwdata.affine, None
-            ).to_filename(bmask_img)
-            kwargs["mask"] = dwdata.brainmask
-
-        kwargs["S0"] = _advanced_clip(dwdata.bzero)
-
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
 
@@ -103,6 +93,28 @@ class EddyMotionEstimator:
                 if model.lower() not in ("b0", "s0", "avg", "average", "mean")
                 else "b0"
             )
+
+            # When downsampling these need to be set per-level
+            bmask_img = None
+            if dwdata.brainmask is not None:
+                _, bmask_img = mkstemp(suffix="_bmask.nii.gz")
+                nb.Nifti1Image(
+                    dwdata.brainmask.astype("uint8"), dwdata.affine, None
+                ).to_filename(bmask_img)
+                kwargs["mask"] = dwdata.brainmask
+
+            if hasattr(dwdata, "bzero") and dwdata.bzero is not None:
+                kwargs["S0"] = _advanced_clip(dwdata.bzero)
+
+            if hasattr(dwdata, "gradients"):
+                kwargs["gtab"] = dwdata.gradients
+
+            if hasattr(dwdata, "frame_time"):
+                kwargs["timepoints"] = dwdata.frame_time
+
+            if hasattr(dwdata, "total_duration"):
+                kwargs["xlim"] = dwdata.total_duration
+
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
 
@@ -118,7 +130,6 @@ class EddyMotionEstimator:
 
                 # Factory creates the appropriate model and pipes arguments
                 dwmodel = ModelFactory.init(
-                    gtab=dwdata.gradients,
                     model=model,
                     **kwargs,
                 )
@@ -137,9 +148,10 @@ class EddyMotionEstimator:
                         pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
 
                         if not single_model:  # A true LOGO estimator
+                            if hasattr(dwdata, "gradients"):
+                                kwargs["gtab"] = data_train[1]
                             # Factory creates the appropriate model and pipes arguments
                             dwmodel = ModelFactory.init(
-                                gtab=data_train[1],
                                 model=model,
                                 n_jobs=n_jobs,
                                 **kwargs,

@@ -27,6 +27,7 @@ from eddymotion.model.base import (
     DKIModel,
     DTIModel,
     TrivialB0Model,
+    PETModel,
 )
 
 __all__ = (
@@ -35,4 +36,5 @@ __all__ = (
     "DKIModel",
     "DTIModel",
     "TrivialB0Model",
+    "PETModel",
 )

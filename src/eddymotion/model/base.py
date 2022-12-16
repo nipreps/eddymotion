@@ -41,7 +41,7 @@ class ModelFactory:
     """A factory for instantiating diffusion models."""
 
     @staticmethod
-    def init(gtab, model="DTI", **kwargs):
+    def init(model="DTI", **kwargs):
         """
         Instatiate a diffusion model.
 
@@ -60,15 +60,14 @@ class ModelFactory:
 
         """
         if model.lower() in ("s0", "b0"):
-            return TrivialB0Model(gtab=gtab, S0=kwargs.pop("S0"))
+            return TrivialB0Model(S0=kwargs.pop("S0"))
 
         if model.lower() in ("avg", "average", "mean"):
-            return AverageDWModel(gtab=gtab, **kwargs)
+            return AverageDWModel(**kwargs)
 
-        # Generate a GradientTable object for DIPY
-        if model.lower() in ("dti", "dki"):
+        if model.lower() in ("dti", "dki", "pet"):
             Model = globals()[f"{model.upper()}Model"]
-            return Model(gtab, **kwargs)
+            return Model(**kwargs)
 
         raise NotImplementedError(f"Unsupported model <{model}>.")
 
@@ -217,7 +216,7 @@ class TrivialB0Model:
 
     __slots__ = ("_S0",)
 
-    def __init__(self, gtab, S0=None, **kwargs):
+    def __init__(self, S0=None, **kwargs):
         """Implement object initialization."""
         if S0 is None:
             raise ValueError("S0 must be provided")
@@ -237,7 +236,7 @@ class AverageDWModel:
 
     __slots__ = ("_data", "_th_low", "_th_high", "_bias", "_stat")
 
-    def __init__(self, gtab, **kwargs):
+    def __init__(self, **kwargs):
         r"""
         Implement object initialization.
 
@@ -291,6 +290,107 @@ class AverageDWModel:
     def predict(self, gradient, **kwargs):
         """Return the average map."""
         return self._data
+
+
+class PETModel:
+    """A PET imaging realignment model based on B-Spline approximation."""
+
+    __slots__ = ("_t", "_x", "_xlim", "_order", "_coeff", "_mask", "_shape", "_n_ctrl")
+
+    def __init__(self, timepoints=None, xlim=None, n_ctrl=None, mask=None, order=3, **kwargs):
+        """
+        Create the B-Spline interpolating matrix.
+
+        Parameters:
+        -----------
+        timepoints : :obj:`list`
+            The timing (in sec) of each PET volume.
+            E.g., ``[15.,   45.,   75.,  105.,  135.,  165.,  210.,  270.,  330.,
+            420.,  540.,  750., 1050., 1350., 1650., 1950., 2250., 2550.]``
+
+        n_ctrl : :obj:`int`
+            Number of B-Spline control points. If `None`, then one control point every
+            six timepoints will be used. The less control points, the smoother is the
+            model.
+
+        """
+        if timepoints is None or xlim is None:
+            raise TypeError("timepoints must be provided in initialization")
+
+        self._order = order
+        self._mask = mask
+
+        self._x = np.array(timepoints, dtype="float32")
+        self._xlim = xlim
+
+        if self._x[0] < 1e-2:
+            raise ValueError("First frame midpoint should not be zero or negative")
+        if self._x[-1] > (self._xlim - 1e-2):
+            raise ValueError("Last frame midpoint should not be equal or greater than duration")
+
+        # Calculate index coordinates in the B-Spline grid
+        self._n_ctrl = n_ctrl or (len(timepoints) // 4) + 1
+
+        # B-Spline knots
+        self._t = np.arange(-3, float(self._n_ctrl) + 4, dtype="float32")
+
+    def fit(self, data, *args, **kwargs):
+        """Fit the model."""
+        from scipy.interpolate import BSpline
+        from scipy.sparse.linalg import cg
+
+        n_jobs = kwargs.pop("n_jobs", None) or 1
+
+        timepoints = kwargs.get("timepoints", None) or self._x
+        x = (np.array(timepoints, dtype="float32") / self._xlim) * self._n_ctrl
+
+        self._shape = data.shape[:3]
+
+        # Convert data into V (voxels) x T (timepoints)
+        data = (
+            data.reshape((-1, data.shape[-1]))
+            if self._mask is None else data[self._mask]
+        )
+
+        # A.shape = (T, K - 4); T= n. timepoints, K= n. knots (with padding)
+        A = BSpline.design_matrix(x, self._t, k=self._order)
+        AT = A.T
+        ATdotA = AT @ A
+
+        # One single CPU - linear execution (full model)
+        if n_jobs == 1:
+            self._coeff = np.array([
+                cg(ATdotA, AT @ v)[0] for v in data
+            ])
+            return
+
+        # Parallelize process with joblib
+        with Parallel(n_jobs=n_jobs) as executor:
+            results = executor(
+                delayed(cg)(ATdotA, AT @ v)
+                for v in data
+            )
+
+        self._coeff = np.array([r[0] for r in results])
+
+    def predict(self, timepoint, **kwargs):
+        """Return the *b=0* map."""
+        from scipy.interpolate import BSpline
+
+        # Project sample timing into B-Spline coordinates
+        x = (timepoint / self._xlim) * self._n_ctrl
+        A = BSpline.design_matrix(x, self._t, k=self._order)
+
+        # A is 1 (num. timepoints) x C (num. coeff)
+        # self._coeff is V (num. voxels) x K - 4
+        predicted = np.squeeze(A @ self._coeff.T)
+
+        if self._mask is None:
+            return predicted.reshape(self._shape)
+
+        retval = np.zeros(self._shape, dtype="float32")
+        retval[self._mask] = predicted
+        return retval
 
 
 class DTIModel(BaseModel):

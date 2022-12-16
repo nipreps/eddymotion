@@ -98,7 +98,6 @@ def test_two_initialisations(datadir):
 
     # Direct initialisation
     model1 = model.AverageDWModel(
-        dmri_dataset.gradients,
         S0=dmri_dataset.bzero,
         th_low=100,
         th_high=1000,

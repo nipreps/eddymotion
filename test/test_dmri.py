@@ -23,7 +23,7 @@
 """Unit tests exercising the dMRI data structure."""
 import pytest
 import numpy as np
-from eddymotion.data.dmri import load
+from src.eddymotion.data.dmri import load
 
 
 def test_load(datadir, tmp_path):
@@ -54,7 +54,11 @@ def test_load(datadir, tmp_path):
     assert np.allclose(dwi_h5.gradients, dwi_from_nifti1.gradients)
 
     # Try loading NIfTI + b-vecs/vals
-    dwi_from_nifti2 = load(dwi_nifti_path, bvec_file=bvecs_path, bval_file=bvals_path,)
+    dwi_from_nifti2 = load(
+        dwi_nifti_path,
+        bvec_file=bvecs_path,
+        bval_file=bvals_path,
+    )
 
     assert np.allclose(dwi_h5.dataobj, dwi_from_nifti2.dataobj)
     assert np.allclose(dwi_h5.bzero, dwi_from_nifti2.bzero)

@@ -30,7 +30,7 @@ from nibabel.eulerangles import euler2mat
 from nipype.interfaces.ants.registration import Registration
 from pkg_resources import resource_filename as pkg_fn
 
-from eddymotion.data.dmri import DWI
+from src.eddymotion.data.dmri import DWI
 
 
 @pytest.mark.parametrize("r_x", [0.0, 0.1, 0.3])

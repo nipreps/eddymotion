@@ -64,11 +64,13 @@ def test_average_model():
 
     tmodel_mean = model.AverageDWModel(gtab=gtab, bias=False, stat="mean")
     tmodel_median = model.AverageDWModel(gtab=gtab, bias=False, stat="median")
-    tmodel_1000 = model.AverageDWModel(
-        gtab=gtab, bias=False, th_high=1000, th_low=900
-    )
+    tmodel_1000 = model.AverageDWModel(gtab=gtab, bias=False, th_high=1000, th_low=900)
     tmodel_2000 = model.AverageDWModel(
-        gtab=gtab, bias=False, th_high=2000, th_low=900, stat="mean",
+        gtab=gtab,
+        bias=False,
+        th_high=2000,
+        th_low=900,
+        stat="mean",
     )
 
     # Verify that fit function returns nothing

@@ -69,12 +69,10 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
 
     result = registration.run(cwd=str(tmp_path)).outputs
     xform = nt.linear.Affine(
-        nt.io.itk.ITKLinearTransform.from_filename(
-            result.forward_transforms[0]
-        ).to_ras(),
+        nt.io.itk.ITKLinearTransform.from_filename(result.forward_transforms[0]).to_ras(),
         reference=b0nii,
     )
 
     coords = xfm.reference.ndcoords.T
     rms = np.sqrt(((xfm.map(coords) - xform.map(coords)) ** 2).sum(1)).mean()
-    assert  rms < 0.8
+    assert rms < 0.8

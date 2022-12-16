@@ -251,12 +251,13 @@ def _prepare_kwargs(dwdata, kwargs):
     kwargs : :obj:`dict`
         Keyword arguments.
     """
+    from eddymotion.data.filtering import advanced_clip as _advanced_clip
 
     if dwdata.brainmask is not None:
         kwargs["mask"] = dwdata.brainmask
 
     if hasattr(dwdata, "bzero") and dwdata.bzero is not None:
-        kwargs["S0"] = dwdata.bzero
+        kwargs["S0"] = _advanced_clip(dwdata.bzero)
 
     if hasattr(dwdata, "gradients"):
         kwargs["gtab"] = dwdata.gradients

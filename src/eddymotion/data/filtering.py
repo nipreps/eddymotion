@@ -23,6 +23,93 @@
 """Filtering data."""
 
 
+def gaussian_filter(data, vox_width):
+    """
+    Apply a Gaussian smoothing filter of a given width (in voxels)
+
+    Parameters
+    ----------
+    data : :obj:`numpy.ndarray`
+        The input image's data array
+    vox_width : :obj:`numbers.Number` or :obj:`tuple` or :obj:`list`
+        The smoothing kernel width in voxels
+
+    Returns
+    -------
+    data : :obj:`numpy.ndarray`
+        The smoothed dataset
+
+    """
+    from numbers import Number
+    import numpy as np
+    from scipy.ndimage import gaussian_filter as _gs
+
+    data = np.squeeze(data)  # drop unused dimensions
+    ndim = data.ndim
+
+    if isinstance(vox_width, Number):
+        vox_width = tuple([vox_width] * min(3, ndim))
+
+    # Do not smooth across time/orientation
+    if ndim == 4 and len(vox_width) == 3:
+        vox_width = (*vox_width, 0)
+
+    return _gs(data, vox_width)
+
+
+def decimate(in_file, factor, smooth=True, order=3, nonnegative=True):
+    from numbers import Number
+    import numpy as np
+    from scipy.ndimage import map_coordinates
+    import nibabel as nb
+
+    imnii = nb.load(in_file)
+    data = np.squeeze(imnii.get_fdata())
+    datashape = data.shape
+    ndim = data.ndim
+
+    if isinstance(factor, Number):
+        factor = tuple([factor] * min(3, ndim))
+
+    if ndim == 4 and len(factor) == 3:
+        factor = (*factor, 0)
+
+    if smooth:
+        if smooth is True:
+            smooth = factor
+
+        data = gaussian_filter(data, smooth)
+
+    down_grid = np.array(
+        np.meshgrid(
+            *[np.arange(_s, step=int(_f) or 1) for _s, _f in zip(datashape, factor)],
+            indexing="ij",
+        )
+    )
+    new_shape = down_grid.shape[1:]
+    newaffine = imnii.affine.copy()
+    newaffine[:3, :3] = np.array(factor[:3]) * newaffine[:3, :3]
+    # newaffine[:3, 3] += imnii.affine[:3, :3] @ (0.5 / np.array(factor[:3], dtype="float32"))
+
+    # Resample data in the new grid
+    resampled = map_coordinates(
+        data,
+        down_grid.reshape((ndim, np.prod(new_shape))),
+        order=order,
+        mode="constant",
+        cval=0,
+        prefilter=True,
+    ).reshape(new_shape)
+
+    if order > 2 and nonnegative:
+        resampled[resampled < 0] = 0
+
+    newnii = nb.Nifti1Image(resampled, newaffine, imnii.header)
+    newnii.set_sform(newaffine, code=1)
+    newnii.set_qform(newaffine, code=1)
+    return newnii
+
+
 def advanced_clip(
     data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16", invert=False
 ):

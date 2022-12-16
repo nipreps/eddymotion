@@ -55,6 +55,7 @@ autodoc_mock_imports = [
     "pandas",
     "seaborn",
     "skimage",
+    "sklearn",
     "svgutils",
     "tqdm",
     "transforms3d",

@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 1
 
    eddymotion.data.dmri
+   eddymotion.data.pet

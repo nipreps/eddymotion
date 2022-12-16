@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.model.base - eddymotion 0.1.7.dev68+g0353039 documentation</title>
+        <title>eddymotion.model.base - eddymotion 0.1.7.dev78+g962ff19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 0.1.7.dev68+g0353039 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 0.1.7.dev78+g962ff19 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev68 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev78 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev68 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev78 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -168,6 +168,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../developers.html">For developers</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
@@ -250,7 +251,7 @@
     <span class="sd">"""A factory for instantiating diffusion models."""</span>
 
 <div class="viewcode-block" id="ModelFactory.init"><a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.ModelFactory.init">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">"DTI"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">"DTI"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Instatiate a diffusion model.</span>
 
@@ -269,15 +270,14 @@
 
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"s0"</span><span class="p">,</span> <span class="s2">"b0"</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">TrivialB0Model</span><span class="p">(</span><span class="n">gtab</span><span class="o">=</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"S0"</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">TrivialB0Model</span><span class="p">(</span><span class="n">S0</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"S0"</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"avg"</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">AverageDWModel</span><span class="p">(</span><span class="n">gtab</span><span class="o">=</span><span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">AverageDWModel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="c1"># Generate a GradientTable object for DIPY</span>
-        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"dti"</span><span class="p">,</span> <span class="s2">"dki"</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"dti"</span><span class="p">,</span> <span class="s2">"dki"</span><span class="p">,</span> <span class="s2">"pet"</span><span class="p">):</span>
             <span class="n">Model</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">Model"</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported model &lt;</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&gt;."</span><span class="p">)</span></div></div>
 
@@ -426,7 +426,7 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_S0"</span><span class="p">,)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Implement object initialization."""</span>
         <span class="k">if</span> <span class="n">S0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"S0 must be provided"</span><span class="p">)</span>
@@ -446,7 +446,7 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_data"</span><span class="p">,</span> <span class="s2">"_th_low"</span><span class="p">,</span> <span class="s2">"_th_high"</span><span class="p">,</span> <span class="s2">"_bias"</span><span class="p">,</span> <span class="s2">"_stat"</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Implement object initialization.</span>
 
@@ -500,6 +500,107 @@
 <div class="viewcode-block" id="AverageDWModel.predict"><a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.AverageDWModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Return the average map."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span></div></div>
+
+
+<div class="viewcode-block" id="PETModel"><a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.PETModel">[docs]</a><span class="k">class</span> <span class="nc">PETModel</span><span class="p">:</span>
+    <span class="sd">"""A PET imaging realignment model based on B-Spline approximation."""</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_t"</span><span class="p">,</span> <span class="s2">"_x"</span><span class="p">,</span> <span class="s2">"_xlim"</span><span class="p">,</span> <span class="s2">"_order"</span><span class="p">,</span> <span class="s2">"_coeff"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">,</span> <span class="s2">"_shape"</span><span class="p">,</span> <span class="s2">"_n_ctrl"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timepoints</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_ctrl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Create the B-Spline interpolating matrix.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        timepoints : :obj:`list`</span>
+<span class="sd">            The timing (in sec) of each PET volume.</span>
+<span class="sd">            E.g., ``[15.,   45.,   75.,  105.,  135.,  165.,  210.,  270.,  330.,</span>
+<span class="sd">            420.,  540.,  750., 1050., 1350., 1650., 1950., 2250., 2550.]``</span>
+
+<span class="sd">        n_ctrl : :obj:`int`</span>
+<span class="sd">            Number of B-Spline control points. If `None`, then one control point every</span>
+<span class="sd">            six timepoints will be used. The less control points, the smoother is the</span>
+<span class="sd">            model.</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">timepoints</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"timepoints must be provided in initialization"</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="n">order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">mask</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">timepoints</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xlim</span> <span class="o">=</span> <span class="n">xlim</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1e-2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"First frame midpoint should not be zero or negative"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xlim</span> <span class="o">-</span> <span class="mf">1e-2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Last frame midpoint should not be equal or greater than duration"</span><span class="p">)</span>
+
+        <span class="c1"># Calculate index coordinates in the B-Spline grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_ctrl</span> <span class="o">=</span> <span class="n">n_ctrl</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">timepoints</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># B-Spline knots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ctrl</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PETModel.fit"><a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.PETModel.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Fit the model."""</span>
+        <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">BSpline</span>
+        <span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">cg</span>
+
+        <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"n_jobs"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span>
+
+        <span class="n">timepoints</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"timepoints"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">timepoints</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xlim</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ctrl</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="c1"># Convert data into V (voxels) x T (timepoints)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># A.shape = (T, K - 4); T= n. timepoints, K= n. knots (with padding)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">BSpline</span><span class="o">.</span><span class="n">design_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">)</span>
+        <span class="n">AT</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">ATdotA</span> <span class="o">=</span> <span class="n">AT</span> <span class="o">@</span> <span class="n">A</span>
+
+        <span class="c1"># One single CPU - linear execution (full model)</span>
+        <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                <span class="n">cg</span><span class="p">(</span><span class="n">ATdotA</span><span class="p">,</span> <span class="n">AT</span> <span class="o">@</span> <span class="n">v</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span>
+            <span class="p">])</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Parallelize process with joblib</span>
+        <span class="k">with</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">executor</span><span class="p">(</span>
+                <span class="n">delayed</span><span class="p">(</span><span class="n">cg</span><span class="p">)(</span><span class="n">ATdotA</span><span class="p">,</span> <span class="n">AT</span> <span class="o">@</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="PETModel.predict"><a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.PETModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Return the *b=0* map."""</span>
+        <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">BSpline</span>
+
+        <span class="c1"># Project sample timing into B-Spline coordinates</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">timepoint</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xlim</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ctrl</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">BSpline</span><span class="o">.</span><span class="n">design_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">)</span>
+
+        <span class="c1"># A is 1 (num. timepoints) x C (num. coeff)</span>
+        <span class="c1"># self._coeff is V (num. voxels) x K - 4</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">A</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coeff</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">predicted</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">)</span>
+
+        <span class="n">retval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
+        <span class="n">retval</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">predicted</span>
+        <span class="k">return</span> <span class="n">retval</span></div></div>
 
 
 <div class="viewcode-block" id="DTIModel"><a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.DTIModel">[docs]</a><span class="k">class</span> <span class="nc">DTIModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>

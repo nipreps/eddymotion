@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.data.dmri module" href="eddymotion.data.dmri.html" /><link rel="prev" title="For developers" href="../developers.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.estimator module" href="eddymotion.estimator.html" /><link rel="prev" title="eddymotion.data.dmri module" href="eddymotion.data.dmri.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.data package - eddymotion 0.1.7.dev78+g962ff19 documentation</title>
+        <title>eddymotion.data.pet module - eddymotion 0.1.7.dev78+g962ff19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -167,9 +167,9 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../developers.html">For developers</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">eddymotion.data package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="eddymotion.data.html">eddymotion.data package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">eddymotion.data.pet module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
@@ -202,23 +202,77 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-eddymotion.data">
-<span id="eddymotion-data-package"></span><h1>eddymotion.data package<a class="headerlink" href="#module-eddymotion.data" title="Permalink to this headline">¶</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
-</ul>
-</div>
-</section>
+          <section id="module-eddymotion.data.pet">
+<span id="eddymotion-data-pet-module"></span><h1>eddymotion.data.pet module<a class="headerlink" href="#module-eddymotion.data.pet" title="Permalink to this headline">¶</a></h1>
+<p>PET data representation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.data.pet.</span></span><span class="sig-name descname"><span class="pre">PET</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brainmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">em_affines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">NOTHING</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/pet.html#PET"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.pet.PET" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Data representation structure for PET data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.affine">
+<span class="sig-name descname"><span class="pre">affine</span></span><a class="headerlink" href="#eddymotion.data.pet.PET.affine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Best affine for RAS-to-voxel conversion of coordinates (NIfTI header).</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.brainmask">
+<span class="sig-name descname"><span class="pre">brainmask</span></span><a class="headerlink" href="#eddymotion.data.pet.PET.brainmask" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean ndarray object containing a corresponding brainmask.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.dataobj">
+<span class="sig-name descname"><span class="pre">dataobj</span></span><a class="headerlink" href="#eddymotion.data.pet.PET.dataobj" title="Permalink to this definition">¶</a></dt>
+<dd><p>A numpy ndarray object for the data array, without <em>b=0</em> volumes.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.em_affines">
+<span class="sig-name descname"><span class="pre">em_affines</span></span><a class="headerlink" href="#eddymotion.data.pet.PET.em_affines" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <code class="xref py py-obj docutils literal notranslate"><span class="pre">nitransforms.linear.Affine</span></code> objects that bring
+PET timepoints into alignment.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.frame_time">
+<span class="sig-name descname"><span class="pre">frame_time</span></span><a class="headerlink" href="#eddymotion.data.pet.PET.frame_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A 1D numpy array with the midpoint timing of each sample.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.from_filename">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/pet.html#PET.from_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.pet.PET.from_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read an HDF5 file from disk.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.set_transform">
+<span class="sig-name descname"><span class="pre">set_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/pet.html#PET.set_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.pet.PET.set_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an affine, and update data object and gradients.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.to_filename">
+<span class="sig-name descname"><span class="pre">to_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/pet.html#PET.to_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.pet.PET.to_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write an HDF5 file to disk.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.to_nifti">
+<span class="sig-name descname"><span class="pre">to_nifti</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_b0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/pet.html#PET.to_nifti"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.pet.PET.to_nifti" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a NIfTI 1.0 file to disk.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eddymotion.data.pet.PET.total_duration">
+<span class="sig-name descname"><span class="pre">total_duration</span></span><a class="headerlink" href="#eddymotion.data.pet.PET.total_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>A float number represaenting the total duration of acquisition.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.data.pet.load">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.data.pet.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brainmask_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/pet.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.pet.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load PET data.</p>
+</dd></dl>
 </section>
 
         </article>
@@ -226,23 +280,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="eddymotion.data.dmri.html">
+          <a class="next-page" href="eddymotion.estimator.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">eddymotion.data.dmri module</div>
+                <div class="title">eddymotion.estimator module</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../developers.html">
+          <a class="prev-page" href="eddymotion.data.dmri.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">For developers</div>
+                <div class="title">eddymotion.data.dmri module</div>
                 
               </div>
             </a>
@@ -254,7 +308,7 @@
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="../_sources/api/eddymotion.data.rst.txt"
+            <a class="muted-link" href="../_sources/api/eddymotion.data.pet.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -262,27 +316,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">eddymotion.data package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

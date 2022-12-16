@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.viz module" href="eddymotion.viz.html" /><link rel="prev" title="eddymotion.model package" href="eddymotion.model.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.model.base module - eddymotion 0.1.7.dev68+g0353039 documentation</title>
+        <title>eddymotion.model.base module - eddymotion 0.1.7.dev78+g962ff19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 0.1.7.dev68+g0353039 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 0.1.7.dev78+g962ff19 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev68 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev78 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev68 (dev)</span>
+  <span class="sidebar-brand-text">0.1.7.dev78 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -169,6 +169,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../developers.html">For developers</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
@@ -212,7 +213,7 @@
 <p>A factory class that adapts DIPY’s dMRI models.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="eddymotion.model.base.AverageDWModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.base.</span></span><span class="sig-name descname"><span class="pre">AverageDWModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#AverageDWModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.AverageDWModel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.base.</span></span><span class="sig-name descname"><span class="pre">AverageDWModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#AverageDWModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.AverageDWModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A trivial model that returns an average map.</p>
 <dl class="py method">
@@ -265,7 +266,7 @@ and to read (see <a class="reference external" href="https://www.youtube.com/wat
 <p>A factory for instantiating diffusion models.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eddymotion.model.base.ModelFactory.init">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DTI'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#ModelFactory.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.ModelFactory.init" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DTI'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#ModelFactory.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.ModelFactory.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instatiate a diffusion model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -285,8 +286,24 @@ Options: <code class="docutils literal notranslate"><span class="pre">"DTI"</spa
 </dd></dl>
 </dd></dl>
 <dl class="py class">
+<dt class="sig sig-object py" id="eddymotion.model.base.PETModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.base.</span></span><span class="sig-name descname"><span class="pre">PETModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timepoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_ctrl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#PETModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.PETModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A PET imaging realignment model based on B-Spline approximation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.base.PETModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#PETModel.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.PETModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the model.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.base.PETModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timepoint</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#PETModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.PETModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <em>b=0</em> map.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
 <dt class="sig sig-object py" id="eddymotion.model.base.TrivialB0Model">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.base.</span></span><span class="sig-name descname"><span class="pre">TrivialB0Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#TrivialB0Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.TrivialB0Model" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.base.</span></span><span class="sig-name descname"><span class="pre">TrivialB0Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#TrivialB0Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.base.TrivialB0Model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A trivial model that returns a <em>b=0</em> map always.</p>
 <dl class="py method">

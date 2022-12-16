@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.data.dmri - eddymotion 0.1.7.dev78+g962ff19 documentation</title>
+        <title>eddymotion.data.pet - eddymotion 0.1.7.dev78+g962ff19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -207,7 +207,7 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for eddymotion.data.dmri</h1><div class="highlight"><pre>
+          <h1>Source code for eddymotion.data.pet</h1><div class="highlight"><pre>
 <span></span><span class="c1"># emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-</span>
 <span class="c1"># vi: set ft=python sts=4 ts=4 sw=4 et:</span>
 <span class="c1">#</span>
@@ -230,11 +230,10 @@
 <span class="c1">#</span>
 <span class="c1">#     https://www.nipreps.org/community/licensing/</span>
 <span class="c1">#</span>
-<span class="sd">"""Representing data in hard-disk and memory."""</span>
+<span class="sd">"""PET data representation."""</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">mkdtemp</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span> <span class="nn">attr</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
@@ -249,9 +248,9 @@
     <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="s1">'x'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&gt;"</span>
 
 
-<div class="viewcode-block" id="DWI"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">DWI</span><span class="p">:</span>
-    <span class="sd">"""Data representation structure for dMRI data."""</span>
+<div class="viewcode-block" id="PET"><a class="viewcode-back" href="../../../api/eddymotion.data.pet.html#eddymotion.data.pet.PET">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PET</span><span class="p">:</span>
+    <span class="sd">"""Data representation structure for PET data."""</span>
 
     <span class="n">dataobj</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="n">_data_repr</span><span class="p">)</span>
     <span class="sd">"""A numpy ndarray object for the data array, without *b=0* volumes."""</span>
@@ -259,21 +258,16 @@
     <span class="sd">"""Best affine for RAS-to-voxel conversion of coordinates (NIfTI header)."""</span>
     <span class="n">brainmask</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="n">_data_repr</span><span class="p">)</span>
     <span class="sd">"""A boolean ndarray object containing a corresponding brainmask."""</span>
-    <span class="n">bzero</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="n">_data_repr</span><span class="p">)</span>
-    <span class="sd">"""</span>
-<span class="sd">    A *b=0* reference map, preferably obtained by some smart averaging.</span>
-<span class="sd">    If the :math:`B_0` fieldmap is set, this *b=0* reference map should also</span>
-<span class="sd">    be unwarped.</span>
-<span class="sd">    """</span>
-    <span class="n">gradients</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="n">_data_repr</span><span class="p">)</span>
-    <span class="sd">"""A 2D numpy array of the gradient table in RAS+B format."""</span>
+    <span class="n">frame_time</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="n">_data_repr</span><span class="p">)</span>
+    <span class="sd">"""A 1D numpy array with the midpoint timing of each sample."""</span>
+    <span class="n">total_duration</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="n">_data_repr</span><span class="p">)</span>
+    <span class="sd">"""A float number represaenting the total duration of acquisition."""</span>
+
     <span class="n">em_affines</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="sd">"""</span>
 <span class="sd">    List of :obj:`nitransforms.linear.Affine` objects that bring</span>
-<span class="sd">    DWIs (i.e., no b=0) into alignment.</span>
+<span class="sd">    PET timepoints into alignment.</span>
 <span class="sd">    """</span>
-    <span class="n">fieldmap</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="n">_data_repr</span><span class="p">)</span>
-    <span class="sd">"""A 3D displacements field to unwarp susceptibility distortions."""</span>
     <span class="n">_filepath</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span>
         <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">mkdtemp</span><span class="p">())</span> <span class="o">/</span> <span class="s2">"em_cache.h5"</span><span class="p">,</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -284,96 +278,28 @@
         <span class="sd">"""Obtain the number of high-*b* orientations."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-<div class="viewcode-block" id="DWI.logo_split"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI.logo_split">[docs]</a>    <span class="k">def</span> <span class="nf">logo_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Produce one fold of LOGO (leave-one-gradient-out).</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        index : :obj:`int`</span>
-<span class="sd">            Index of the DWI orientation to be left out in this fold.</span>
-<span class="sd">        with_b0 : :obj:`bool`</span>
-<span class="sd">            Insert the *b=0* reference at the beginning of the training dataset.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        (train_data, train_gradients) : :obj:`tuple`</span>
-<span class="sd">            Training DWI and corresponding gradients.</span>
-<span class="sd">            Training data/gradients come **from the updated dataset**.</span>
-<span class="sd">        (test_data, test_gradients) :obj:`tuple`</span>
-<span class="sd">            Test 3D map (one DWI orientation) and corresponding b-vector/value.</span>
-<span class="sd">            The test data/gradient come **from the original dataset**.</span>
-
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filepath</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filepath</span><span class="p">)</span>
-
-        <span class="c1"># read original DWI data &amp; b-vector</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filepath</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">in_file</span><span class="p">:</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="n">in_file</span><span class="p">[</span><span class="s2">"/0"</span><span class="p">]</span>
-            <span class="n">dwframe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">"dataobj"</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">])</span>
-            <span class="n">bframe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">"gradients"</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">])</span>
-
-        <span class="c1"># if the size of the mask does not match data, cache is stale</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="n">mask</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="n">train_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">]</span>
-        <span class="n">train_gradients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">with_b0</span><span class="p">:</span>
-            <span class="n">train_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bzero</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">train_data</span><span class="p">),</span>
-                <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">b0vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-            <span class="n">b0vec</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">train_gradients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">b0vec</span><span class="p">,</span> <span class="n">train_gradients</span><span class="p">),</span>
-                <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_gradients</span><span class="p">),</span>
-            <span class="p">(</span><span class="n">dwframe</span><span class="p">,</span> <span class="n">bframe</span><span class="p">),</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="DWI.set_transform"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI.set_transform">[docs]</a>    <span class="k">def</span> <span class="nf">set_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="PET.set_transform"><a class="viewcode-back" href="../../../api/eddymotion.data.pet.html#eddymotion.data.pet.PET.set_transform">[docs]</a>    <span class="k">def</span> <span class="nf">set_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
         <span class="sd">"""Set an affine, and update data object and gradients."""</span>
         <span class="n">reference</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">"ImageGrid"</span><span class="p">,</span> <span class="p">(</span><span class="s2">"shape"</span><span class="p">,</span> <span class="s2">"affine"</span><span class="p">))(</span>
             <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">affine</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span>
         <span class="p">)</span>
-
-        <span class="c1"># create a nitransforms object</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fieldmap</span><span class="p">:</span>
-            <span class="c1"># compose fieldmap into transform</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">xform</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">affine</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">)</span>
+        <span class="n">xform</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">affine</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filepath</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filepath</span><span class="p">)</span>
 
-        <span class="c1"># read original DWI data &amp; b-vector</span>
+        <span class="c1"># read original PET</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filepath</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">in_file</span><span class="p">:</span>
             <span class="n">root</span> <span class="o">=</span> <span class="n">in_file</span><span class="p">[</span><span class="s2">"/0"</span><span class="p">]</span>
-            <span class="n">dwframe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">"dataobj"</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">])</span>
-            <span class="n">bvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">"gradients"</span><span class="p">][:</span><span class="mi">3</span><span class="p">,</span> <span class="n">index</span><span class="p">])</span>
+            <span class="n">dframe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">"dataobj"</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">])</span>
 
-        <span class="n">dwmoving</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">dwframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">dmoving</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># resample and update orientation at index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span>
-            <span class="n">xform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">dwmoving</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span>
+            <span class="n">xform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">dmoving</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="c1"># invert transform transform b-vector and origin</span>
-        <span class="n">r_bvec</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">xform</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">([</span><span class="n">bvec</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)])</span>
-        <span class="c1"># Reset b-vector's origin</span>
-        <span class="n">new_bvec</span> <span class="o">=</span> <span class="n">r_bvec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_bvec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1"># Normalize and update</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_bvec</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">new_bvec</span><span class="p">)</span>
 
         <span class="c1"># update transform</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">em_affines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -381,17 +307,17 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">xform</span></div>
 
-<div class="viewcode-block" id="DWI.to_filename"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI.to_filename">[docs]</a>    <span class="k">def</span> <span class="nf">to_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compression_opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PET.to_filename"><a class="viewcode-back" href="../../../api/eddymotion.data.pet.html#eddymotion.data.pet.PET.to_filename">[docs]</a>    <span class="k">def</span> <span class="nf">to_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compression_opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""Write an HDF5 file to disk."""</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".h5"</span><span class="p">):</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.h5"</span>
 
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
-            <span class="n">out_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Format"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"EMC/DWI"</span>
+            <span class="n">out_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Format"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"EMC/PET"</span>
             <span class="n">out_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Version"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">root</span> <span class="o">=</span> <span class="n">out_file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"/0"</span><span class="p">)</span>
-            <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Type"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"dwi"</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Type"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"pet"</span>
             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_"</span><span class="p">):</span>
                     <span class="k">continue</span>
@@ -405,33 +331,13 @@
                         <span class="n">compression_opts</span><span class="o">=</span><span class="n">compression_opts</span><span class="p">,</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DWI.to_nifti"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI.to_nifti">[docs]</a>    <span class="k">def</span> <span class="nf">to_nifti</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">insert_b0</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PET.to_nifti"><a class="viewcode-back" href="../../../api/eddymotion.data.pet.html#eddymotion.data.pet.PET.to_nifti">[docs]</a>    <span class="k">def</span> <span class="nf">to_nifti</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">insert_b0</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">"""Write a NIfTI 1.0 file to disk."""</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">insert_b0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bzero</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span>
-        <span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">nii</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">nii</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set_xyzt_units</span><span class="p">(</span><span class="s2">"mm"</span><span class="p">)</span>
         <span class="n">nii</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DWI.plot_mosaic"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI.plot_mosaic">[docs]</a>    <span class="k">def</span> <span class="nf">plot_mosaic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Visualize one direction of the dMRI dataset."""</span>
-        <span class="kn">from</span> <span class="nn">eddymotion.viz</span> <span class="kn">import</span> <span class="n">plot_dwi</span>
-
-        <span class="k">return</span> <span class="n">plot_dwi</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bzero</span> <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
-            <span class="n">gradient</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="DWI.plot_gradients"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI.plot_gradients">[docs]</a>    <span class="k">def</span> <span class="nf">plot_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Visualize diffusion gradient."""</span>
-        <span class="kn">from</span> <span class="nn">eddymotion.viz</span> <span class="kn">import</span> <span class="n">plot_gradients</span>
-
-        <span class="k">return</span> <span class="n">plot_gradients</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DWI.from_filename"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.DWI.from_filename">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="PET.from_filename"><a class="viewcode-back" href="../../../api/eddymotion.data.pet.html#eddymotion.data.pet.PET.from_filename">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">"""Read an HDF5 file from disk."""</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">in_file</span><span class="p">:</span>
@@ -442,59 +348,43 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../api/eddymotion.data.dmri.html#eddymotion.data.dmri.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../api/eddymotion.data.pet.html#eddymotion.data.pet.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
     <span class="n">filename</span><span class="p">,</span>
-    <span class="n">gradients_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">b0_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">brainmask_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">fmap_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">bvec_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">bval_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">b0_thres</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">frame_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">frame_duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">"""Load DWI data."""</span>
+    <span class="sd">"""Load PET data."""</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".h5"</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">DWI</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">gradients_file</span><span class="p">:</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">gradients_file</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-
-        <span class="k">if</span> <span class="n">bvec_file</span> <span class="ow">and</span> <span class="n">bval_file</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="s2">"Gradients table file and b-vec/val files are defined; "</span>
-                <span class="s2">"dismissing b-vec/val files."</span>
-            <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">bvec_file</span> <span class="ow">and</span> <span class="n">bval_file</span><span class="p">:</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">bvec_file</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">),</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">bval_file</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">),</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"A gradients file is necessary"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PET</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
     <span class="n">img</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="n">fulldata</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
-    <span class="n">retval</span> <span class="o">=</span> <span class="n">DWI</span><span class="p">(</span><span class="n">affine</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">affine</span><span class="p">,)</span>
-    <span class="n">gradmsk</span> <span class="o">=</span> <span class="n">grad</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b0_thres</span>
-    <span class="n">retval</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="n">grad</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">gradmsk</span><span class="p">]</span>
-    <span class="n">retval</span><span class="o">.</span><span class="n">dataobj</span> <span class="o">=</span> <span class="n">fulldata</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">gradmsk</span><span class="p">]</span>
+    <span class="n">retval</span> <span class="o">=</span> <span class="n">PET</span><span class="p">(</span>
+        <span class="n">dataobj</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">),</span>
+        <span class="n">affine</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">b0_file</span><span class="p">:</span>
-        <span class="n">b0img</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">b0_file</span><span class="p">)</span>
-        <span class="n">retval</span><span class="o">.</span><span class="n">bzero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">b0img</span><span class="o">.</span><span class="n">dataobj</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">gradmsk</span><span class="p">):</span>
-        <span class="n">retval</span><span class="o">.</span><span class="n">bzero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">fulldata</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">~</span><span class="n">gradmsk</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">frame_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">"Start time of frames is mandatory (see https://bids-specification.readthedocs.io/"</span>
+            <span class="s2">"en/stable/glossary.html#objects.metadata.FrameTimesStart)"</span>
+        <span class="p">)</span>
+
+    <span class="n">frame_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">frame_time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">-</span> <span class="n">frame_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">frame_duration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">frame_duration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">frame_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame_duration</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">retval</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">frame_duration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frame_duration</span><span class="p">,</span> <span class="n">frame_duration</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">retval</span><span class="o">.</span><span class="n">total_duration</span> <span class="o">=</span> <span class="n">frame_time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">frame_duration</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">retval</span><span class="o">.</span><span class="n">frame_time</span> <span class="o">=</span> <span class="n">frame_time</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">frame_duration</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">retval</span><span class="o">.</span><span class="n">frame_time</span><span class="p">)</span> <span class="o">==</span> <span class="n">retval</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">brainmask_file</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">brainmask_file</span><span class="p">)</span>
         <span class="n">retval</span><span class="o">.</span><span class="n">brainmask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">dataobj</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">fmap_file</span><span class="p">:</span>
-        <span class="n">fmapimg</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fmap_file</span><span class="p">)</span>
-        <span class="n">retval</span><span class="o">.</span><span class="n">fieldmap</span> <span class="o">=</span> <span class="n">fmapimg</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">(</span><span class="n">fmapimg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">retval</span></div>
 </pre></div>

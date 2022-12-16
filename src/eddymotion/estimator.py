@@ -36,7 +36,7 @@ from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
 from eddymotion.model import ModelFactory
-from eddymotion.dmri import DWI
+from eddymotion.data.dmri import DWI
 
 
 class EddyMotionEstimator:

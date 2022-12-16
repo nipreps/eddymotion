@@ -24,8 +24,8 @@
 import numpy as np
 import pytest
 
-from src.eddymotion import model
-from src.eddymotion.data.dmri import DWI
+from eddymotion import model
+from eddymotion.data.dmri import DWI
 
 
 def test_trivial_model():

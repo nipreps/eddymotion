@@ -26,8 +26,8 @@ import nibabel as nb
 import nitransforms as nt
 import numpy as np
 
-from src.eddymotion.data.dmri import DWI
-from src.eddymotion.estimator import EddyMotionEstimator
+from eddymotion.data.dmri import DWI
+from eddymotion.estimator import EddyMotionEstimator
 
 
 def test_proximity_estimator_trivial_model(datadir, tmp_path):

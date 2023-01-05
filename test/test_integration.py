@@ -82,7 +82,7 @@ def test_proximity_estimator_trivial_model(datadir, tmp_path):
 
     estimator = EddyMotionEstimator()
     em_affines = estimator.fit(
-        dwdata=dwi_motion, models=("b0", ), align_kwargs=None, seed=None
+        dwdata=dwi_motion, models=("b0",), align_kwargs=None, seed=None
     )
 
     # Uncomment to see the realigned dataset
@@ -95,4 +95,5 @@ def test_proximity_estimator_trivial_model(datadir, tmp_path):
     coords = xfms.reference.ndcoords.T
     for i, est in enumerate(em_affines):
         xfm = nt.linear.Affine(xfms.matrix[i], reference=b0nii)
+        est = nt.linear.Affine(est.matrix, reference=b0nii)
         assert np.sqrt(((xfm.map(coords) - est.map(coords)) ** 2).sum(1)).mean() < 0.2

@@ -167,9 +167,9 @@ class DWI:
 
         # update transform
         if self.em_affines is None:
-            self.em_affines = [None] * len(self)
+            self.em_affines = np.zeros((self.dataobj.shape[-1], 4, 4))
 
-        self.em_affines[index] = xform
+        self.em_affines[index] = xform._matrix
 
     def to_filename(self, filename, compression=None, compression_opts=None):
         """Write an HDF5 file to disk."""
@@ -197,9 +197,11 @@ class DWI:
 
     def to_nifti(self, filename, insert_b0=False):
         """Write a NIfTI 1.0 file to disk."""
-        data = self.dataobj if not insert_b0 else np.concatenate((
-            self.bzero[..., np.newaxis], self.dataobj
-        ), axis=-1)
+        data = (
+            self.dataobj
+            if not insert_b0
+            else np.concatenate((self.bzero[..., np.newaxis], self.dataobj), axis=-1)
+        )
         nii = nb.Nifti1Image(data, self.affine, None)
         nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
@@ -267,7 +269,9 @@ def load(
 
     img = nb.load(filename)
     fulldata = img.get_fdata(dtype="float32")
-    retval = DWI(affine=img.affine,)
+    retval = DWI(
+        affine=img.affine,
+    )
     gradmsk = grad[-1] > b0_thres
     retval.gradients = grad[..., gradmsk]
     retval.dataobj = fulldata[..., gradmsk]

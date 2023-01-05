@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """A model-based algorithm for the realignment of dMRI data."""
+from collections import namedtuple
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 
@@ -28,6 +29,7 @@ import nibabel as nb
 import nitransforms as nt
 import numpy as np
 from nipype.interfaces.ants.registration import Registration
+from nitransforms.linear import Affine
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
@@ -42,7 +44,7 @@ class EddyMotionEstimator:
         dwdata,
         *,
         align_kwargs=None,
-        models=("b0", ),
+        models=("b0",),
         omp_nthreads=None,
         n_jobs=None,
         seed=None,
@@ -106,10 +108,13 @@ class EddyMotionEstimator:
             index_order = np.arange(len(dwdata))
             np.random.shuffle(index_order)
 
-            single_model = (
-                model.lower() in ("b0", "s0", "avg", "average", "mean")
-                or model.lower().startswith("full")
-            )
+            single_model = model.lower() in (
+                "b0",
+                "s0",
+                "avg",
+                "average",
+                "mean",
+            ) or model.lower().startswith("full")
 
             dwmodel = None
             if single_model:
@@ -182,9 +187,23 @@ class EddyMotionEstimator:
                         if bmask_img:
                             registration.inputs.fixed_image_masks = ["NULL", bmask_img]
 
-                        if dwdata.em_affines and dwdata.em_affines[i] is not None:
+                        if dwdata.em_affines is not None and np.any(
+                            dwdata.em_affines[i]
+                        ):
+                            reference = namedtuple("ImageGrid", ("shape", "affine"))(
+                                shape=dwdata.dataobj.shape[:3], affine=dwdata.affine
+                            )
+
+                            # create a nitransforms object
+                            if dwdata.fieldmap:
+                                # compose fieldmap into transform
+                                raise NotImplementedError
+                            else:
+                                initial_xform = Affine(
+                                    matrix=dwdata.em_affines[i], reference=reference
+                                )
                             mat_file = tmpdir / f"init_{i_iter}_{i:05d}.mat"
-                            dwdata.em_affines[i].to_filename(mat_file, fmt="itk")
+                            initial_xform.to_filename(mat_file, fmt="itk")
                             registration.inputs.initial_moving_transform = str(mat_file)
 
                         # execute ants command line

@@ -90,6 +90,8 @@ workflows:
   build_test_deploy:
     jobs:
       - tests:
+          context:
+            - nipreps-common
           filters:
             branches:
               ignore:
@@ -106,4 +108,6 @@ workflows:
               only:
                 - main
     jobs:
-      - tests
+      - tests:
+          context:
+            - nipreps-common

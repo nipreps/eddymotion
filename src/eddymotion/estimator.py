@@ -187,9 +187,7 @@ class EddyMotionEstimator:
                         if bmask_img:
                             registration.inputs.fixed_image_masks = ["NULL", bmask_img]
 
-                        if dwdata.em_affines is not None and np.any(
-                            dwdata.em_affines[i]
-                        ):
+                        if np.any(dwdata.em_affines[i, ...]):
                             reference = namedtuple("ImageGrid", ("shape", "affine"))(
                                 shape=dwdata.dataobj.shape[:3], affine=dwdata.affine
                             )

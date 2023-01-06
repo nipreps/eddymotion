@@ -169,7 +169,7 @@ class DWI:
         if self.em_affines is None:
             self.em_affines = np.zeros((self.dataobj.shape[-1], 4, 4))
 
-        self.em_affines[index] = xform._matrix
+        self.em_affines[index] = xform.matrix
 
     def to_filename(self, filename, compression=None, compression_opts=None):
         """Write an HDF5 file to disk."""

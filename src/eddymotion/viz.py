@@ -281,7 +281,27 @@ def plot_gradients(
     return ax
 
 
-def plot_carpet(nii_data, gtab, bmask, downscale_factor, output_file=None):
+def plot_carpet(nii_data, gtab, brain_mask, downscale_factor, output_file=None):
+    """
+    Return carpet plot using niworkflows carpet_plot
+
+    Parameters
+    ----------
+    nii_data : 4D numpy array
+        DW imaging data
+    gtab : :obj:`GradientTable`
+        DW imaging data gradient data
+    brain_mask : 3D numpy array
+        Boolean mask of DW imaging data
+    downscale_factor : :obj:`int`
+        Factor by which to downscale DW data in X, Y, Z (not time)
+    output_file : :obj:`string`
+        Path to save the plot
+
+    Returns
+    ---------
+    matplotlib GridSpec object
+    """
     b0_data = nii_data[..., gtab.b0s_mask]
     dw_data = nii_data[..., ~gtab.b0s_mask]
 
@@ -293,19 +313,19 @@ def plot_carpet(nii_data, gtab, bmask, downscale_factor, output_file=None):
     nii_data_downscaled = downscale_local_mean(
         nii_data_div_b0, (downscale_factor, downscale_factor, downscale_factor, 1)
     )
-    bmask_downscaled = (
+    brain_mask_downscaled = (
         downscale_local_mean(
-            bmask, (downscale_factor, downscale_factor, downscale_factor)
+            brain_mask, (downscale_factor, downscale_factor, downscale_factor)
         )
         > 0
     )
 
     # Reshape
     nii_data_reshaped = nii_data_downscaled.reshape(-1, nii_data_downscaled.shape[-1])
-    bmask_reshaped = bmask_downscaled.reshape(-1)
+    brain_mask_reshaped = brain_mask_downscaled.reshape(-1)
 
     # Apply mask
-    nii_data_masked = nii_data_reshaped[bmask_reshaped, :]
+    nii_data_masked = nii_data_reshaped[brain_mask_reshaped, :]
 
     # Plot
     return nw_plot_carpet(nii_data_masked, output_file=output_file)

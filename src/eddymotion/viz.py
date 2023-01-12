@@ -23,6 +23,8 @@
 """Visualization utilities."""
 import nibabel as nb
 import numpy as np
+from niworkflows.viz import plot_carpet as nw_plot_carpet
+from skimage.transform import downscale_local_mean
 
 
 def plot_dwi(dataobj, affine, gradient=None, **kwargs):
@@ -277,3 +279,33 @@ def plot_gradients(
         plt.suptitle(title)
 
     return ax
+
+
+def plot_carpet(nii_data, gtab, bmask, downscale_factor, output_file=None):
+    b0_data = nii_data[..., gtab.b0s_mask]
+    dw_data = nii_data[..., ~gtab.b0s_mask]
+
+    bzero = np.mean(b0_data, -1)
+
+    nii_data_div_b0 = dw_data / (np.expand_dims(bzero, 3).repeat(dw_data.shape[3], 3))
+
+    # Downscale local mean
+    nii_data_downscaled = downscale_local_mean(
+        nii_data_div_b0, (downscale_factor, downscale_factor, downscale_factor, 1)
+    )
+    bmask_downscaled = (
+        downscale_local_mean(
+            bmask, (downscale_factor, downscale_factor, downscale_factor)
+        )
+        > 0
+    )
+
+    # Reshape
+    nii_data_reshaped = nii_data_downscaled.reshape(-1, nii_data_downscaled.shape[-1])
+    bmask_reshaped = bmask_downscaled.reshape(-1)
+
+    # Apply mask
+    nii_data_masked = nii_data_reshaped[bmask_reshaped, :]
+
+    # Plot
+    return nw_plot_carpet(nii_data_masked, output_file=output_file)

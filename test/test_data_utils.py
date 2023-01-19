@@ -12,6 +12,6 @@ def test_apply_affines():
     nii = nib.Nifti1Image(nii_data, np.eye(4))
 
     # Generate synthetic affines
-    em_affines = np.concatenate([np.eye(4)[None]] * 3, 0)
+    em_affines = np.expand_dims(np.eye(4), 0).repeat(nii_data.shape[-1], 0)
 
     apply_affines(nii, em_affines)

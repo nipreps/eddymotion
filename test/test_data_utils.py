@@ -14,4 +14,6 @@ def test_apply_affines():
     # Generate synthetic affines
     em_affines = np.expand_dims(np.eye(4), 0).repeat(nii_data.shape[-1], 0)
 
-    apply_affines(nii, em_affines)
+    nii_t = apply_affines(nii, em_affines)
+
+    assert nii.shape == nii_t.shape

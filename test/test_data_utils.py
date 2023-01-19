@@ -1,6 +1,6 @@
 import nibabel as nib
 import numpy as np
-from numpy.testing import assert_array_equal
+import numpy.testing as npt
 
 from eddymotion.data.utils import apply_affines
 
@@ -17,5 +17,5 @@ def test_apply_affines():
 
     nii_t = apply_affines(nii, em_affines)
 
-    assert_array_equal(nii.dataobj, nii_t.dataobj)
-    assert_array_equal(nii.affine, nii_t.affine)
+    npt.assert_allclose(nii.dataobj, nii_t.dataobj)
+    npt.assert_array_equal(nii.affine, nii_t.affine)

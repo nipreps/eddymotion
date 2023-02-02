@@ -284,11 +284,12 @@ def plot_gradients(
 def plot_carpet(
     nii_data,
     gtab,
-    brain_mask,
+    brain_mask=None,
     downscale_factor=1,
     sort_by_bval=False,
     output_file=None,
     segment_labels=["", "", "csf", "wm"],
+    detrend=False,
 ):
     """
     Return carpet plot using niworkflows carpet_plot
@@ -309,6 +310,8 @@ def plot_carpet(
         Path to save the plot
     segment_labels : :obj:`list` of :obj:`string`
         List of segment labels to be used if brain_mask is not boolean
+    detrend : :obj:`bool`
+        niworkflows plot_carpet detrend flag
 
     Returns
     ---------
@@ -330,27 +333,40 @@ def plot_carpet(
         nii_data_div_b0, (downscale_factor, downscale_factor, downscale_factor, 1)
     )
 
-    brain_mask_downscaled = downscale_local_mean(
-        brain_mask, (downscale_factor, downscale_factor, downscale_factor)
-    )
-
     # Reshape
     nii_data_reshaped = nii_data_downscaled.reshape(-1, nii_data_downscaled.shape[-1])
-    brain_mask_reshaped = brain_mask_downscaled.reshape(-1)
 
-    # Apply mask
-    nii_data_masked = nii_data_reshaped[brain_mask_reshaped > 0, :]
+    if brain_mask is not None:
+        brain_mask_downscaled = downscale_local_mean(
+            brain_mask, (downscale_factor, downscale_factor, downscale_factor)
+        )
 
-    # Define segments
-    if brain_mask.dtype == bool:
-        segments = None
+        # Apply mask
+        brain_mask_reshaped = brain_mask_downscaled.reshape(-1)
+        nii_data_masked = nii_data_reshaped[brain_mask_reshaped > 0, :]
+
+        # Define segments
+        if brain_mask.dtype == bool:
+            segments = None
+        else:
+            dseg_mask = brain_mask_reshaped[brain_mask_reshaped > 0]
+
+            segments = dict()
+            for i, label in enumerate(segment_labels):
+                if label:
+                    segments[label] = np.where(dseg_mask == i)[0]
     else:
-        dseg_mask = brain_mask_reshaped[brain_mask_reshaped > 0]
+        nii_data_masked = nii_data_reshaped
+        segments = None
 
-        segments = dict()
-        for i, label in enumerate(segment_labels):
-            if label:
-                segments[label] = np.where(dseg_mask == i)[0]
+    bad_row_ind = np.where(~np.isfinite(nii_data_masked))[0]
+
+    good_row_ind = np.ones(nii_data_masked.shape[0], dtype=bool)
+    good_row_ind[bad_row_ind] = False
+
+    nii_data_masked = nii_data_masked[good_row_ind, :]
 
     # Plot
-    return nw_plot_carpet(nii_data_masked, segments=segments, output_file=output_file)
+    return nw_plot_carpet(
+        nii_data_masked, detrend=detrend, segments=segments, output_file=output_file
+    )

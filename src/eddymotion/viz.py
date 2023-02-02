@@ -281,7 +281,15 @@ def plot_gradients(
     return ax
 
 
-def plot_carpet(nii_data, gtab, brain_mask, downscale_factor, output_file=None):
+def plot_carpet(
+    nii_data,
+    gtab,
+    brain_mask,
+    downscale_factor=1,
+    sort_by_bval=False,
+    output_file=None,
+    segment_labels=["", "", "csf", "wm"],
+):
     """
     Return carpet plot using niworkflows carpet_plot
 
@@ -292,11 +300,15 @@ def plot_carpet(nii_data, gtab, brain_mask, downscale_factor, output_file=None):
     gtab : :obj:`GradientTable`
         DW imaging data gradient data
     brain_mask : 3D numpy array
-        Boolean mask of DW imaging data
+        Boolean or segmentation mask of DW imaging data
     downscale_factor : :obj:`int`
         Factor by which to downscale DW data in X, Y, Z (not time)
+    sort_by_bval : :obj:`bool`
+        Flag to reorder time points by bvalue
     output_file : :obj:`string`
         Path to save the plot
+    segment_labels : :obj:`list` of :obj:`string`
+        List of segment labels to be used if brain_mask is not boolean
 
     Returns
     ---------
@@ -309,15 +321,17 @@ def plot_carpet(nii_data, gtab, brain_mask, downscale_factor, output_file=None):
 
     nii_data_div_b0 = dw_data / (np.expand_dims(bzero, 3).repeat(dw_data.shape[3], 3))
 
+    if sort_by_bval:
+        sort_inds = np.argsort(gtab.bvals[~gtab.b0s_mask])
+        nii_data_div_b0 = nii_data_div_b0[..., sort_inds]
+
     # Downscale local mean
     nii_data_downscaled = downscale_local_mean(
         nii_data_div_b0, (downscale_factor, downscale_factor, downscale_factor, 1)
     )
-    brain_mask_downscaled = (
-        downscale_local_mean(
-            brain_mask, (downscale_factor, downscale_factor, downscale_factor)
-        )
-        > 0
+
+    brain_mask_downscaled = downscale_local_mean(
+        brain_mask, (downscale_factor, downscale_factor, downscale_factor)
     )
 
     # Reshape
@@ -325,7 +339,18 @@ def plot_carpet(nii_data, gtab, brain_mask, downscale_factor, output_file=None):
     brain_mask_reshaped = brain_mask_downscaled.reshape(-1)
 
     # Apply mask
-    nii_data_masked = nii_data_reshaped[brain_mask_reshaped, :]
+    nii_data_masked = nii_data_reshaped[brain_mask_reshaped > 0, :]
+
+    # Define segments
+    if brain_mask.dtype == bool:
+        segments = None
+    else:
+        dseg_mask = brain_mask_reshaped[brain_mask_reshaped > 0]
+
+        segments = dict()
+        for i, label in enumerate(segment_labels):
+            if label:
+                segments[label] = np.where(dseg_mask == i)[0]
 
     # Plot
-    return nw_plot_carpet(nii_data_masked, output_file=output_file)
+    return nw_plot_carpet(nii_data_masked, segments=segments, output_file=output_file)

@@ -1,9 +1,8 @@
-import os
-import os.path as op
-from collections import namedtuple
+from pathlib import Path
 
 import nibabel as nib
 import nitransforms as nt
+import numpy as np
 
 
 def apply_affines(nii, em_affines, output_filename=None):
@@ -21,25 +20,22 @@ def apply_affines(nii, em_affines, output_filename=None):
 
     Returns
     -------
-    transformed_nii : :obj:`Nifti1Image`
+    nii_t_img : :obj:`Nifti1Image`
         Transformed Nifti1Image data
 
     """
-    # Apply affine
-    reference = namedtuple("ImageGrid", ("shape", "affine"))(
-        shape=nii.dataobj.shape[:3], affine=nii.affine
-    )
+    transformed_nii = np.zeros(nii.shape)
+    for ii, bvecnii in enumerate(nib.four_to_three(nii)):
+        xfms = nt.linear.Affine(em_affines[ii])
+        transformed_nii[..., ii] = (~xfms).apply(bvecnii, reference=nii).get_fdata()
 
-    xfms = nt.linear.LinearTransformsMapping(em_affines)
-    transformed_nii = (~xfms).apply(nii, reference=reference)
+    nii_t_img = nib.Nifti1Image(transformed_nii, nii.affine)
 
     if output_filename is not None:
         # Ensure directories in output_filename exist
-        os.makedirs(op.split(output_filename)[0], exist_ok=True)
+        Path(output_filename).parent.mkdir(exist_ok=True)
 
         # Save as .nii
-        nii_t_img = nib.Nifti1Image(transformed_nii, transformed_nii.affine)
-
         nib.save(nii_t_img, output_filename)
 
-    return transformed_nii
+    return nii_t_img

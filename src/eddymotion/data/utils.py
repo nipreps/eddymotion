@@ -24,7 +24,8 @@ def apply_affines(nii, em_affines, output_filename=None):
         Transformed Nifti1Image data
 
     """
-    transformed_nii = np.zeros(nii.shape)
+    transformed_nii = np.zeros_like(np.asanyarray(nii.dataobj))
+
     for ii, bvecnii in enumerate(nib.four_to_three(nii)):
         xfms = nt.linear.Affine(em_affines[ii])
         transformed_nii[..., ii] = np.asanyarray(

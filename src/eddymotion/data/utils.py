@@ -39,6 +39,6 @@ def apply_affines(nii, em_affines, output_filename=None):
         Path(output_filename).parent.mkdir(exist_ok=True)
 
         # Save as .nii
-        nib.save(nii_t_img, output_filename)
+        nii_t_img.to_filename(output_filename)
 
     return nii_t_img

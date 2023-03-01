@@ -29,7 +29,7 @@ def apply_affines(nii, em_affines, output_filename=None):
         xfms = nt.linear.Affine(em_affines[ii])
         transformed_nii[..., ii] = (~xfms).apply(bvecnii, reference=nii).get_fdata()
 
-    nii_t_img = nib.Nifti1Image(transformed_nii, nii.affine)
+    nii_t_img = nii.__class__(transformed_nii, nii.affine, nii.header)
 
     if output_filename is not None:
         # Ensure directories in output_filename exist

@@ -32,7 +32,6 @@ def apply_affines(nii, em_affines, output_filename=None):
             (~xfms).apply(bvecnii, reference=nii).dataobj
         )
 
-
     nii_t_img = nii.__class__(transformed_nii, nii.affine, nii.header)
 
     if output_filename is not None:

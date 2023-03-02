@@ -14,3 +14,4 @@ Submodules
 
    eddymotion.data.dmri
    eddymotion.data.pet
+   eddymotion.data.utils

@@ -306,6 +306,9 @@ def plot_carpet(
         Path to save the plot
     segment_labels : :obj:`dict`
         Dictionary of segment labels
+        e.g. {'Cerebral_White_Matter': [2, 41],
+              'Cerebral_Cortex': [3, 42],
+              'Ventricle': [4, 14, 15, 43, 72]}
     detrend : :obj:`bool`
         niworkflows plot_carpet detrend flag
 
@@ -378,6 +381,7 @@ def get_segment_labels(
         Path to segment label text file, such as freesurfer label file
     keywords : list of :obj:`string`
         List of label keywords. All labels containing the keyword will be grouped together.
+        e.g. ["Cerebral_White_Matter", "Cerebral_Cortex", "Ventricle"]
     delimiter : :obj:`string`
         Delimiter between label index and label string in label file
         (' ' for freesurfer label file)
@@ -391,6 +395,9 @@ def get_segment_labels(
     Returns
     ---------
     dict
+    e.g. {'Cerebral_White_Matter': [2, 41],
+          'Cerebral_Cortex': [3, 42],
+          'Ventricle': [4, 14, 15, 43, 72]}
     """
     segment_labels = dict()
 

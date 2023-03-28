@@ -283,7 +283,7 @@ def plot_gradients(
 def plot_carpet(
     nii,
     gtab,
-    brain_mask=None,
+    segmentation=None,
     sort_by_bval=False,
     output_file=None,
     segment_labels=None,

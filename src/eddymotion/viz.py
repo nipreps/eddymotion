@@ -337,7 +337,7 @@ def plot_carpet(
     nii_data_reshaped = nii_data_div_b0.reshape(-1, nii_data_div_b0.shape[-1])
 
     if brain_mask is not None:
-        brain_mask_data = brain_mask.get_fdata()
+        brain_mask_data = np.asanyarray(brain_mask.dataobj, dtype=np.int16)
 
         # Apply mask
         brain_mask_reshaped = brain_mask_data.reshape(-1)

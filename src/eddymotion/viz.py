@@ -23,7 +23,7 @@
 """Visualization utilities."""
 import nibabel as nb
 import numpy as np
-from nireports.reportlets.mosaic import plot_carpet as nw_plot_carpet
+from nireports.reportlets.nuisance import plot_carpet as nw_plot_carpet
 
 
 def plot_dwi(dataobj, affine, gradient=None, **kwargs):

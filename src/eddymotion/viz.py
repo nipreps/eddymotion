@@ -325,7 +325,7 @@ def plot_carpet(
 
     bzero = np.mean(b0_data, -1)
 
-    nii_data_div_b0 = dw_data / (np.expand_dims(bzero, 3).repeat(dw_data.shape[3], 3))
+    nii_data_div_b0 = dw_data / bzero[..., np.newaxis]
 
     if sort_by_bval:
         sort_inds = np.argsort(gtab.bvals[~gtab.b0s_mask])

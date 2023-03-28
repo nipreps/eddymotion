@@ -298,7 +298,7 @@ def plot_carpet(
         DW imaging data
     gtab : :obj:`GradientTable`
         DW imaging data gradient data
-    brain_mask : Nifti1Image
+    segmentation : Nifti1Image
         Boolean or segmentation mask of DW imaging data
     sort_by_bval : :obj:`bool`
         Flag to reorder time points by bvalue

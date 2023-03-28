@@ -327,9 +327,11 @@ def plot_carpet(
 
     nii_data_div_b0 = dw_data / bzero[..., np.newaxis]
 
-    if sort_by_bval:
-        sort_inds = np.argsort(gtab.bvals[~gtab.b0s_mask])
-        nii_data_div_b0 = nii_data_div_b0[..., sort_inds]
+    sort_inds = (
+        np.argsort(gtab.bvals[~gtab.b0s_mask] if sort_by_bval
+        else np.arange(len(gtab.bvals[~gtab.b0s_mask]))
+    )
+    nii_data_div_b0 = nii_data_div_b0[..., sort_inds]
 
     # Reshape
     nii_data_reshaped = nii_data_div_b0.reshape(-1, nii_data_div_b0.shape[-1])

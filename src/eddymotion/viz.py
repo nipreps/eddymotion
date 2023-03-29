@@ -327,8 +327,9 @@ def plot_carpet(
 
     nii_data_div_b0 = dw_data / bzero[..., np.newaxis]
 
-    sort_inds = (
-        np.argsort(gtab.bvals[~gtab.b0s_mask] if sort_by_bval
+    sort_inds = np.argsort(
+        gtab.bvals[~gtab.b0s_mask]
+        if sort_by_bval
         else np.arange(len(gtab.bvals[~gtab.b0s_mask]))
     )
     nii_data_div_b0 = nii_data_div_b0[..., sort_inds]
@@ -336,13 +337,13 @@ def plot_carpet(
     # Reshape
     nii_data_reshaped = nii_data_div_b0.reshape(-1, nii_data_div_b0.shape[-1])
 
-    if brain_mask is not None:
-        brain_mask_data = np.asanyarray(brain_mask.dataobj, dtype=np.int16)
+    if segmentation is not None:
+        segmentation_data = np.asanyarray(segmentation.dataobj, dtype=np.int16)
 
         # Apply mask
-        brain_mask_reshaped = brain_mask_data.reshape(-1)
-        nii_data_masked = nii_data_reshaped[brain_mask_reshaped > 0, :]
-        brain_mask_masked = brain_mask_reshaped[brain_mask_reshaped > 0]
+        segmentation_reshaped = segmentation_data.reshape(-1)
+        nii_data_masked = nii_data_reshaped[segmentation_reshaped > 0, :]
+        segmentation_masked = segmentation_reshaped[segmentation_reshaped > 0]
 
         if segment_labels is not None:
             segments = dict()
@@ -351,7 +352,7 @@ def plot_carpet(
                 indices = np.array([], dtype=int)
                 for ii in segment_labels[label]:
                     indices = np.concatenate(
-                        [indices, np.where(brain_mask_masked == ii)[0]]
+                        [indices, np.where(segmentation_masked == ii)[0]]
                     )
                 segments[label] = indices
 

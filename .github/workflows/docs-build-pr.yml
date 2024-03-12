@@ -39,10 +39,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install --no-cache-dir "setuptools >= 45.0" "setuptools_scm[toml] >= 6.2"
+        pip install -U build hatch hatchling pip twine docutils
         pip install -r docs/requirements.txt
+        python -m hatch version | tail -n1 | xargs
 
     - name: Build docs
       run: |
-          python -m setuptools_scm  # Generate _version.py file
           make -C docs/ SPHINXOPTS="-W" BUILDDIR="$HOME/docs" OUTDIR="${CURBRANCH:-html}" html

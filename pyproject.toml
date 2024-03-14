@@ -2,6 +2,7 @@
 requires = ["hatchling", "hatch-vcs", "nipreps-versions"]
 build-backend = "hatchling.build"
 
+
 [project]
 name = "eddymotion"
 description = "Pure python eddy-current and head-motion correction for dMRI, an extension of QSIprep's SHOREline algorithm (Cieslak, 2020) to multiple diffusion models."
@@ -92,9 +93,9 @@ allow-direct-references = true
 exclude = [".git_archival.txt"]  # No longer needed in sdist
 
 [tool.hatch.build.targets.wheel]
-packages = ["eddymotion"]
+packages = ["src/eddymotion"]
 # exclude = [
-#     "sdcflows/tests/data",  # Large test data directory
+#     "eddymotion/tests/data",  # Large test data directory
 # ]
 
 
@@ -162,7 +163,7 @@ omit = [
     '*/tests/*',
     '*/__init__.py',
     '*/conftest.py',
-    'eddymotion/_version.py'
+    'src/eddymotion/_version.py'
 ]
 
 [tool.coverage.report]

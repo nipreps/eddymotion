@@ -142,8 +142,8 @@ class EddyMotionEstimator:
                 )
                 dwmodel.fit(dwdata.dataobj, n_jobs=n_jobs)
 
-            with TemporaryDirectory() as tmpdir:
-                print(f"Processing in <{tmpdir}>")
+            with TemporaryDirectory() as tmp_dir:
+                print(f"Processing in <{tmp_dir}>")
                 with tqdm(total=len(index_order), unit="dwi") as pbar:
                     # run a original-to-synthetic affine registration
                     for i in index_order:
@@ -174,9 +174,9 @@ class EddyMotionEstimator:
                         predicted = dwmodel.predict(data_test[1])
 
                         # prepare data for running ANTs
-                        tmpdir = Path(tmpdir)
-                        moving = tmpdir / f"moving{i:05d}.nii.gz"
-                        fixed = tmpdir / f"fixed{i:05d}.nii.gz"
+                        tmp_dir = Path(tmp_dir)
+                        moving = tmp_dir / f"moving{i:05d}.nii.gz"
+                        fixed = tmp_dir / f"fixed{i:05d}.nii.gz"
                         _to_nifti(data_test[0], dwdata.affine, moving)
                         _to_nifti(
                             predicted,
@@ -214,12 +214,12 @@ class EddyMotionEstimator:
                                 initial_xform = Affine(
                                     matrix=dwdata.em_affines[i], reference=reference
                                 )
-                            mat_file = tmpdir / f"init_{i_iter}_{i:05d}.mat"
+                            mat_file = tmp_dir / f"init_{i_iter}_{i:05d}.mat"
                             initial_xform.to_filename(mat_file, fmt="itk")
                             registration.inputs.initial_moving_transform = str(mat_file)
 
                         # execute ants command line
-                        result = registration.run(cwd=str(tmpdir)).outputs
+                        result = registration.run(cwd=str(tmp_dir)).outputs
 
                         # read output transform
                         xform = nt.linear.Affine(
@@ -229,7 +229,7 @@ class EddyMotionEstimator:
                         )
                         # debugging: generate aligned file for testing
                         xform.apply(moving, reference=fixed).to_filename(
-                            tmpdir / f"aligned{i:05d}_{int(data_test[1][3]):04d}.nii.gz"
+                            tmp_dir / f"aligned{i:05d}_{int(data_test[1][3]):04d}.nii.gz"
                         )
 
                         # update

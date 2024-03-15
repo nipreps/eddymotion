@@ -195,8 +195,9 @@ class DWI:
                         compression_opts=compression_opts,
                     )
 
-    def to_nifti(self, filename, insert_b0=False):
+    def to_nifti(self, filename, **kwargs):
         """Write a NIfTI 1.0 file to disk."""
+        insert_b0 = kwargs.get("insert_b0", False)
         data = (
             self.dataobj
             if not insert_b0

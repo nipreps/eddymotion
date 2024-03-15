@@ -47,8 +47,6 @@ class ModelFactory:
 
         Parameters
         ----------
-        gtab : :obj:`numpy.ndarray`
-            An array representing the gradient table in RAS+B format.
         model : :obj:`str`
             Diffusion model.
             Options: ``"DTI"``, ``"DKI"``, ``"S0"``, ``"AverageDW"``

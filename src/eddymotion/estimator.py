@@ -64,11 +64,15 @@ class EddyMotionEstimator:
             Number of iterations this particular model is going to be repeated.
         align_kwargs : :obj:`dict`
             Parameters to configure the image registration process.
-        model : :obj:`str`
+        models : :obj:`list`
             Selects the diffusion model that will generate the registration target
             corresponding to each gradient map.
             See :obj:`~eddymotion.model.ModelFactory` for allowed models (and corresponding
             keywords).
+        omp_nthreads : :obj:`int`
+            Maximum number of threads an individual process may use.
+        n_jobs : :obj:`int`
+            Number of parallel jobs.
         seed : :obj:`int` or :obj:`bool`
             Seed the random number generator (necessary when we want deterministic
             estimation).

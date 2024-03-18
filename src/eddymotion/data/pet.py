@@ -51,7 +51,7 @@ class PET:
     frame_time = attr.ib(default=None, repr=_data_repr)
     """A 1D numpy array with the midpoint timing of each sample."""
     total_duration = attr.ib(default=None, repr=_data_repr)
-    """A float number represaenting the total duration of acquisition."""
+    """A float number representing the total duration of acquisition."""
 
     em_affines = attr.ib(default=None)
     """

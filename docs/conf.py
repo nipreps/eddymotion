@@ -235,7 +235,7 @@ apidoc_extra_args = ["--module-first", "-d 1", "-T"]
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "bids": ("https://bids-standard.github.io/pybids/", None),
-    "dipy": ("https://dipy.org/documentation/latest/", None),
+    "dipy": ("https://docs.dipy.org/stable", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "nibabel": ("https://nipy.org/nibabel/", None),
     "nipype": ("https://nipype.readthedocs.io/en/latest/", None),

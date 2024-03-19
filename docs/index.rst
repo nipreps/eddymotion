@@ -1,6 +1,8 @@
 .. include:: links.rst
 .. include:: ../README.rst
    :end-line: 29
+.. include:: ../README.rst
+   :start-line: 34
 
 
 .. image:: _static/eddymotion-flowchart.svg

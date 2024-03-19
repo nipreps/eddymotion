@@ -4,3 +4,4 @@ matplotlib >= 2.2.0
 packaging
 sphinx >= 4.5
 sphinxcontrib-apidoc
+nireports

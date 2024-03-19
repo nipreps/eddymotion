@@ -291,8 +291,7 @@ def plot_carpet(
     segment_labels=None,
     detrend=False,
 ):
-    """
-    Return carpet plot using niworkflows carpet_plot
+    """Return carpet plot using niworkflows carpet_plot
 
     Parameters
     ----------
@@ -307,10 +306,8 @@ def plot_carpet(
     output_file : :obj:`string`
         Path to save the plot
     segment_labels : :obj:`dict`
-        Dictionary of segment labels
-        e.g. {'Cerebral_White_Matter': [2, 41],
-              'Cerebral_Cortex': [3, 42],
-              'Ventricle': [4, 14, 15, 43, 72]}
+        Dictionary of segment labels, mapping segment name to list of integers
+        e.g. {'Cerebral_White_Matter': [2, 41], ...}
     detrend : :obj:`bool`
         niworkflows plot_carpet detrend flag
 

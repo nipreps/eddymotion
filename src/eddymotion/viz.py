@@ -115,7 +115,7 @@ def draw_circles(positions, radius, n_samples=20):
     r"""
     Draw circular patches (lying on a sphere) at given positions.
 
-    Adapted from from `Emmanuel Caruyer's code
+    Adapted from `Emmanuel Caruyer's code
     <https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py>`__,
     which is distributed under the revised BSD License:
 
@@ -164,7 +164,7 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, cmap="viridis"):
     """
     Draw the vectors on a shell.
 
-    Adapted from from `Emmanuel Caruyer's code
+    Adapted from `Emmanuel Caruyer's code
     <https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py>`__,
     which is distributed under the revised BSD License:
 
@@ -184,7 +184,7 @@ def draw_points(gradients, ax, rad_min=0.3, rad_max=0.7, cmap="viridis"):
     gradients : array-like shape (N, 4)
         A 2D numpy array of the gradient table in RAS+B format.
     ax : :obj:`matplotlib.axes.Axis`
-        The matplolib axes instance to plot in.
+        The matplotlib axes instance to plot in.
     rad_min : :obj:`float` between 0 and 1
         Minimum radius of the circle that renders a gradient direction
     rad_max : :obj:`float` between 0 and 1

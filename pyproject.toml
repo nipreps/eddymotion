@@ -79,9 +79,6 @@ docs = ["eddymotion[doc]"]
 tests = ["eddymotion[test]"]
 all = ["eddymotion[doc,test,dev,plotting,resmon,popylar]"]
 
-[project.scripts]
-sdcflows-find-estimators = "sdcflows.cli.find_estimators:main"
-
 #
 # Hatch configurations
 #

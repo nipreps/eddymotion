@@ -39,10 +39,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -U build hatch hatchling pip twine docutils
+        pip install -U build hatch pip
         pip install -r docs/requirements.txt
-        python -m hatch version | tail -n1 | xargs
+        python -m hatch version | tail -n1
 
     - name: Build docs
       run: |
+          python -m hatch build --hooks-only
           make -C docs/ SPHINXOPTS="-W" BUILDDIR="$HOME/docs" OUTDIR="${CURBRANCH:-html}" html

@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
-    - name: Fetch all tags (for setuptools_scm to work)
-      run: |
-        /usr/bin/git -c protocol.version=2 fetch --tags --prune --unshallow origin
+      with:
+        submodules: recursive
+        fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -44,7 +44,6 @@ jobs:
         python -m twine check dist/eddymotion-*
 
         mv dist /tmp/package
-        rm -rf eddymotion.egg-info/
 
         # Interpolate version
         if [[ "$GITHUB_REF" == refs/tags/* ]]; then

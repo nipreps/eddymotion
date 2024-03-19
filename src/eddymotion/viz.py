@@ -49,11 +49,13 @@ def plot_dwi(dataobj, affine, gradient=None, **kwargs):
         nb.Nifti1Image(dataobj, affine, None),
         vmax=vmax,
         cut_coords=cut_coords,
-        title=r"Reference $b$=0"
-        if gradient is None
-        else f"""\
+        title=(
+            r"Reference $b$=0"
+            if gradient is None
+            else f"""\
 $b$={gradient[3].astype(int)}, \
-$\\vec{{b}}$ = ({', '.join(str(v) for v in gradient[:3])})""",
+$\\vec{{b}}$ = ({', '.join(str(v) for v in gradient[:3])})"""
+        ),
         **kwargs,
     )
 
@@ -328,9 +330,7 @@ def plot_carpet(
     nii_data_div_b0 = dw_data / bzero[..., np.newaxis]
 
     sort_inds = np.argsort(
-        gtab.bvals[~gtab.b0s_mask]
-        if sort_by_bval
-        else np.arange(len(gtab.bvals[~gtab.b0s_mask]))
+        gtab.bvals[~gtab.b0s_mask] if sort_by_bval else np.arange(len(gtab.bvals[~gtab.b0s_mask]))
     )
     nii_data_div_b0 = nii_data_div_b0[..., sort_inds]
 
@@ -351,9 +351,7 @@ def plot_carpet(
             for label in labels:
                 indices = np.array([], dtype=int)
                 for ii in segment_labels[label]:
-                    indices = np.concatenate(
-                        [indices, np.where(segmentation_masked == ii)[0]]
-                    )
+                    indices = np.concatenate([indices, np.where(segmentation_masked == ii)[0]])
                 segments[label] = indices
 
     else:
@@ -372,9 +370,7 @@ def plot_carpet(
     )
 
 
-def get_segment_labels(
-    filepath, keywords, delimiter=" ", index_position=0, label_position=1
-):
+def get_segment_labels(filepath, keywords, delimiter=" ", index_position=0, label_position=1):
     """
     Return segment labels for plot_carpet function
 

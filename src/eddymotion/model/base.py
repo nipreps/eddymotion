@@ -22,9 +22,10 @@
 #
 """A factory class that adapts DIPY's dMRI models."""
 import warnings
-from joblib import Parallel, delayed
+
 import numpy as np
 from dipy.core.gradients import gradient_table
+from joblib import Parallel, delayed
 
 
 def _exec_fit(model, data, chunk=None):
@@ -97,7 +98,11 @@ class BaseModel:
         # Setup B0 map
         self._S0 = None
         if S0 is not None:
-            self._S0 = np.clip(S0.astype("float32") / S0.max(), a_min=1e-5, a_max=1.0,)
+            self._S0 = np.clip(
+                S0.astype("float32") / S0.max(),
+                a_min=1e-5,
+                a_max=1.0,
+            )
 
         # Setup brain mask
         self._mask = mask
@@ -124,9 +129,7 @@ class BaseModel:
         from importlib import import_module
 
         module_name, class_name = model_str.rsplit(".", 1)
-        self._model = getattr(
-            import_module(module_name), class_name
-        )(_rasb2dipy(gtab), **kwargs)
+        self._model = getattr(import_module(module_name), class_name)(_rasb2dipy(gtab), **kwargs)
 
     def fit(self, data, n_jobs=None, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
@@ -136,9 +139,7 @@ class BaseModel:
 
         # Select voxels within mask or just unravel 3D if no mask
         data = (
-            data[self._mask, ...]
-            if self._mask is not None
-            else data.reshape(-1, data.shape[-1])
+            data[self._mask, ...] if self._mask is not None else data.reshape(-1, data.shape[-1])
         )
 
         # One single CPU - linear execution (full model)
@@ -154,8 +155,7 @@ class BaseModel:
         # Parallelize process with joblib
         with Parallel(n_jobs=n_jobs) as executor:
             results = executor(
-                delayed(_exec_fit)(self._model, dchunk, i)
-                for i, dchunk in enumerate(data_chunks)
+                delayed(_exec_fit)(self._model, dchunk, i) for i, dchunk in enumerate(data_chunks)
             )
         for submodel, index in results:
             self._models[index] = submodel
@@ -182,10 +182,7 @@ class BaseModel:
         if n_models == 1:
             predicted, _ = _exec_predict(self._model, gradient, S0=S0, **kwargs)
         else:
-            S0 = (
-                np.array_split(S0, n_models) if S0 is not None
-                else [None] * n_models
-            )
+            S0 = np.array_split(S0, n_models) if S0 is not None else [None] * n_models
 
             predicted = [None] * n_models
 
@@ -345,10 +342,7 @@ class PETModel:
         self._shape = data.shape[:3]
 
         # Convert data into V (voxels) x T (timepoints)
-        data = (
-            data.reshape((-1, data.shape[-1]))
-            if self._mask is None else data[self._mask]
-        )
+        data = data.reshape((-1, data.shape[-1])) if self._mask is None else data[self._mask]
 
         # A.shape = (T, K - 4); T= n. timepoints, K= n. knots (with padding)
         A = BSpline.design_matrix(x, self._t, k=self._order)
@@ -357,17 +351,12 @@ class PETModel:
 
         # One single CPU - linear execution (full model)
         if n_jobs == 1:
-            self._coeff = np.array([
-                cg(ATdotA, AT @ v)[0] for v in data
-            ])
+            self._coeff = np.array([cg(ATdotA, AT @ v)[0] for v in data])
             return
 
         # Parallelize process with joblib
         with Parallel(n_jobs=n_jobs) as executor:
-            results = executor(
-                delayed(cg)(ATdotA, AT @ v)
-                for v in data
-            )
+            results = executor(delayed(cg)(ATdotA, AT @ v) for v in data)
 
         self._coeff = np.array([r[0] for r in results])
 

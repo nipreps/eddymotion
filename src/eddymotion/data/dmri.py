@@ -228,9 +228,7 @@ class DWI:
         """Read an HDF5 file from disk."""
         with h5py.File(filename, "r") as in_file:
             root = in_file["/0"]
-            data = {
-                k: np.asanyarray(v) for k, v in root.items() if not k.startswith("_")
-            }
+            data = {k: np.asanyarray(v) for k, v in root.items() if not k.startswith("_")}
         return cls(**data)
 
 

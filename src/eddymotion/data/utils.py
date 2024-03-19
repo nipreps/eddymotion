@@ -28,9 +28,7 @@ def apply_affines(nii, em_affines, output_filename=None):
 
     for ii, bvecnii in enumerate(nib.four_to_three(nii)):
         xfms = nt.linear.Affine(em_affines[ii])
-        transformed_nii[..., ii] = np.asanyarray(
-            (~xfms).apply(bvecnii, reference=nii).dataobj
-        )
+        transformed_nii[..., ii] = np.asanyarray((~xfms).apply(bvecnii, reference=nii).dataobj)
 
     nii_t_img = nii.__class__(transformed_nii, nii.affine, nii.header)
 

@@ -22,12 +22,12 @@
 #
 """Data models."""
 from eddymotion.model.base import (
-    ModelFactory,
     AverageDWModel,
     DKIModel,
     DTIModel,
-    TrivialB0Model,
+    ModelFactory,
     PETModel,
+    TrivialB0Model,
 )
 
 __all__ = (

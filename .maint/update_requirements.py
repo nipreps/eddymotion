@@ -25,7 +25,11 @@ def to_min(req):
     if req.specifier:
         req = copy(req)
         try:
-            min_spec = [spec for spec in req.specifier if spec.operator in (">=", "~=")][0]
+            min_spec = [
+                spec
+                for spec in req.specifier
+                if spec.operator in (">=", "~=")
+            ][0]
         except IndexError:
             return req
         min_spec._spec = ("==",) + min_spec._spec[1:]

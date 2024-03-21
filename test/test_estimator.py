@@ -77,4 +77,4 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
 
     coords = xfm.reference.ndcoords.T
     rms = np.sqrt(((xfm.map(coords) - xform.map(coords)) ** 2).sum(1)).mean()
-    assert  rms < 0.8
+    assert rms < 0.8

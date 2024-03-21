@@ -95,18 +95,16 @@ class EddyMotionEstimator:
         n_iter = len(models)
         for i_iter, model in enumerate(models):
             reg_target_type = (
-                "dwi"
-                if model.lower() not in ("b0", "s0", "avg", "average", "mean")
-                else "b0"
+                "dwi" if model.lower() not in ("b0", "s0", "avg", "average", "mean") else "b0"
             )
 
             # When downsampling these need to be set per-level
             bmask_img = None
             if dwdata.brainmask is not None:
                 _, bmask_img = mkstemp(suffix="_bmask.nii.gz")
-                nb.Nifti1Image(
-                    dwdata.brainmask.astype("uint8"), dwdata.affine, None
-                ).to_filename(bmask_img)
+                nb.Nifti1Image(dwdata.brainmask.astype("uint8"), dwdata.affine, None).to_filename(
+                    bmask_img
+                )
                 kwargs["mask"] = dwdata.brainmask
 
             if hasattr(dwdata, "bzero") and dwdata.bzero is not None:
@@ -203,9 +201,7 @@ class EddyMotionEstimator:
                         if bmask_img:
                             registration.inputs.fixed_image_masks = ["NULL", bmask_img]
 
-                        if dwdata.em_affines is not None and np.any(
-                            dwdata.em_affines[i, ...]
-                        ):
+                        if dwdata.em_affines is not None and np.any(dwdata.em_affines[i, ...]):
                             reference = namedtuple("ImageGrid", ("shape", "affine"))(
                                 shape=dwdata.dataobj.shape[:3], affine=dwdata.affine
                             )
@@ -243,9 +239,7 @@ class EddyMotionEstimator:
         return dwdata.em_affines
 
 
-def _advanced_clip(
-    data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16", invert=False
-):
+def _advanced_clip(data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16", invert=False):
     """
     Remove outliers at both ends of the intensity distribution and fit into a given dtype.
 

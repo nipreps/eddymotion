@@ -74,8 +74,7 @@ jobs:
       - run:
           name: Initiate versioning
           command: |
-            python -m pip install -U build "setuptools >= 45" wheel "setuptools_scm >= 6.2" \
-                                  setuptools_scm_git_archive pip twine docutils
+            python3 -m pip install -U build hatch hatchling pip twine docutils
 
             pip install /tmp/src/eddymotion[all]
 

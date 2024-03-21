@@ -43,7 +43,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -U build hatch pip
-        pip install -r docs/requirements.txt
+        pip install .[doc]
         python -m hatch version | tail -n1
 
     - name: Build docs

@@ -7,7 +7,7 @@ defaults:
 
 jobs:
   stable:
-    name: Run flake8
+    name: Run ruff
     runs-on: ubuntu-latest
 
     steps:
@@ -20,4 +20,4 @@ jobs:
         with:
           python-version: 3
       - name: Lint EddyMotion
-        run: pipx run flake8-pyproject
+        run: pipx run ruff check

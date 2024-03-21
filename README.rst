@@ -6,6 +6,22 @@
    :target: https://doi.org/10.5281/zenodo.4680599
    :alt: DOI
 
+.. image:: https://img.shields.io/pypi/l/eddymotion.svg
+   :target: https://pypi.python.org/pypi/eddymotion/
+   :alt: License
+
+.. image:: https://img.shields.io/pypi/v/eddymotion.svg
+   :target: https://pypi.python.org/pypi/eddymotion/
+   :alt: Latest Version
+
+.. image:: https://github.com/nipreps/eddymotion/actions/workflows/pages/pages-build-deployment/badge.svg
+   :target: https://www.nipreps.org/eddymotion/main/index.html
+   :alt: Documentation
+
+.. image:: https://github.com/nipreps/eddymotion/actions/workflows/pythonpackage.yml/badge.svg
+   :target: https://github.com/nipreps/eddymotion/actions/workflows/pythonpackage.yml
+   :alt: Python package
+
 Retrospective estimation of head-motion between diffusion-weighted images (DWI) acquired within
 diffusion MRI (dMRI) experiments renders exceptionally challenging1 for datasets including
 high-diffusivity (or “high b”) images.

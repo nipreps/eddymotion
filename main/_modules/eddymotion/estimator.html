@@ -1,15 +1,15 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en" data-content_root="../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.estimator - eddymotion 0.1.7.dev99+g3e66f54 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/version-switch.css" />
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>eddymotion.estimator - eddymotion 24.0.0.dev143+g62a213a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/version-switch.css?v=45d66e8a" />
     
     
 
@@ -20,38 +20,38 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -60,14 +60,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -82,7 +82,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -90,7 +90,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev99+g3e66f54 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev143+g62a213a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,28 +145,28 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev99 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev143 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev99 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev143 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
   </ul>
 </div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../developers.html">For developers</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developers.html">For developers</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of For developers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of eddymotion.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.utils.html">eddymotion.data.utils module</a></li>
@@ -174,7 +174,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.estimator.html">eddymotion.estimator module</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.model.html">eddymotion.model package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.model.html">eddymotion.model package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of eddymotion.model package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.model.base.html">eddymotion.model.base module</a></li>
 </ul>
 </li>
@@ -186,6 +186,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -193,6 +194,12 @@
   <div class="main">
     <div class="content">
       <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
@@ -214,14 +221,14 @@
 <span class="c1">#</span>
 <span class="c1"># Copyright 2022 The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
 <span class="c1">#</span>
-<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
 <span class="c1"># You may obtain a copy of the License at</span>
 <span class="c1">#</span>
 <span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
 <span class="c1">#</span>
 <span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
 <span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
@@ -231,7 +238,7 @@
 <span class="c1">#</span>
 <span class="c1">#     https://www.nipreps.org/community/licensing/</span>
 <span class="c1">#</span>
-<span class="sd">"""A model-based algorithm for the realignment of dMRI data."""</span>
+<span class="sd">&quot;&quot;&quot;A model-based algorithm for the realignment of dMRI data.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">TemporaryDirectory</span><span class="p">,</span> <span class="n">mkstemp</span>
@@ -247,27 +254,31 @@
 <span class="kn">from</span> <span class="nn">eddymotion.model</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 
 
-<div class="viewcode-block" id="EddyMotionEstimator"><a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator">[docs]</a><span class="k">class</span> <span class="nc">EddyMotionEstimator</span><span class="p">:</span>
-    <span class="sd">"""Estimates rigid-body head-motion and distortions derived from eddy-currents."""</span>
+<div class="viewcode-block" id="EddyMotionEstimator">
+<a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator">[docs]</a>
+<span class="k">class</span> <span class="nc">EddyMotionEstimator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates rigid-body head-motion and distortions derived from eddy-currents.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EddyMotionEstimator.fit"><a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator.fit">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="EddyMotionEstimator.fit">
+<a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator.fit">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
         <span class="n">dwdata</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">align_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">models</span><span class="o">=</span><span class="p">(</span><span class="s2">"b0"</span><span class="p">,),</span>
+        <span class="n">models</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,),</span>
         <span class="n">omp_nthreads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sa">r</span><span class="sd">"""</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Estimate head-motion and Eddy currents.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dwdata : :obj:`~eddymotion.dmri.DWI`</span>
-<span class="sd">            The target DWI dataset, represented by this tool's internal</span>
+<span class="sd">            The target DWI dataset, represented by this tool&#39;s internal</span>
 <span class="sd">            type. The object is used in-place, and will contain the estimated</span>
 <span class="sd">            parameters in its ``em_affines`` property, as well as the rotated</span>
 <span class="sd">            *b*-vectors within its ``gradients`` property.</span>
@@ -275,11 +286,15 @@
 <span class="sd">            Number of iterations this particular model is going to be repeated.</span>
 <span class="sd">        align_kwargs : :obj:`dict`</span>
 <span class="sd">            Parameters to configure the image registration process.</span>
-<span class="sd">        model : :obj:`str`</span>
+<span class="sd">        models : :obj:`list`</span>
 <span class="sd">            Selects the diffusion model that will generate the registration target</span>
 <span class="sd">            corresponding to each gradient map.</span>
 <span class="sd">            See :obj:`~eddymotion.model.ModelFactory` for allowed models (and corresponding</span>
 <span class="sd">            keywords).</span>
+<span class="sd">        omp_nthreads : :obj:`int`</span>
+<span class="sd">            Maximum number of threads an individual process may use.</span>
+<span class="sd">        n_jobs : :obj:`int`</span>
+<span class="sd">            Number of parallel jobs.</span>
 <span class="sd">        seed : :obj:`int` or :obj:`bool`</span>
 <span class="sd">            Seed the random number generator (necessary when we want deterministic</span>
 <span class="sd">            estimation).</span>
@@ -290,58 +305,56 @@
 <span class="sd">            A list of :math:`4 \times 4` affine matrices encoding the estimated</span>
 <span class="sd">            parameters of the deformations caused by head-motion and eddy-currents.</span>
 
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">align_kwargs</span> <span class="o">=</span> <span class="n">align_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">"num_threads"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_kwargs</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">"num_threads"</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_nthreads</span>
+        <span class="k">if</span> <span class="s2">&quot;num_threads&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_kwargs</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">&quot;num_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_nthreads</span>
 
         <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i_iter</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
             <span class="n">reg_target_type</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">"dwi"</span>
-                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"b0"</span><span class="p">,</span> <span class="s2">"s0"</span><span class="p">,</span> <span class="s2">"avg"</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">)</span>
-                <span class="k">else</span> <span class="s2">"b0"</span>
+                <span class="s2">&quot;dwi&quot;</span> <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="s2">&quot;s0&quot;</span><span class="p">,</span> <span class="s2">&quot;avg&quot;</span><span class="p">,</span> <span class="s2">&quot;average&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;b0&quot;</span>
             <span class="p">)</span>
 
             <span class="c1"># When downsampling these need to be set per-level</span>
             <span class="n">bmask_img</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">_</span><span class="p">,</span> <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"_bmask.nii.gz"</span><span class="p">)</span>
-                <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span>
-                    <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">),</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">bmask_img</span><span class="p">)</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"mask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;_bmask.nii.gz&quot;</span><span class="p">)</span>
+                <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">),</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span>
+                    <span class="n">bmask_img</span>
+                <span class="p">)</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">"bzero"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"S0"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;bzero&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;S0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">"gradients"</span><span class="p">):</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"gtab"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">"frame_time"</span><span class="p">):</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"timepoints"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">frame_time</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;frame_time&quot;</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timepoints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">frame_time</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">"total_duration"</span><span class="p">):</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"xlim"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">total_duration</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;total_duration&quot;</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;xlim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">total_duration</span>
 
             <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
 
             <span class="n">single_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
-                <span class="s2">"b0"</span><span class="p">,</span>
-                <span class="s2">"s0"</span><span class="p">,</span>
-                <span class="s2">"avg"</span><span class="p">,</span>
-                <span class="s2">"average"</span><span class="p">,</span>
-                <span class="s2">"mean"</span><span class="p">,</span>
-            <span class="p">)</span> <span class="ow">or</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"full"</span><span class="p">)</span>
+                <span class="s2">&quot;b0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;s0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;avg&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;average&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;full&quot;</span><span class="p">)</span>
 
             <span class="n">dwmodel</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">single_model</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"full"</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;full&quot;</span><span class="p">):</span>
                     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
 
                 <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
@@ -352,20 +365,20 @@
                 <span class="n">dwmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing in &lt;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
-                <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">index_order</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"dwi"</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing in &lt;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">index_order</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;dwi&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
                     <span class="c1"># run a original-to-synthetic affine registration</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_order</span><span class="p">:</span>
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
+                            <span class="sa">f</span><span class="s2">&quot;Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
                         <span class="p">)</span>
                         <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">logo_split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                        <span class="n">grad_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">, b=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">"</span>
-                        <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">grad_str</span><span class="si">}</span><span class="s2">], </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> jobs"</span><span class="p">)</span>
+                        <span class="n">grad_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">, b=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">grad_str</span><span class="si">}</span><span class="s2">], </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> jobs&quot;</span><span class="p">)</span>
 
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">single_model</span><span class="p">:</span>  <span class="c1"># A true LOGO estimator</span>
-                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">"gradients"</span><span class="p">):</span>
-                                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"gtab"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_train</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+                                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_train</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                             <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
                             <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
                                 <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
@@ -384,36 +397,34 @@
 
                         <span class="c1"># prepare data for running ANTs</span>
                         <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
-                        <span class="n">moving</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"moving</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz"</span>
-                        <span class="n">fixed</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"fixed</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz"</span>
+                        <span class="n">moving</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;moving</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+                        <span class="n">fixed</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;fixed</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
                         <span class="n">_to_nifti</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">moving</span><span class="p">)</span>
                         <span class="n">_to_nifti</span><span class="p">(</span>
                             <span class="n">predicted</span><span class="p">,</span>
                             <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
                             <span class="n">fixed</span><span class="p">,</span>
-                            <span class="n">clip</span><span class="o">=</span><span class="n">reg_target_type</span> <span class="o">==</span> <span class="s2">"dwi"</span><span class="p">,</span>
+                            <span class="n">clip</span><span class="o">=</span><span class="n">reg_target_type</span> <span class="o">==</span> <span class="s2">&quot;dwi&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
 
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">"Pass </span><span class="si">{</span><span class="n">i_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;"</span>
+                            <span class="sa">f</span><span class="s2">&quot;Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
                         <span class="p">)</span>
                         <span class="n">registration</span> <span class="o">=</span> <span class="n">Registration</span><span class="p">(</span>
-                            <span class="n">terminal_output</span><span class="o">=</span><span class="s2">"file"</span><span class="p">,</span>
+                            <span class="n">terminal_output</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
                             <span class="n">from_file</span><span class="o">=</span><span class="n">pkg_fn</span><span class="p">(</span>
-                                <span class="s2">"eddymotion"</span><span class="p">,</span>
-                                <span class="sa">f</span><span class="s2">"config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">.json"</span><span class="p">,</span>
+                                <span class="s2">&quot;eddymotion&quot;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">&quot;config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span>
                             <span class="p">),</span>
                             <span class="n">fixed_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fixed</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
                             <span class="n">moving_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">moving</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
                             <span class="o">**</span><span class="n">align_kwargs</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="k">if</span> <span class="n">bmask_img</span><span class="p">:</span>
-                            <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image_masks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"NULL"</span><span class="p">,</span> <span class="n">bmask_img</span><span class="p">]</span>
+                            <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image_masks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NULL&quot;</span><span class="p">,</span> <span class="n">bmask_img</span><span class="p">]</span>
 
-                        <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-                        <span class="p">):</span>
-                            <span class="n">reference</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">"ImageGrid"</span><span class="p">,</span> <span class="p">(</span><span class="s2">"shape"</span><span class="p">,</span> <span class="s2">"affine"</span><span class="p">))(</span>
+                        <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]):</span>
+                            <span class="n">reference</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ImageGrid&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;affine&quot;</span><span class="p">))(</span>
                                 <span class="n">shape</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">affine</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span>
                             <span class="p">)</span>
 
@@ -425,8 +436,8 @@
                                 <span class="n">initial_xform</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span>
                                     <span class="n">matrix</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference</span>
                                 <span class="p">)</span>
-                            <span class="n">mat_file</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"init_</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.mat"</span>
-                            <span class="n">initial_xform</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">mat_file</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"itk"</span><span class="p">)</span>
+                            <span class="n">mat_file</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;init_</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.mat&quot;</span>
+                            <span class="n">initial_xform</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">mat_file</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;itk&quot;</span><span class="p">)</span>
                             <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">initial_moving_transform</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mat_file</span><span class="p">)</span>
 
                         <span class="c1"># execute ants command line</span>
@@ -440,23 +451,23 @@
                         <span class="p">)</span>
                         <span class="c1"># debugging: generate aligned file for testing</span>
                         <span class="n">xform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">moving</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span>
-                            <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"aligned</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.nii.gz"</span>
+                            <span class="n">tmpdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;aligned</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
                         <span class="p">)</span>
 
                         <span class="c1"># update</span>
                         <span class="n">dwdata</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xform</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
                         <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span></div></div>
+        <span class="k">return</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span></div>
+</div>
 
 
-<span class="k">def</span> <span class="nf">_advanced_clip</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">p_min</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">p_max</span><span class="o">=</span><span class="mf">99.98</span><span class="p">,</span> <span class="n">nonnegative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int16"</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">):</span>
-    <span class="sd">"""</span>
+
+<span class="k">def</span> <span class="nf">_advanced_clip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">p_min</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">p_max</span><span class="o">=</span><span class="mf">99.98</span><span class="p">,</span> <span class="n">nonnegative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int16&quot;</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove outliers at both ends of the intensity distribution and fit into a given dtype.</span>
 
-<span class="sd">    This interface tries to emulate ANTs workflows' massaging that truncate images into</span>
+<span class="sd">    This interface tries to emulate ANTs workflows&#39; massaging that truncate images into</span>
 <span class="sd">    the 0-255 range, and applies percentiles for clipping images.</span>
 <span class="sd">    For image registration, normalizing the intensity into a compact range (e.g., uint8)</span>
 <span class="sd">    is generally advised.</span>
@@ -466,7 +477,7 @@
 <span class="sd">    Once the thresholds are calculated, the denoised data are thrown away and the thresholds</span>
 <span class="sd">    are applied on the original image.</span>
 
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
     <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
     <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span>
@@ -485,7 +496,7 @@
     <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">data</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"uint8"</span><span class="p">,</span> <span class="s2">"int16"</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">,</span> <span class="s2">&quot;int16&quot;</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">data</span>
@@ -512,13 +523,19 @@
           
           
         </div>
-
-        <div class="related-information">
-              Copyright &#169; Copyright 2021, The eddymotion developers |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; Copyright 2021, The eddymotion developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
         </div>
         
       </footer>
@@ -529,11 +546,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
-    <script src="../../_static/js/version-switch.js"></script>
+</div><script src="../../_static/documentation_options.js?v=48ac68c4"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/js/version-switch.js?v=8028bf13"></script>
     </body>
 </html>

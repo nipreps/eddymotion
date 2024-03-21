@@ -1,15 +1,15 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en" data-content_root="../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.viz - eddymotion 0.1.7.dev99+g3e66f54 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/version-switch.css" />
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>eddymotion.viz - eddymotion 24.0.0.dev143+g62a213a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/version-switch.css?v=45d66e8a" />
     
     
 
@@ -20,38 +20,38 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -60,14 +60,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -82,7 +82,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -90,7 +90,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.7.dev99+g3e66f54 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev143+g62a213a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,28 +145,28 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.7.dev99 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev143 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.7.dev99 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev143 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
   </ul>
 </div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../developers.html">For developers</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developers.html">For developers</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of For developers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of eddymotion.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.utils.html">eddymotion.data.utils module</a></li>
@@ -174,7 +174,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.estimator.html">eddymotion.estimator module</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.model.html">eddymotion.model package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.model.html">eddymotion.model package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of eddymotion.model package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.model.base.html">eddymotion.model.base module</a></li>
 </ul>
 </li>
@@ -186,6 +186,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -193,6 +194,12 @@
   <div class="main">
     <div class="content">
       <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
@@ -214,14 +221,14 @@
 <span class="c1">#</span>
 <span class="c1"># Copyright 2022 The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
 <span class="c1">#</span>
-<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
 <span class="c1"># You may obtain a copy of the License at</span>
 <span class="c1">#</span>
 <span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
 <span class="c1">#</span>
 <span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
 <span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
@@ -231,48 +238,56 @@
 <span class="c1">#</span>
 <span class="c1">#     https://www.nipreps.org/community/licensing/</span>
 <span class="c1">#</span>
-<span class="sd">"""Visualization utilities."""</span>
+<span class="sd">&quot;&quot;&quot;Visualization utilities.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nb</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">nireports.reportlets.nuisance</span> <span class="kn">import</span> <span class="n">plot_carpet</span> <span class="k">as</span> <span class="n">nw_plot_carpet</span>
 
 
-<div class="viewcode-block" id="plot_dwi"><a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.plot_dwi">[docs]</a><span class="k">def</span> <span class="nf">plot_dwi</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">"""Plot a DW map."""</span>
+<div class="viewcode-block" id="plot_dwi">
+<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.plot_dwi">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_dwi</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a DW map.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
     <span class="kn">from</span> <span class="nn">nilearn.plotting</span> <span class="kn">import</span> <span class="n">plot_anat</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">"text.usetex"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">"font.family"</span><span class="p">:</span> <span class="s2">"sans-serif"</span><span class="p">,</span>
-            <span class="s2">"font.sans-serif"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Helvetica"</span><span class="p">],</span>
+            <span class="s2">&quot;text.usetex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;font.family&quot;</span><span class="p">:</span> <span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;font.sans-serif&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Helvetica&quot;</span><span class="p">],</span>
         <span class="p">}</span>
     <span class="p">)</span>
 
     <span class="n">affine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">nb</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">voxel_sizes</span><span class="p">(</span><span class="n">affine</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">affine</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">affine</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">@</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">))</span>
 
-    <span class="n">vmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"vmax"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="mi">98</span><span class="p">)</span>
-    <span class="n">cut_coords</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"cut_coords"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;vmax&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="mi">98</span><span class="p">)</span>
+    <span class="n">cut_coords</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;cut_coords&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">plot_anat</span><span class="p">(</span>
         <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
         <span class="n">cut_coords</span><span class="o">=</span><span class="n">cut_coords</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="sa">r</span><span class="s2">"Reference $b$=0"</span>
-        <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="k">else</span> <span class="sa">f</span><span class="s2">"""</span><span class="se">\</span>
+        <span class="n">title</span><span class="o">=</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;Reference $b$=0&quot;</span>
+            <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">$b$=</span><span class="si">{</span><span class="n">gradient</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
-<span class="s2">$</span><span class="se">\\</span><span class="s2">vec</span><span class="se">{{</span><span class="s2">b</span><span class="se">}}</span><span class="s2">$ = (</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gradient</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">)"""</span><span class="p">,</span>
+<span class="s2">$</span><span class="se">\\</span><span class="s2">vec</span><span class="se">{{</span><span class="s2">b</span><span class="se">}}</span><span class="s2">$ = (</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">gradient</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;&quot;&quot;</span>
+        <span class="p">),</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">"""</span>
+
+<div class="viewcode-block" id="rotation_matrix">
+<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.rotation_matrix">[docs]</a>
+<span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the rotation matrix *R* such that :math:`R \cdot \mathbf{u} = \mathbf{v}`.</span>
 
-<span class="sd">    Extracted from `Emmanuel Caruyer's code</span>
+<span class="sd">    Extracted from `Emmanuel Caruyer&#39;s code</span>
 <span class="sd">    &lt;https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py&gt;`__,</span>
 <span class="sd">    which is distributed under the revised BSD License:</span>
 
@@ -295,7 +310,7 @@
 <span class="sd">    R : :obj:`numpy.ndarray`</span>
 <span class="sd">        The rotation matrix.</span>
 
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># the axis is given by the product u x v</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
     <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
@@ -321,11 +336,14 @@
     <span class="k">return</span> <span class="n">R</span></div>
 
 
-<div class="viewcode-block" id="draw_circles"><a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.draw_circles">[docs]</a><span class="k">def</span> <span class="nf">draw_circles</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">"""</span>
+
+<div class="viewcode-block" id="draw_circles">
+<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.draw_circles">[docs]</a>
+<span class="k">def</span> <span class="nf">draw_circles</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draw circular patches (lying on a sphere) at given positions.</span>
 
-<span class="sd">    Adapted from from `Emmanuel Caruyer's code</span>
+<span class="sd">    Adapted from `Emmanuel Caruyer&#39;s code</span>
 <span class="sd">    &lt;https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py&gt;`__,</span>
 <span class="sd">    which is distributed under the revised BSD License:</span>
 
@@ -352,7 +370,7 @@
 <span class="sd">    circles : :obj:`numpy.ndarray`</span>
 <span class="sd">        Circular patches</span>
 
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># a circle centered at [1, 0, 0] with radius r</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
 
@@ -370,11 +388,14 @@
     <span class="k">return</span> <span class="n">circles</span></div>
 
 
-<div class="viewcode-block" id="draw_points"><a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.draw_points">[docs]</a><span class="k">def</span> <span class="nf">draw_points</span><span class="p">(</span><span class="n">gradients</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">rad_min</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">rad_max</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"viridis"</span><span class="p">):</span>
-    <span class="sd">"""</span>
+
+<div class="viewcode-block" id="draw_points">
+<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.draw_points">[docs]</a>
+<span class="k">def</span> <span class="nf">draw_points</span><span class="p">(</span><span class="n">gradients</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">rad_min</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">rad_max</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draw the vectors on a shell.</span>
 
-<span class="sd">    Adapted from from `Emmanuel Caruyer's code</span>
+<span class="sd">    Adapted from `Emmanuel Caruyer&#39;s code</span>
 <span class="sd">    &lt;https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py&gt;`__,</span>
 <span class="sd">    which is distributed under the revised BSD License:</span>
 
@@ -394,7 +415,7 @@
 <span class="sd">    gradients : array-like shape (N, 4)</span>
 <span class="sd">        A 2D numpy array of the gradient table in RAS+B format.</span>
 <span class="sd">    ax : :obj:`matplotlib.axes.Axis`</span>
-<span class="sd">        The matplolib axes instance to plot in.</span>
+<span class="sd">        The matplotlib axes instance to plot in.</span>
 <span class="sd">    rad_min : :obj:`float` between 0 and 1</span>
 <span class="sd">        Minimum radius of the circle that renders a gradient direction</span>
 <span class="sd">    rad_max : :obj:`float` between 0 and 1</span>
@@ -402,7 +423,7 @@
 <span class="sd">    cmap : :obj:`matplotlib.pyplot.cm.ColorMap`</span>
 <span class="sd">        matplotlib colormap name</span>
 
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">cm</span>
     <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">art3d</span>
 
@@ -443,10 +464,13 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="n">max_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">max_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">(</span><span class="o">-</span><span class="n">max_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span></div>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_gradients"><a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.plot_gradients">[docs]</a><span class="k">def</span> <span class="nf">plot_gradients</span><span class="p">(</span>
+
+<div class="viewcode-block" id="plot_gradients">
+<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.plot_gradients">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_gradients</span><span class="p">(</span>
     <span class="n">gradients</span><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -454,7 +478,7 @@
     <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draw the vectors on a unit sphere with color code for multiple b-value.</span>
 
 <span class="sd">    Parameters</span>
@@ -464,21 +488,21 @@
 <span class="sd">    title : :obj:`string`</span>
 <span class="sd">        Custom plot title</span>
 <span class="sd">    ax : :obj:`matplotlib.axes.Axis`</span>
-<span class="sd">        A figure's axis to plot on.</span>
+<span class="sd">        A figure&#39;s axis to plot on.</span>
 <span class="sd">    spacing : :obj:`float`</span>
 <span class="sd">        Parameter to adjust plot spacing</span>
 <span class="sd">    filename : :obj:`string`</span>
 <span class="sd">        Path to save the plot</span>
 <span class="sd">    kwargs : extra args given to :obj:`eddymotion.viz.draw_points()`</span>
 
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
     <span class="c1"># Figure initialization</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">figsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"figsize"</span><span class="p">,</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">))</span>
+        <span class="n">figsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;figsize&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">))</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">"3d"</span><span class="p">)</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">spacing</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
 
     <span class="c1"># Visualization after re-projecting all shells to the unit sphere</span>
@@ -488,6 +512,140 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ax</span></div>
+
+
+
+<div class="viewcode-block" id="plot_carpet">
+<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.plot_carpet">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_carpet</span><span class="p">(</span>
+    <span class="n">nii</span><span class="p">,</span>
+    <span class="n">gtab</span><span class="p">,</span>
+    <span class="n">segmentation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sort_by_bval</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">output_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">segment_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">detrend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return carpet plot using niworkflows carpet_plot</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nii : Nifti1Image</span>
+<span class="sd">        DW imaging data</span>
+<span class="sd">    gtab : :obj:`GradientTable`</span>
+<span class="sd">        DW imaging data gradient data</span>
+<span class="sd">    segmentation : Nifti1Image</span>
+<span class="sd">        Boolean or segmentation mask of DW imaging data</span>
+<span class="sd">    sort_by_bval : :obj:`bool`</span>
+<span class="sd">        Flag to reorder time points by bvalue</span>
+<span class="sd">    output_file : :obj:`string`</span>
+<span class="sd">        Path to save the plot</span>
+<span class="sd">    segment_labels : :obj:`dict`</span>
+<span class="sd">        Dictionary of segment labels, mapping segment name to list of integers</span>
+<span class="sd">        e.g. {&#39;Cerebral_White_Matter&#39;: [2, 41], ...}</span>
+<span class="sd">    detrend : :obj:`bool`</span>
+<span class="sd">        niworkflows plot_carpet detrend flag</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ---------</span>
+<span class="sd">    matplotlib GridSpec object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">nii_data</span> <span class="o">=</span> <span class="n">nii</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span>
+
+    <span class="n">b0_data</span> <span class="o">=</span> <span class="n">nii_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">gtab</span><span class="o">.</span><span class="n">b0s_mask</span><span class="p">]</span>
+    <span class="n">dw_data</span> <span class="o">=</span> <span class="n">nii_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">~</span><span class="n">gtab</span><span class="o">.</span><span class="n">b0s_mask</span><span class="p">]</span>
+
+    <span class="n">bzero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">b0_data</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">nii_data_div_b0</span> <span class="o">=</span> <span class="n">dw_data</span> <span class="o">/</span> <span class="n">bzero</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="n">sort_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+        <span class="n">gtab</span><span class="o">.</span><span class="n">bvals</span><span class="p">[</span><span class="o">~</span><span class="n">gtab</span><span class="o">.</span><span class="n">b0s_mask</span><span class="p">]</span> <span class="k">if</span> <span class="n">sort_by_bval</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gtab</span><span class="o">.</span><span class="n">bvals</span><span class="p">[</span><span class="o">~</span><span class="n">gtab</span><span class="o">.</span><span class="n">b0s_mask</span><span class="p">]))</span>
+    <span class="p">)</span>
+    <span class="n">nii_data_div_b0</span> <span class="o">=</span> <span class="n">nii_data_div_b0</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">sort_inds</span><span class="p">]</span>
+
+    <span class="c1"># Reshape</span>
+    <span class="n">nii_data_reshaped</span> <span class="o">=</span> <span class="n">nii_data_div_b0</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nii_data_div_b0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">segmentation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">segmentation_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">segmentation</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+
+        <span class="c1"># Apply mask</span>
+        <span class="n">segmentation_reshaped</span> <span class="o">=</span> <span class="n">segmentation_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">nii_data_masked</span> <span class="o">=</span> <span class="n">nii_data_reshaped</span><span class="p">[</span><span class="n">segmentation_reshaped</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">segmentation_masked</span> <span class="o">=</span> <span class="n">segmentation_reshaped</span><span class="p">[</span><span class="n">segmentation_reshaped</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">segment_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">segments</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">segment_labels</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">segment_labels</span><span class="p">[</span><span class="n">label</span><span class="p">]:</span>
+                    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">indices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">segmentation_masked</span> <span class="o">==</span> <span class="n">ii</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="n">segments</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nii_data_masked</span> <span class="o">=</span> <span class="n">nii_data_reshaped</span>
+
+    <span class="n">bad_row_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">nii_data_masked</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">good_row_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nii_data_masked</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">good_row_ind</span><span class="p">[</span><span class="n">bad_row_ind</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">nii_data_masked</span> <span class="o">=</span> <span class="n">nii_data_masked</span><span class="p">[</span><span class="n">good_row_ind</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># Plot</span>
+    <span class="k">return</span> <span class="n">nw_plot_carpet</span><span class="p">(</span>
+        <span class="n">nii_data_masked</span><span class="p">,</span> <span class="n">detrend</span><span class="o">=</span><span class="n">detrend</span><span class="p">,</span> <span class="n">segments</span><span class="o">=</span><span class="n">segments</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_segment_labels">
+<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.get_segment_labels">[docs]</a>
+<span class="k">def</span> <span class="nf">get_segment_labels</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">index_position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">label_position</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return segment labels for plot_carpet function</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : :obj:`string`</span>
+<span class="sd">        Path to segment label text file, such as freesurfer label file</span>
+<span class="sd">    keywords : list of :obj:`string`</span>
+<span class="sd">        List of label keywords. All labels containing the keyword will be grouped together.</span>
+<span class="sd">        e.g. [&quot;Cerebral_White_Matter&quot;, &quot;Cerebral_Cortex&quot;, &quot;Ventricle&quot;]</span>
+<span class="sd">    delimiter : :obj:`string`</span>
+<span class="sd">        Delimiter between label index and label string in label file</span>
+<span class="sd">        (&#39; &#39; for freesurfer label file)</span>
+<span class="sd">    index_position : :obj:`int`</span>
+<span class="sd">        Position of label index in label file</span>
+<span class="sd">        (0 for freesurfer label file)</span>
+<span class="sd">    label_position : :obj:`int`</span>
+<span class="sd">        Position of label string in label file</span>
+<span class="sd">        (1 for freesurfer label file)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ---------</span>
+<span class="sd">    dict</span>
+<span class="sd">    e.g. {&#39;Cerebral_White_Matter&#39;: [2, 41],</span>
+<span class="sd">          &#39;Cerebral_Cortex&#39;: [3, 42],</span>
+<span class="sd">          &#39;Ventricle&#39;: [4, 14, 15, 43, 72]}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">segment_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="n">labels_s</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">label</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="n">index_position</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">labels_s</span> <span class="k">if</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">i</span><span class="p">[</span><span class="n">label_position</span><span class="p">]]</span>
+        <span class="n">segment_labels</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span>
+
+    <span class="k">return</span> <span class="n">segment_labels</span></div>
+
 </pre></div>
         </article>
       </div>
@@ -497,13 +655,19 @@
           
           
         </div>
-
-        <div class="related-information">
-              Copyright &#169; Copyright 2021, The eddymotion developers |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; Copyright 2021, The eddymotion developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
         </div>
         
       </footer>
@@ -514,11 +678,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
-    <script src="../../_static/js/version-switch.js"></script>
+</div><script src="../../_static/documentation_options.js?v=48ac68c4"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/js/version-switch.js?v=8028bf13"></script>
     </body>
 </html>

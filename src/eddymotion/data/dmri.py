@@ -253,7 +253,8 @@ def load(
         if bvec_file and bval_file:
             warn(
                 "Gradients table file and b-vec/val files are defined; "
-                "dismissing b-vec/val files."
+                "dismissing b-vec/val files.",
+                stacklevel=2
             )
     elif bvec_file and bval_file:
         grad = np.vstack(

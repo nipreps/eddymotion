@@ -44,7 +44,7 @@ the work of ``eddy`` and *SHORELine*, while generalizing these methods to multip
 (single-shell, multi-shell, and diffusion spectrum imaging) using diffusion models available with DIPY [#r5]_.
 
 
-.. image:: docs/_static/eddymotion-flowchart.svg
+.. image:: https://raw.githubusercontent.com/nipreps/eddymotion/507fc9bab86696d5330fd6a86c3870968243aea8/docs/_static/eddymotion-flowchart.svg
    :alt: The eddymotion flowchart
 
 

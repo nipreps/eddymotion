@@ -75,8 +75,9 @@ class EddyMotionEstimator:
             Number of parallel jobs.
         seed : :obj:`int` or :obj:`bool`
             Seed the random number generator (necessary when we want deterministic
-            estimation).
-
+            estimation). If an integer, the value is used to initialize the
+            generator; if ``True``, the arbitrary value of ``20210324`` is used
+            to initialize it.
         Return
         ------
         affines : :obj:`list` of :obj:`numpy.ndarray`
@@ -86,8 +87,11 @@ class EddyMotionEstimator:
         """
         align_kwargs = align_kwargs or {}
 
+        _seed = None
         if seed or seed == 0:
-            np.random.seed(20210324 if seed is True else seed)
+            _seed = 20210324 if seed is True else seed
+
+        rng = np.random.default_rng(_seed)
 
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
@@ -120,7 +124,7 @@ class EddyMotionEstimator:
                 kwargs["xlim"] = dwdata.total_duration
 
             index_order = np.arange(len(dwdata))
-            np.random.shuffle(index_order)
+            rng.shuffle(index_order)
 
             single_model = model.lower() in (
                 "b0",

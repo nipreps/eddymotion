@@ -20,4 +20,4 @@ jobs:
         with:
           python-version: 3
       - name: Lint EddyMotion
-        run: pipx run ruff check
+        run: pipx run ruff check --diff

@@ -51,15 +51,15 @@ def lovo_split(data, index, with_b0=False):
     if not Path(data.get_filename()).exists():
         data.to_filename(data.get_filename())
 
-    # if the size of the mask does not match data, cache is stale
-    mask = np.zeros(len(data), dtype=bool)
-    mask[index] = True
-
     # read original DWI data & b-vector
     with h5py.File(data.get_filename(), "r") as in_file:
         root = in_file["/0"]
-        dwframe = np.asanyarray(root["dataobj"][..., mask])
-        bframe = np.asanyarray(root["gradients"][..., mask])
+        dwframe = np.asanyarray(root["dataobj"][..., index])
+        bframe = np.asanyarray(root["gradients"][..., index])
+
+    # if the size of the mask does not match data, cache is stale
+    mask = np.zeros(len(data), dtype=bool)
+    mask[index] = True
 
     train_data = data.dataobj[..., ~mask]
     train_gradients = data.gradients[..., ~mask]

@@ -26,7 +26,7 @@ import numpy as np
 import h5py
 
 
-def lovo_split(data, index):
+def lovo_split(data, index, with_b0=False):
     """
     Produce one fold of LOVO (leave-one-volume-out).
 
@@ -50,7 +50,7 @@ def lovo_split(data, index):
 
     if not Path(data.get_filename()).exists():
         data.to_filename(data.get_filename())
-    
+
     # if the size of the mask does not match data, cache is stale
     mask = np.zeros(len(data), dtype=bool)
     mask[index] = True
@@ -63,6 +63,18 @@ def lovo_split(data, index):
 
     train_data = data.dataobj[..., ~mask]
     train_gradients = data.gradients[..., ~mask]
+
+    if with_b0:
+        train_data = np.concatenate(
+            (np.asanyarray(data.bzero)[..., np.newaxis], train_data),
+            axis=-1,
+        )
+        b0vec = np.zeros((4, 1))
+        b0vec[0, 0] = 1
+        train_gradients = np.concatenate(
+            (b0vec, train_gradients),
+            axis=-1,
+        )
 
     return (
         (train_data, train_gradients),

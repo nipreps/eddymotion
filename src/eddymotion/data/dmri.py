@@ -70,6 +70,10 @@ class DWI:
     )
     """A path to an HDF5 file to store the whole dataset."""
 
+    def get_filename(self):
+        """Get the filepath of the HDF5 file."""
+        return self._filepath
+
     def __len__(self):
         """Obtain the number of high-*b* orientations."""
         return self.dataobj.shape[-1]

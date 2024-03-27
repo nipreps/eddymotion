@@ -90,7 +90,7 @@ class BaseModel:
         "_models",
         "_datashape",
     )
-    _modelargs = tuple()
+    _modelargs = ()
 
     def __init__(self, gtab, S0=None, mask=None, b_max=None, **kwargs):
         """Base initialization."""

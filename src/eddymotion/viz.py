@@ -343,7 +343,7 @@ def plot_carpet(
         segmentation_masked = segmentation_reshaped[segmentation_reshaped > 0]
 
         if segment_labels is not None:
-            segments = dict()
+            segments = {}
             labels = list(segment_labels.keys())
             for label in labels:
                 indices = np.array([], dtype=int)
@@ -395,7 +395,7 @@ def get_segment_labels(filepath, keywords, delimiter=" ", index_position=0, labe
           'Cerebral_Cortex': [3, 42],
           'Ventricle': [4, 14, 15, 43, 72]}
     """
-    segment_labels = dict()
+    segment_labels = {}
 
     with open(filepath, "r") as f:
         labels = f.read()

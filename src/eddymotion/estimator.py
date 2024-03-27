@@ -33,7 +33,7 @@ from nitransforms.linear import Affine
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
-from eddymotion.data.splitting import lovo_split as logo_split
+from eddymotion.data.splitting import lovo_split
 from eddymotion.model import ModelFactory
 
 
@@ -151,7 +151,7 @@ class EddyMotionEstimator:
                         pbar.set_description_str(
                             f"Pass {i_iter + 1}/{n_iter} | Fit and predict b-index <{i}>"
                         )
-                        data_train, data_test = logo_split(dwdata, i)
+                        data_train, data_test = lovo_split(dwdata, i)
                         grad_str = f"{i}, {data_test[1][:3]}, b={int(data_test[1][3])}"
                         pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
 

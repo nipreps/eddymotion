@@ -74,15 +74,6 @@ class DWI:
         """Obtain the number of high-*b* orientations."""
         return self.dataobj.shape[-1]
 
-    def set_data(self):
-        # Generate dwframe and bframe
-        if not Path(self._filepath).exists():
-            self.to_filename(self._filepath)
-
-        # read original DWI data & b-vector
-        with h5py.File(self._filepath, "r") as in_file:
-            self._root = in_file["/0"]
-
     def set_transform(self, index, affine, order=3):
         """Set an affine, and update data object and gradients."""
         reference = namedtuple("ImageGrid", ("shape", "affine"))(
@@ -96,8 +87,14 @@ class DWI:
         else:
             xform = Affine(matrix=affine, reference=reference)
 
-        dwframe = np.asanyarray(self.dataobj[..., index])
-        bvec = np.asanyarray(self.gradients[:3, index])
+        if not Path(self._filepath).exists():
+            self.to_filename(self._filepath)
+
+        # read original DWI data & b-vector
+        with h5py.File(self._filepath, "r") as in_file:
+            root = in_file["/0"]
+            dwframe = np.asanyarray(root["dataobj"][..., index])
+            bvec = np.asanyarray(root["gradients"][:3, index])
 
         dwmoving = nb.Nifti1Image(dwframe, self.affine, None)
 

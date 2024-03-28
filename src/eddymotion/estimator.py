@@ -151,7 +151,7 @@ class EddyMotionEstimator:
                         pbar.set_description_str(
                             f"Pass {i_iter + 1}/{n_iter} | Fit and predict b-index <{i}>"
                         )
-                        data_train, data_test = lovo_split(dwdata, i)
+                        data_train, data_test = lovo_split(dwdata, i, with_b0=True)
                         grad_str = f"{i}, {data_test[1][:3]}, b={int(data_test[1][3])}"
                         pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
 

@@ -49,6 +49,7 @@ class EddyMotionEstimator:
         omp_nthreads=None,
         n_jobs=None,
         seed=None,
+        gradient_ordering="random",
         **kwargs,
     ):
         r"""
@@ -77,6 +78,8 @@ class EddyMotionEstimator:
         seed : :obj:`int` or :obj:`bool`
             Seed the random number generator (necessary when we want deterministic
             estimation).
+        gradient_ordering : :obj:`str`, optional
+            Specifies the ordering of the gradients. Default is "random".
 
         Return
         ------
@@ -120,8 +123,7 @@ class EddyMotionEstimator:
             if hasattr(dwdata, "total_duration"):
                 kwargs["xlim"] = dwdata.total_duration
 
-            index_order = np.arange(len(dwdata))
-            np.random.shuffle(index_order)
+            index_order = handle_gradient_ordering(dwdata, gradient_ordering)
 
             single_model = model.lower() in (
                 "b0",
@@ -238,6 +240,34 @@ class EddyMotionEstimator:
                         pbar.update()
 
         return dwdata.em_affines
+
+
+def handle_gradient_ordering(data, gradient_ordering):
+    actions = {
+        "random": random_action,
+        "ascending": ascending_action,
+    }
+
+    action = actions.get(gradient_ordering)
+
+    if action:
+        return action(data)
+    else:
+        # Handle the case when the provided gradient_ordering is not recognized
+        print("Unknown gradient ordering:", gradient_ordering)
+        return None
+
+
+def random_action(data):
+    index_order = np.arange(len(data))
+    np.random.shuffle(index_order)
+    return index_order
+
+
+def ascending_action(data):
+    last_column = data.gradients[:, -1]
+    index_order = np.argsort(last_column)
+    return index_order
 
 
 def _advanced_clip(data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16", invert=False):

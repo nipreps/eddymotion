@@ -121,7 +121,7 @@ class PET:
                         compression_opts=compression_opts,
                     )
 
-    def to_nifti(self, filename, insert_b0=False):
+    def to_nifti(self, filename, *_):
         """Write a NIfTI 1.0 file to disk."""
         nii = nb.Nifti1Image(self.dataobj, self.affine, None)
         nii.header.set_xyzt_units("mm")

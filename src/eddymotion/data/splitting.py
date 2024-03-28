@@ -62,8 +62,8 @@ def lovo_split(dataset, index, with_b0=False):
     mask[index] = True
 
     train_data = data[..., ~mask]
-    train_gradients = gradients[..., mask]
-    test_data = data[..., ~mask]
+    train_gradients = gradients[..., ~mask]
+    test_data = data[..., mask]
     test_gradients = gradients[..., mask]
 
     if with_b0:

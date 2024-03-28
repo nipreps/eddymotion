@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion.estimator - eddymotion 24.0.0.dev170+gdbe8719 documentation</title>
+        <title>eddymotion.estimator - eddymotion 24.0.0.dev172+gafc5270 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev170+gdbe8719 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev172+gafc5270 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev170 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev172 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev170 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev172 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -297,8 +297,9 @@
 <span class="sd">            Number of parallel jobs.</span>
 <span class="sd">        seed : :obj:`int` or :obj:`bool`</span>
 <span class="sd">            Seed the random number generator (necessary when we want deterministic</span>
-<span class="sd">            estimation).</span>
-
+<span class="sd">            estimation). If an integer, the value is used to initialize the</span>
+<span class="sd">            generator; if ``True``, the arbitrary value of ``20210324`` is used</span>
+<span class="sd">            to initialize it.</span>
 <span class="sd">        Return</span>
 <span class="sd">        ------</span>
 <span class="sd">        affines : :obj:`list` of :obj:`numpy.ndarray`</span>
@@ -308,8 +309,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">align_kwargs</span> <span class="o">=</span> <span class="n">align_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
 
+        <span class="n">_seed</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span><span class="p">)</span>
+            <span class="n">_seed</span> <span class="o">=</span> <span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span>
+
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">_seed</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;num_threads&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_kwargs</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">&quot;num_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_nthreads</span>
@@ -342,7 +346,7 @@
                 <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;xlim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">total_duration</span>
 
             <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
+            <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
 
             <span class="n">single_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
                 <span class="s2">&quot;b0&quot;</span><span class="p">,</span>
@@ -546,7 +550,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b992b923"></script>
+</div><script src="../../_static/documentation_options.js?v=f18dc905"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -6,8 +6,10 @@ full list see the documentation:
 http://www.sphinx-doc.org/en/master/config
 
 """
+
 from packaging.version import Version
-from eddymotion import __version__, __copyright__, __packagename__
+
+from eddymotion import __copyright__, __packagename__, __version__
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,

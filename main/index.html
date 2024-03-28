@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion 24.0.0.dev162+gc073fdf documentation</title>
+        <title>eddymotion 24.0.0.dev166+ga35b36a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">eddymotion 24.0.0.dev162+gc073fdf documentation</div></a>
+      <a href="#"><div class="brand">eddymotion 24.0.0.dev166+ga35b36a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev162 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev166 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev162 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev166 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -221,48 +221,47 @@
 <h1><em>Eddymotion</em><a class="headerlink" href="#eddymotion" title="Link to this heading">#</a></h1>
 <p><strong>Estimating head-motion and deformations derived from eddy-currents in diffusion MRI data</strong>.</p>
 <a class="reference external image-reference" href="https://doi.org/10.5281/zenodo.4680599"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.4680599.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/eddymotion/"><img alt="License" src="https://img.shields.io/pypi/l/eddymotion.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/eddymotion/"><img alt="Latest Version" src="https://img.shields.io/pypi/v/eddymotion.svg" /></a>
+<a class="reference external image-reference" href="https://www.nipreps.org/eddymotion/main/index.html"><img alt="Documentation" src="https://github.com/nipreps/eddymotion/actions/workflows/pages/pages-build-deployment/badge.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/nipreps/eddymotion/actions/workflows/pythonpackage.yml"><img alt="Python package" src="https://github.com/nipreps/eddymotion/actions/workflows/pythonpackage.yml/badge.svg" /></a>
 <p>Retrospective estimation of head-motion between diffusion-weighted images (DWI) acquired within
 diffusion MRI (dMRI) experiments renders exceptionally challenging1 for datasets including
 high-diffusivity (or “high b”) images.
 These “high b” (b &gt; 1000s/mm2) DWIs enable higher angular resolution, as compared to more traditional
-diffusion tensor imaging (DTI) schemes.
-UNDISTORT <a class="footnote-reference brackets" href="#id6" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> (Using NonDistorted Images to Simulate a Template Of the Registration Target)
-was the earliest method addressing this issue, by simulating a target DW image without motion
-or distortion from a DTI (b=1000s/mm2) scan of the same subject.
-Later, Andersson and Sotiropoulos <a class="footnote-reference brackets" href="#id7" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> proposed a similar approach (widely available within the
-FSL <code class="docutils literal notranslate"><span class="pre">eddy</span></code> tool), by predicting the target DW image to be registered from the remainder of the
-dMRI dataset and modeled with a Gaussian process.
+diffusion tensor imaging (DTI) schemes.</p>
+<p>dMRI dataset and modeled with a Gaussian process.
 Besides the need for less data, <code class="docutils literal notranslate"><span class="pre">eddy</span></code> has the advantage of implicitly modeling distortions due
 to Eddy currents.
-More recently, Cieslak et al. <a class="footnote-reference brackets" href="#id8" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> integrated both approaches in <em>SHORELine</em>, by
+More recently, Cieslak et al. <a class="footnote-reference brackets" href="#r3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> integrated both approaches in <em>SHORELine</em>, by
 (i) setting up a leave-one-out prediction framework as in eddy; and
-(ii) replacing eddy’s general-purpose Gaussian process prediction with the SHORE <a class="footnote-reference brackets" href="#id9" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> diffusion model.</p>
+(ii) replacing eddy’s general-purpose Gaussian process prediction with the SHORE <a class="footnote-reference brackets" href="#r4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> diffusion model.</p>
 <p><em>Eddymotion</em> is an open implementation of eddy-current and head-motion correction that builds upon
 the work of <code class="docutils literal notranslate"><span class="pre">eddy</span></code> and <em>SHORELine</em>, while generalizing these methods to multiple acquisition schemes
-(single-shell, multi-shell, and diffusion spectrum imaging) using diffusion models available with DIPY <a class="footnote-reference brackets" href="#id10" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id6" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+(single-shell, multi-shell, and diffusion spectrum imaging) using diffusion models available with DIPY <a class="footnote-reference brackets" href="#r5" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p>
+<img alt="The eddymotion flowchart" src="https://raw.githubusercontent.com/nipreps/eddymotion/507fc9bab86696d5330fd6a86c3870968243aea8/docs/_static/eddymotion-flowchart.svg" /><aside class="footnote-list brackets">
+<aside class="footnote brackets" id="r1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
 <p>S. Ben-Amitay et al., Motion correction and registration of high b-value diffusion weighted images, Magnetic
 Resonance in Medicine 67:1694–1702 (2012)</p>
 </aside>
-<aside class="footnote brackets" id="id7" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="r2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
 <p>J. L. R. Andersson. et al., An integrated approach to correction for off-resonance effects and subject movement
 in diffusion MR imaging, NeuroImage 125 (2016) 1063–1078</p>
 </aside>
-<aside class="footnote brackets" id="id8" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="r3" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">3</a><span class="fn-bracket">]</span></span>
 <p>M. Cieslak et al., QSIPrep: An integrative platform for preprocessing and reconstructing diffusion MRI data.
 Nature Methods, 18(7), 775–778 (2021)</p>
 </aside>
-<aside class="footnote brackets" id="id9" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="r4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">4</a><span class="fn-bracket">]</span></span>
 <p>E. Ozarslan et al., Simple Harmonic Oscillator Based Reconstruction and Estimation for Three-Dimensional Q-Space
 MRI. in Proc. Intl. Soc. Mag. Reson. Med. vol. 17 1396 (2009)</p>
 </aside>
-<aside class="footnote brackets" id="id10" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="r5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">5</a><span class="fn-bracket">]</span></span>
 <p>E. Garyfallidis et al., Dipy, a library for the analysis of diffusion MRI data. Front. Neuroinformatics 8, 8
 (2014)</p>
 </aside>
@@ -355,7 +354,7 @@ MRI. in Proc. Intl. Soc. Mag. Reson. Med. vol. 17 1396 (2009)</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=199f92e6"></script>
+</div><script src="_static/documentation_options.js?v=0b706eb1"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

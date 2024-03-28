@@ -62,7 +62,9 @@ def lovo_split(dataset, index, with_b0=False):
     mask[index] = True
 
     train_data = data[..., ~mask]
-    train_gradients = gradients[..., ~mask]
+    train_gradients = gradients[..., mask]
+    test_data = data[..., ~mask]
+    test_gradients = gradients[..., mask]
 
     if with_b0:
         train_data = np.concatenate(
@@ -78,5 +80,5 @@ def lovo_split(dataset, index, with_b0=False):
 
     return (
         (train_data, train_gradients),
-        (dwframe, bframe),
+        (test_data, test_gradients),
     )

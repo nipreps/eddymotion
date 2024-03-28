@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Test _version.py."""
+
 import sys
 from importlib import reload
 

@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Representing data in hard-disk and memory."""
+
 from collections import namedtuple
 from pathlib import Path
 from tempfile import mkdtemp
@@ -255,7 +256,7 @@ def load(
             warn(
                 "Gradients table file and b-vec/val files are defined; "
                 "dismissing b-vec/val files.",
-                stacklevel=2
+                stacklevel=2,
             )
     elif bvec_file and bval_file:
         grad = np.vstack(

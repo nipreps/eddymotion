@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """A factory class that adapts DIPY's dMRI models."""
+
 import warnings
 
 import numpy as np

@@ -21,3 +21,5 @@ jobs:
           python-version: 3
       - name: Lint EddyMotion
         run: pipx run ruff check --diff
+      - name: Format EddyMotion
+        run: pipx run ruff format --diff

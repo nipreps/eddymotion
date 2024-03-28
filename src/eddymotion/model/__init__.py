@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Data models."""
+
 from eddymotion.model.base import (
     AverageDWModel,
     DKIModel,

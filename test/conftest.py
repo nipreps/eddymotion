@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """py.test configuration."""
+
 import os
 from pathlib import Path
 

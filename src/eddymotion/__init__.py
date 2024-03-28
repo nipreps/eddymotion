@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Top-level package for eddymotion."""
+
 from eddymotion._version import __version__
 
 __packagename__ = "eddymotion"

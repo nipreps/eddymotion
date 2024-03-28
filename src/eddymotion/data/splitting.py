@@ -49,7 +49,7 @@ def lovo_split(dataset, index, with_b0=False):
     """
 
     if not Path(dataset.get_filename()).exists():
-        dataset.to_filename(data.get_filename())
+        dataset.to_filename(dataset.get_filename())
 
     # read original DWI data & b-vector
     with h5py.File(dataset.get_filename(), "r") as in_file:

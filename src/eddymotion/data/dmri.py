@@ -71,63 +71,13 @@ class DWI:
     )
     """A path to an HDF5 file to store the whole dataset."""
 
+    def get_filename(self):
+        """Get the filepath of the HDF5 file."""
+        return self._filepath
+
     def __len__(self):
         """Obtain the number of high-*b* orientations."""
         return self.dataobj.shape[-1]
-
-    def logo_split(self, index, with_b0=False):
-        """
-        Produce one fold of LOGO (leave-one-gradient-out).
-
-        Parameters
-        ----------
-        index : :obj:`int`
-            Index of the DWI orientation to be left out in this fold.
-        with_b0 : :obj:`bool`
-            Insert the *b=0* reference at the beginning of the training dataset.
-
-        Returns
-        -------
-        (train_data, train_gradients) : :obj:`tuple`
-            Training DWI and corresponding gradients.
-            Training data/gradients come **from the updated dataset**.
-        (test_data, test_gradients) :obj:`tuple`
-            Test 3D map (one DWI orientation) and corresponding b-vector/value.
-            The test data/gradient come **from the original dataset**.
-
-        """
-        if not Path(self._filepath).exists():
-            self.to_filename(self._filepath)
-
-        # read original DWI data & b-vector
-        with h5py.File(self._filepath, "r") as in_file:
-            root = in_file["/0"]
-            dwframe = np.asanyarray(root["dataobj"][..., index])
-            bframe = np.asanyarray(root["gradients"][..., index])
-
-        # if the size of the mask does not match data, cache is stale
-        mask = np.zeros(len(self), dtype=bool)
-        mask[index] = True
-
-        train_data = self.dataobj[..., ~mask]
-        train_gradients = self.gradients[..., ~mask]
-
-        if with_b0:
-            train_data = np.concatenate(
-                (np.asanyarray(self.bzero)[..., np.newaxis], train_data),
-                axis=-1,
-            )
-            b0vec = np.zeros((4, 1))
-            b0vec[0, 0] = 1
-            train_gradients = np.concatenate(
-                (b0vec, train_gradients),
-                axis=-1,
-            )
-
-        return (
-            (train_data, train_gradients),
-            (dwframe, bframe),
-        )
 
     def set_transform(self, index, affine, order=3):
         """Set an affine, and update data object and gradients."""

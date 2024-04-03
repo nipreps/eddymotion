@@ -39,27 +39,13 @@ def test_proximity_estimator_trivial_model(datadir, tmp_path):
     # Generate a list of large-yet-plausible bulk-head motion.
     xfms = nt.linear.LinearTransformsMapping(
         [
-            nb.affines.from_matvec(
-                nb.eulerangles.euler2mat(x=0.03, z=0.005), (0.8, 0.2, 0.2)
-            ),
-            nb.affines.from_matvec(
-                nb.eulerangles.euler2mat(x=0.02, z=0.005), (0.8, 0.2, 0.2)
-            ),
-            nb.affines.from_matvec(
-                nb.eulerangles.euler2mat(x=0.02, z=0.02), (0.4, 0.2, 0.2)
-            ),
-            nb.affines.from_matvec(
-                nb.eulerangles.euler2mat(x=-0.02, z=0.02), (0.4, 0.2, 0.2)
-            ),
-            nb.affines.from_matvec(
-                nb.eulerangles.euler2mat(x=-0.02, z=0.002), (0.0, 0.2, 0.2)
-            ),
-            nb.affines.from_matvec(
-                nb.eulerangles.euler2mat(y=-0.02, z=0.002), (0.0, 0.2, 0.2)
-            ),
-            nb.affines.from_matvec(
-                nb.eulerangles.euler2mat(y=-0.01, z=0.002), (0.0, 0.4, 0.2)
-            ),
+            nb.affines.from_matvec(nb.eulerangles.euler2mat(x=0.03, z=0.005), (0.8, 0.2, 0.2)),
+            nb.affines.from_matvec(nb.eulerangles.euler2mat(x=0.02, z=0.005), (0.8, 0.2, 0.2)),
+            nb.affines.from_matvec(nb.eulerangles.euler2mat(x=0.02, z=0.02), (0.4, 0.2, 0.2)),
+            nb.affines.from_matvec(nb.eulerangles.euler2mat(x=-0.02, z=0.02), (0.4, 0.2, 0.2)),
+            nb.affines.from_matvec(nb.eulerangles.euler2mat(x=-0.02, z=0.002), (0.0, 0.2, 0.2)),
+            nb.affines.from_matvec(nb.eulerangles.euler2mat(y=-0.02, z=0.002), (0.0, 0.2, 0.2)),
+            nb.affines.from_matvec(nb.eulerangles.euler2mat(y=-0.01, z=0.002), (0.0, 0.4, 0.2)),
         ],
         reference=b0nii,
     )
@@ -81,9 +67,7 @@ def test_proximity_estimator_trivial_model(datadir, tmp_path):
     )
 
     estimator = EddyMotionEstimator()
-    em_affines = estimator.fit(
-        dwdata=dwi_motion, models=("b0",), align_kwargs=None, seed=None
-    )
+    em_affines = estimator.fit(dwdata=dwi_motion, models=("b0",), align_kwargs=None, seed=None)
 
     # Uncomment to see the realigned dataset
     # nt.linear.LinearTransformsMapping(

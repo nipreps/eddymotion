@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """A model-based algorithm for the realignment of dMRI data."""
+
 from collections import namedtuple
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp

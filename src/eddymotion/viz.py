@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Visualization utilities."""
+
 import nibabel as nb
 import numpy as np
 from nireports.reportlets.nuisance import plot_carpet as nw_plot_carpet

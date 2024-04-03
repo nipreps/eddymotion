@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """PET data representation."""
+
 from collections import namedtuple
 from pathlib import Path
 from tempfile import mkdtemp

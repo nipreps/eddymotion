@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate an author list for a new paper or abstract."""
+
 import json
 import sys
 from pathlib import Path
@@ -63,7 +64,5 @@ if __name__ == "__main__":
 
     print(
         "\n\nAffiliations:\n%s"
-        % "\n".join(
-            ["{0: >2}. {1}".format(i + 1, a) for i, a in enumerate(affiliations)]
-        )
+        % "\n".join(["{0: >2}. {1}".format(i + 1, a) for i, a in enumerate(affiliations)])
     )

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion.estimator - eddymotion 24.0.0.dev177+gc8c6c0d documentation</title>
+        <title>eddymotion.estimator - eddymotion 24.0.0.dev179+g2d71ba0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev177+gc8c6c0d documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev179+g2d71ba0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev177 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev179 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev177 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev179 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -298,9 +298,7 @@
 <span class="sd">            Number of parallel jobs.</span>
 <span class="sd">        seed : :obj:`int` or :obj:`bool`</span>
 <span class="sd">            Seed the random number generator (necessary when we want deterministic</span>
-<span class="sd">            estimation). If an integer, the value is used to initialize the</span>
-<span class="sd">            generator; if ``True``, the arbitrary value of ``20210324`` is used</span>
-<span class="sd">            to initialize it.</span>
+<span class="sd">            estimation). See :func:`_sort_dwdata_indices`.</span>
 <span class="sd">        Return</span>
 <span class="sd">        ------</span>
 <span class="sd">        affines : :obj:`list` of :obj:`numpy.ndarray`</span>
@@ -308,13 +306,10 @@
 <span class="sd">            parameters of the deformations caused by head-motion and eddy-currents.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">align_kwargs</span> <span class="o">=</span> <span class="n">align_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
 
-        <span class="n">_seed</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">_seed</span> <span class="o">=</span> <span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span>
-
-        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">_seed</span><span class="p">)</span>
+        <span class="n">index_order</span> <span class="o">=</span> <span class="n">_sort_dwdata_indices</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="s2">&quot;num_threads&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_kwargs</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">&quot;num_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_nthreads</span>
@@ -326,28 +321,9 @@
             <span class="p">)</span>
 
             <span class="c1"># When downsampling these need to be set per-level</span>
-            <span class="n">bmask_img</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">_</span><span class="p">,</span> <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;_bmask.nii.gz&quot;</span><span class="p">)</span>
-                <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">),</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span>
-                    <span class="n">bmask_img</span>
-                <span class="p">)</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span>
+            <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">_prepare_brainmask_data</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span><span class="p">,</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;bzero&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;S0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span>
-
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;frame_time&quot;</span><span class="p">):</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timepoints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">frame_time</span>
-
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;total_duration&quot;</span><span class="p">):</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;xlim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">total_duration</span>
-
-            <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
-            <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
+            <span class="n">_prepare_kwargs</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
             <span class="n">single_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
                 <span class="s2">&quot;b0&quot;</span><span class="p">,</span>
@@ -371,6 +347,7 @@
 
             <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing in &lt;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+                <span class="n">ptmp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">index_order</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;dwi&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
                     <span class="c1"># run a original-to-synthetic affine registration</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_order</span><span class="p">:</span>
@@ -401,62 +378,28 @@
                         <span class="n">predicted</span> <span class="o">=</span> <span class="n">dwmodel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
                         <span class="c1"># prepare data for running ANTs</span>
-                        <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span>
-                        <span class="n">moving</span> <span class="o">=</span> <span class="n">tmp_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;moving</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
-                        <span class="n">fixed</span> <span class="o">=</span> <span class="n">tmp_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;fixed</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
-                        <span class="n">_to_nifti</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">moving</span><span class="p">)</span>
-                        <span class="n">_to_nifti</span><span class="p">(</span>
-                            <span class="n">predicted</span><span class="p">,</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
-                            <span class="n">fixed</span><span class="p">,</span>
-                            <span class="n">clip</span><span class="o">=</span><span class="n">reg_target_type</span> <span class="o">==</span> <span class="s2">&quot;dwi&quot;</span><span class="p">,</span>
+                        <span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span> <span class="o">=</span> <span class="n">_prepare_registration_data</span><span class="p">(</span>
+                            <span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">ptmp_dir</span><span class="p">,</span> <span class="n">reg_target_type</span>
                         <span class="p">)</span>
 
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
                         <span class="p">)</span>
-                        <span class="n">registration</span> <span class="o">=</span> <span class="n">Registration</span><span class="p">(</span>
-                            <span class="n">terminal_output</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
-                            <span class="n">from_file</span><span class="o">=</span><span class="n">pkg_fn</span><span class="p">(</span>
-                                <span class="s2">&quot;eddymotion&quot;</span><span class="p">,</span>
-                                <span class="sa">f</span><span class="s2">&quot;config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span>
-                            <span class="p">),</span>
-                            <span class="n">fixed_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fixed</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
-                            <span class="n">moving_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">moving</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
-                            <span class="o">**</span><span class="n">align_kwargs</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="k">if</span> <span class="n">bmask_img</span><span class="p">:</span>
-                            <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image_masks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NULL&quot;</span><span class="p">,</span> <span class="n">bmask_img</span><span class="p">]</span>
 
-                        <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]):</span>
-                            <span class="n">reference</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ImageGrid&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;affine&quot;</span><span class="p">))(</span>
-                                <span class="n">shape</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">affine</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span>
-                            <span class="p">)</span>
-
-                            <span class="c1"># create a nitransforms object</span>
-                            <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">fieldmap</span><span class="p">:</span>
-                                <span class="c1"># compose fieldmap into transform</span>
-                                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">initial_xform</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span>
-                                    <span class="n">matrix</span><span class="o">=</span><span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference</span>
-                                <span class="p">)</span>
-                            <span class="n">mat_file</span> <span class="o">=</span> <span class="n">tmp_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;init_</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.mat&quot;</span>
-                            <span class="n">initial_xform</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">mat_file</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;itk&quot;</span><span class="p">)</span>
-                            <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">initial_moving_transform</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mat_file</span><span class="p">)</span>
-
-                        <span class="c1"># execute ants command line</span>
-                        <span class="n">result</span> <span class="o">=</span> <span class="n">registration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">))</span><span class="o">.</span><span class="n">outputs</span>
-
-                        <span class="c1"># read output transform</span>
-                        <span class="n">xform</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">Affine</span><span class="p">(</span>
-                            <span class="n">nt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">ITKLinearTransform</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span>
-                                <span class="n">result</span><span class="o">.</span><span class="n">forward_transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                            <span class="p">)</span><span class="o">.</span><span class="n">to_ras</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span><span class="o">=</span><span class="n">moving</span><span class="p">),</span>
-                        <span class="p">)</span>
-                        <span class="c1"># debugging: generate aligned file for testing</span>
-                        <span class="n">xform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">moving</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span>
-                            <span class="n">tmp_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;aligned</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+                        <span class="n">xform</span> <span class="o">=</span> <span class="n">_run_registration</span><span class="p">(</span>
+                            <span class="n">fixed</span><span class="p">,</span>
+                            <span class="n">moving</span><span class="p">,</span>
+                            <span class="n">bmask_img</span><span class="p">,</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">,</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
+                            <span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">fieldmap</span><span class="p">,</span>
+                            <span class="n">i_iter</span><span class="p">,</span>
+                            <span class="n">i</span><span class="p">,</span>
+                            <span class="n">ptmp_dir</span><span class="p">,</span>
+                            <span class="n">reg_target_type</span><span class="p">,</span>
+                            <span class="n">align_kwargs</span><span class="p">,</span>
                         <span class="p">)</span>
 
                         <span class="c1"># update</span>
@@ -519,6 +462,222 @@
     <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set_sform</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set_qform</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">nii</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_sort_dwdata_indices</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">dwi_vol_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort the DWI data volume indices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seed : :obj:`int` or :obj:`bool`</span>
+<span class="sd">        Seed the random number generator. If an integer, the value is used to initialize the</span>
+<span class="sd">        generator; if ``True``, the arbitrary value of ``20210324`` is used to initialize it.</span>
+<span class="sd">    dwi_vol_count : :obj:`int`</span>
+<span class="sd">        Number of DWI volumes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    index_order : :obj:`numpy.ndarray`</span>
+<span class="sd">        Index order.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_seed</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_seed</span> <span class="o">=</span> <span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span>
+
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">_seed</span><span class="p">)</span>
+
+    <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dwi_vol_count</span><span class="p">)</span>
+    <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">index_order</span>
+
+
+<span class="k">def</span> <span class="nf">_prepare_brainmask_data</span><span class="p">(</span><span class="n">brainmask</span><span class="p">,</span> <span class="n">affine</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the brainmask data: save the data to disk.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    brainmask : :obj:`numpy.ndarray`</span>
+<span class="sd">        Brainmask data.</span>
+<span class="sd">    affine : :obj:`numpy.ndarray`</span>
+<span class="sd">        Affine transformation matrix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bmask_img : :class:`~nibabel.nifti1.Nifti1Image`</span>
+<span class="sd">        Brainmask image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">bmask_img</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;_bmask.nii.gz&quot;</span><span class="p">)</span>
+        <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">brainmask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">),</span> <span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">bmask_img</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bmask_img</span>
+
+
+<span class="k">def</span> <span class="nf">_prepare_kwargs</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the keyword arguments depending on the DWI data: add attributes corresponding to</span>
+<span class="sd">    the ``brainmask``, ``bzero``, ``gradients``, ``frame_time``, and ``total_duration`` DWI data</span>
+<span class="sd">    properties.</span>
+
+<span class="sd">    Modifies kwargs in-place.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dwdata : :class:`eddymotion.data.dmri.DWI`</span>
+<span class="sd">        DWI data object.</span>
+<span class="sd">    kwargs : :obj:`dict`</span>
+<span class="sd">        Keyword arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;bzero&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;S0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;frame_time&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timepoints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">frame_time</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;total_duration&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;xlim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">total_duration</span>
+
+
+<span class="k">def</span> <span class="nf">_prepare_registration_data</span><span class="p">(</span><span class="n">dwframe</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">vol_idx</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">reg_target_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the registration data: save the fixed and moving images to disk.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dwframe : :obj:`numpy.ndarray`</span>
+<span class="sd">        DWI data object.</span>
+<span class="sd">    predicted : :obj:`numpy.ndarray`</span>
+<span class="sd">        Predicted data.</span>
+<span class="sd">    affine : :obj:`numpy.ndarray`</span>
+<span class="sd">        Affine transformation matrix.</span>
+<span class="sd">    vol_idx : :obj:`int</span>
+<span class="sd">        DWI volume index.</span>
+<span class="sd">    dirname : :obj:`Path`</span>
+<span class="sd">        Directory name where the data is saved.</span>
+<span class="sd">    reg_target_type : :obj:`str`</span>
+<span class="sd">        Target registration type.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fixed : :obj:`Path`</span>
+<span class="sd">        Fixed image filename.</span>
+<span class="sd">    moving : :obj:`Path`</span>
+<span class="sd">        Moving image filename.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">moving</span> <span class="o">=</span> <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;moving</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+    <span class="n">fixed</span> <span class="o">=</span> <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;fixed</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+    <span class="n">_to_nifti</span><span class="p">(</span><span class="n">dwframe</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">moving</span><span class="p">)</span>
+    <span class="n">_to_nifti</span><span class="p">(</span>
+        <span class="n">predicted</span><span class="p">,</span>
+        <span class="n">affine</span><span class="p">,</span>
+        <span class="n">fixed</span><span class="p">,</span>
+        <span class="n">clip</span><span class="o">=</span><span class="n">reg_target_type</span> <span class="o">==</span> <span class="s2">&quot;dwi&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span>
+
+
+<span class="k">def</span> <span class="nf">_run_registration</span><span class="p">(</span>
+    <span class="n">fixed</span><span class="p">,</span>
+    <span class="n">moving</span><span class="p">,</span>
+    <span class="n">bmask_img</span><span class="p">,</span>
+    <span class="n">em_affines</span><span class="p">,</span>
+    <span class="n">affine</span><span class="p">,</span>
+    <span class="n">shape</span><span class="p">,</span>
+    <span class="n">bval</span><span class="p">,</span>
+    <span class="n">fieldmap</span><span class="p">,</span>
+    <span class="n">i_iter</span><span class="p">,</span>
+    <span class="n">vol_idx</span><span class="p">,</span>
+    <span class="n">dirname</span><span class="p">,</span>
+    <span class="n">reg_target_type</span><span class="p">,</span>
+    <span class="n">align_kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register the moving image to the fixed image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fixed : :obj:`Path`</span>
+<span class="sd">        Fixed image filename.</span>
+<span class="sd">    moving : :obj:`Path`</span>
+<span class="sd">        Moving image filename.</span>
+<span class="sd">    bmask_img : :class:`~nibabel.nifti1.Nifti1Image`</span>
+<span class="sd">        Brainmask image.</span>
+<span class="sd">    em_affines : :obj:`numpy.ndarray`</span>
+<span class="sd">        Estimated eddy motion affine transformation matrices.</span>
+<span class="sd">    affine : :obj:`numpy.ndarray`</span>
+<span class="sd">        Affine transformation matrix.</span>
+<span class="sd">    shape : :obj:`tuple`</span>
+<span class="sd">        Shape of the DWI frame.</span>
+<span class="sd">    bval : :obj:`int`</span>
+<span class="sd">        b-value of the corresponding DWI volume.</span>
+<span class="sd">    fieldmap : :class:`~nibabel.nifti1.Nifti1Image`</span>
+<span class="sd">        Fieldmap.</span>
+<span class="sd">    i_iter : :obj:`int`</span>
+<span class="sd">        Iteration number.</span>
+<span class="sd">    vol_idx : :obj:`int`</span>
+<span class="sd">        DWI frame index.</span>
+<span class="sd">    dirname : :obj:`Path`</span>
+<span class="sd">        Directory name where the transformation is saved.</span>
+<span class="sd">    reg_target_type : :obj:`str`</span>
+<span class="sd">        Target registration type.</span>
+<span class="sd">    align_kwargs : :obj:`dict`</span>
+<span class="sd">        Parameters to configure the image registration process.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xform : :class:`~nitransforms.linear.Affine`</span>
+<span class="sd">        Registration transformation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">registration</span> <span class="o">=</span> <span class="n">Registration</span><span class="p">(</span>
+        <span class="n">terminal_output</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="n">from_file</span><span class="o">=</span><span class="n">pkg_fn</span><span class="p">(</span>
+            <span class="s2">&quot;eddymotion&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">fixed_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fixed</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
+        <span class="n">moving_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">moving</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
+        <span class="o">**</span><span class="n">align_kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">bmask_img</span><span class="p">:</span>
+        <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image_masks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NULL&quot;</span><span class="p">,</span> <span class="n">bmask_img</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">em_affines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">em_affines</span><span class="p">[</span><span class="n">vol_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]):</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ImageGrid&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;affine&quot;</span><span class="p">))(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">)</span>
+
+        <span class="c1"># create a nitransforms object</span>
+        <span class="k">if</span> <span class="n">fieldmap</span><span class="p">:</span>
+            <span class="c1"># compose fieldmap into transform</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">initial_xform</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">em_affines</span><span class="p">[</span><span class="n">vol_idx</span><span class="p">],</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">)</span>
+        <span class="n">mat_file</span> <span class="o">=</span> <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;init_</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.mat&quot;</span>
+        <span class="n">initial_xform</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">mat_file</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;itk&quot;</span><span class="p">)</span>
+        <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">initial_moving_transform</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mat_file</span><span class="p">)</span>
+
+    <span class="c1"># execute ants command line</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">registration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">dirname</span><span class="p">))</span><span class="o">.</span><span class="n">outputs</span>
+
+    <span class="c1"># read output transform</span>
+    <span class="n">xform</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">Affine</span><span class="p">(</span>
+        <span class="n">nt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">ITKLinearTransform</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">forward_transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">to_ras</span><span class="p">(</span>
+            <span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span><span class="o">=</span><span class="n">moving</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># debugging: generate aligned file for testing</span>
+    <span class="n">xform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">moving</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span>
+        <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;aligned</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">bval</span><span class="p">)</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xform</span>
 </pre></div>
         </article>
       </div>
@@ -551,7 +710,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ecad7126"></script>
+</div><script src="../../_static/documentation_options.js?v=84764b42"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

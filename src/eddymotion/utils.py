@@ -126,12 +126,10 @@ def random_action(dwdata, seed=None):
 
 def bvalue_action(dwdata):
     """
-    Sort the DWI data volume indices in ascending order based on the last
-    column of gradients.
+    Sort the DWI data volume indices in ascending order based on the last column of gradients.
 
     Parameters:
-    dwdata : :obj:`~eddymotion.dmri.DWI`
-        DWI dataset, represented by this tool's internal type.
+    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
 
     Returns:
     numpy.ndarray: The sorted index order.

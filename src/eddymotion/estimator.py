@@ -36,7 +36,7 @@ from tqdm import tqdm
 
 from eddymotion.data.splitting import lovo_split
 from eddymotion.model import ModelFactory
-from eddymotion.utils import sort_dwdata_indices, SortingStrategy
+from eddymotion.utils import SortingStrategy, sort_dwdata_indices
 
 
 class EddyMotionEstimator:

@@ -36,6 +36,7 @@ from tqdm import tqdm
 
 from eddymotion.data.splitting import lovo_split
 from eddymotion.model import ModelFactory
+from utils import sort_dwdata_indices, SortingStrategy
 
 
 class EddyMotionEstimator:
@@ -88,21 +89,19 @@ class EddyMotionEstimator:
 
         align_kwargs = align_kwargs or {}
 
-        index_order = _sort_dwdata_indices(seed, len(dwdata))
+        index_order = sort_dwdata_indices(
+            dwdata, SortingStrategy.RANDOM, seed=None
+        )
 
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
 
         n_iter = len(models)
         for i_iter, model in enumerate(models):
-            reg_target_type = (
-                "dwi" if model.lower() not in ("b0", "s0", "avg", "average", "mean") else "b0"
+            bmask_img = _prepare_brainmask_data(
+                dwdata.brainmask,
+                dwdata.affine
             )
-
-            # When downsampling these need to be set per-level
-            bmask_img = _prepare_brainmask_data(dwdata.brainmask, dwdata.affine)
-
-            _prepare_kwargs(dwdata, kwargs)
 
             single_model = model.lower() in (
                 "b0",
@@ -239,35 +238,6 @@ def _to_nifti(data, affine, filename, clip=True):
     nii.header.set_sform(affine, code=1)
     nii.header.set_qform(affine, code=1)
     nii.to_filename(filename)
-
-
-def _sort_dwdata_indices(seed, dwi_vol_count):
-    """Sort the DWI data volume indices.
-
-    Parameters
-    ----------
-    seed : :obj:`int` or :obj:`bool`
-        Seed the random number generator. If an integer, the value is used to initialize the
-        generator; if ``True``, the arbitrary value of ``20210324`` is used to initialize it.
-    dwi_vol_count : :obj:`int`
-        Number of DWI volumes.
-
-    Returns
-    -------
-    index_order : :obj:`numpy.ndarray`
-        Index order.
-    """
-
-    _seed = None
-    if seed or seed == 0:
-        _seed = 20210324 if seed is True else seed
-
-    rng = np.random.default_rng(_seed)
-
-    index_order = np.arange(dwi_vol_count)
-    rng.shuffle(index_order)
-
-    return index_order
 
 
 def _prepare_brainmask_data(brainmask, affine):

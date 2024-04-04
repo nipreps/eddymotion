@@ -23,6 +23,7 @@
 """Utils to sort the DWI data volume indices """
 
 from enum import Enum
+
 import numpy as np
 
 
@@ -144,8 +145,7 @@ def centralsym_action(dwdata):
     Sort the DWI data volume indices in a central symmetric manner.
 
     Parameters:
-    dwdata : :obj:`~eddymotion.dmri.DWI`
-        DWI dataset, represented by this tool's internal type.
+    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
 
     Returns:
     numpy.ndarray: The sorted index order.

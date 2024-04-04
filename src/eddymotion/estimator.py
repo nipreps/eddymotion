@@ -89,19 +89,14 @@ class EddyMotionEstimator:
 
         align_kwargs = align_kwargs or {}
 
-        index_order = sort_dwdata_indices(
-            dwdata, SortingStrategy.RANDOM, seed=None
-        )
+        index_order = sort_dwdata_indices(dwdata, SortingStrategy.RANDOM, seed=None)
 
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
 
         n_iter = len(models)
         for i_iter, model in enumerate(models):
-            bmask_img = _prepare_brainmask_data(
-                dwdata.brainmask,
-                dwdata.affine
-            )
+            bmask_img = _prepare_brainmask_data(dwdata.brainmask, dwdata.affine)
 
             single_model = model.lower() in (
                 "b0",

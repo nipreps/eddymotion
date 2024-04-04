@@ -20,7 +20,7 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Utils to sort the DWI data volume indices """
+"""Utils to sort the DWI data volume indices"""
 
 from enum import Enum
 
@@ -37,6 +37,7 @@ class SortingStrategy(Enum):
     - BVALUE: Sorts the items based on their b-value.
     - CENTRALSYM: Sorts the items based on their central symmetry.
     """
+
     LINEAR = "linear"
     RANDOM = "random"
     BVALUE = "bvalue"
@@ -82,11 +83,12 @@ def linear_action(dwdata):
     """
     Sort the DWI data volume indices linearly
 
-    Parameters:
-    dwdata : :obj:`~eddymotion.dmri.DWI`
-        DWI dataset, represented by this tool's internal type.
+    Parameters
+    ----------
+    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
 
-    Returns:
+    Returns
+    -------
     index_order : :obj:`numpy.ndarray`
     The sorted index order.
     """
@@ -100,8 +102,7 @@ def random_action(dwdata, seed=None):
 
     Parameters
     ----------
-    dwdata : :obj:`~eddymotion.dmri.DWI`
-        DWI dataset, represented by this tool's internal type.
+    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
     seed : :obj:`int` or :obj:`bool`, optional
         Seed the random number generator. If an integer, the value is used to
         initialize the generator; if ``True``, the arbitrary value
@@ -129,10 +130,12 @@ def bvalue_action(dwdata):
     """
     Sort the DWI data volume indices in ascending order based on the last column of gradients.
 
-    Parameters:
+    Parameters
+    ----------
     dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
 
-    Returns:
+    Returns
+    -------
     numpy.ndarray: The sorted index order.
     """
     last_column = dwdata.gradients[:, -1]
@@ -144,10 +147,12 @@ def centralsym_action(dwdata):
     """
     Sort the DWI data volume indices in a central symmetric manner.
 
-    Parameters:
+    Parameters
+    ----------
     dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
 
-    Returns:
+    Returns
+    -------
     numpy.ndarray: The sorted index order.
 
     """
@@ -155,17 +160,17 @@ def centralsym_action(dwdata):
 
     index_order = old_index.copy()
     if len(old_index) % 2 == 0:
-        middle_point = int(len(old_index) / 2-1)
+        middle_point = int(len(old_index) / 2 - 1)
         index_order[0] = old_index[middle_point]
 
         for i in np.arange(1, middle_point+1):
-            index_order[2*i-1] = old_index[middle_point + i]
-            index_order[2*i] = old_index[middle_point - i]
+            index_order[2 * i - 1] = old_index[middle_point + i]
+            index_order[2 * i] = old_index[middle_point - i]
     else:
         middle_point = int(len(old_index) / 2)
         index_order[0] = old_index[middle_point]
-        for i in np.arange(1, middle_point+1):
-            index_order[2*i-1] = old_index[middle_point + i]
-            index_order[2*i] = old_index[middle_point - i]
+        for i in np.arange(1, middle_point + 1):
+            index_order[2 * i - 1] = old_index[middle_point + i]
+            index_order[2 * i] = old_index[middle_point - i]
 
     return index_order

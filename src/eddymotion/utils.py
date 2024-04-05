@@ -51,6 +51,8 @@ def linear_action(size=None, **kwargs):
     if size is None:
         raise TypeError("Cannot build iterator without size")
 
+    return range(size)
+
 
 def random_action(size=None, **kwargs):
     """Sort the DWI data volume indices.

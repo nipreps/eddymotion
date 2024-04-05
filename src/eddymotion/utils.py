@@ -27,24 +27,6 @@ from enum import Enum
 import numpy as np
 
 
-class SortingStrategy(Enum):
-    """
-    Enum class representing different sorting strategies.
-
-    Available sorting strategies:
-    - LINEAR: Sorts the items in a linear order.
-    - RANDOM: Sorts the items in a random order.
-    - BVALUE: Sorts the items based on their b-value.
-    - CENTRALSYM: Sorts the items based on their central symmetry.
-    """
-
-    LINEAR = "linear"
-    RANDOM = "random"
-    BVALUE = "bvalue"
-    CENTRALSYM = "centralsym"
-
-
-
 def linear_action(size, **kwargs):
     """
     Sort the DWI data volume indices linearly

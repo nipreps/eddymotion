@@ -56,11 +56,9 @@ def random_action(size, **kwargs):
 
     Parameters
     ----------
-    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
-    seed : :obj:`int` or :obj:`bool`, optional
-        Seed the random number generator. If an integer, the value is used to
-        initialize the generator; if ``True``, the arbitrary value
-        of ``20210324`` is used to initialize it.
+    size : :obj:`int`
+        Number of volumes in the dataset
+        (for instance, the number of orientations in a DWI)
 
     Returns
     -------
@@ -86,7 +84,7 @@ def bvalue_action(gradients):
 
     Parameters
     ----------
-    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
+    gradients : :obj:`numpy.ndarray` gradient table of the dataset
 
     Examples
     --------

@@ -69,12 +69,12 @@ def random_action(size, **kwargs):
     """
 
     _seed = kwargs.get('seed', None)
-    if seed or seed == 0:
-        _seed = 20210324 if seed is True else seed
+    if kwargs.get('seed', None) or kwargs.get('seed', None) == 0:
+        _seed = 20210324 if kwargs.get('seed', None) is True else kwargs.get('seed', None)
 
     rng = np.random.default_rng(_seed)
 
-    index_order = np.arange(len(dwdata))
+    index_order = np.arange(size)
     rng.shuffle(index_order)
 
     return index_order.to_list()

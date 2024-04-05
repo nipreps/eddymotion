@@ -127,6 +127,13 @@ def centralsym_action(size, **kwargs):
         Number of volumes in the dataset
         (for instance, the number of orientations in a DWI)
 
+    Examples
+    --------
+    >>> centralsym_action(10)
+    [4, 5, 3, 6, 2, 7, 1, 8, 0, 9]
+    >>> centralsym_action(11)
+    [4, 5, 3, 6, 2, 7, 1, 8, 0, 9, 10]
+
     Returns
     -------
     :obj:`list` of :obj:`int`

@@ -25,7 +25,7 @@
 import numpy as np
 
 
-def linear_action(size, **kwargs):
+def linear_action(size=None, **kwargs):
     """
     Sort the DWI data volume indices linearly
 
@@ -46,10 +46,14 @@ def linear_action(size, **kwargs):
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     """
+    if size is None and 'bvals' in kwargs:
+        size = len(kwargs['bvals'])
+    if size is None:
+       raise TypeError("Cannot build iterator without size") 
     return range(size)
 
 
-def random_action(size, **kwargs):
+def random_action(size=None, **kwargs):
     """Sort the DWI data volume indices.
 
     Parameters
@@ -76,13 +80,14 @@ def random_action(size, **kwargs):
     return index_order.to_list()
 
 
-def bvalue_action(gradients):
+def bvalue_action(size=None, **kwargs):
     """
     Sort the DWI data volume indices in ascending order based on the last column of gradients.
 
     Parameters
     ----------
-    gradients : :obj:`numpy.ndarray` gradient table of the dataset
+    bvalues : :obj:`list`
+        List of b-values corresponding to all orientations of the dataset.
 
     Examples
     --------
@@ -93,12 +98,17 @@ def bvalue_action(gradients):
     -------
     numpy.ndarray: The sorted index order.
     """
-    last_column = gradients[:, -1]
+    bvals = kwargs.get('bvals', None)
+    if bvals is None:
+        raise TypeError('Keyword argument bvals is required')
+    indexed_bvals = sorted([(round(b, 2), i) for i, b in enumerate(bvals)])
+    return [index[1] for index in indexed_bvals]
+    
     index_order = np.argsort(last_column)
     return index_order
 
 
-def centralsym_action(size, **kwargs):
+def centralsym_action(size=None, **kwargs):
     """
     Sort the DWI data volume indices in a central symmetric manner.
 
@@ -120,6 +130,10 @@ def centralsym_action(size, **kwargs):
     :obj:`list` of :obj:`int`
         The sorted index order.
     """
+    if size is None and 'bvals' in kwargs:
+        size = len(kwargs['bvals'])
+    if size is None:
+       raise TypeError("Cannot build iterator without size") 
     linear = list(range(size))
     half1, half2 = list(reversed(linear[:size // 2])), linear[size // 2:]
     index_order = [

@@ -44,16 +44,14 @@ def linear_action(size, **kwargs):
 
     Examples
     --------
-    >>> linear_action(10)
+    >>> list(linear_action(10))
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     """
-    index_order = np.arange(len(dwdata))
-
-    return index_order
+    return range(size)
 
 
-def random_action(dwdata, seed=None):
+def random_action(size, **kwargs):
     """Sort the DWI data volume indices.
 
     Parameters
@@ -112,9 +110,9 @@ def centralsym_action(size, **kwargs):
     Examples
     --------
     >>> centralsym_action(10)
-    [4, 5, 3, 6, 2, 7, 1, 8, 0, 9]
+    [5, 4, 6, 3, 7, 2, 8, 1, 9, 0]
     >>> centralsym_action(11)
-    [4, 5, 3, 6, 2, 7, 1, 8, 0, 9, 10]
+    [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10]
 
     Returns
     -------
@@ -125,7 +123,7 @@ def centralsym_action(size, **kwargs):
     half1, half2 = list(reversed(linear[:size // 2])), linear[size // 2:]
     index_order = [
         sub[item] for item in range(len(half1))
-        for sub in [half1, half2]
+        for sub in [half2, half1]
     ]
     if size % 2:  # If size is odd number, append last element
         index_order.append(half2[-1])

@@ -137,7 +137,7 @@ def centralsym_action(size=None, **kwargs):
     if size is None and 'bvals' in kwargs:
         size = len(kwargs['bvals'])
     if size is None:
-       raise TypeError("Cannot build iterator without size") 
+        raise TypeError("Cannot build iterator without size")
     linear = list(range(size))
     half1, half2 = list(reversed(linear[:size // 2])), linear[size // 2:]
     index_order = [

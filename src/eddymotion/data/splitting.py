@@ -21,11 +21,9 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Data splitting helpers."""
-
 from pathlib import Path
-
-import h5py
 import numpy as np
+import h5py
 
 
 def lovo_split(dataset, index, with_b0=False):

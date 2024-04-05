@@ -22,8 +22,6 @@
 #
 """Utils to sort the DWI data volume indices"""
 
-from enum import Enum
-
 import numpy as np
 
 

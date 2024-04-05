@@ -64,7 +64,7 @@ def random_action(size=None, **kwargs):
 
     Returns
     -------
-    index_order : :obj:`numpy.ndarray`
+    :obj:`list` of :obj:`int`
         The sorted index order.
     """
 
@@ -96,21 +96,19 @@ def bvalue_action(size=None, **kwargs):
 
     Examples
     --------
-    >>> bvalue_action(np.array([[1, 1, 1, 1], [4, 4, 4, 4], [2, 2, 2, 2]]))
-    array([0, 2, 1])
+    >>> bvalue_action(bvals=[[1, 1, 1, 1], [4, 4, 4, 4], [2, 2, 2, 2]])
+    [0, 2, 1]
 
     Returns
     -------
-    numpy.ndarray: The sorted index order.
+    :obj:`list` of :obj:`int`
+        The sorted index order.
     """
     bvals = kwargs.get('bvals', None)
     if bvals is None:
         raise TypeError('Keyword argument bvals is required')
-    indexed_bvals = sorted([(round(b, 2), i) for i, b in enumerate(bvals)])
+    indexed_bvals = sorted([(round(sum(sublist), 2), i) for i, sublist in enumerate(bvals)])
     return [index[1] for index in indexed_bvals]
-    
-    index_order = np.argsort(last_column)
-    return index_order
 
 
 def centralsym_action(size=None, **kwargs):

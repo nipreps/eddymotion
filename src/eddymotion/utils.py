@@ -68,6 +68,11 @@ def random_action(size=None, **kwargs):
         The sorted index order.
     """
 
+    if size is None and 'bvals' in kwargs:
+        size = len(kwargs['bvals'])
+    if size is None:
+        raise TypeError("Cannot build iterator without size")
+
     _seed = kwargs.get('seed', None)
     if kwargs.get('seed', None) or kwargs.get('seed', None) == 0:
         _seed = 20210324 if kwargs.get('seed', None) is True else kwargs.get('seed', None)

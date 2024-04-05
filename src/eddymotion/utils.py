@@ -44,53 +44,27 @@ class SortingStrategy(Enum):
     CENTRALSYM = "centralsym"
 
 
-def sort_dwdata_indices(dwdata, strategy, seed=None):
-    """Sort the DWI data volume indices following the given strategy.
 
-    Parameters
-    ----------
-    dwdata : :obj:`~eddymotion.dmri.DWI`
-        DWI dataset, represented by this tool's internal type.
-    strategy : :obj:`~eddymotion.utils.SortingStrategy`
-        The sorting strategy to be used. Available options are:
-        - SortingStrategy.LINEAR: Sort the indices linearly.
-        - SortingStrategy.RANDOM: Sort the indices randomly.
-        - SortingStrategy.BVALUE: Sort the indices based on the last column of gradients in ascending order.
-        - SortingStrategy.CENTRALSYM: Sort the indices in a central symmetric manner.
-    seed : :obj:`int` or :obj:`bool`, optional
-        Seed the random number generator. If an integer, the value is used to
-        initialize the generator; if ``True``, the arbitrary value
-        of ``20210324`` is used to initialize it.
-
-    Returns
-    -------
-    index_order : :obj:`numpy.ndarray`
-        The sorted index order.
-    """
-    if strategy == SortingStrategy.LINEAR:
-        return linear_action(dwdata)
-    elif strategy == SortingStrategy.RANDOM:
-        return random_action(dwdata, seed)
-    elif strategy == SortingStrategy.BVALUE:
-        return bvalue_action(dwdata)
-    elif strategy == SortingStrategy.CENTRALSYM:
-        return centralsym_action(dwdata)
-    else:
-        raise ValueError("Invalid sorting strategy")
-
-
-def linear_action(dwdata):
+def linear_action(size, **kwargs):
     """
     Sort the DWI data volume indices linearly
 
     Parameters
     ----------
-    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
+    size : :obj:`int`
+        Number of volumes in the dataset
+        (for instance, the number of orientations in a DWI)
 
     Returns
     -------
-    index_order : :obj:`numpy.ndarray`
-    The sorted index order.
+    :obj:`list` of :obj:`int`
+        The sorted index order.
+
+    Examples
+    --------
+    >>> linear_action(10)
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
     """
     index_order = np.arange(len(dwdata))
 
@@ -114,7 +88,7 @@ def random_action(dwdata, seed=None):
         The sorted index order.
     """
 
-    _seed = None
+    _seed = kwargs.get('seed', None)
     if seed or seed == 0:
         _seed = 20210324 if seed is True else seed
 
@@ -123,7 +97,7 @@ def random_action(dwdata, seed=None):
     index_order = np.arange(len(dwdata))
     rng.shuffle(index_order)
 
-    return index_order
+    return index_order.to_list()
 
 
 def bvalue_action(dwdata):
@@ -143,18 +117,20 @@ def bvalue_action(dwdata):
     return index_order
 
 
-def centralsym_action(dwdata):
+def centralsym_action(size, **kwargs):
     """
     Sort the DWI data volume indices in a central symmetric manner.
 
     Parameters
     ----------
-    dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
+    size : :obj:`int`
+        Number of volumes in the dataset
+        (for instance, the number of orientations in a DWI)
 
     Returns
     -------
-    numpy.ndarray: The sorted index order.
-
+    :obj:`list` of :obj:`int`
+        The sorted index order.
     """
     old_index = np.arange(len(dwdata))
 

@@ -139,21 +139,12 @@ def centralsym_action(size, **kwargs):
     :obj:`list` of :obj:`int`
         The sorted index order.
     """
-    old_index = np.arange(len(dwdata))
-
-    index_order = old_index.copy()
-    if len(old_index) % 2 == 0:
-        middle_point = int(len(old_index) / 2 - 1)
-        index_order[0] = old_index[middle_point]
-
-        for i in np.arange(1, middle_point+1):
-            index_order[2 * i - 1] = old_index[middle_point + i]
-            index_order[2 * i] = old_index[middle_point - i]
-    else:
-        middle_point = int(len(old_index) / 2)
-        index_order[0] = old_index[middle_point]
-        for i in np.arange(1, middle_point + 1):
-            index_order[2 * i - 1] = old_index[middle_point + i]
-            index_order[2 * i] = old_index[middle_point - i]
-
+    linear = list(range(size))
+    half1, half2 = list(reversed(linear[:size // 2])), linear[size // 2:]
+    index_order = [
+        sub[item] for item in range(len(half1))
+        for sub in [half1, half2]
+    ]
+    if size % 2:  # If size is odd number, append last element
+        index_order.append(half2[-1])
     return index_order

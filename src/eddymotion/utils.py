@@ -49,8 +49,7 @@ def linear_action(size=None, **kwargs):
     if size is None and 'bvals' in kwargs:
         size = len(kwargs['bvals'])
     if size is None:
-       raise TypeError("Cannot build iterator without size") 
-    return range(size)
+        raise TypeError("Cannot build iterator without size")
 
 
 def random_action(size=None, **kwargs):

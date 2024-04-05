@@ -80,7 +80,7 @@ def random_action(size, **kwargs):
     return index_order.to_list()
 
 
-def bvalue_action(dwdata):
+def bvalue_action(gradients):
     """
     Sort the DWI data volume indices in ascending order based on the last column of gradients.
 
@@ -88,11 +88,16 @@ def bvalue_action(dwdata):
     ----------
     dwdata : :obj:`~eddymotion.dmri.DWI` DWI dataset, represented by this tool's internal type.
 
+    Examples
+    --------
+    >>> bvalue_action(np.array([[1, 1, 1, 1], [4, 4, 4, 4], [2, 2, 2, 2]]))
+    array([0, 2, 1])
+
     Returns
     -------
     numpy.ndarray: The sorted index order.
     """
-    last_column = dwdata.gradients[:, -1]
+    last_column = gradients[:, -1]
     index_order = np.argsort(last_column)
     return index_order
 

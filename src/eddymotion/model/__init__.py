@@ -26,6 +26,7 @@ from eddymotion.model.base import (
     AverageDWModel,
     DKIModel,
     DTIModel,
+    GaussianProcessModel,
     ModelFactory,
     PETModel,
     TrivialB0Model,
@@ -36,6 +37,7 @@ __all__ = (
     "AverageDWModel",
     "DKIModel",
     "DTIModel",
+    "GaussianProcessModel",
     "TrivialB0Model",
     "PETModel",
 )

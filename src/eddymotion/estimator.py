@@ -120,6 +120,7 @@ class EddyMotionEstimator:
                 "avg",
                 "average",
                 "mean",
+                "gp",
             ) or model.lower().startswith("full")
 
             dwmodel = None

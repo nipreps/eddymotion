@@ -24,6 +24,8 @@
 
 import numpy as np
 import pytest
+from sklearn.datasets import make_friedman2
+from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 
 from eddymotion import model
 from eddymotion.data.dmri import DWI
@@ -103,6 +105,23 @@ def test_average_model():
     # Verify that the threshold for b-value selection works as expected
     assert np.all(tmodel_1000.predict([0, 0, 0]) == 1000)
     assert np.all(tmodel_2000.predict([0, 0, 0]) == 1100)
+
+
+def test_gp_model(datadir):
+    dwi = DWI.from_filename(datadir / "dwi.h5")
+
+    kernel = DotProduct() + WhiteKernel()
+
+    gp = model.GaussianProcessModel(dwi=dwi, kernel=kernel)
+
+    assert isinstance(gp, model.GaussianProcessModel)
+
+    X, y = make_friedman2(n_samples=500, noise=0, random_state=0)
+    gp.fit(X, y)
+    X_qry = X[:2, :]
+    prediction, _ = gp.predict(X_qry, return_std=True)
+
+    assert prediction.shape == (X_qry.shape[0],)
 
 
 def test_two_initialisations(datadir):

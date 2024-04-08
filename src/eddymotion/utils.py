@@ -24,9 +24,9 @@
 
 import random
 from itertools import chain, zip_longest
-from typing import Generator
+from typing import Iterator
 
-def linear_iterator(size: int = None, **kwargs) -> Generator[int]:
+def linear_iterator(size: int = None, **kwargs) -> Iterator[int]:
     """
     Traverse the dataset volumes in ascending order.
 
@@ -55,7 +55,7 @@ def linear_iterator(size: int = None, **kwargs) -> Generator[int]:
     return range(size)
 
 
-def random_iterator(size: int = None, **kwargs) -> Generator[int]:
+def random_iterator(size: int = None, **kwargs) -> Iterator[int]:
     """
     Traverse the dataset volumes randomly.
 
@@ -104,7 +104,7 @@ def random_iterator(size: int = None, **kwargs) -> Generator[int]:
     return (x for x in index_order)
 
 
-def bvalue_iterator(size: int = None, **kwargs) -> Generator[int]:
+def bvalue_iterator(size: int = None, **kwargs) -> Iterator[int]:
     """
     Traverse the volumes in a DWI dataset by growing b-value.
 
@@ -131,7 +131,7 @@ def bvalue_iterator(size: int = None, **kwargs) -> Generator[int]:
     return (index[1] for index in indexed_bvals)
 
 
-def centralsym_iterator(size: int = None, **kwargs) -> Generator[int]:
+def centralsym_iterator(size: int = None, **kwargs) -> Iterator[int]:
     """
     Traverse the dataset starting from the center and alternatingly progressing to the sides.
 

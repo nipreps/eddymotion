@@ -95,7 +95,7 @@ def random_iterator(size: int = None, **kwargs) -> Iterator[int]:
     if size is None:
         raise TypeError("Cannot build iterator without size")
 
-    _seed = kwargs.get('seed', None)
+    _seed = kwargs.get("seed", None)
     _seed = 20210324 if _seed is True else _seed
 
     random.seed(None if _seed is False else _seed)
@@ -125,7 +125,7 @@ def bvalue_iterator(size: int = None, **kwargs) -> Iterator[int]:
     [0, 1, 8, 4, 5, 2, 3, 6, 7]
 
     """
-    bvals = kwargs.get('bvals', None)
+    bvals = kwargs.get("bvals", None)
     if bvals is None:
         raise TypeError('Keyword argument bvals is required')
     indexed_bvals = sorted([(round(b, 2), i) for i, b in enumerate(bvals)])
@@ -164,8 +164,8 @@ def centralsym_iterator(size: int = None, **kwargs) -> Iterator[int]:
         x
         for x in chain.from_iterable(
             zip_longest(
-                linear[size // 2:],
-                reversed(linear[:size // 2]),
+                linear[size // 2 :],
+                reversed(linear[: size // 2]),
             )
         )
         if x is not None

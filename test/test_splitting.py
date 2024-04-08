@@ -60,4 +60,3 @@ def test_lovo_split(datadir):
     assert np.all(train_data == 0)
     assert np.all(test_gradients == 1)
     assert np.all(train_gradients == 0)
-

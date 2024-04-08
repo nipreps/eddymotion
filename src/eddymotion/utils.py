@@ -23,6 +23,7 @@
 """Utils to sort the DWI data volume indices"""
 
 import numpy as np
+from itertools import chain, zip_longest
 
 
 def linear_iterator(size=None, **kwargs):
@@ -42,7 +43,7 @@ def linear_iterator(size=None, **kwargs):
 
     Examples
     --------
-    >>> list(linear_action(10))
+    >>> list(linear_iterator(10))
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     """
@@ -102,15 +103,15 @@ def bvalue_iterator(size=None, **kwargs):
 
     Examples
     --------
-    >>> bvalue_action(bvals=[0.0, 0.0, 1000.0, 1000.0, 700.0, 700.0, 2000.0, 2000.0, 0.0])
+    >>> list(bvalue_iterator(bvals=[0.0, 0.0, 1000.0, 1000.0, 700.0, 700.0, 2000.0, 2000.0, 0.0]))
     [0, 1, 8, 4, 5, 2, 3, 6, 7]
 
     """
     bvals = kwargs.get('bvals', None)
     if bvals is None:
         raise TypeError('Keyword argument bvals is required')
-    indexed_bvals = sorted([(round(sum(sublist), 2), i) for i, sublist in enumerate(bvals)])
-    return [index[1] for index in indexed_bvals]
+    indexed_bvals = sorted([(round(b, 2), i) for i, b in enumerate(bvals)])
+    return (index[1] for index in indexed_bvals)
 
 
 def centralsym_iterator(size=None, **kwargs):
@@ -130,9 +131,9 @@ def centralsym_iterator(size=None, **kwargs):
 
     Examples
     --------
-    >>> centralsym_action(10)
+    >>> list(centralsym_iterator(10))
     [5, 4, 6, 3, 7, 2, 8, 1, 9, 0]
-    >>> centralsym_action(11)
+    >>> list(centralsym_iterator(11))
     [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10]
 
     """
@@ -141,11 +142,10 @@ def centralsym_iterator(size=None, **kwargs):
     if size is None:
         raise TypeError("Cannot build iterator without size")
     linear = list(range(size))
-    half1, half2 = list(reversed(linear[:size // 2])), linear[size // 2:]
-    index_order = [
-        sub[item] for item in range(len(half1))
-        for sub in [half2, half1]
-    ]
-    if size % 2:  # If size is odd number, append last element
-        index_order.append(half2[-1])
-    return index_order
+    return (
+        x for x in chain.from_iterable(zip_longest(
+            linear[size // 2:],
+            reversed(linear[:size // 2]),
+        ))
+        if x is not None
+    )

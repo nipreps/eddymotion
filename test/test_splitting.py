@@ -22,6 +22,7 @@
 #
 """Unit test testing the lovo_split function."""
 import numpy as np
+
 from eddymotion.data.dmri import DWI
 from eddymotion.data.splitting import lovo_split
 

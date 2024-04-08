@@ -1,7 +1,7 @@
 # emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-
 # vi: set ft=python sts=4 ts=4 sw=4 et:
 #
-# Copyright 2022 The NiPreps Developers <nipreps@gmail.com>
+# Copyright 2024 The NiPreps Developers <nipreps@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Utils to sort the DWI data volume indices"""
+"""Iterators to traverse the volumes in a 4D image."""
 
 import random
 from itertools import chain, zip_longest
@@ -28,7 +28,7 @@ from itertools import chain, zip_longest
 
 def linear_iterator(size=None, **kwargs):
     """
-    Sort the DWI data volume indices linearly
+    Traverse the dataset volumes in ascending order.
 
     Parameters
     ----------
@@ -56,7 +56,8 @@ def linear_iterator(size=None, **kwargs):
 
 
 def random_iterator(size=None, **kwargs):
-    """Sort the DWI data volume indices.
+    """
+    Traverse the dataset volumes randomly.
 
     Parameters
     ----------
@@ -105,7 +106,7 @@ def random_iterator(size=None, **kwargs):
 
 def bvalue_iterator(size=None, **kwargs):
     """
-    Sort the DWI data volume indices in ascending order based on the last column of gradients.
+    Traverse the volumes in a DWI dataset by growing b-value.
 
     Parameters
     ----------
@@ -132,7 +133,7 @@ def bvalue_iterator(size=None, **kwargs):
 
 def centralsym_iterator(size=None, **kwargs):
     """
-    Sort the DWI data volume indices in a central symmetric manner.
+    Traverse the dataset starting from the center and alternatingly progressing to the sides.
 
     Parameters
     ----------

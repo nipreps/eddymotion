@@ -77,7 +77,7 @@ def random_iterator(size=None, **kwargs):
     20210324
     >>> random_iterator(10, seed=True, test_seed=True)
     20210324
-    >>> random_iterator(10, seed=42)
+    >>> random_iterator(10, seed=42, test_seed=True)
     42
 
     """
@@ -99,7 +99,7 @@ def random_iterator(size=None, **kwargs):
     if kwargs.get('test_seed', False) is True:
         return _seed
 
-    return index_order.to_list()
+    return index_order.tolist()
 
 
 def bvalue_iterator(size=None, **kwargs):

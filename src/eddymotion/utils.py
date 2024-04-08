@@ -22,7 +22,7 @@
 #
 """Utils to sort the DWI data volume indices"""
 
-import numpy as np
+import random
 from itertools import chain, zip_longest
 
 
@@ -63,8 +63,11 @@ def random_iterator(size=None, **kwargs):
     size : :obj:`int`
         Number of volumes in the dataset
         (for instance, the number of orientations in a DWI)
-    test_seed : :obj:`bool`
-        If True, return the seed value used for the random number generator.
+    seed : :obj:`int` or :obj:`bool` or :obj:`bool` or ``None``
+        If :obj:`int` or :obj:`str` or ``None``, initializes the seed of Python's random generator
+        with the given value.
+        If ``False``, the random generator is passed ``None``.
+        If ``True``, a default seed value is set.
 
     Returns
     -------
@@ -73,11 +76,14 @@ def random_iterator(size=None, **kwargs):
 
     Examples
     --------
-    >>> random_iterator(15, seed=0)  # seed is 0
+    >>> list(random_iterator(15, seed=0))  # seed is 0
     [12, 2, 7, 8, 14, 4, 9, 13, 6, 3, 5, 0, 1, 10, 11]
-    >>> random_iterator(15, seed=True)  # seed is the default value 20210324
+    >>>  # seed is True -> the default value 20210324 is set
+    >>> list(random_iterator(15, seed=True))
     [13, 2, 8, 12, 10, 4, 9, 3, 0, 1, 14, 6, 11, 7, 5]
-    >>> random_iterator(15, seed=42)  # seed is 42
+    >>> list(random_iterator(15, seed=20210324))
+    [13, 2, 8, 12, 10, 4, 9, 3, 0, 1, 14, 6, 11, 7, 5]
+    >>> list(random_iterator(15, seed=42))  # seed is 42
     [0, 13, 8, 4, 7, 2, 3, 5, 10, 1, 12, 6, 11, 14, 9]
 
     """
@@ -90,13 +96,11 @@ def random_iterator(size=None, **kwargs):
     _seed = kwargs.get('seed', None)
     _seed = 20210324 if _seed is True else _seed
 
-    rng = np.random.default_rng(
-        None if _seed is False else _seed,
-    )
+    random.seed(None if _seed is False else _seed)
 
-    index_order = np.arange(size)
-    rng.shuffle(index_order)
-    return index_order.tolist()
+    index_order = list(range(size))
+    random.shuffle(index_order)
+    return (x for x in index_order)
 
 
 def bvalue_iterator(size=None, **kwargs):

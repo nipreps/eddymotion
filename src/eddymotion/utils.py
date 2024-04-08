@@ -88,17 +88,14 @@ def random_iterator(size=None, **kwargs):
         raise TypeError("Cannot build iterator without size")
 
     _seed = kwargs.get('seed', None)
-    if _seed is True or _seed == 0:
-        _seed = 20210324 if kwargs.get('seed', None) in [True, 0] else kwargs.get('seed', None)
+    _seed = 20210324 if _seed is True else _seed
 
-    rng = np.random.default_rng(_seed)
+    rng = np.random.default_rng(
+        None if _seed is False else _seed,
+    )
 
     index_order = np.arange(size)
     rng.shuffle(index_order)
-
-    if kwargs.get('test_seed', False) is True:
-        return _seed
-
     return index_order.tolist()
 
 

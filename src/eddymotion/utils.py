@@ -63,11 +63,23 @@ def random_iterator(size=None, **kwargs):
     size : :obj:`int`
         Number of volumes in the dataset
         (for instance, the number of orientations in a DWI)
+    test_seed : :obj:`bool`
+        If True, return the seed value used for the random number generator.
 
     Returns
     -------
     :obj:`list` of :obj:`int`
         The sorted index order.
+
+    Examples
+    --------
+    >>> random_iterator(10, seed=0, test_seed=True)
+    20210324
+    >>> random_iterator(10, seed=True, test_seed=True)
+    20210324
+    >>> random_iterator(10, seed=42)
+    42
+
     """
 
     if size is None and 'bvals' in kwargs:
@@ -76,13 +88,16 @@ def random_iterator(size=None, **kwargs):
         raise TypeError("Cannot build iterator without size")
 
     _seed = kwargs.get('seed', None)
-    if kwargs.get('seed', None) or kwargs.get('seed', None) == 0:
-        _seed = 20210324 if kwargs.get('seed', None) is True else kwargs.get('seed', None)
+    if _seed is True or _seed == 0:
+        _seed = 20210324 if kwargs.get('seed', None) in [True, 0] else kwargs.get('seed', None)
 
     rng = np.random.default_rng(_seed)
 
     index_order = np.arange(size)
     rng.shuffle(index_order)
+
+    if kwargs.get('test_seed', False) is True:
+        return _seed
 
     return index_order.to_list()
 

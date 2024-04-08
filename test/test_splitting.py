@@ -21,7 +21,9 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Unit test testing the lovo_split function."""
+
 import numpy as np
+
 from eddymotion.data.dmri import DWI
 from eddymotion.data.splitting import lovo_split
 
@@ -50,8 +52,7 @@ def test_lovo_split(datadir):
     data.gradients[..., index] = 1
 
     # Apply the lovo_split function at the specified index
-    (train_data, train_gradients), \
-        (test_data, test_gradients) = lovo_split(data, index)
+    (train_data, train_gradients), (test_data, test_gradients) = lovo_split(data, index)
 
     # Check if the test data contains only 1s
     # and the train data contains only 0s after the split
@@ -59,4 +60,3 @@ def test_lovo_split(datadir):
     assert np.all(train_data == 0)
     assert np.all(test_gradients == 1)
     assert np.all(train_gradients == 0)
-

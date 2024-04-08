@@ -37,7 +37,7 @@ def linear_action(size=None, **kwargs):
 
     Returns
     -------
-    :obj:`list` of :obj:`int`
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples
@@ -97,8 +97,8 @@ def bvalue_action(size=None, **kwargs):
 
     Examples
     --------
-    >>> bvalue_action(bvals=[[1, 1, 1, 1], [4, 4, 4, 4], [2, 2, 2, 2]])
-    [0, 2, 1]
+    >>> bvalue_action(bvals=[0.0, 0.0, 1000.0, 1000.0, 700.0, 700.0, 2000.0, 2000.0, 0.0])
+    [0, 1, 8, 4, 5, 2, 3, 6, 7]
 
     Returns
     -------
@@ -133,6 +133,7 @@ def centralsym_action(size=None, **kwargs):
     -------
     :obj:`list` of :obj:`int`
         The sorted index order.
+
     """
     if size is None and 'bvals' in kwargs:
         size = len(kwargs['bvals'])

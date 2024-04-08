@@ -73,12 +73,12 @@ def random_iterator(size=None, **kwargs):
 
     Examples
     --------
-    >>> random_iterator(10, seed=0, test_seed=True)
-    20210324
-    >>> random_iterator(10, seed=True, test_seed=True)
-    20210324
-    >>> random_iterator(10, seed=42, test_seed=True)
-    42
+    >>> random_iterator(15, seed=0)  # seed is 0
+    [12, 2, 7, 8, 14, 4, 9, 13, 6, 3, 5, 0, 1, 10, 11]
+    >>> random_iterator(15, seed=True)  # seed is the default value 20210324
+    [13, 2, 8, 12, 10, 4, 9, 3, 0, 1, 14, 6, 11, 7, 5]
+    >>> random_iterator(15, seed=42)  # seed is 42
+    [0, 13, 8, 4, 7, 2, 3, 5, 10, 1, 12, 6, 11, 14, 9]
 
     """
 

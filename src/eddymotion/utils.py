@@ -48,8 +48,8 @@ def linear_iterator(size: int = None, **kwargs) -> Iterator[int]:
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     """
-    if size is None and 'bvals' in kwargs:
-        size = len(kwargs['bvals'])
+    if size is None and "bvals" in kwargs:
+        size = len(kwargs["bvals"])
     if size is None:
         raise TypeError("Cannot build iterator without size")
 
@@ -90,8 +90,8 @@ def random_iterator(size: int = None, **kwargs) -> Iterator[int]:
 
     """
 
-    if size is None and 'bvals' in kwargs:
-        size = len(kwargs['bvals'])
+    if size is None and "bvals" in kwargs:
+        size = len(kwargs["bvals"])
     if size is None:
         raise TypeError("Cannot build iterator without size")
 
@@ -155,15 +155,18 @@ def centralsym_iterator(size: int = None, **kwargs) -> Iterator[int]:
     [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10]
 
     """
-    if size is None and 'bvals' in kwargs:
-        size = len(kwargs['bvals'])
+    if size is None and "bvals" in kwargs:
+        size = len(kwargs["bvals"])
     if size is None:
         raise TypeError("Cannot build iterator without size")
     linear = list(range(size))
     return (
-        x for x in chain.from_iterable(zip_longest(
-            linear[size // 2:],
-            reversed(linear[:size // 2]),
-        ))
+        x
+        for x in chain.from_iterable(
+            zip_longest(
+                linear[size // 2:],
+                reversed(linear[:size // 2]),
+            )
+        )
         if x is not None
     )

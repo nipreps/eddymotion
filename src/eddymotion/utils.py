@@ -95,15 +95,16 @@ def bvalue_iterator(size=None, **kwargs):
     bvalues : :obj:`list`
         List of b-values corresponding to all orientations of the dataset.
 
+    Returns
+    -------
+    :obj:`list` of :obj:`int`
+        The sorted index order.
+
     Examples
     --------
     >>> bvalue_action(bvals=[0.0, 0.0, 1000.0, 1000.0, 700.0, 700.0, 2000.0, 2000.0, 0.0])
     [0, 1, 8, 4, 5, 2, 3, 6, 7]
 
-    Returns
-    -------
-    :obj:`list` of :obj:`int`
-        The sorted index order.
     """
     bvals = kwargs.get('bvals', None)
     if bvals is None:
@@ -122,17 +123,17 @@ def centralsym_iterator(size=None, **kwargs):
         Number of volumes in the dataset
         (for instance, the number of orientations in a DWI)
 
+    Returns
+    -------
+    :obj:`list` of :obj:`int`
+        The sorted index order.
+
     Examples
     --------
     >>> centralsym_action(10)
     [5, 4, 6, 3, 7, 2, 8, 1, 9, 0]
     >>> centralsym_action(11)
     [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10]
-
-    Returns
-    -------
-    :obj:`list` of :obj:`int`
-        The sorted index order.
 
     """
     if size is None and 'bvals' in kwargs:

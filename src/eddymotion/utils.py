@@ -25,7 +25,7 @@
 import numpy as np
 
 
-def linear_action(size=None, **kwargs):
+def linear_iterator(size=None, **kwargs):
     """
     Sort the DWI data volume indices linearly
 
@@ -54,7 +54,7 @@ def linear_action(size=None, **kwargs):
     return range(size)
 
 
-def random_action(size=None, **kwargs):
+def random_iterator(size=None, **kwargs):
     """Sort the DWI data volume indices.
 
     Parameters
@@ -86,7 +86,7 @@ def random_action(size=None, **kwargs):
     return index_order.to_list()
 
 
-def bvalue_action(size=None, **kwargs):
+def bvalue_iterator(size=None, **kwargs):
     """
     Sort the DWI data volume indices in ascending order based on the last column of gradients.
 
@@ -112,7 +112,7 @@ def bvalue_action(size=None, **kwargs):
     return [index[1] for index in indexed_bvals]
 
 
-def centralsym_action(size=None, **kwargs):
+def centralsym_iterator(size=None, **kwargs):
     """
     Sort the DWI data volume indices in a central symmetric manner.
 

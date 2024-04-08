@@ -26,6 +26,7 @@ import random
 from itertools import chain, zip_longest
 from typing import Iterator
 
+
 def linear_iterator(size: int = None, **kwargs) -> Iterator[int]:
     """
     Traverse the dataset volumes in ascending order.
@@ -38,7 +39,7 @@ def linear_iterator(size: int = None, **kwargs) -> Iterator[int]:
 
     Returns
     -------
-    :obj:`~typing.Generator`
+    :obj:`~typing.Iterator`
         The sorted index order.
 
     Examples
@@ -72,7 +73,7 @@ def random_iterator(size: int = None, **kwargs) -> Iterator[int]:
 
     Returns
     -------
-    :obj:`~typing.Generator`
+    :obj:`~typing.Iterator`
         The sorted index order.
 
     Examples
@@ -115,7 +116,7 @@ def bvalue_iterator(size: int = None, **kwargs) -> Iterator[int]:
 
     Returns
     -------
-    :obj:`~typing.Generator`
+    :obj:`~typing.Iterator`
         The sorted index order.
 
     Examples
@@ -143,7 +144,7 @@ def centralsym_iterator(size: int = None, **kwargs) -> Iterator[int]:
 
     Returns
     -------
-    :obj:`~typing.Generator`
+    :obj:`~typing.Iterator`
         The sorted index order.
 
     Examples

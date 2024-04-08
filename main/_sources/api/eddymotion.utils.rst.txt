@@ -1,0 +1,7 @@
+eddymotion.utils module
+=======================
+
+.. automodule:: eddymotion.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

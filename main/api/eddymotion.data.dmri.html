@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.data.pet module" href="eddymotion.data.pet.html" /><link rel="prev" title="eddymotion.data package" href="eddymotion.data.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion.data.dmri module - eddymotion 24.0.0.dev179+g2d71ba0 documentation</title>
+        <title>eddymotion.data.dmri module - eddymotion 24.0.0.dev218+gecd7ce8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev179+g2d71ba0 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev218+gecd7ce8 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev179 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev218 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev179 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev218 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -170,6 +170,7 @@
 <li class="toctree-l2 current has-children"><a class="reference internal" href="eddymotion.data.html">eddymotion.data package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of eddymotion.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">eddymotion.data.dmri module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="eddymotion.data.splitting.html">eddymotion.data.splitting module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.utils.html">eddymotion.data.utils module</a></li>
 </ul>
 </li>
@@ -270,33 +271,16 @@ DWIs (i.e., no b=0) into alignment.</p>
 <dd><p>Read an HDF5 file from disk.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.get_filename">
+<span class="sig-name descname"><span class="pre">get_filename</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.get_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.get_filename" title="Link to this definition">#</a></dt>
+<dd><p>Get the filepath of the HDF5 file.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.gradients">
 <span class="sig-name descname"><span class="pre">gradients</span></span><a class="headerlink" href="#eddymotion.data.dmri.DWI.gradients" title="Link to this definition">#</a></dt>
 <dd><p>A 2D numpy array of the gradient table in RAS+B format.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.data.dmri.DWI.logo_split">
-<span class="sig-name descname"><span class="pre">logo_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_b0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/data/dmri.html#DWI.logo_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.dmri.DWI.logo_split" title="Link to this definition">#</a></dt>
-<dd><p>Produce one fold of LOGO (leave-one-gradient-out).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – Index of the DWI orientation to be left out in this fold.</p></li>
-<li><p><strong>with_b0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Insert the <em>b=0</em> reference at the beginning of the training dataset.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>(train_data, train_gradients)</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>) – Training DWI and corresponding gradients.
-Training data/gradients come <strong>from the updated dataset</strong>.</p></li>
-<li><p>(test_data, test_gradients) <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> – Test 3D map (one DWI orientation) and corresponding b-vector/value.
-The test data/gradient come <strong>from the original dataset</strong>.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -403,8 +387,8 @@ The test data/gradient come <strong>from the original dataset</strong>.</p></li>
 <li><a class="reference internal" href="#eddymotion.data.dmri.DWI.em_affines"><code class="docutils literal notranslate"><span class="pre">DWI.em_affines</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.data.dmri.DWI.fieldmap"><code class="docutils literal notranslate"><span class="pre">DWI.fieldmap</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.data.dmri.DWI.from_filename"><code class="docutils literal notranslate"><span class="pre">DWI.from_filename()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.data.dmri.DWI.get_filename"><code class="docutils literal notranslate"><span class="pre">DWI.get_filename()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.data.dmri.DWI.gradients"><code class="docutils literal notranslate"><span class="pre">DWI.gradients</span></code></a></li>
-<li><a class="reference internal" href="#eddymotion.data.dmri.DWI.logo_split"><code class="docutils literal notranslate"><span class="pre">DWI.logo_split()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.data.dmri.DWI.plot_gradients"><code class="docutils literal notranslate"><span class="pre">DWI.plot_gradients()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.data.dmri.DWI.plot_mosaic"><code class="docutils literal notranslate"><span class="pre">DWI.plot_mosaic()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.data.dmri.DWI.set_transform"><code class="docutils literal notranslate"><span class="pre">DWI.set_transform()</span></code></a></li>
@@ -424,7 +408,7 @@ The test data/gradient come <strong>from the original dataset</strong>.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=84764b42"></script>
+</div><script src="../_static/documentation_options.js?v=9ecd59ae"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -1,0 +1,7 @@
+eddymotion.data.splitting module
+================================
+
+.. automodule:: eddymotion.data.splitting
+   :members:
+   :undoc-members:
+   :show-inheritance:

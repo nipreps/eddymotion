@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion.data.utils - eddymotion 24.0.0.dev218+gecd7ce8 documentation</title>
+        <title>eddymotion.data.splitting - eddymotion 24.0.0.dev218+gecd7ce8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -216,51 +216,95 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for eddymotion.data.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+          <h1>Source code for eddymotion.data.splitting</h1><div class="highlight"><pre>
+<span></span><span class="c1"># emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-</span>
+<span class="c1"># vi: set ft=python sts=4 ts=4 sw=4 et:</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2022 The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># We support and encourage derived works from this project, please read</span>
+<span class="c1"># about our expectations at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.nipreps.org/community/licensing/</span>
+<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;Data splitting helpers.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
-<span class="kn">import</span> <span class="nn">nitransforms</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="apply_affines">
-<a class="viewcode-back" href="../../../api/eddymotion.data.utils.html#eddymotion.data.utils.apply_affines">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_affines</span><span class="p">(</span><span class="n">nii</span><span class="p">,</span> <span class="n">em_affines</span><span class="p">,</span> <span class="n">output_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="lovo_split">
+<a class="viewcode-back" href="../../../api/eddymotion.data.splitting.html#eddymotion.data.splitting.lovo_split">[docs]</a>
+<span class="k">def</span> <span class="nf">lovo_split</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Apply affines to supplied nii data</span>
+<span class="sd">    Produce one fold of LOVO (leave-one-volume-out).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    nii : :obj:`Nifti1Image`</span>
-<span class="sd">        Nifti1Image data to be transformed</span>
-<span class="sd">    em_affines : :obj:`ndarray`</span>
-<span class="sd">        Nx4x4 array</span>
-<span class="sd">    output_filename : :obj:`str`, optional</span>
-<span class="sd">        String specifying filepath to which to save transformed Nifti1Image data</span>
+<span class="sd">    dataset : :obj:`eddymotion.data.dmri.DWI`</span>
+<span class="sd">        DWI object</span>
+<span class="sd">    index : :obj:`int`</span>
+<span class="sd">        Index of the DWI orientation to be left out in this fold.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    nii_t_img : :obj:`Nifti1Image`</span>
-<span class="sd">        Transformed Nifti1Image data</span>
+<span class="sd">    (train_data, train_gradients) : :obj:`tuple`</span>
+<span class="sd">        Training DWI and corresponding gradients.</span>
+<span class="sd">        Training data/gradients come **from the updated dataset**.</span>
+<span class="sd">    (test_data, test_gradients) :obj:`tuple`</span>
+<span class="sd">        Test 3D map (one DWI orientation) and corresponding b-vector/value.</span>
+<span class="sd">        The test data/gradient come **from the original dataset**.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">transformed_nii</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">nii</span><span class="o">.</span><span class="n">dataobj</span><span class="p">))</span>
 
-    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">bvecnii</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nib</span><span class="o">.</span><span class="n">four_to_three</span><span class="p">(</span><span class="n">nii</span><span class="p">)):</span>
-        <span class="n">xfms</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">Affine</span><span class="p">(</span><span class="n">em_affines</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-        <span class="n">transformed_nii</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">((</span><span class="o">~</span><span class="n">xfms</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">bvecnii</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">nii</span><span class="p">)</span><span class="o">.</span><span class="n">dataobj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_filename</span><span class="p">())</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_filename</span><span class="p">())</span>
 
-    <span class="n">nii_t_img</span> <span class="o">=</span> <span class="n">nii</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">transformed_nii</span><span class="p">,</span> <span class="n">nii</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+    <span class="c1"># read original DWI data &amp; b-vector</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_filename</span><span class="p">(),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">in_file</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">in_file</span><span class="p">[</span><span class="s2">&quot;/0&quot;</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">&quot;dataobj&quot;</span><span class="p">])</span>
+        <span class="n">gradients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">&quot;gradients&quot;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">output_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># Ensure directories in output_filename exist</span>
-        <span class="n">Path</span><span class="p">(</span><span class="n">output_filename</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># if the size of the mask does not match data, cache is stale</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">mask</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="c1"># Save as .nii</span>
-        <span class="n">nii_t_img</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">output_filename</span><span class="p">)</span>
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">train_gradients</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">mask</span><span class="p">]</span>
+    <span class="n">test_gradients</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">mask</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">nii_t_img</span></div>
+    <span class="k">if</span> <span class="n">with_b0</span><span class="p">:</span>
+        <span class="n">train_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">bzero</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">train_data</span><span class="p">),</span>
+            <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">b0vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">b0vec</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">train_gradients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">b0vec</span><span class="p">,</span> <span class="n">train_gradients</span><span class="p">),</span>
+            <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_gradients</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">test_gradients</span><span class="p">),</span>
+    <span class="p">)</span></div>
 
 </pre></div>
         </article>

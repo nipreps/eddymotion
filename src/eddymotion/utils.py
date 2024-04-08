@@ -27,19 +27,19 @@ from typing import Generator
 """Iterators to traverse the volumes in a 4D image."""
 
 
-def linear_iterator(size: int = None, **kwargs) -> Generator[int, None, None]:
+def linear_iterator(size: int = None, **kwargs) -> Generator[int]:
     """
     Traverse the dataset volumes in ascending order.
 
     Parameters
     ----------
-    size : int, optional
+    size : :obj:`int`
         Number of volumes in the dataset
         (for instance, the number of orientations in a DWI)
 
     Returns
     -------
-    Generator[int, None, None]
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples
@@ -56,24 +56,24 @@ def linear_iterator(size: int = None, **kwargs) -> Generator[int, None, None]:
     return range(size)
 
 
-def random_iterator(size: int = None, **kwargs) -> Generator[int, None, None]:
+def random_iterator(size: int = None, **kwargs) -> Generator[int]:
     """
     Traverse the dataset volumes randomly.
 
     Parameters
     ----------
-    size : int, optional
+    size : :obj:`int`
         Number of volumes in the dataset
         (for instance, the number of orientations in a DWI)
-    seed : int or bool or None, optional
-        If int or str or None, initializes the seed of Python's random generator
+    seed : :obj:`int` or :obj:`bool` or :obj:`bool` or ``None``
+        If :obj:`int` or :obj:`str` or ``None``, initializes the seed of Python's random generator
         with the given value.
-        If False, the random generator is passed None.
-        If True, a default seed value is set.
+        If ``False``, the random generator is passed ``None``.
+        If ``True``, a default seed value is set.
 
     Returns
     -------
-    Generator[int, None, None]
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples
@@ -105,18 +105,18 @@ def random_iterator(size: int = None, **kwargs) -> Generator[int, None, None]:
     return (x for x in index_order)
 
 
-def bvalue_iterator(size: int = None, **kwargs) -> Generator[int, None, None]:
+def bvalue_iterator(size: int = None, **kwargs) -> Generator[int]:
     """
     Traverse the volumes in a DWI dataset by growing b-value.
 
     Parameters
     ----------
-    bvals : list
+    bvalues : :obj:`list`
         List of b-values corresponding to all orientations of the dataset.
 
     Returns
     -------
-    Generator[int, None, None]
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples
@@ -132,19 +132,19 @@ def bvalue_iterator(size: int = None, **kwargs) -> Generator[int, None, None]:
     return (index[1] for index in indexed_bvals)
 
 
-def centralsym_iterator(size: int = None, **kwargs) -> Generator[int, None, None]:
+def centralsym_iterator(size: int = None, **kwargs) -> Generator[int]:
     """
     Traverse the dataset starting from the center and alternatingly progressing to the sides.
 
     Parameters
     ----------
-    size : int
+    size : :obj:`int`
         Number of volumes in the dataset
         (for instance, the number of orientations in a DWI)
 
     Returns
     -------
-    Generator[int, None, None]
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples

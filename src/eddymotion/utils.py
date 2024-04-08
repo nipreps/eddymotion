@@ -127,7 +127,7 @@ def bvalue_iterator(size: int = None, **kwargs) -> Iterator[int]:
     """
     bvals = kwargs.get("bvals", None)
     if bvals is None:
-        raise TypeError('Keyword argument bvals is required')
+        raise TypeError("Keyword argument bvals is required")
     indexed_bvals = sorted([(round(b, 2), i) for i, b in enumerate(bvals)])
     return (index[1] for index in indexed_bvals)
 

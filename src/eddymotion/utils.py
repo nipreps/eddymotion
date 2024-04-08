@@ -68,7 +68,7 @@ def random_iterator(size=None, **kwargs):
 
     Returns
     -------
-    :obj:`list` of :obj:`int`
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples
@@ -113,7 +113,7 @@ def bvalue_iterator(size=None, **kwargs):
 
     Returns
     -------
-    :obj:`list` of :obj:`int`
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples
@@ -141,7 +141,7 @@ def centralsym_iterator(size=None, **kwargs):
 
     Returns
     -------
-    :obj:`list` of :obj:`int`
+    :obj:`~typing.Generator`
         The sorted index order.
 
     Examples

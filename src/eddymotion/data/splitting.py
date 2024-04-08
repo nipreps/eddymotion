@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Data splitting helpers."""
+
 from pathlib import Path
 
 import h5py

@@ -22,54 +22,113 @@
 #
 """Filtering data."""
 
+from __future__ import annotations
 
-def gaussian_filter(data, vox_width):
+from numbers import Number
+
+import numpy as np
+from nibabel import Nifti1Image, load
+from scipy.ndimage import gaussian_filter as _gs
+from scipy.ndimage import map_coordinates, median_filter
+from skimage.morphology import ball
+
+
+def gaussian_filter(
+    data: np.ndarray,
+    vox_width: float | tuple[float, float, float],
+) -> np.ndarray:
     """
-    Apply a Gaussian smoothing filter of a given width (in voxels)
+    Applies a Gaussian smoothing filter to a n-dimensional array.
+
+    This function smooths the input data using a Gaussian filter with a specified
+    width (sigma) in voxels along each relevant dimension. It automatically
+    handles different data dimensionalities (2D, 3D, or 4D) and ensures that
+    smoothing is not applied along the time or orientation dimension (if present
+    in 4D data).
 
     Parameters
     ----------
-    data : :obj:`numpy.ndarray`
-        The input image's data array
-    vox_width : :obj:`numbers.Number` or :obj:`tuple` or :obj:`list`
-        The smoothing kernel width in voxels
+    data : :obj:`~numpy.ndarray`
+        The input data array.
+    vox_width : :obj:`float` or :obj:`tuple` of three :obj:`float`
+        The smoothing kernel width (sigma) in voxels. If a single :obj:`float` is provided,
+        it is applied uniformly across all spatial dimensions. Alternatively, a
+        tuple of three floats can be provided to specify different sigma values
+        for each spatial dimension (x, y, z).
 
     Returns
     -------
-    data : :obj:`numpy.ndarray`
-        The smoothed dataset
+    :obj:`~numpy.ndarray`
+        The smoothed data array.
 
     """
-    from numbers import Number
-    import numpy as np
-    from scipy.ndimage import gaussian_filter as _gs
 
-    data = np.squeeze(data)  # drop unused dimensions
+    data = np.squeeze(data)  # Drop unused dimensions
     ndim = data.ndim
 
     if isinstance(vox_width, Number):
         vox_width = tuple([vox_width] * min(3, ndim))
 
-    # Do not smooth across time/orientation
+    # Do not smooth across time/orientation (if present in 4D data)
     if ndim == 4 and len(vox_width) == 3:
         vox_width = (*vox_width, 0)
 
     return _gs(data, vox_width)
 
 
-def decimate(in_file, factor, smooth=True, order=3, nonnegative=True):
-    from numbers import Number
-    import numpy as np
-    from scipy.ndimage import map_coordinates
-    import nibabel as nb
+def decimate(
+    in_file: str,
+    factor: int | tuple[int, int, int],
+    smooth: bool | tuple[int, int, int] = True,
+    order: int = 3,
+    nonnegative: bool = True,
+) -> Nifti1Image:
+    """
+    Decimates a 3D or 4D Nifti image by a specified downsampling factor.
 
-    imnii = nb.load(in_file)
-    data = np.squeeze(imnii.get_fdata())
+    This function downsamples a Nifti image by averaging voxels within a user-defined
+    factor in each spatial dimension. It optionally applies Gaussian smoothing
+    before downsampling to reduce aliasing artifacts. The function also handles
+    updating the affine transformation matrix to reflect the change in voxel size.
+
+    Parameters
+    ----------
+    in_file : :obj:`str`
+        Path to the input NIfTI image file.
+    factor : :obj:`int` or :obj:`tuple`
+        The downsampling factor. If a single integer is provided, it is applied
+        uniformly across all spatial dimensions. Alternatively, a tuple of three
+        integers can be provided to specify different downsampling factors for each
+        spatial dimension (x, y, z). Values must be greater than 0.
+    smooth : :obj:`bool` or :obj:`tuple`, optional (default=``True``)
+        Controls application of Gaussian smoothing before downsampling. If True,
+        a smoothing kernel size equal to the downsampling factor is applied.
+        Alternatively, a tuple of three integers can be provided to specify
+        different smoothing kernel sizes for each spatial dimension. Setting to
+        False disables smoothing.
+    order : :obj:`int`, optional (default=3)
+        The order of the spline interpolation used for downsampling. Higher
+        orders provide smoother results but are computationally more expensive.
+    nonnegative : :obj:`bool`, optional (default=``True``)
+        If True, negative values in the downsampled data are set to zero.
+
+    Returns
+    -------
+    :obj:`~nibabel.Nifti1Image`
+        The downsampled NIfTI image object.
+
+    """
+
+    imnii = load(in_file)
+    data = np.squeeze(imnii.get_fdata())  # Remove unused dimensions
     datashape = data.shape
     ndim = data.ndim
 
     if isinstance(factor, Number):
         factor = tuple([factor] * min(3, ndim))
+
+    if any(f <= 0 for f in factor[:3]):
+        raise ValueError("All spatial downsampling factors must be positive.")
 
     if ndim == 4 and len(factor) == 3:
         factor = (*factor, 0)
@@ -77,9 +136,9 @@ def decimate(in_file, factor, smooth=True, order=3, nonnegative=True):
     if smooth:
         if smooth is True:
             smooth = factor
-
         data = gaussian_filter(data, smooth)
 
+    # Create downsampled grid
     down_grid = np.array(
         np.meshgrid(
             *[np.arange(_s, step=int(_f) or 1) for _s, _f in zip(datashape, factor)],
@@ -87,11 +146,12 @@ def decimate(in_file, factor, smooth=True, order=3, nonnegative=True):
         )
     )
     new_shape = down_grid.shape[1:]
+
+    # Update affine transformation
     newaffine = imnii.affine.copy()
     newaffine[:3, :3] = np.array(factor[:3]) * newaffine[:3, :3]
-    # newaffine[:3, 3] += imnii.affine[:3, :3] @ (0.5 / np.array(factor[:3], dtype="float32"))
 
-    # Resample data in the new grid
+    # Resample data on the new grid
     resampled = map_coordinates(
         data,
         down_grid.reshape((ndim, np.prod(new_shape))),
@@ -101,43 +161,67 @@ def decimate(in_file, factor, smooth=True, order=3, nonnegative=True):
         prefilter=True,
     ).reshape(new_shape)
 
+    # Set negative values to zero (optional)
     if order > 2 and nonnegative:
         resampled[resampled < 0] = 0
 
-    newnii = nb.Nifti1Image(resampled, newaffine, imnii.header)
+    # Create new Nifti image with updated information
+    newnii = Nifti1Image(resampled, newaffine, imnii.header)
     newnii.set_sform(newaffine, code=1)
     newnii.set_qform(newaffine, code=1)
+
     return newnii
 
 
 def advanced_clip(
-    data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16", invert=False
-):
+    data: np.ndarray,
+    p_min: float = 35,
+    p_max: float = 99.98,
+    nonnegative: bool = True,
+    dtype: str | np.dtype = "int16",
+    invert: bool = False,
+) -> np.ndarray:
     """
-    Remove outliers at both ends of the intensity distribution and fit into a given dtype.
+    Clips outliers from a n-dimensional array and scales/casts to a specified data type.
 
-    This interface tries to emulate ANTs workflows' massaging that truncate images into
-    the 0-255 range, and applies percentiles for clipping images.
-    For image registration, normalizing the intensity into a compact range (e.g., uint8)
-    is generally advised.
+    This function removes outliers from both ends of the intensity distribution
+    in a n-dimensional array using percentiles. It optionally enforces non-negative
+    values and scales the data to fit within a specified data type (e.g., uint8
+    for image registration). To remove outliers more robustly, the function
+    first applies a median filter to the data before calculating clipping thresholds.
 
-    To more robustly determine the clipping thresholds, spikes are removed from data with
-    a median filter.
-    Once the thresholds are calculated, the denoised data are thrown away and the thresholds
-    are applied on the original image.
+    Parameters
+    ----------
+    data : :obj:`~numpy.ndarray`
+        The input n-dimensional data array.
+    p_min : :obj:`float`, optional (default=35)
+        The lower percentile threshold for clipping. Values below this percentile
+        are set to the threshold value.
+    p_max : :obj:`float`, optional (default=99.98)
+        The upper percentile threshold for clipping. Values above this percentile
+        are set to the threshold value.
+    nonnegative : :obj:`bool`, optional (default=``True``)
+        If True, only consider non-negative values when calculating thresholds.
+    dtype : :obj:`str` or :obj:`~numpy.dtype`, optional (default=``"int16"``)
+        The desired data type for the output array. Supported types are "uint8"
+        and "int16".
+    invert : :obj:`bool`, optional (default=``False``)
+        If True, inverts the intensity values after scaling (1.0 - data).
+
+    Returns
+    -------
+    :obj:`~numpy.ndarray`
+        The clipped and scaled data array with the specified data type.
 
     """
-    import numpy as np
-    from scipy import ndimage
-    from skimage.morphology import ball
 
-    # Calculate stats on denoised version, to preempt outliers from biasing
-    denoised = ndimage.median_filter(data, footprint=ball(3))
+    # Calculate stats on denoised version to avoid outlier bias
+    denoised = median_filter(data, footprint=ball(3))
 
     a_min = np.percentile(denoised[denoised >= 0] if nonnegative else denoised, p_min)
     a_max = np.percentile(denoised[denoised >= 0] if nonnegative else denoised, p_max)
 
-    # Clip and cast
+    # Clip and scale data
     data = np.clip(data, a_min=a_min, a_max=a_max)
     data -= data.min()
     data /= data.max()

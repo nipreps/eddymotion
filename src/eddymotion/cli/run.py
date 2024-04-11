@@ -22,25 +22,30 @@
 #
 """Eddymotion runner."""
 
+import os
+from typing import Union
+
 from parser import parse_args
 from eddymotion.data.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
-import os
 
 
-def main():
-    """Entry point."""
-    # Parse command-line arguments
+def main() -> None:
+    """
+    Entry point.
+
+    Returns
+    -------
+    None
+    """
     args = parse_args()
 
     # Open the data with the given file path
-    dwi_dataset = DWI.from_filename(args.dwi_dir)
+    dwi_dataset: DWI = DWI.from_filename(args.input_dir)
 
-    # Initialize the EddyMotionEstimator
-    estimator = EddyMotionEstimator()
+    estimator: EddyMotionEstimator = EddyMotionEstimator()
 
-    # Fit the EddyMotionEstimator to the DWI data
-    estimated_affines = estimator.fit(
+    _ = estimator.fit(
         dwi_dataset,
         align_kwargs=args.align_kwargs,
         models=args.models,
@@ -49,11 +54,13 @@ def main():
         seed=args.seed
     )
 
-    if os.path.isdir(args.output):
-        output_path = os.path.join(args.output, os.path.basename(args.dwi_dir))
-    else:
-        output_path = args.output
+    if os.path.isfile(args.output_dir):  # If output_dir is a file path
+        output_path: str = args.output_dir
+    else:  # If output_dir is a directory path
+        output_filename: str = os.path.basename(args.input_dir)
+        output_path: str = os.path.join(args.output_dir, output_filename)
 
+    # Save the DWI dataset to the output path
     dwi_dataset.to_filename(output_path)
 
 

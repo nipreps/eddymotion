@@ -23,8 +23,8 @@
 """Eddymotion runner."""
 
 import os
-from parser import parse_args
 
+from eddymotion.cli.parser import parse_args
 from eddymotion.data.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
 

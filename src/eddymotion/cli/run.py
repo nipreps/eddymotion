@@ -23,9 +23,8 @@
 """Eddymotion runner."""
 
 import os
-from typing import Union
-
 from parser import parse_args
+
 from eddymotion.data.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
 

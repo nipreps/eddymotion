@@ -20,24 +20,32 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Parser."""
+"""Parser module."""
 
-from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
+from typing import Optional
 
 
-def _build_parser():
-    """Build parser object."""
+def _build_parser() -> ArgumentParser:
+    """
+    Build parser object.
+
+    Returns
+    -------
+    ArgumentParser
+        The parser object configured for the command-line arguments.
+    """
     parser = ArgumentParser(
         description="A model-based algorithm for the realignment of dMRI data.",
         formatter_class=ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(
-        "dwi_dir",
+        "input_dir",
         action="store",
         type=Path,
-        help="Path to the directory containing the DWI data.",
+        help="Path to the directory containing the original DWI data.",
     )
     parser.add_argument(
         "--align_kwargs",
@@ -85,7 +93,21 @@ def _build_parser():
     return parser
 
 
-def parse_args(args=None, namespace=None):
-    """Parse args and run further checks on the command line."""
+def parse_args(args: Optional[list] = None, namespace: Optional[Namespace] = None) -> Namespace:
+    """
+    Parse args and run further checks on the command line.
+
+    Parameters
+    ----------
+    args : list, optional
+        List of strings representing the command line arguments. Defaults to None.
+    namespace : Namespace, optional
+        An object to parse the arguments into. Defaults to None.
+
+    Returns
+    -------
+    Namespace
+        An object holding the parsed arguments.
+    """
     parser = _build_parser()
     return parser.parse_args(args, namespace)

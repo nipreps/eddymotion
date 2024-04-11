@@ -50,7 +50,7 @@ def main() -> None:
         models=args.models,
         omp_nthreads=args.omp_nthreads,
         n_jobs=args.n_jobs,
-        seed=args.seed
+        seed=args.seed,
     )
 
     if os.path.isfile(args.output_dir):  # If output_dir is a file path

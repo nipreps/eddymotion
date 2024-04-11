@@ -27,7 +27,7 @@ import sys
 from . import __name__ as module
 from .cli.run import main
 
-if __name__ == '__main__':
-    if '__main__.py' in sys.argv[0]:
-        sys.argv[0] = f'{sys.executable} -m {module}'
+if __name__ == "__main__":
+    if "__main__.py" in sys.argv[0]:
+        sys.argv[0] = f"{sys.executable} -m {module}"
     main()

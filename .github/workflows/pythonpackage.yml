@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
         python -m venv /tmp/buildenv
         source /tmp/buildenv/bin/activate
         pip install -U build hatch pip twine
-        
+
         python -m build -s -w
         python -m twine check dist/eddymotion-*
 

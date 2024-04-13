@@ -57,7 +57,7 @@ if __name__ == "__main__":
         % "; ".join(
             [
                 "%s \\ :sup:`%s`\\ " % (i["name"], idx)
-                for i, idx in zip(author_matches, aff_indexes)
+                for i, idx in zip(author_matches, aff_indexes, strict=True)
             ]
         )
     )

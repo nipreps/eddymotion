@@ -31,6 +31,8 @@ Information on specific functions, classes, and methods.
    api/eddymotion.data
    api/eddymotion.data.dmri
    api/eddymotion.estimator
+   api/eddymotion.exceptions
    api/eddymotion.model
    api/eddymotion.utils
+   api/eddymotion.validation
    api/eddymotion.viz

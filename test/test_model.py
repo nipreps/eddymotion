@@ -28,6 +28,8 @@ import pytest
 from eddymotion import model
 from eddymotion.data.dmri import DWI
 from eddymotion.data.splitting import lovo_split
+from eddymotion.exceptions import NotFittedError
+from eddymotion.validation import not_fitted_msg
 
 
 def test_trivial_model():
@@ -40,6 +42,10 @@ def test_trivial_model():
     _S0 = np.random.normal(size=(10, 10, 10))
 
     tmodel = model.TrivialB0Model(gtab=np.eye(4), S0=_S0)
+
+    with pytest.raises(NotFittedError) as exc_info:
+        tmodel.predict((1, 0, 0))
+    assert str(exc_info.value) == not_fitted_msg % {"name": tmodel}
 
     assert tmodel.fit() is None
 
@@ -74,6 +80,10 @@ def test_average_model():
         th_low=900,
         stat="mean",
     )
+
+    with pytest.raises(NotFittedError) as exc_info:
+        tmodel_mean.predict([0, 0, 0])
+    assert str(exc_info.value) == not_fitted_msg % {"name": tmodel_mean}
 
     # Verify that fit function returns nothing
     assert tmodel_mean.fit(data[..., 1:], gtab=gtab[1:].T) is None
@@ -121,6 +131,11 @@ def test_two_initialisations(datadir):
         bias=False,
         stat="mean",
     )
+
+    with pytest.raises(NotFittedError) as exc_info:
+        model2.predict(data_test[1])
+    assert str(exc_info.value) == not_fitted_msg % {"name": model2}
+
     model2.fit(data_train[0], gtab=data_train[1])
     predicted2 = model2.predict(data_test[1])
 

@@ -28,6 +28,8 @@ import numpy as np
 from dipy.core.gradients import gradient_table
 from joblib import Parallel, delayed
 
+from eddymotion.validation import check_is_fitted
+
 
 def _exec_fit(model, data, chunk=None):
     retval = model.fit(data)
@@ -134,6 +136,7 @@ class BaseModel:
 
         self._datashape = None
         self._models = None
+        self._is_fitted = False
 
     def fit(self, data, n_jobs=None, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
@@ -164,10 +167,13 @@ class BaseModel:
         for submodel, index in results:
             self._models[index] = submodel
 
+        self._is_fitted = True
         self._model = None  # Preempt further actions on the model
 
     def predict(self, gradient, **kwargs):
         """Predict asynchronously chunk-by-chunk the diffusion signal."""
+        check_is_fitted(self)
+
         if self._b_max is not None:
             gradient[-1] = min(gradient[-1], self._b_max)
 
@@ -209,6 +215,10 @@ class BaseModel:
 
         return retval
 
+    def __model_is_fitted__(self):
+        """Check fitted status and return a Boolean value."""
+        return hasattr(self, "_is_fitted") and self._is_fitted
+
 
 class TrivialB0Model:
     """A trivial model that returns a *b=0* map always."""
@@ -224,9 +234,13 @@ class TrivialB0Model:
 
     def fit(self, *args, **kwargs):
         """Do nothing."""
+        # ToDo
+        # Does not inherit from BaseModel, so should be defined in __init__ ??
+        self._is_fitted = True
 
     def predict(self, gradient, **kwargs):
         """Return the *b=0* map."""
+        check_is_fitted(self)
         return self._S0
 
 

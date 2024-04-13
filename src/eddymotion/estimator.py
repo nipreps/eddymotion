@@ -36,6 +36,7 @@ from tqdm import tqdm
 
 from eddymotion.data.splitting import lovo_split
 from eddymotion.model import ModelFactory
+from eddymotion.utils import random_iterator
 
 
 class EddyMotionEstimator:
@@ -88,7 +89,7 @@ class EddyMotionEstimator:
 
         align_kwargs = align_kwargs or {}
 
-        index_order = _sort_dwdata_indices(seed, len(dwdata))
+        index_order = list(_sort_dwdata_indices(len(dwdata), seed))
 
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
@@ -241,33 +242,23 @@ def _to_nifti(data, affine, filename, clip=True):
     nii.to_filename(filename)
 
 
-def _sort_dwdata_indices(seed, dwi_vol_count):
-    """Sort the DWI data volume indices.
+def _sort_dwdata_indices(dwi_vol_count, seed):
+    """Sort the DWI data volume indices randomly.
 
     Parameters
     ----------
-    seed : :obj:`int` or :obj:`bool`
-        Seed the random number generator. If an integer, the value is used to initialize the
-        generator; if ``True``, the arbitrary value of ``20210324`` is used to initialize it.
     dwi_vol_count : :obj:`int`
         Number of DWI volumes.
+    seed : :obj:`int` or :obj:`bool`
+        Seed the random number generator. See :func:`eddymotion.utils.random_iterator`.
 
     Returns
     -------
-    index_order : :obj:`numpy.ndarray`
+    :func:`eddymotion.utils.random_iterator`
         Index order.
     """
 
-    _seed = None
-    if seed or seed == 0:
-        _seed = 20210324 if seed is True else seed
-
-    rng = np.random.default_rng(_seed)
-
-    index_order = np.arange(dwi_vol_count)
-    rng.shuffle(index_order)
-
-    return index_order
+    return random_iterator(dwi_vol_count, seed=seed)
 
 
 def _prepare_brainmask_data(brainmask, affine):

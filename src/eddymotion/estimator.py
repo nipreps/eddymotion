@@ -80,7 +80,7 @@ class EddyMotionEstimator:
             estimation). See :func:`_sort_dwdata_indices`.
         Return
         ------
-        affines : :obj:`list` of :obj:`numpy.ndarray`
+        :obj:`list` of :obj:`numpy.ndarray`
             A list of :math:`4 \times 4` affine matrices encoding the estimated
             parameters of the deformations caused by head-motion and eddy-currents.
 

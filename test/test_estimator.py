@@ -66,6 +66,7 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
         ),
         fixed_image=str(fixed.absolute()),
         moving_image=str(moving.absolute()),
+        random_seed=1234,
     )
 
     result = registration.run(cwd=str(tmp_path)).outputs

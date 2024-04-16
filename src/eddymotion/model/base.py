@@ -56,7 +56,7 @@ class ModelFactory:
         Return
         ------
         model : :obj:`~dipy.reconst.ReconstModel`
-            An model object compliant with DIPY's interface.
+            A model object compliant with DIPY's interface.
 
         """
         if model.lower() in ("s0", "b0"):

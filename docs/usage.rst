@@ -80,17 +80,18 @@ To incorporate Eddymotion functionalities into a Python module, follow these ste
      dwi_data.to_nifti(output_filename)
 
 6. **Plotting**: Visualize your data and results using built-in plotting functions of the DWI objects:
+
    - Use `plot_mosaic` to visualize one direction of the dMRI dataset.
    - Employ `plot_gradients` to visualize diffusion gradients.
 
-Example Usage:
+   Example Usage:
 
-```python
-# Visualize DWI data at a specific index
-dwi_data.plot_mosaic(index=0)
+   .. code-block:: python
 
-# Visualize gradients
-dwi_data.plot_gradients()
+      # Visualize DWI data at a specific index
+      dwi_data.plot_mosaic(index=0)
+      # Visualize gradients
+      dwi_data.plot_gradients()
 
 Command-Line Arguments
 ----------------------

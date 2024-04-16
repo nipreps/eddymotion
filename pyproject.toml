@@ -46,7 +46,7 @@ doc = [
     "packaging",
     "pydot >= 1.2.3",
     "pydotplus",
-    "sphinx >= 4.5",
+    "sphinx >= 7.2",
     "sphinx-argparse",
     "sphinx_rtd_theme",
     "sphinxcontrib-apidoc ~= 0.3.0",

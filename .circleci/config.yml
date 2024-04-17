@@ -5,7 +5,7 @@ orbs:
 jobs:
   tests:
     docker: # executor type
-      - image: nipreps/miniconda:py39_2205.0
+      - image: nipreps/miniconda:py39_2403.0
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PAT

@@ -3,10 +3,10 @@
 How to Use
 ============
 
-Incorporating Eddymotion into a Python Module
+Incorporating Eddymotion into a Python module or script
 ---------------------------------------------
 
-To utilize Eddymotion functionalities within your Python module, follow these steps:
+To utilize Eddymotion functionalities within your Python module or script, follow these steps:
 
 1. **Import Eddymotion Components**: Start by importing necessary components from the Eddymotion package:
 

@@ -42,10 +42,10 @@ def _build_parser() -> ArgumentParser:
     )
 
     parser.add_argument(
-        "input_dir",
+        "input_file",
         action="store",
         type=Path,
-        help="Path to the directory containing the original DWI data.",
+        help="Path to the HDF5 file containing the original DWI data.",
     )
     parser.add_argument(
         "--align_kwargs",
@@ -62,7 +62,7 @@ def _build_parser() -> ArgumentParser:
         help="Select the diffusion model for registration targets.",
     )
     parser.add_argument(
-        "--omp-nthreads",
+        "--nthreads",
         action="store",
         type=int,
         default=None,
@@ -87,7 +87,7 @@ def _build_parser() -> ArgumentParser:
         action="store",
         type=Path,
         default=Path.cwd(),
-        help="Path to the output directory. Defaults to the current directory.",
+        help="Path to the output directory. Defaults to the current directory. The output file will have the same name as the input file.",
     )
 
     return parser
@@ -99,14 +99,14 @@ def parse_args(args: Optional[list] = None, namespace: Optional[Namespace] = Non
 
     Parameters
     ----------
-    args : list, optional
+    args : list of str, optional
         List of strings representing the command line arguments. Defaults to None.
-    namespace : Namespace, optional
+    namespace : :class:`~argparse.Namespace`, optional
         An object to parse the arguments into. Defaults to None.
 
     Returns
     -------
-    Namespace
+    :class:`~argparse.Namespace`
         An object holding the parsed arguments.
     """
     parser = _build_parser()

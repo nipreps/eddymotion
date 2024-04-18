@@ -53,11 +53,9 @@ def main() -> None:
         seed=args.seed,
     )
 
-    if args.output_dir.isfile():  # If output_dir is a file path
-        output_path: str = args.output_dir
-    else:  # If output_dir is a directory path
-        output_filename: str = Path(args.input_dir).name
-        output_path: str = Path(args.output_dir) / output_filename
+    # Set the output filename to be the same as the input filename
+    output_filename: str = Path(args.input_file).name
+    output_path: str = Path(args.output_dir) / output_filename
 
     # Save the DWI dataset to the output path
     dwi_dataset.to_filename(output_path)

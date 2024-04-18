@@ -51,8 +51,12 @@ doc = [
     "sphinx_rtd_theme",
     "sphinxcontrib-apidoc ~= 0.3.0",
     "sphinxcontrib-napoleon",
-    "sphinxcontrib-versioning"
+    "sphinxcontrib-versioning",
+    "sphinxarg.ext",
 ]
+
+[project.scripts]
+eddymotion = "eddymotion.cli.run:main"
 
 dev = [
     "ruff",

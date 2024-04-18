@@ -22,7 +22,7 @@
 #
 """Eddymotion runner."""
 
-import os
+from pathlib import Path
 
 from eddymotion.cli.parser import parse_args
 from eddymotion.data.dmri import DWI
@@ -56,8 +56,8 @@ def main() -> None:
     if args.output_dir.isfile():  # If output_dir is a file path
         output_path: str = args.output_dir
     else:  # If output_dir is a directory path
-        output_filename: str = os.path.basename(args.input_dir)
-        output_path: str = os.path.join(args.output_dir, output_filename)
+        output_filename: str = Path(args.input_dir).name
+        output_path: str = Path(args.output_dir) / output_filename
 
     # Save the DWI dataset to the output path
     dwi_dataset.to_filename(output_path)

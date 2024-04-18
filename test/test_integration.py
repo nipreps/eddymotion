@@ -30,7 +30,7 @@ from eddymotion.data.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
 
 
-def test_proximity_estimator_trivial_model(datadir, tmp_path):
+def test_proximity_estimator_trivial_model(datadir):
     """Check the proximity of transforms estimated by the estimator with a trivial B0 model."""
 
     dwdata = DWI.from_filename(datadir / "dwi.h5")

@@ -48,8 +48,8 @@ def main() -> None:
         dwi_dataset,
         align_kwargs=args.align_kwargs,
         models=args.models,
-        omp_nthreads=args.omp_nthreads,
-        n_jobs=args.n_jobs,
+        omp_nthreads=args.nthreads,
+        njobs=args.njobs,
         seed=args.seed,
     )
 

@@ -40,7 +40,7 @@ def main() -> None:
     args = parse_args()
 
     # Open the data with the given file path
-    dwi_dataset: DWI = DWI.from_filename(args.input_dir)
+    dwi_dataset: DWI = DWI.from_filename(args.input_file)
 
     estimator: EddyMotionEstimator = EddyMotionEstimator()
 

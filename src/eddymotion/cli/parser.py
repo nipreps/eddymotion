@@ -33,11 +33,11 @@ def _build_parser() -> ArgumentParser:
 
     Returns
     -------
-    ArgumentParser
-        The parser object configured for the command-line arguments.
+    :obj:`~argparse.ArgumentParser`
+        The parser object defining the interface for the command-line.
     """
     parser = ArgumentParser(
-        description="A model-based algorithm for the realignment of dMRI data.",
+        description="A model-based algorithm for the realignment of 4D brain images.",
         formatter_class=ArgumentDefaultsHelpFormatter,
     )
 
@@ -62,14 +62,14 @@ def _build_parser() -> ArgumentParser:
         help="Select the diffusion model for registration targets.",
     )
     parser.add_argument(
-        "--omp_nthreads",
+        "--omp-nthreads",
         action="store",
         type=int,
         default=None,
         help="Maximum number of threads an individual process may use.",
     )
     parser.add_argument(
-        "--n_jobs",
+        "--njobs",
         action="store",
         type=int,
         default=None,

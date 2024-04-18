@@ -53,7 +53,7 @@ def main() -> None:
         seed=args.seed,
     )
 
-    if os.path.isfile(args.output_dir):  # If output_dir is a file path
+    if args.output_dir.isfile():  # If output_dir is a file path
         output_path: str = args.output_dir
     else:  # If output_dir is a directory path
         output_filename: str = os.path.basename(args.input_dir)

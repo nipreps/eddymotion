@@ -52,7 +52,7 @@ doc = [
     "sphinxcontrib-apidoc ~= 0.3.0",
     "sphinxcontrib-napoleon",
     "sphinxcontrib-versioning",
-    "sphinxarg.ext",
+    "sphinx-argparse",
 ]
 
 dev = [

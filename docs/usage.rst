@@ -30,12 +30,12 @@ To utilize Eddymotion functionalities within your Python module or script, follo
 
 4. **Fit the Models to Estimate the Affine Transformation**:
 
-   Use the `fit` method of the `EddyMotionEstimator` object to estimate the affine transformation parameters:
+   Use the `estimate` method of the `EddyMotionEstimator` object to estimate the affine transformation parameters:
 
    .. code-block:: python
 
       # Estimate affine transformation parameters
-      estimated_affine = estimator.fit(
+      estimated_affine = estimator.estimate(
           dwi_data,
           align_kwargs=align_kwargs,
           models=models,
@@ -44,7 +44,7 @@ To utilize Eddymotion functionalities within your Python module or script, follo
           seed=seed,
       )
 
-   The `fit` method employs the Leave-One-Volume-Out (LOVO) splitting technique to iteratively process DWI data volumes for each specified model. Affine transformations align the volumes, updating the `DWI` object with the estimated parameters. This method accepts several parameters:
+   The `estimate` method employs the Leave-One-Volume-Out (LOVO) splitting technique to iteratively process DWI data volumes for each specified model. Affine transformations align the volumes, updating the `DWI` object with the estimated parameters. This method accepts several parameters:
 
    - `dwi_data`: The target DWI dataset, represented by this tool's internal type.
    - `align_kwargs`: Parameters to configure the image registration process.
@@ -60,7 +60,7 @@ To utilize Eddymotion functionalities within your Python module or script, follo
    .. code-block:: python
 
       # Example of fitting the model
-      estimated_affine = estimator.fit(
+      estimated_affine = estimator.estimate(
           dwi_data,
           models=["b0"],
           omp_nthreads=4,

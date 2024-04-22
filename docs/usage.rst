@@ -1,8 +1,7 @@
 .. include:: links.rst
 
 How to Use
-============
-
+==========
 Incorporating Eddymotion into a Python module or script
 ---------------------------------------------
 

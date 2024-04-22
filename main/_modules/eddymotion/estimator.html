@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion.estimator - eddymotion 24.0.0.dev219+g6128b37 documentation</title>
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+        <title>eddymotion.estimator - eddymotion 24.0.0.dev239+g7f79390 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev219+g6128b37 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev239+g7f79390 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,14 +145,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev219 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev239 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev219 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev239 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -263,10 +263,10 @@
 <span class="k">class</span> <span class="nc">EddyMotionEstimator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates rigid-body head-motion and distortions derived from eddy-currents.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EddyMotionEstimator.fit">
-<a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator.fit">[docs]</a>
+<div class="viewcode-block" id="EddyMotionEstimator.estimate">
+<a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator.estimate">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">estimate</span><span class="p">(</span>
         <span class="n">dwdata</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">align_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -304,7 +304,7 @@
 <span class="sd">            estimation). See :func:`_sort_dwdata_indices`.</span>
 <span class="sd">        Return</span>
 <span class="sd">        ------</span>
-<span class="sd">        affines : :obj:`list` of :obj:`numpy.ndarray`</span>
+<span class="sd">        :obj:`list` of :obj:`numpy.ndarray`</span>
 <span class="sd">            A list of :math:`4 \times 4` affine matrices encoding the estimated</span>
 <span class="sd">            parameters of the deformations caused by head-motion and eddy-currents.</span>
 
@@ -713,8 +713,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=4f92abd2"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=dbb6dc8a"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/js/version-switch.js?v=8028bf13"></script>

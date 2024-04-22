@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.model package" href="eddymotion.model.html" /><link rel="prev" title="eddymotion.data.utils module" href="eddymotion.data.utils.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion.estimator module - eddymotion 24.0.0.dev219+g6128b37 documentation</title>
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+        <title>eddymotion.estimator module - eddymotion 24.0.0.dev239+g7f79390 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev219+g6128b37 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev239+g7f79390 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev219 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev239 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev219 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev239 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -220,16 +220,16 @@
         </div>
         <article role="main">
           <section id="module-eddymotion.estimator">
-<span id="eddymotion-estimator-module"></span><h1>eddymotion.estimator module<a class="headerlink" href="#module-eddymotion.estimator" title="Link to this heading">#</a></h1>
+<span id="eddymotion-estimator-module"></span><h1>eddymotion.estimator module<a class="headerlink" href="#module-eddymotion.estimator" title="Link to this heading">¶</a></h1>
 <p>A model-based algorithm for the realignment of dMRI data.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="eddymotion.estimator.EddyMotionEstimator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.estimator.</span></span><span class="sig-name descname"><span class="pre">EddyMotionEstimator</span></span><a class="reference internal" href="../_modules/eddymotion/estimator.html#EddyMotionEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.estimator.EddyMotionEstimator" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.estimator.</span></span><span class="sig-name descname"><span class="pre">EddyMotionEstimator</span></span><a class="reference internal" href="../_modules/eddymotion/estimator.html#EddyMotionEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.estimator.EddyMotionEstimator" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Estimates rigid-body head-motion and distortions derived from eddy-currents.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="eddymotion.estimator.EddyMotionEstimator.fit">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dwdata</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('b0',)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omp_nthreads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/estimator.html#EddyMotionEstimator.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.estimator.EddyMotionEstimator.fit" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="eddymotion.estimator.EddyMotionEstimator.estimate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dwdata</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('b0',)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omp_nthreads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/estimator.html#EddyMotionEstimator.estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.estimator.EddyMotionEstimator.estimate" title="Link to this definition">¶</a></dt>
 <dd><p>Estimate head-motion and Eddy currents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -251,7 +251,7 @@ estimation). See <code class="xref py py-func docutils literal notranslate"><spa
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>affines</strong> – A list of <span class="math notranslate nohighlight">\(4 \times 4\)</span> affine matrices encoding the estimated
+<dd class="field-even"><p>A list of <span class="math notranslate nohighlight">\(4 \times 4\)</span> affine matrices encoding the estimated
 parameters of the deformations caused by head-motion and eddy-currents.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -321,7 +321,7 @@ parameters of the deformations caused by head-motion and eddy-currents.</p>
             <ul>
 <li><a class="reference internal" href="#">eddymotion.estimator module</a><ul>
 <li><a class="reference internal" href="#eddymotion.estimator.EddyMotionEstimator"><code class="docutils literal notranslate"><span class="pre">EddyMotionEstimator</span></code></a><ul>
-<li><a class="reference internal" href="#eddymotion.estimator.EddyMotionEstimator.fit"><code class="docutils literal notranslate"><span class="pre">EddyMotionEstimator.fit()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.estimator.EddyMotionEstimator.estimate"><code class="docutils literal notranslate"><span class="pre">EddyMotionEstimator.estimate()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -335,8 +335,8 @@ parameters of the deformations caused by head-motion and eddy-currents.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=4f92abd2"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+</div><script src="../_static/documentation_options.js?v=dbb6dc8a"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

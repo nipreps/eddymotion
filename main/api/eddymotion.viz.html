@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="What’s new?" href="../changes.html" /><link rel="prev" title="eddymotion.utils module" href="eddymotion.utils.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>eddymotion.viz module - eddymotion 24.0.0.dev219+g6128b37 documentation</title>
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
+        <title>eddymotion.viz module - eddymotion 24.0.0.dev239+g7f79390 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev219+g6128b37 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev239+g7f79390 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,14 +146,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev219 (dev)</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev239 (dev)</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev219 (dev)</span>
+  <span class="sidebar-brand-text">24.0.0.dev239 (dev)</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -220,11 +220,11 @@
         </div>
         <article role="main">
           <section id="module-eddymotion.viz">
-<span id="eddymotion-viz-module"></span><h1>eddymotion.viz module<a class="headerlink" href="#module-eddymotion.viz" title="Link to this heading">#</a></h1>
+<span id="eddymotion-viz-module"></span><h1>eddymotion.viz module<a class="headerlink" href="#module-eddymotion.viz" title="Link to this heading">¶</a></h1>
 <p>Visualization utilities.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.draw_circles">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">draw_circles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#draw_circles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.draw_circles" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">draw_circles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#draw_circles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.draw_circles" title="Link to this definition">¶</a></dt>
 <dd><p>Draw circular patches (lying on a sphere) at given positions.</p>
 <p>Adapted from <a class="reference external" href="https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py">Emmanuel Caruyer’s code</a>,
 which is distributed under the revised BSD License:</p>
@@ -255,7 +255,7 @@ radii instead of taking the list of bvecs and radii for a specific shell
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.draw_points">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">draw_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#draw_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.draw_points" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">draw_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#draw_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.draw_points" title="Link to this definition">¶</a></dt>
 <dd><p>Draw the vectors on a shell.</p>
 <p>Adapted from <a class="reference external" href="https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py">Emmanuel Caruyer’s code</a>,
 which is distributed under the revised BSD License:</p>
@@ -286,7 +286,7 @@ the bvals. A minimum/maximal value for the radii can be specified.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.get_segment_labels">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">get_segment_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#get_segment_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.get_segment_labels" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">get_segment_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#get_segment_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.get_segment_labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return segment labels for plot_carpet function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -315,7 +315,7 @@ e.g. [“Cerebral_White_Matter”, “Cerebral_Cortex”, “Ventricle”]</p></
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.plot_carpet">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">plot_carpet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by_bval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detrend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#plot_carpet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.plot_carpet" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">plot_carpet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by_bval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detrend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#plot_carpet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.plot_carpet" title="Link to this definition">¶</a></dt>
 <dd><p>Return carpet plot using niworkflows carpet_plot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -338,13 +338,13 @@ e.g. {‘Cerebral_White_Matter’: [2, 41], …}</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.plot_dwi">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">plot_dwi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#plot_dwi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.plot_dwi" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">plot_dwi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#plot_dwi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.plot_dwi" title="Link to this definition">¶</a></dt>
 <dd><p>Plot a DW map.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.plot_gradients">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">plot_gradients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#plot_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.plot_gradients" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">plot_gradients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#plot_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.plot_gradients" title="Link to this definition">¶</a></dt>
 <dd><p>Draw the vectors on a unit sphere with color code for multiple b-value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -362,7 +362,7 @@ e.g. {‘Cerebral_White_Matter’: [2, 41], …}</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.rotation_matrix">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.rotation_matrix" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz.html#rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.rotation_matrix" title="Link to this definition">¶</a></dt>
 <dd><p>Calculate the rotation matrix <em>R</em> such that <span class="math notranslate nohighlight">\(R \cdot \mathbf{u} = \mathbf{v}\)</span>.</p>
 <p>Extracted from <a class="reference external" href="https://github.com/ecaruyer/qspace/blob/master/qspace/visu/visu_points.py">Emmanuel Caruyer’s code</a>,
 which is distributed under the revised BSD License:</p>
@@ -464,8 +464,8 @@ All rights reserved.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=4f92abd2"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+</div><script src="../_static/documentation_options.js?v=dbb6dc8a"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

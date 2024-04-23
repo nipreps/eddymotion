@@ -14,5 +14,6 @@ Contents
     :maxdepth: 3
 
     installation
+    running
     developers
     changes

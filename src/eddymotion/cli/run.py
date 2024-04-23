@@ -46,7 +46,7 @@ def main() -> None:
 
     _ = estimator.fit(
         dwi_dataset,
-        align_kwargs=args.align_kwargs,
+        align_kwargs=args.align_config,
         models=args.models,
         omp_nthreads=args.nthreads,
         njobs=args.njobs,

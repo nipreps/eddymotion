@@ -21,10 +21,30 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Parser module."""
+import yaml
 
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
 from typing import Optional
+
+
+def _parse_yaml_config(file_path: Path) -> dict:
+    """
+    Parse YAML configuration file.
+
+    Parameters
+    ----------
+    file_path : Path
+        Path to the YAML configuration file.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the parsed YAML configuration.
+    """
+    with open(file_path, 'r') as file:
+        config = yaml.safe_load(file)
+    return config
 
 
 def _build_parser() -> ArgumentParser:
@@ -48,11 +68,11 @@ def _build_parser() -> ArgumentParser:
         help="Path to the HDF5 file containing the original DWI data.",
     )
     parser.add_argument(
-        "--align_kwargs",
+        "--align_config",
         action="store",
-        type=dict,
+        type=_parse_yaml_config,
         default=None,
-        help="Parameters to configure the image registration process.",
+        help="Path to the yaml file containing the parameters to configure the image registration process.",
     )
     parser.add_argument(
         "--models",

@@ -55,7 +55,7 @@ def main() -> None:
 
     # Set the output filename to be the same as the input filename
     output_filename: str = Path(args.input_file).name
-    output_path: str = Path(args.output_dir) / output_filename
+    output_path: Path = Path(args.output_dir) / output_filename
 
     # Save the DWI dataset to the output path
     dwi_dataset.to_filename(output_path)

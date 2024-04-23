@@ -21,11 +21,11 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Parser module."""
-import yaml
-
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
 from typing import Optional
+
+import yaml
 
 
 def _parse_yaml_config(file_path: Path) -> dict:

@@ -42,7 +42,7 @@ class EddyMotionEstimator:
     """Estimates rigid-body head-motion and distortions derived from eddy-currents."""
 
     @staticmethod
-    def fit(
+    def estimate(
         dwdata,
         *,
         align_kwargs=None,

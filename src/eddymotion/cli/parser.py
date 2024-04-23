@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Parser module."""
+
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
 from typing import Optional
@@ -42,7 +43,7 @@ def _parse_yaml_config(file_path: Path) -> dict:
     dict
         A dictionary containing the parsed YAML configuration.
     """
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         config = yaml.safe_load(file)
     return config
 

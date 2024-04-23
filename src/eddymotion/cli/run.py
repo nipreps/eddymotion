@@ -44,7 +44,7 @@ def main() -> None:
 
     estimator: EddyMotionEstimator = EddyMotionEstimator()
 
-    _ = estimator.fit(
+    _ = estimator.estimate(
         dwi_dataset,
         align_kwargs=args.align_config,
         models=args.models,

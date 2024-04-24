@@ -51,7 +51,8 @@ doc = [
     "sphinx_rtd_theme",
     "sphinxcontrib-apidoc ~= 0.3.0",
     "sphinxcontrib-napoleon",
-    "sphinxcontrib-versioning"
+    "sphinxcontrib-versioning",
+    "sphinx-argparse",
 ]
 
 dev = [
@@ -78,6 +79,9 @@ test = [
 docs = ["eddymotion[doc]"]
 tests = ["eddymotion[test]"]
 all = ["eddymotion[doc,test,dev,plotting,resmon,popylar]"]
+
+[project.scripts]
+eddymotion = "eddymotion.cli.run:main"
 
 #
 # Hatch configurations

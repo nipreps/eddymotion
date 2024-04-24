@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinxcontrib.apidoc",
+    "sphinxarg.ext",
 ]
 
 autodoc_mock_imports = [

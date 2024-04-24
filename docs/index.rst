@@ -15,5 +15,6 @@ Contents
 
     installation
     usage
+    running
     developers
     changes

@@ -1,0 +1,7 @@
+eddymotion.cli.parser module
+============================
+
+.. automodule:: eddymotion.cli.parser
+   :members:
+   :undoc-members:
+   :show-inheritance:

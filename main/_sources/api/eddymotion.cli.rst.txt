@@ -1,0 +1,16 @@
+eddymotion.cli package
+======================
+
+.. automodule:: eddymotion.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   eddymotion.cli.parser
+   eddymotion.cli.run

@@ -21,6 +21,16 @@ To utilize Eddymotion functionalities within your Python module or script, follo
       # Load dMRI data into a DWI object
       dwi_data = DWI.load('/path/to/your/dwi_data.nii.gz', gradients_file='/path/to/your/gradient_file')
 
+   *Note*: To fetch an example of test data for running examples and tests from this page, you can use datalad, a data management tool. If you haven't already installed it, follow the instructions to install datalad given `here <https://handbook.datalad.org/en/latest/intro/installation.html>`_. Then, run the following commands to fetch our test data:
+
+   .. code-block:: bash
+
+      #install the test data datalad repository
+      datalad install -rg --source=https://gin.g-node.org/nipreps-data/tests-eddymotion.git
+      # Navigate to the test data folder
+      cd tests-eddymotion/
+
+
 3. **Instantiate an Eddymotion Estimator Object**: Create an instance of the `EddyMotionEstimator` class, which encapsulates tools for estimating rigid-body head motion and distortions due to eddy currents.
 
    .. code-block:: python

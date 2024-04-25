@@ -56,9 +56,9 @@ jobs:
 
     - name: Upload sdist and wheel artifacts
       uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
+      with:
+        name: dist
+        path: dist/
 
     - name: Install in confined environment [pip]
       run: |

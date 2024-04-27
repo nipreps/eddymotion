@@ -45,7 +45,7 @@ class ModelFactory:
     @staticmethod
     def init(model="DTI", **kwargs):
         """
-        Instatiate a diffusion model.
+        Instantiate a diffusion model.
 
         Parameters
         ----------

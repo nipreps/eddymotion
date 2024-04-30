@@ -171,9 +171,9 @@ class DWI:
 
     def plot_gradients(self, **kwargs):
         """Visualize diffusion gradient."""
-        from eddymotion.viz import plot_gradients
+        from nireports.reportlets.modality.dwi import plot_gradients as rpt_plot_gradients
 
-        return plot_gradients(self.gradients, **kwargs)
+        return rpt_plot_gradients(self.gradients, **kwargs)
 
     @classmethod
     def from_filename(cls, filename):

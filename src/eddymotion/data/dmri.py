@@ -160,7 +160,7 @@ class DWI:
 
     def plot_mosaic(self, index=None, **kwargs):
         """Visualize one direction of the dMRI dataset."""
-        from eddymotion.viz import plot_dwi
+        from nireports.reportlets.modality.dwi import plot_dwi
 
         return plot_dwi(
             self.bzero if index is None else self.dataobj[..., index],

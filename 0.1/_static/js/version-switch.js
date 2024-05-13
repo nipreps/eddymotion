@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var pathname = window.location.pathname;
     var cur_ver = $("#version-slug").text().replace(/^[\n\s]+|[\n\s]+$/g, '')
-    var major_minor = "master";
+    var major_minor = "main";
     if ( cur_ver.lastIndexOf(" (dev)") == -1 ) {
         major_minor = `${cur_ver.split('.')[0]}.${cur_ver.split('.')[1]}`
     }
@@ -30,7 +30,7 @@ $(document).ready(function() {
         $.each(data["heads"].reverse(), function( i, val ) {
             var new_path = relpath.replace(major_minor, val)
             var item = `<li class="toctree-l2"><a class="reference internal" href="${new_path}">${val}</a></li>`
-            if ( val == "master" ) {
+            if ( val == "main" ) {
                 item = `<li class="toctree-l2"><a class="reference internal" href="${new_path}">${val} (Development)</a></li>`
             }
             $("#v-tags").append(item)

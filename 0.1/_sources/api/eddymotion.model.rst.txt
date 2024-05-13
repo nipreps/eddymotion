@@ -1,7 +1,15 @@
-eddymotion.model module
-=======================
+eddymotion.model package
+========================
 
 .. automodule:: eddymotion.model
    :members:
    :undoc-members:
    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   eddymotion.model.base

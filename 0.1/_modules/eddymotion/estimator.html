@@ -1,15 +1,15 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en" data-content_root="../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>eddymotion.estimator - eddymotion 0.1.6 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/version-switch.css" />
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>eddymotion.estimator - eddymotion 0.1.15 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/version-switch.css?v=45d66e8a" />
     
     
 
@@ -20,38 +20,38 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -60,15 +60,15 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -82,16 +82,16 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
       <path d="M13 12h5" />
@@ -99,6 +99,60 @@
       <path d="M13 18h1" />
       <path d="M13 9h4" />
       <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -112,6 +166,8 @@
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
 
 
 <div class="page">
@@ -123,13 +179,14 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.6 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 0.1.15 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -145,30 +202,47 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.6</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.15</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.6</span>
+  <span class="sidebar-brand-text">0.1.15</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
   </ul>
 </div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api.html">Library API (application program interface)</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.dmri.html">eddymotion.dmri module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../running.html">Running <em>Eddymotion</em></a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../developers.html">For developers</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of For developers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.cli.html">eddymotion.cli package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of eddymotion.cli package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.cli.parser.html">eddymotion.cli.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.cli.run.html">eddymotion.cli.run module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of eddymotion.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.splitting.html">eddymotion.data.splitting module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.data.utils.html">eddymotion.data.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.estimator.html">eddymotion.estimator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.model.html">eddymotion.model module</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/eddymotion.model.html">eddymotion.model package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of eddymotion.model package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/eddymotion.model.base.html">eddymotion.model.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.utils.html">eddymotion.utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/eddymotion.viz.html">eddymotion.viz module</a></li>
 </ul>
 </li>
@@ -177,6 +251,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -184,11 +259,18 @@
   <div class="main">
     <div class="content">
       <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -198,43 +280,73 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for eddymotion.estimator</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""A model-based algorithm for the realignment of dMRI data."""</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">tempfile</span> <span class="k">import</span> <span class="n">TemporaryDirectory</span><span class="p">,</span> <span class="n">mkstemp</span>
+<span></span><span class="c1"># emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-</span>
+<span class="c1"># vi: set ft=python sts=4 ts=4 sw=4 et:</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2022 The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># We support and encourage derived works from this project, please read</span>
+<span class="c1"># about our expectations at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.nipreps.org/community/licensing/</span>
+<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;A model-based algorithm for the realignment of dMRI data.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">TemporaryDirectory</span><span class="p">,</span> <span class="n">mkstemp</span>
 
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nb</span>
 <span class="kn">import</span> <span class="nn">nitransforms</span> <span class="k">as</span> <span class="nn">nt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">nipype.interfaces.ants.registration</span> <span class="k">import</span> <span class="n">Registration</span>
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_filename</span> <span class="k">as</span> <span class="n">pkg_fn</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">nipype.interfaces.ants.registration</span> <span class="kn">import</span> <span class="n">Registration</span>
+<span class="kn">from</span> <span class="nn">nitransforms.linear</span> <span class="kn">import</span> <span class="n">Affine</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span> <span class="k">as</span> <span class="n">pkg_fn</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span> <span class="nn">eddymotion.model</span> <span class="k">import</span> <span class="n">ModelFactory</span>
+<span class="kn">from</span> <span class="nn">eddymotion.data.splitting</span> <span class="kn">import</span> <span class="n">lovo_split</span>
+<span class="kn">from</span> <span class="nn">eddymotion.model</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 
 
-<div class="viewcode-block" id="EddyMotionEstimator"><a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator">[docs]</a><span class="k">class</span> <span class="nc">EddyMotionEstimator</span><span class="p">:</span>
-    <span class="sd">"""Estimates rigid-body head-motion and distortions derived from eddy-currents."""</span>
+<div class="viewcode-block" id="EddyMotionEstimator">
+<a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator">[docs]</a>
+<span class="k">class</span> <span class="nc">EddyMotionEstimator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates rigid-body head-motion and distortions derived from eddy-currents.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EddyMotionEstimator.fit"><a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator.fit">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+<div class="viewcode-block" id="EddyMotionEstimator.estimate">
+<a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator.estimate">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">estimate</span><span class="p">(</span>
         <span class="n">dwdata</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">n_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">align_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">model</span><span class="o">=</span><span class="s2">"b0"</span><span class="p">,</span>
+        <span class="n">models</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,),</span>
         <span class="n">omp_nthreads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sa">r</span><span class="sd">"""</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Estimate head-motion and Eddy currents.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dwdata : :obj:`~eddymotion.dmri.DWI`</span>
-<span class="sd">            The target DWI dataset, represented by this tool's internal</span>
+<span class="sd">            The target DWI dataset, represented by this tool&#39;s internal</span>
 <span class="sd">            type. The object is used in-place, and will contain the estimated</span>
 <span class="sd">            parameters in its ``em_affines`` property, as well as the rotated</span>
 <span class="sd">            *b*-vectors within its ``gradients`` property.</span>
@@ -242,122 +354,135 @@
 <span class="sd">            Number of iterations this particular model is going to be repeated.</span>
 <span class="sd">        align_kwargs : :obj:`dict`</span>
 <span class="sd">            Parameters to configure the image registration process.</span>
-<span class="sd">        model : :obj:`str`</span>
+<span class="sd">        models : :obj:`list`</span>
 <span class="sd">            Selects the diffusion model that will generate the registration target</span>
 <span class="sd">            corresponding to each gradient map.</span>
 <span class="sd">            See :obj:`~eddymotion.model.ModelFactory` for allowed models (and corresponding</span>
 <span class="sd">            keywords).</span>
+<span class="sd">        omp_nthreads : :obj:`int`</span>
+<span class="sd">            Maximum number of threads an individual process may use.</span>
+<span class="sd">        n_jobs : :obj:`int`</span>
+<span class="sd">            Number of parallel jobs.</span>
 <span class="sd">        seed : :obj:`int` or :obj:`bool`</span>
 <span class="sd">            Seed the random number generator (necessary when we want deterministic</span>
-<span class="sd">            estimation).</span>
-
+<span class="sd">            estimation). See :func:`_sort_dwdata_indices`.</span>
 <span class="sd">        Return</span>
 <span class="sd">        ------</span>
-<span class="sd">        affines : :obj:`list` of :obj:`numpy.ndarray`</span>
+<span class="sd">        :obj:`list` of :obj:`numpy.ndarray`</span>
 <span class="sd">            A list of :math:`4 \times 4` affine matrices encoding the estimated</span>
 <span class="sd">            parameters of the deformations caused by head-motion and eddy-currents.</span>
 
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">align_kwargs</span> <span class="o">=</span> <span class="n">align_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="n">reg_target_type</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">"dwi"</span>
-            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"b0"</span><span class="p">,</span> <span class="s2">"s0"</span><span class="p">,</span> <span class="s2">"avg"</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">)</span>
-            <span class="k">else</span> <span class="s2">"b0"</span>
-        <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span><span class="p">)</span>
+        <span class="n">index_order</span> <span class="o">=</span> <span class="n">_sort_dwdata_indices</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
 
-        <span class="n">bmask_img</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"_bmask.nii.gz"</span><span class="p">)</span>
-            <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span>
-                <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">),</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="kc">None</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">bmask_img</span><span class="p">)</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s2">"mask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span>
+        <span class="k">if</span> <span class="s2">&quot;num_threads&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_kwargs</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">&quot;num_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_nthreads</span>
 
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"S0"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i_iter</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
+            <span class="n">reg_target_type</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;dwi&quot;</span> <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="s2">&quot;s0&quot;</span><span class="p">,</span> <span class="s2">&quot;avg&quot;</span><span class="p">,</span> <span class="s2">&quot;average&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;b0&quot;</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">"n_threads"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">"num_threads"</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"n_threads"</span><span class="p">]</span>
+            <span class="c1"># When downsampling these need to be set per-level</span>
+            <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">_prepare_brainmask_data</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span><span class="p">,</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">i_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
-            <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">index_order</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"dwi"</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_order</span><span class="p">:</span>
+            <span class="n">_prepare_kwargs</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="n">single_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="s2">&quot;b0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;s0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;avg&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;average&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;full&quot;</span><span class="p">)</span>
+
+            <span class="n">dwmodel</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">single_model</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;full&quot;</span><span class="p">):</span>
+                    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+
+                <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
+                <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+                    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">dwmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing in &lt;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+                <span class="n">ptmp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">index_order</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;dwi&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
                     <span class="c1"># run a original-to-synthetic affine registration</span>
-                    <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
-                        <span class="n">pbar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                            <span class="n">f</span><span class="s2">"Pass </span><span class="si">{i_iter}</span><span class="s2">/</span><span class="si">{n_iter}</span><span class="s2"> | Processing b-index &lt;</span><span class="si">{i}</span><span class="s2">&gt; in &lt;</span><span class="si">{tmpdir}</span><span class="s2">&gt;"</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_order</span><span class="p">:</span>
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
                         <span class="p">)</span>
-                        <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">logo_split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">lovo_split</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">grad_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">, b=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">grad_str</span><span class="si">}</span><span class="s2">], </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> jobs&quot;</span><span class="p">)</span>
 
-                        <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
-                        <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
-                            <span class="n">gtab</span><span class="o">=</span><span class="n">data_train</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-                            <span class="n">omp_nthreads</span><span class="o">=</span><span class="n">omp_nthreads</span><span class="p">,</span>
-                            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">single_model</span><span class="p">:</span>  <span class="c1"># A true LOGO estimator</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+                                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_train</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
+                            <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+                                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                            <span class="p">)</span>
 
-                        <span class="c1"># fit the model</span>
-                        <span class="n">dwmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data_train</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                            <span class="c1"># fit the model</span>
+                            <span class="n">dwmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+                                <span class="n">data_train</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+                            <span class="p">)</span>
 
                         <span class="c1"># generate a synthetic dw volume for the test gradient</span>
                         <span class="n">predicted</span> <span class="o">=</span> <span class="n">dwmodel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-                        <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
-                        <span class="n">moving</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="s2">"moving.nii.gz"</span>
-                        <span class="n">fixed</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="s2">"fixed.nii.gz"</span>
-                        <span class="n">_to_nifti</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">moving</span><span class="p">)</span>
-                        <span class="n">_to_nifti</span><span class="p">(</span>
-                            <span class="n">predicted</span><span class="p">,</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
+                        <span class="c1"># prepare data for running ANTs</span>
+                        <span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span> <span class="o">=</span> <span class="n">_prepare_registration_data</span><span class="p">(</span>
+                            <span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">ptmp_dir</span><span class="p">,</span> <span class="n">reg_target_type</span>
+                        <span class="p">)</span>
+
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Realign b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                        <span class="p">)</span>
+
+                        <span class="n">xform</span> <span class="o">=</span> <span class="n">_run_registration</span><span class="p">(</span>
                             <span class="n">fixed</span><span class="p">,</span>
-                            <span class="n">clip</span><span class="o">=</span><span class="n">reg_target_type</span> <span class="o">==</span> <span class="s2">"dwi"</span><span class="p">,</span>
+                            <span class="n">moving</span><span class="p">,</span>
+                            <span class="n">bmask_img</span><span class="p">,</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">,</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
+                            <span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                            <span class="n">dwdata</span><span class="o">.</span><span class="n">fieldmap</span><span class="p">,</span>
+                            <span class="n">i_iter</span><span class="p">,</span>
+                            <span class="n">i</span><span class="p">,</span>
+                            <span class="n">ptmp_dir</span><span class="p">,</span>
+                            <span class="n">reg_target_type</span><span class="p">,</span>
+                            <span class="n">align_kwargs</span><span class="p">,</span>
                         <span class="p">)</span>
 
-                        <span class="n">registration</span> <span class="o">=</span> <span class="n">Registration</span><span class="p">(</span>
-                            <span class="n">terminal_output</span><span class="o">=</span><span class="s2">"file"</span><span class="p">,</span>
-                            <span class="n">from_file</span><span class="o">=</span><span class="n">pkg_fn</span><span class="p">(</span>
-                                <span class="s2">"eddymotion"</span><span class="p">,</span>
-                                <span class="n">f</span><span class="s2">"config/dwi-to-</span><span class="si">{reg_target_type}</span><span class="s2">_level</span><span class="si">{i_iter}</span><span class="s2">.json"</span><span class="p">,</span>
-                            <span class="p">),</span>
-                            <span class="n">fixed_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fixed</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
-                            <span class="n">moving_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">moving</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
-                            <span class="o">**</span><span class="n">align_kwargs</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="k">if</span> <span class="n">bmask_img</span><span class="p">:</span>
-                            <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image_masks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"NULL"</span><span class="p">,</span> <span class="n">bmask_img</span><span class="p">]</span>
+                        <span class="c1"># update</span>
+                        <span class="n">dwdata</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xform</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-                        <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="n">mat_file</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="n">f</span><span class="s2">"init</span><span class="si">{i_iter}</span><span class="s2">.mat"</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">mat_file</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"itk"</span><span class="p">)</span>
-                            <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">initial_moving_transform</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mat_file</span><span class="p">)</span>
-
-                        <span class="c1"># execute ants command line</span>
-                        <span class="n">result</span> <span class="o">=</span> <span class="n">registration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">))</span><span class="o">.</span><span class="n">outputs</span>
-
-                        <span class="c1"># read output transform</span>
-                        <span class="n">xform</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">ITKLinearTransform</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span>
-                            <span class="n">result</span><span class="o">.</span><span class="n">forward_transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                        <span class="p">)</span><span class="o">.</span><span class="n">to_ras</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span><span class="o">=</span><span class="n">moving</span><span class="p">)</span>
-
-                    <span class="c1"># update</span>
-                    <span class="n">dwdata</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xform</span><span class="p">)</span>
-                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span></div></div>
+        <span class="k">return</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span></div>
+</div>
 
 
-<span class="k">def</span> <span class="nf">_advanced_clip</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">p_min</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">p_max</span><span class="o">=</span><span class="mf">99.98</span><span class="p">,</span> <span class="n">nonnegative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int16"</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">):</span>
-    <span class="sd">"""</span>
+
+<span class="k">def</span> <span class="nf">_advanced_clip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">p_min</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">p_max</span><span class="o">=</span><span class="mf">99.98</span><span class="p">,</span> <span class="n">nonnegative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int16&quot;</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove outliers at both ends of the intensity distribution and fit into a given dtype.</span>
 
-<span class="sd">    This interface tries to emulate ANTs workflows' massaging that truncate images into</span>
+<span class="sd">    This interface tries to emulate ANTs workflows&#39; massaging that truncate images into</span>
 <span class="sd">    the 0-255 range, and applies percentiles for clipping images.</span>
 <span class="sd">    For image registration, normalizing the intensity into a compact range (e.g., uint8)</span>
 <span class="sd">    is generally advised.</span>
@@ -367,10 +492,10 @@
 <span class="sd">    Once the thresholds are calculated, the denoised data are thrown away and the thresholds</span>
 <span class="sd">    are applied on the original image.</span>
 
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-    <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">ndimage</span>
-    <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="k">import</span> <span class="n">ball</span>
+    <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
+    <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span>
 
     <span class="c1"># Calculate stats on denoised version, to preempt outliers from biasing</span>
     <span class="n">denoised</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
@@ -386,7 +511,7 @@
     <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">data</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"uint8"</span><span class="p">,</span> <span class="s2">"int16"</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">,</span> <span class="s2">&quot;int16&quot;</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">data</span>
@@ -396,11 +521,230 @@
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">clip</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span>
+    <span class="n">nii</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span>
         <span class="n">data</span><span class="p">,</span>
         <span class="n">affine</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set_sform</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set_qform</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nii</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_sort_dwdata_indices</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">dwi_vol_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort the DWI data volume indices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seed : :obj:`int` or :obj:`bool`</span>
+<span class="sd">        Seed the random number generator. If an integer, the value is used to initialize the</span>
+<span class="sd">        generator; if ``True``, the arbitrary value of ``20210324`` is used to initialize it.</span>
+<span class="sd">    dwi_vol_count : :obj:`int`</span>
+<span class="sd">        Number of DWI volumes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    index_order : :obj:`numpy.ndarray`</span>
+<span class="sd">        Index order.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_seed</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_seed</span> <span class="o">=</span> <span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span>
+
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">_seed</span><span class="p">)</span>
+
+    <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dwi_vol_count</span><span class="p">)</span>
+    <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">index_order</span>
+
+
+<span class="k">def</span> <span class="nf">_prepare_brainmask_data</span><span class="p">(</span><span class="n">brainmask</span><span class="p">,</span> <span class="n">affine</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the brainmask data: save the data to disk.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    brainmask : :obj:`numpy.ndarray`</span>
+<span class="sd">        Brainmask data.</span>
+<span class="sd">    affine : :obj:`numpy.ndarray`</span>
+<span class="sd">        Affine transformation matrix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bmask_img : :class:`~nibabel.nifti1.Nifti1Image`</span>
+<span class="sd">        Brainmask image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">bmask_img</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;_bmask.nii.gz&quot;</span><span class="p">)</span>
+        <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">brainmask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">),</span> <span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">bmask_img</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bmask_img</span>
+
+
+<span class="k">def</span> <span class="nf">_prepare_kwargs</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the keyword arguments depending on the DWI data: add attributes corresponding to</span>
+<span class="sd">    the ``brainmask``, ``bzero``, ``gradients``, ``frame_time``, and ``total_duration`` DWI data</span>
+<span class="sd">    properties.</span>
+
+<span class="sd">    Modifies kwargs in-place.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dwdata : :class:`eddymotion.data.dmri.DWI`</span>
+<span class="sd">        DWI data object.</span>
+<span class="sd">    kwargs : :obj:`dict`</span>
+<span class="sd">        Keyword arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;bzero&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;S0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;frame_time&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timepoints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">frame_time</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;total_duration&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;xlim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">total_duration</span>
+
+
+<span class="k">def</span> <span class="nf">_prepare_registration_data</span><span class="p">(</span><span class="n">dwframe</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">vol_idx</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">reg_target_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the registration data: save the fixed and moving images to disk.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dwframe : :obj:`numpy.ndarray`</span>
+<span class="sd">        DWI data object.</span>
+<span class="sd">    predicted : :obj:`numpy.ndarray`</span>
+<span class="sd">        Predicted data.</span>
+<span class="sd">    affine : :obj:`numpy.ndarray`</span>
+<span class="sd">        Affine transformation matrix.</span>
+<span class="sd">    vol_idx : :obj:`int</span>
+<span class="sd">        DWI volume index.</span>
+<span class="sd">    dirname : :obj:`Path`</span>
+<span class="sd">        Directory name where the data is saved.</span>
+<span class="sd">    reg_target_type : :obj:`str`</span>
+<span class="sd">        Target registration type.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fixed : :obj:`Path`</span>
+<span class="sd">        Fixed image filename.</span>
+<span class="sd">    moving : :obj:`Path`</span>
+<span class="sd">        Moving image filename.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">moving</span> <span class="o">=</span> <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;moving</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+    <span class="n">fixed</span> <span class="o">=</span> <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;fixed</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+    <span class="n">_to_nifti</span><span class="p">(</span><span class="n">dwframe</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">moving</span><span class="p">)</span>
+    <span class="n">_to_nifti</span><span class="p">(</span>
+        <span class="n">predicted</span><span class="p">,</span>
+        <span class="n">affine</span><span class="p">,</span>
+        <span class="n">fixed</span><span class="p">,</span>
+        <span class="n">clip</span><span class="o">=</span><span class="n">reg_target_type</span> <span class="o">==</span> <span class="s2">&quot;dwi&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span>
+
+
+<span class="k">def</span> <span class="nf">_run_registration</span><span class="p">(</span>
+    <span class="n">fixed</span><span class="p">,</span>
+    <span class="n">moving</span><span class="p">,</span>
+    <span class="n">bmask_img</span><span class="p">,</span>
+    <span class="n">em_affines</span><span class="p">,</span>
+    <span class="n">affine</span><span class="p">,</span>
+    <span class="n">shape</span><span class="p">,</span>
+    <span class="n">bval</span><span class="p">,</span>
+    <span class="n">fieldmap</span><span class="p">,</span>
+    <span class="n">i_iter</span><span class="p">,</span>
+    <span class="n">vol_idx</span><span class="p">,</span>
+    <span class="n">dirname</span><span class="p">,</span>
+    <span class="n">reg_target_type</span><span class="p">,</span>
+    <span class="n">align_kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register the moving image to the fixed image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fixed : :obj:`Path`</span>
+<span class="sd">        Fixed image filename.</span>
+<span class="sd">    moving : :obj:`Path`</span>
+<span class="sd">        Moving image filename.</span>
+<span class="sd">    bmask_img : :class:`~nibabel.nifti1.Nifti1Image`</span>
+<span class="sd">        Brainmask image.</span>
+<span class="sd">    em_affines : :obj:`numpy.ndarray`</span>
+<span class="sd">        Estimated eddy motion affine transformation matrices.</span>
+<span class="sd">    affine : :obj:`numpy.ndarray`</span>
+<span class="sd">        Affine transformation matrix.</span>
+<span class="sd">    shape : :obj:`tuple`</span>
+<span class="sd">        Shape of the DWI frame.</span>
+<span class="sd">    bval : :obj:`int`</span>
+<span class="sd">        b-value of the corresponding DWI volume.</span>
+<span class="sd">    fieldmap : :class:`~nibabel.nifti1.Nifti1Image`</span>
+<span class="sd">        Fieldmap.</span>
+<span class="sd">    i_iter : :obj:`int`</span>
+<span class="sd">        Iteration number.</span>
+<span class="sd">    vol_idx : :obj:`int`</span>
+<span class="sd">        DWI frame index.</span>
+<span class="sd">    dirname : :obj:`Path`</span>
+<span class="sd">        Directory name where the transformation is saved.</span>
+<span class="sd">    reg_target_type : :obj:`str`</span>
+<span class="sd">        Target registration type.</span>
+<span class="sd">    align_kwargs : :obj:`dict`</span>
+<span class="sd">        Parameters to configure the image registration process.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xform : :class:`~nitransforms.linear.Affine`</span>
+<span class="sd">        Registration transformation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">registration</span> <span class="o">=</span> <span class="n">Registration</span><span class="p">(</span>
+        <span class="n">terminal_output</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="n">from_file</span><span class="o">=</span><span class="n">pkg_fn</span><span class="p">(</span>
+            <span class="s2">&quot;eddymotion&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;config/dwi-to-</span><span class="si">{</span><span class="n">reg_target_type</span><span class="si">}</span><span class="s2">_level</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">fixed_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fixed</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
+        <span class="n">moving_image</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">moving</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span>
+        <span class="o">**</span><span class="n">align_kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">bmask_img</span><span class="p">:</span>
+        <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image_masks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NULL&quot;</span><span class="p">,</span> <span class="n">bmask_img</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">em_affines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">em_affines</span><span class="p">[</span><span class="n">vol_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]):</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ImageGrid&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;affine&quot;</span><span class="p">))(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">)</span>
+
+        <span class="c1"># create a nitransforms object</span>
+        <span class="k">if</span> <span class="n">fieldmap</span><span class="p">:</span>
+            <span class="c1"># compose fieldmap into transform</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">initial_xform</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">em_affines</span><span class="p">[</span><span class="n">vol_idx</span><span class="p">],</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">)</span>
+        <span class="n">mat_file</span> <span class="o">=</span> <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;init_</span><span class="si">{</span><span class="n">i_iter</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">.mat&quot;</span>
+        <span class="n">initial_xform</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">mat_file</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;itk&quot;</span><span class="p">)</span>
+        <span class="n">registration</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">initial_moving_transform</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mat_file</span><span class="p">)</span>
+
+    <span class="c1"># execute ants command line</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">registration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">dirname</span><span class="p">))</span><span class="o">.</span><span class="n">outputs</span>
+
+    <span class="c1"># read output transform</span>
+    <span class="n">xform</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">Affine</span><span class="p">(</span>
+        <span class="n">nt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">ITKLinearTransform</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">forward_transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">to_ras</span><span class="p">(</span>
+            <span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span><span class="o">=</span><span class="n">moving</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># debugging: generate aligned file for testing</span>
+    <span class="n">xform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">moving</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">fixed</span><span class="p">)</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span>
+        <span class="n">dirname</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;aligned</span><span class="si">{</span><span class="n">vol_idx</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">bval</span><span class="p">)</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xform</span>
 </pre></div>
         </article>
       </div>
@@ -410,13 +754,19 @@
           
           
         </div>
-
-        <div class="related-information">
-              Copyright &#169; Copyright 2021, The eddymotion developers |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; Copyright 2021, The eddymotion developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
         </div>
         
       </footer>
@@ -427,11 +777,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
-    <script src="../../_static/js/version-switch.js"></script>
+</div><script src="../../_static/documentation_options.js?v=e2f3408e"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../../_static/js/version-switch.js?v=8028bf13"></script>
     </body>
 </html>

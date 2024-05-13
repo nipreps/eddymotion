@@ -1,0 +1,18 @@
+eddymotion.data package
+=======================
+
+.. automodule:: eddymotion.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   eddymotion.data.dmri
+   eddymotion.data.pet
+   eddymotion.data.splitting
+   eddymotion.data.utils

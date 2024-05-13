@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="eddymotion.viz module" href="api/eddymotion.viz.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>What’s new? - eddymotion 24.0.0.dev288 documentation</title>
+        <title>What’s new? - eddymotion 0.1.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -180,7 +180,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">eddymotion 24.0.0.dev288 documentation</div></a>
+      <a href="index.html"><div class="brand">eddymotion 0.1.15 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -203,14 +203,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev288</span>
+    <span id="version-slug" class="sidebar-brand-text">0.1.15</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev288</span>
+  <span class="sidebar-brand-text">0.1.15</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -290,6 +290,75 @@
         <article role="main" id="furo-main-content">
           <section id="what-s-new">
 <h1>What’s new?<a class="headerlink" href="#what-s-new" title="Link to this heading">¶</a></h1>
+<section id="mai-13-2024">
+<h2>0.1.15 (mai 13, 2024)<a class="headerlink" href="#mai-13-2024" title="Link to this heading">¶</a></h2>
+<p>A new minor release with fixes such as setting random seeds and enhancing parallelization, alongside improvements like automated package building, documentation updates, and maintenance tasks.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>FIX: Set random seed in registration test (#160)</p></li>
+<li><p>FIX: Implement parallelization with joblib &amp; processes (#103)</p></li>
+<li><p>FIX: Revise <code class="docutils literal notranslate"><span class="pre">antsRegistration</span></code> arguments (just FYI) (#102)</p></li>
+<li><p>FIX: Revising parallel execution and related housekeeping (#100)</p></li>
+<li><p>FIX: Stop using overly complicated asyncio for managing ThreadPoolExecutors (#97)</p></li>
+<li><p>FIX: Housekeeping of the data loader function (#92)</p></li>
+<li><p>FIX: Integration test with B0 (trivial) model (#85)</p></li>
+<li><p>FIX: Generate temporary H5 cache path anew with every new instance of <code class="docutils literal notranslate"><span class="pre">DWI</span></code> (#87)</p></li>
+<li><p>FIX: Miscelaneous revisions to make tests execute properly (#84)</p></li>
+<li><p>FIX: Fix Sphinx documentation configuration file (#136)</p></li>
+<li><p>ENH: Use img shields license badge and point to file (#190)</p></li>
+<li><p>ENH: Add test for the CLI parser (#183)</p></li>
+<li><p>ENH: Automated Package Building and Deployment (#179)</p></li>
+<li><p>ENH: CLI Implementation for Eddymotion (#157)</p></li>
+<li><p>ENH: Rename the estimator method to honor its purpose/use (#173)</p></li>
+<li><p>ENH: Bump CircleCI docker image (#177)</p></li>
+<li><p>ENH: Require the iterables in a zip call to have equal length (#172)</p></li>
+<li><p>ENH: Adopt the NiPreps author update maintenance script (#167)</p></li>
+<li><p>ENH: Drop support for Python 3.8 and 3.9 (#158)</p></li>
+<li><p>ENH: Remove unused <cite>tmp_path</cite> parameter from test (#162)</p></li>
+<li><p>ENH: Outsource leave-one-out splitter so it can be used across data types (#98)</p></li>
+<li><p>ENH: Simplify <cite>eddymotion.estimator.EddyMotionEstimator.fit</cite> (#149)</p></li>
+<li><p>ENH: Refactor code linter and formatter dependencies (#144)</p></li>
+<li><p>ENH: Use NumPy’s <cite>Generator</cite> class as a replacement for <cite>RandomState</cite> (#141)</p></li>
+<li><p>ENH: Define instance attributes in <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method (#133)</p></li>
+<li><p>ENH: Remove unused parameter from method prototype (#134)</p></li>
+<li><p>ENH: Add Python 3.12 to project classifiers (#143)</p></li>
+<li><p>ENH: Fix GitHub workflow actions warnings linked to <cite>Node.js</cite> (#130)</p></li>
+<li><p>ENH: Remove unnecessary <cite>docs/requirements.txt</cite> (#137)</p></li>
+<li><p>ENH: Refactor package structure (#115)</p></li>
+<li><p>ENH: Model building refactor (#109)</p></li>
+<li><p>ENH: Add <code class="docutils literal notranslate"><span class="pre">FullDKIModel</span></code> (#91)</p></li>
+<li><p>ENH: PET uptake model (#112)</p></li>
+<li><p>ENH: Allow mix-and-matching of models (#105)</p></li>
+<li><p>ENH: Improvements to the estimator (#96)</p></li>
+<li><p>ENH: Adds carpet_plot function (#123)</p></li>
+<li><p>ENH: Data utils (#124)</p></li>
+<li><p>ENH: Changed em_affines from Affine object to matrix with preallocation (#122)</p></li>
+<li><p>DOC: Fix typo in ModelFactory docstring (#185)</p></li>
+<li><p>DOC: Fix grammar in model factory docstring (#175)</p></li>
+<li><p>DOC: Remove unnamed return parameter from docstring (#164)</p></li>
+<li><p>DOC: Add CircleCI status badge to README (#159)</p></li>
+<li><p>DOC: Add status badges to <code class="docutils literal notranslate"><span class="pre">README</span></code> file (#138)</p></li>
+<li><p>DOC: Add missing references in <cite>README</cite> file (#131)</p></li>
+<li><p>DOC: Miscellaneous documentation fixes (#135)</p></li>
+<li><p>DOC: Fix documentation build (#104)</p></li>
+<li><p>DOC: Just added myself to contributors (#83)</p></li>
+<li><p>DOC: Update contact information for &#64;dpys and setup.cfg -&gt; nipreps (#119)</p></li>
+<li><p>DOC: Update contact information for &#64;dpys and setup.cfg -&gt; nipreps (#119)</p></li>
+<li><p>STY: fix style errors (#154)</p></li>
+<li><p>STY: Format the code base style (#147)</p></li>
+<li><p>STY: Avoid using <cite>pytest</cite> <cite>tmpdir</cite> fixture as variable name (#132)</p></li>
+<li><p>MAINT: Drop local version to play nicely with test.pypi.org (#182)</p></li>
+<li><p>MAINT: Migrate to PEP517/518 packaging (#128)</p></li>
+<li><p>MAINT: Rotate CircleCI secrets and setup up org-level context (#121)</p></li>
+<li><p>MAINT: Pin Python &gt;= 3.8 (#120)</p></li>
+<li><p>MAINT: Do not install ants with conda (CircleCI) (#106)</p></li>
+<li><p>MAINT: Do not install ants with conda (CircleCI) (#106)</p></li>
+<li><p>MAINT: Initiate CircleCI’s config file (#88)</p></li>
+<li><p>MAINT: Reduce jobs in contrib GHA (#82)</p></li>
+<li><p>CI: replace flake8 by ruff check (#139)</p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="april-12-2021">
 <h2>0.1.4 (April 12, 2021)<a class="headerlink" href="#april-12-2021" title="Link to this heading">¶</a></h2>
 <p>The first release following a more complete deployment cycle.</p>
@@ -352,6 +421,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">What’s new?</a><ul>
+<li><a class="reference internal" href="#mai-13-2024">0.1.15 (mai 13, 2024)</a></li>
 <li><a class="reference internal" href="#april-12-2021">0.1.4 (April 12, 2021)</a></li>
 </ul>
 </li>
@@ -364,7 +434,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=aa19d288"></script>
+</div><script src="_static/documentation_options.js?v=e2f3408e"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>

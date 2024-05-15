@@ -1,0 +1,35 @@
+{
+  "collapse_output_transforms": true,
+  "convergence_threshold": [ 1E-6, 1E-7 ],
+  "convergence_window_size": [ 15, 5 ],
+  "dimension": 3,
+  "initialize_transforms_per_stage": false,
+  "interpolation": "Linear",
+  "metric": [ "Mattes", "GC" ],
+  "metric_weight": [ 1.0, 1.0 ],
+  "number_of_iterations": [
+    [ 100 ],
+    [ 50 ]
+  ],
+  "radius_or_number_of_bins": [ 32, 5 ],
+  "sampling_percentage": [ 0.2, 0.1 ],
+  "sampling_strategy": [ "Regular", "Random" ],
+  "shrink_factors": [
+    [ 1 ],
+    [ 1 ]
+  ],
+  "sigma_units": [ "vox", "vox" ],
+  "smoothing_sigmas": [
+    [ 2.0 ],
+    [ 0.0 ]
+  ],
+  "transform_parameters": [
+    [ 0.01 ],
+    [ 0.001 ]
+  ],
+  "transforms": [ "Affine", "Affine" ],
+  "use_histogram_matching": [ true, true ],
+  "winsorize_lower_quantile": 0.0001,
+  "winsorize_upper_quantile": 0.9998,
+  "write_composite_transform": false
+}

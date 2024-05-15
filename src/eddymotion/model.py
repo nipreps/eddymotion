@@ -296,33 +296,6 @@ class AverageDWModel:
         return self._data
 
 
-class PETUptakeModel:
-    """A trivial model of PET radiotracer uptake."""
-
-    __slots__ = ("_data", "_uptake")
-
-    def __init__(self, data, **kwargs):
-        r"""
-        Implement object initialization.
-
-        Parameters
-        ----------
-        data : :obj:`~numpy.ndarray`
-            The original 3D timeseries from which a "canonical" uptake function will be
-            estimated.
-
-
-        """
-
-    def fit(self, data, **kwargs):
-        """Impute the missing volume from the remainder of the dataset."""
-        # self._data =
-
-    def predict(self, gradient, **kwargs):
-        """Return the modeled frame."""
-        return self._data
-
-
 class DTIModel:
     """A wrapper of :obj:`dipy.reconst.dti.TensorModel."""
 

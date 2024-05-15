@@ -455,3 +455,73 @@ def _run_registration(
     )
 
     return xform
+
+class PETMotionEstimator:
+    """Estimates motion within PET imaging data."""
+
+    @staticmethod
+    def estimate(
+        pet_data,
+        *,
+        align_kwargs=None,
+        omp_nthreads=None,
+        n_jobs=None,
+        seed=None,
+        **kwargs,
+    ):
+        """
+        Estimate motion parameters for PET data.
+        
+        Parameters
+        ----------
+        pet_data : :obj:`PET`
+            The PET dataset to be processed.
+        align_kwargs : :obj:`dict`
+            Configuration parameters for the registration algorithm.
+        omp_nthreads : :obj:`int`
+            Maximum number of OpenMP threads to use.
+        n_jobs : :obj:`int`
+            Number of parallel jobs.
+        seed : :obj:`int` or :obj:`bool`
+            Seed for random number generation.
+        """
+        align_kwargs = align_kwargs or {}
+        index_order = np.arange(len(pet_data))  # Assuming motion needs to be estimated across all frames
+
+        if "num_threads" not in align_kwargs and omp_nthreads is not None:
+            align_kwargs["num_threads"] = omp_nthreads
+
+        affine_matrices = []
+        for i in tqdm(index_order, desc="Estimating PET motion"):
+            train_data, test_data = pet_data.lofo_split(i)
+
+            # Save Nifti images to temporary files
+            with NamedTemporaryFile(delete=False, suffix='.nii.gz') as fixed_file, \
+                 NamedTemporaryFile(delete=False, suffix='.nii.gz') as moving_file:
+                nb.Nifti1Image(train_data[0], pet_data.affine).to_filename(fixed_file.name)
+                nb.Nifti1Image(test_data[0], pet_data.affine).to_filename(moving_file.name)
+
+                # Setup registration
+                registration = Registration(
+                    from_file=Path('/Users/martinnorgaard/Documents/GitHub/eddymotion/src/eddymotion/config/pet-to-pet_level1.json'),
+                    fixed_image=fixed_file.name,
+                    moving_image=moving_file.name,
+                    **align_kwargs
+                )
+                try:
+                    result = registration.run()
+                    if result.outputs.forward_transforms:
+                        # Load the affine transformation matrix from the result
+                        transform = nt.io.itk.ITKLinearTransform.from_filename(result.outputs.forward_transforms[0])
+                        matrix = transform.to_ras(reference=fixed_file.name, moving=moving_file.name)
+                        affine_matrices.append(matrix)
+                    else:
+                        print(f"No transforms produced for index {i}")
+                except Exception as e:
+                    print(f"Failed to process frame {i} due to {e}")
+
+            # Clean up temporary files
+            os.unlink(fixed_file.name)
+            os.unlink(moving_file.name)
+
+        return affine_matrices

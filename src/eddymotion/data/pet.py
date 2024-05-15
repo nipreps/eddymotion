@@ -31,6 +31,7 @@ import h5py
 import nibabel as nb
 import numpy as np
 from nitransforms.linear import Affine
+import json
 
 
 def _data_repr(value):
@@ -49,10 +50,8 @@ class PET:
     """Best affine for RAS-to-voxel conversion of coordinates (NIfTI header)."""
     brainmask = attr.ib(default=None, repr=_data_repr)
     """A boolean ndarray object containing a corresponding brainmask."""
-    frame_time = attr.ib(default=None, repr=_data_repr)
+    midframe = attr.ib(default=None, repr=_data_repr)
     """A 1D numpy array with the midpoint timing of each sample."""
-    total_duration = attr.ib(default=None, repr=_data_repr)
-    """A float number representing the total duration of acquisition."""
 
     em_affines = attr.ib(default=None)
     """
@@ -68,6 +67,44 @@ class PET:
     def __len__(self):
         """Obtain the number of high-*b* orientations."""
         return self.dataobj.shape[-1]
+    
+    def lofo_split(self, index):
+        """
+        Leave-one-frame-out (LOFO) for PET data.
+
+        Parameters
+        ----------
+        index : int
+            Index of the PET frame to be left out in this fold.
+
+        Returns
+        -------
+        (train_data, train_timings) : tuple
+            Training data and corresponding timings, excluding the left-out frame.
+        (test_data, test_timing) : tuple
+            Test data (one PET frame) and corresponding timing.
+        """
+        if not Path(self._filepath).exists():
+            self.to_filename(self._filepath)
+
+        # Read original PET data
+        with h5py.File(self._filepath, "r") as in_file:
+            root = in_file["/0"]
+            pet_frame = np.asanyarray(root["dataobj"][..., index])
+            if self.midframe is not None:
+                timing_frame = np.asanyarray(root["midframe"][..., index])
+
+        # Mask to exclude the selected frame
+        mask = np.ones(self.dataobj.shape[-1], dtype=bool)
+        mask[index] = False
+
+        train_data = self.dataobj[..., mask]
+        train_timings = self.midframe[mask] if self.midframe is not None else None
+
+        test_data = pet_frame
+        test_timing = timing_frame if self.midframe is not None else None
+
+        return ((train_data, train_timings), (test_data, test_timing))
 
     def set_transform(self, index, affine, order=3):
         """Set an affine, and update data object and gradients."""
@@ -136,43 +173,36 @@ class PET:
             data = {k: np.asanyarray(v) for k, v in root.items() if not k.startswith("_")}
         return cls(**data)
 
+    def load(
+        filename,
+        json_file,
+        brainmask_file=None
+    ):
+        """Load PET data."""
+        filename = Path(filename)
+        if filename.name.endswith(".h5"):
+            return PET.from_filename(filename)
 
-def load(
-    filename,
-    brainmask_file=None,
-    frame_time=None,
-    frame_duration=None,
-):
-    """Load PET data."""
-    filename = Path(filename)
-    if filename.name.endswith(".h5"):
-        return PET.from_filename(filename)
-
-    img = nb.load(filename)
-    retval = PET(
-        dataobj=img.get_fdata(dtype="float32"),
-        affine=img.affine,
-    )
-
-    if frame_time is None:
-        raise RuntimeError(
-            "Start time of frames is mandatory (see https://bids-specification.readthedocs.io/"
-            "en/stable/glossary.html#objects.metadata.FrameTimesStart)"
+        img = nb.load(filename)
+        retval = PET(
+            dataobj=img.get_fdata(dtype="float32"),
+            affine=img.affine,
         )
 
-    frame_time = np.array(frame_time, dtype="float32") - frame_time[0]
-    if frame_duration is None:
-        frame_duration = np.diff(frame_time)
-        if len(frame_duration) == (retval.dataobj.shape[-1] - 1):
-            frame_duration = np.append(frame_duration, frame_duration[-1])
+        # Load metadata
+        with open(json_file, 'r') as f:
+            metadata = json.load(f)
+                      
+        frame_duration = np.array(metadata['FrameDuration'])
+        frame_times_start = np.array(metadata['FrameTimesStart'])
+        midframe = frame_times_start + frame_duration/2
 
-    retval.total_duration = frame_time[-1] + frame_duration[-1]
-    retval.frame_time = frame_time + 0.5 * np.array(frame_duration, dtype="float32")
+        retval.midframe = midframe
 
-    assert len(retval.frame_time) == retval.dataobj.shape[-1]
+        assert len(retval.midframe) == retval.dataobj.shape[-1]
 
-    if brainmask_file:
-        mask = nb.load(brainmask_file)
-        retval.brainmask = np.asanyarray(mask.dataobj)
+        if brainmask_file:
+            mask = nb.load(brainmask_file)
+            retval.brainmask = np.asanyarray(mask.dataobj)
 
-    return retval
+        return retval

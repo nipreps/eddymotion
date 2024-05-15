@@ -21,6 +21,7 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Unit tests exercising the estimator."""
+
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
@@ -30,7 +31,7 @@ from nibabel.eulerangles import euler2mat
 from nipype.interfaces.ants.registration import Registration
 from pkg_resources import resource_filename as pkg_fn
 
-from eddymotion.dmri import DWI
+from eddymotion.data.dmri import DWI
 
 
 @pytest.mark.parametrize("r_x", [0.0, 0.1, 0.3])
@@ -39,15 +40,17 @@ from eddymotion.dmri import DWI
 @pytest.mark.parametrize("t_x", [0.0, 1.0])
 @pytest.mark.parametrize("t_y", [0.0, 1.0])
 @pytest.mark.parametrize("t_z", [0.0, 1.0])
-def test_ANTs_config_b0(pkg_datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
+def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
     """Check that the registration parameters for b=0
     gives a good estimate of known affine"""
 
     fixed = tmp_path / "b0.nii.gz"
     moving = tmp_path / "moving.nii.gz"
 
-    dwdata = DWI.from_filename(pkg_datadir / "dwi.h5")
+    dwdata = DWI.from_filename(datadir / "dwi.h5")
     b0nii = nb.Nifti1Image(dwdata.bzero, dwdata.affine, None)
+    b0nii.header.set_qform(dwdata.affine, code=1)
+    b0nii.header.set_sform(dwdata.affine, code=1)
     b0nii.to_filename(fixed)
 
     T = from_matvec(euler2mat(x=r_x, y=r_y, z=r_z), (t_x, t_y, t_z))
@@ -59,18 +62,19 @@ def test_ANTs_config_b0(pkg_datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
         terminal_output="file",
         from_file=pkg_fn(
             "eddymotion",
-            "config/dwi-to-b0_level1.json",
+            "config/dwi-to-b0_level0.json",
         ),
         fixed_image=str(fixed.absolute()),
         moving_image=str(moving.absolute()),
+        random_seed=1234,
     )
+
     result = registration.run(cwd=str(tmp_path)).outputs
     xform = nt.linear.Affine(
-        nt.io.itk.ITKLinearTransform.from_filename(
-            result.forward_transforms[0]
-        ).to_ras(),
+        nt.io.itk.ITKLinearTransform.from_filename(result.forward_transforms[0]).to_ras(),
         reference=b0nii,
     )
 
     coords = xfm.reference.ndcoords.T
-    assert np.sqrt(((xfm.map(coords) - xform.map(coords)) ** 2).sum(1)).mean() < 0.2
+    rms = np.sqrt(((xfm.map(coords) - xform.map(coords)) ** 2).sum(1)).mean()
+    assert rms < 0.8

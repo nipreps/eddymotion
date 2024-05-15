@@ -1,7 +1,7 @@
 # emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-
 # vi: set ft=python sts=4 ts=4 sw=4 et:
 #
-# Copyright 2022 The NiPreps Developers <nipreps@gmail.com>
+# Copyright 2024 The NiPreps Developers <nipreps@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Top-level package for eddymotion."""
+"""Entry point for Eddymotion."""
 
-from eddymotion._version import __version__
+import sys
 
-__packagename__ = "eddymotion"
-__copyright__ = "Copyright 2021, The eddymotion developers"
-__url__ = "https://github.com/nipreps/EddyMotionCorrection"
+from . import __name__ as module
+from .cli.run import main
 
-DOWNLOAD_URL = f"https://github.com/nipreps/{__packagename__}/archive/{__version__}.tar.gz"
+if __name__ == "__main__":
+    if "__main__.py" in sys.argv[0]:
+        sys.argv[0] = f"{sys.executable} -m {module}"
+    main()

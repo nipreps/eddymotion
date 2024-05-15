@@ -1,0 +1,112 @@
+version: 2.1
+orbs:
+  docker: circleci/docker@1.6.0
+
+jobs:
+  tests:
+    docker: # executor type
+      - image: nipreps/miniconda:py39_2403.0
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PAT
+
+    resource_class: xlarge
+
+    environment:
+      TEST_DATA_HOME: "/tmp/tests-data"
+      ANTSPATH: "/tmp/ants"
+
+    working_directory: /tmp/tests
+    steps:
+      - checkout:
+          path: /tmp/src/eddymotion
+
+      - restore_cache:
+          keys:
+            - ants-v1-{{ .Branch }}-{{ .Revision }}
+            - ants-v1--{{ .Revision }}
+            - ants-v1-{{ .Branch }}-
+            - ants-v1-main-
+            - ants-v1-
+
+      - run:
+          name: Install ANTs
+          command: |
+            if [[ ! -d "${ANTSPATH}" ]]; then
+              mkdir -p ${ANTSPATH}
+              curl -sSL "https://dl.dropbox.com/s/gwf51ykkk5bifyj/ants-Linux-centos6_x86_64-v2.3.4.tar.gz" | tar -xzC $ANTSPATH --strip-components 1
+            fi
+
+      - save_cache:
+          key: ants-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /tmp/ants
+
+      - run:
+          name: Configure git (pacify datalad)
+          command: |
+            git config --global user.name "First Last"
+            git config --global user.email "email@domain.com"
+
+      - restore_cache:
+          keys:
+            - data-v1-{{ .Branch }}-{{ .Revision }}
+            - data-v1--{{ .Revision }}
+            - data-v1-{{ .Branch }}-
+            - data-v1-main-
+            - data-v1-
+      - run:
+          name: Pull down test data
+          command: |
+            if [[ ! -d "${TEST_DATA_HOME}" ]]; then
+              datalad install -rg --source=https://gin.g-node.org/nipreps-data/tests-eddymotion.git ${TEST_DATA_HOME}
+            else
+              cd ${TEST_DATA_HOME}
+              datalad update --merge -r .
+              datalad get -r -J4 *
+            fi
+
+      - save_cache:
+          key: data-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /tmp/tests-data
+
+      - run:
+          name: Initiate versioning
+          command: |
+            python3 -m pip install -U build hatch hatchling pip twine docutils
+
+            pip install /tmp/src/eddymotion[all]
+
+      - run:
+          name: Run tests
+          command: |
+            export PATH="${ANTSPATH}:$PATH"
+            pytest -n auto --doctest-modules /tmp/src/eddymotion/src /tmp/src/eddymotion/test
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - tests:
+          context:
+            - nipreps-common
+          filters:
+            branches:
+              ignore:
+                - /docs?\/.*/
+            tags:
+              only: /.*/
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 10 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - tests:
+          context:
+            - nipreps-common

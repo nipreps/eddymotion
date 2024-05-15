@@ -1,7 +1,31 @@
+# emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-
+# vi: set ft=python sts=4 ts=4 sw=4 et:
+#
+# Copyright 2022 The NiPreps Developers <nipreps@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# We support and encourage derived works from this project, please read
+# about our expectations at
+#
+#     https://www.nipreps.org/community/licensing/
+#
 """Representing data in hard-disk and memory."""
+
 from collections import namedtuple
 from pathlib import Path
 from tempfile import mkdtemp
+from warnings import warn
 
 import attr
 import h5py
@@ -41,66 +65,19 @@ class DWI:
     """
     fieldmap = attr.ib(default=None, repr=_data_repr)
     """A 3D displacements field to unwarp susceptibility distortions."""
-    _filepath = attr.ib(default=Path(mkdtemp()) / "em_cache.h5", repr=False)
+    _filepath = attr.ib(
+        factory=lambda: Path(mkdtemp()) / "em_cache.h5",
+        repr=False,
+    )
     """A path to an HDF5 file to store the whole dataset."""
+
+    def get_filename(self):
+        """Get the filepath of the HDF5 file."""
+        return self._filepath
 
     def __len__(self):
         """Obtain the number of high-*b* orientations."""
-        return self.gradients.shape[-1]
-
-    def logo_split(self, index, with_b0=False):
-        """
-        Produce one fold of LOGO (leave-one-gradient-out).
-
-        Parameters
-        ----------
-        index : :obj:`int`
-            Index of the DWI orientation to be left out in this fold.
-        with_b0 : :obj:`bool`
-            Insert the *b=0* reference at the beginning of the training dataset.
-
-        Return
-        ------
-        (train_data, train_gradients) : :obj:`tuple`
-            Training DWI and corresponding gradients.
-            Training data/gradients come **from the updated dataset**.
-        (test_data, test_gradients) :obj:`tuple`
-            Test 3D map (one DWI orientation) and corresponding b-vector/value.
-            The test data/gradient come **from the original dataset**.
-
-        """
-        if not Path(self._filepath).exists():
-            self.to_filename(self._filepath)
-
-        # read original DWI data & b-vector
-        with h5py.File(self._filepath, "r") as in_file:
-            root = in_file["/0"]
-            dwframe = np.asanyarray(root["dataobj"][..., index])
-            bframe = np.asanyarray(root["gradients"][..., index])
-
-        # if the size of the mask does not match data, cache is stale
-        mask = np.zeros(len(self), dtype=bool)
-        mask[index] = True
-
-        train_data = self.dataobj[..., ~mask]
-        train_gradients = self.gradients[..., ~mask]
-
-        if with_b0:
-            train_data = np.concatenate(
-                (np.asanyarray(self.bzero)[..., np.newaxis], train_data),
-                axis=-1,
-            )
-            b0vec = np.zeros((4, 1))
-            b0vec[0, 0] = 1
-            train_gradients = np.concatenate(
-                (b0vec, train_gradients),
-                axis=-1,
-            )
-
-        return (
-            (train_data, train_gradients),
-            (dwframe, bframe),
-        )
+        return self.dataobj.shape[-1]
 
     def set_transform(self, index, affine, order=3):
         """Set an affine, and update data object and gradients."""
@@ -141,9 +118,9 @@ class DWI:
 
         # update transform
         if self.em_affines is None:
-            self.em_affines = [None] * len(self)
+            self.em_affines = np.zeros((self.dataobj.shape[-1], 4, 4))
 
-        self.em_affines[index] = xform
+        self.em_affines[index] = xform.matrix
 
     def to_filename(self, filename, compression=None, compression_opts=None):
         """Write an HDF5 file to disk."""
@@ -169,13 +146,15 @@ class DWI:
                         compression_opts=compression_opts,
                     )
 
-    def to_nifti(self, filename):
+    def to_nifti(self, filename, **kwargs):
         """Write a NIfTI 1.0 file to disk."""
-        nii = nb.Nifti1Image(
-            self.dataobj,
-            self.affine,
-            None,
+        insert_b0 = kwargs.get("insert_b0", False)
+        data = (
+            self.dataobj
+            if not insert_b0
+            else np.concatenate((self.bzero[..., np.newaxis], self.dataobj), axis=-1)
         )
+        nii = nb.Nifti1Image(data, self.affine, None)
         nii.header.set_xyzt_units("mm")
         nii.to_filename(filename)
 
@@ -201,40 +180,65 @@ class DWI:
         """Read an HDF5 file from disk."""
         with h5py.File(filename, "r") as in_file:
             root = in_file["/0"]
-            data = {k: np.asanyarray(v) for k, v in root.items()}
+            data = {k: np.asanyarray(v) for k, v in root.items() if not k.startswith("_")}
         return cls(**data)
 
 
 def load(
-    filename, gradients_file=None, b0_file=None, brainmask_file=None, fmap_file=None
+    filename,
+    gradients_file=None,
+    b0_file=None,
+    brainmask_file=None,
+    fmap_file=None,
+    bvec_file=None,
+    bval_file=None,
+    b0_thres=50,
 ):
     """Load DWI data."""
     filename = Path(filename)
     if filename.name.endswith(".h5"):
         return DWI.from_filename(filename)
 
-    if not gradients_file:
+    if gradients_file:
+        grad = np.loadtxt(gradients_file, dtype="float32").T
+
+        if bvec_file and bval_file:
+            warn(
+                "Gradients table file and b-vec/val files are defined; "
+                "dismissing b-vec/val files.",
+                stacklevel=2,
+            )
+    elif bvec_file and bval_file:
+        grad = np.vstack(
+            (
+                np.loadtxt(bvec_file, dtype="float32"),
+                np.loadtxt(bval_file, dtype="float32"),
+            )
+        )
+    else:
         raise RuntimeError("A gradients file is necessary")
 
-    img = nb.as_closest_canonical(nb.load(filename))
+    img = nb.load(filename)
+    fulldata = img.get_fdata(dtype="float32")
     retval = DWI(
         affine=img.affine,
     )
-    grad = np.loadtxt(gradients_file, dtype="float32").T
-    gradmsk = grad[-1] > 50
+    gradmsk = grad[-1] > b0_thres
     retval.gradients = grad[..., gradmsk]
-    retval.dataobj = img.get_fdata(dtype="float32")[..., gradmsk]
+    retval.dataobj = fulldata[..., gradmsk]
 
     if b0_file:
-        b0img = nb.as_closest_canonical(nb.load(b0_file))
+        b0img = nb.load(b0_file)
         retval.bzero = np.asanyarray(b0img.dataobj)
+    elif not np.all(gradmsk):
+        retval.bzero = np.median(fulldata[..., ~gradmsk], axis=3)
 
     if brainmask_file:
-        mask = nb.as_closest_canonical(nb.load(brainmask_file))
+        mask = nb.load(brainmask_file)
         retval.brainmask = np.asanyarray(mask.dataobj)
 
     if fmap_file:
-        fmapimg = nb.as_closest_canonical(nb.load(fmap_file))
+        fmapimg = nb.load(fmap_file)
         retval.fieldmap = fmapimg.get_fdata(fmapimg, dtype="float32")
 
     return retval

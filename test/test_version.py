@@ -21,9 +21,9 @@
 #     https://www.nipreps.org/community/licensing/
 #
 """Test _version.py."""
+
 import sys
 from importlib import reload
-from pkg_resources import get_distribution
 
 import eddymotion
 
@@ -37,8 +37,3 @@ def test_version_scm0(monkeypatch):
     monkeypatch.setitem(sys.modules, "eddymotion._version", _version)
     reload(eddymotion)
     assert eddymotion.__version__ == "10.0.0"
-
-
-def test_version_scm1():
-    """Retrieve the version via pkg_resources."""
-    assert get_distribution("eddymotion").version != "0.0"

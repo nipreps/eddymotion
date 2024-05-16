@@ -24,7 +24,9 @@
 
 from collections import namedtuple
 from pathlib import Path
-from tempfile import TemporaryDirectory, mkstemp
+from tempfile import TemporaryDirectory, mkstemp, NamedTemporaryFile
+import os
+
 
 import nibabel as nb
 import nitransforms as nt

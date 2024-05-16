@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.viz - eddymotion 0.1.15 documentation</title>
+        <title>eddymotion.viz - eddymotion 24.0.0.dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -179,7 +179,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 0.1.15 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,14 +202,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">0.1.15</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev2</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">0.1.15</span>
+  <span class="sidebar-brand-text">24.0.0.dev2</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -306,46 +306,8 @@
 <span class="c1">#</span>
 <span class="sd">&quot;&quot;&quot;Visualization utilities.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nb</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">nireports.reportlets.nuisance</span> <span class="kn">import</span> <span class="n">plot_carpet</span> <span class="k">as</span> <span class="n">nw_plot_carpet</span>
-
-
-<div class="viewcode-block" id="plot_dwi">
-<a class="viewcode-back" href="../../api/eddymotion.viz.html#eddymotion.viz.plot_dwi">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_dwi</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a DW map.&quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-    <span class="kn">from</span> <span class="nn">nilearn.plotting</span> <span class="kn">import</span> <span class="n">plot_anat</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;text.usetex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;font.family&quot;</span><span class="p">:</span> <span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;font.sans-serif&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Helvetica&quot;</span><span class="p">],</span>
-        <span class="p">}</span>
-    <span class="p">)</span>
-
-    <span class="n">affine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">nb</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">voxel_sizes</span><span class="p">(</span><span class="n">affine</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">affine</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">affine</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">@</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">))</span>
-
-    <span class="n">vmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;vmax&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="mi">98</span><span class="p">)</span>
-    <span class="n">cut_coords</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;cut_coords&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">plot_anat</span><span class="p">(</span>
-        <span class="n">nb</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
-        <span class="n">cut_coords</span><span class="o">=</span><span class="n">cut_coords</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="p">(</span>
-            <span class="sa">r</span><span class="s2">&quot;Reference $b$=0&quot;</span>
-            <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2">$b$=</span><span class="si">{</span><span class="n">gradient</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
-<span class="s2">$</span><span class="se">\\</span><span class="s2">vec</span><span class="se">{{</span><span class="s2">b</span><span class="se">}}</span><span class="s2">$ = (</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">gradient</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;&quot;&quot;</span>
-        <span class="p">),</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="rotation_matrix">
@@ -745,7 +707,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=e2f3408e"></script>
+</div><script src="../../_static/documentation_options.js?v=ba00f89d"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>

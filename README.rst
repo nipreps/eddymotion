@@ -6,8 +6,8 @@
    :target: https://doi.org/10.5281/zenodo.4680599
    :alt: DOI
 
-.. image:: https://img.shields.io/pypi/l/eddymotion.svg
-   :target: https://pypi.python.org/pypi/eddymotion/
+.. image:: https://img.shields.io/badge/License-Apache_2.0-blue.svg
+   :target: https://github.com/nipreps/eddymotion/blob/main/LICENSE
    :alt: License
 
 .. image:: https://img.shields.io/pypi/v/eddymotion.svg

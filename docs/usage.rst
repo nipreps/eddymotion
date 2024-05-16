@@ -11,7 +11,7 @@ To utilize Eddymotion functionalities within your Python module or script, follo
    .. code-block:: python
 
       # Import required components from the Eddymotion package
-      from eddymotion.data.dmri import DWI
+      from eddymotion.data import dmri
       from eddymotion.estimator import EddyMotionEstimator
 
 2. **Load DWI Data**: Load diffusion MRI (dMRI) data into a `DWI` object using the `load` function. Ensure the gradient table is provided. It should have one row per diffusion-weighted image. The first three columns represent the gradient directions, and the last column indicates the timing and strength of the gradients in units of s/mm² [ R A S+ b ]. If your data are in NIfTI file format, include a file containing the gradient information with the argument "gradients_file":
@@ -19,9 +19,17 @@ To utilize Eddymotion functionalities within your Python module or script, follo
    .. code-block:: python
 
       # Load dMRI data into a DWI object
-      dwi_data = DWI.load('/path/to/your/dwi_data.nii.gz', gradients_file='/path/to/your/gradient_file')
+      dwi_data = dmri.load('/path/to/your/dwi_data.nii.gz', gradients_file='/path/to/your/gradient_file')
 
-   *Note*: To run the examples and tests from this page, you can download an example of DWI data from `here <https://osf.io/download/6at98/>`_. 
+   .. note::
+
+      To run the examples and tests from this page,
+      find `sample data <https://osf.io/download/6at98/>`__ on OSF.
+      To load from an HDF5 file, use:
+
+      .. code-block:: python
+
+         dwi_data = dmri.DWI.from_filename('/path/to/downloaded/dwi_full.h5')
 
 
 3. **Instantiate an Eddymotion Estimator Object**: Create an instance of the `EddyMotionEstimator` class, which encapsulates tools for estimating rigid-body head motion and distortions due to eddy currents.
@@ -56,7 +64,8 @@ To utilize Eddymotion functionalities within your Python module or script, follo
    - `n_jobs`: Number of parallel jobs.
    - `seed`: Seed for the random number generator (necessary for deterministic estimation).
 
-   The method returns a list of affine matrices encoding the estimated parameters of the deformations due to head motion and eddy currents.
+   The method returns an Nx4x4 array of affine matrices encoding the estimated parameters of
+   the deformations due to head motion and eddy currents.
 
    Example:
 
@@ -100,5 +109,3 @@ To utilize Eddymotion functionalities within your Python module or script, follo
       dwi_data.plot_mosaic(index=0)
       # Visualize gradients
       dwi_data.plot_gradients()
-
-

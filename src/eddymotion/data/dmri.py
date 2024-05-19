@@ -239,6 +239,6 @@ def load(
 
     if fmap_file:
         fmapimg = nb.load(fmap_file)
-        retval.fieldmap = fmapimg.get_fdata(fmapimg, dtype="float32")
+        retval.fieldmap = fmapimg.get_fdata(dtype="float32")
 
     return retval

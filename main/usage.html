@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="./">
-  <head>
-<meta charset="utf-8"/>
+  <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="#" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Running Eddymotion" href="running.html" /><link rel="prev" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-<meta name="robots" content="noindex" />
-<title>Search - eddymotion 24.0.0.dev19 documentation</title><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+        <title>How to Use - eddymotion 24.0.0.dev19 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/css/version-switch.css?v=45d66e8a" />
@@ -192,7 +192,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -215,15 +215,15 @@
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
   </ul>
-</div><form class="sidebar-search-container" method="get" action="#" role="search">
+</div><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">How to Use</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">How to Use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="running.html">Running <em>Eddymotion</em></a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="developers.html">For developers</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of For developers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/eddymotion.cli.html">eddymotion.cli package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of eddymotion.cli package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -268,7 +268,13 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/usage.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -277,31 +283,137 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<noscript>
-<div class="admonition error">
-  <p class="admonition-title">Error</p>
-  <p>
-    Please activate JavaScript to enable the search functionality.
-  </p>
+          <section id="how-to-use">
+<h1>How to Use<a class="headerlink" href="#how-to-use" title="Link to this heading">¶</a></h1>
+<section id="incorporating-eddymotion-into-a-python-module-or-script">
+<h2>Incorporating Eddymotion into a Python module or script<a class="headerlink" href="#incorporating-eddymotion-into-a-python-module-or-script" title="Link to this heading">¶</a></h2>
+<p>To utilize Eddymotion functionalities within your Python module or script, follow these steps:</p>
+<ol class="arabic">
+<li><p><strong>Import Eddymotion Components</strong>: Start by importing necessary components from the Eddymotion package:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import required components from the Eddymotion package</span>
+<span class="kn">from</span> <span class="nn">eddymotion.data</span> <span class="kn">import</span> <span class="n">dmri</span>
+<span class="kn">from</span> <span class="nn">eddymotion.estimator</span> <span class="kn">import</span> <span class="n">EddyMotionEstimator</span>
+</pre></div>
 </div>
-</noscript>
-
-<div id="search-results"></div>
+</li>
+<li><p><strong>Load DWI Data</strong>: Load diffusion MRI (dMRI) data into a <cite>DWI</cite> object using the <cite>load</cite> function. Ensure the gradient table is provided. It should have one row per diffusion-weighted image. The first three columns represent the gradient directions, and the last column indicates the timing and strength of the gradients in units of s/mm² [ R A S+ b ]. If your data are in NIfTI file format, include a file containing the gradient information with the argument “gradients_file”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load dMRI data into a DWI object</span>
+<span class="n">dwi_data</span> <span class="o">=</span> <span class="n">dmri</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/path/to/your/dwi_data.nii.gz&#39;</span><span class="p">,</span> <span class="n">gradients_file</span><span class="o">=</span><span class="s1">&#39;/path/to/your/gradient_file&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To run the examples and tests from this page,
+find <a class="reference external" href="https://osf.io/download/6at98/">sample data</a> on OSF.
+To load from an HDF5 file, use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dwi_data</span> <span class="o">=</span> <span class="n">dmri</span><span class="o">.</span><span class="n">DWI</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span><span class="s1">&#39;/path/to/downloaded/dwi_full.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p><strong>Instantiate an Eddymotion Estimator Object</strong>: Create an instance of the <cite>EddyMotionEstimator</cite> class, which encapsulates tools for estimating rigid-body head motion and distortions due to eddy currents.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an instance of the EddyMotionEstimator class</span>
+<span class="n">estimator</span> <span class="o">=</span> <span class="n">EddyMotionEstimator</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Fit the Models to Estimate the Affine Transformation</strong>:</p>
+<p>Use the <cite>estimate</cite> method of the <cite>EddyMotionEstimator</cite> object to estimate the affine transformation parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimate affine transformation parameters</span>
+<span class="n">estimated_affine</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span>
+    <span class="n">dwi_data</span><span class="p">,</span>
+    <span class="n">align_kwargs</span><span class="o">=</span><span class="n">align_kwargs</span><span class="p">,</span>
+    <span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">,</span>
+    <span class="n">omp_nthreads</span><span class="o">=</span><span class="n">omp_nthreads</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <cite>estimate</cite> method employs the Leave-One-Volume-Out (LOVO) splitting technique to iteratively process DWI data volumes for each specified model. Affine transformations align the volumes, updating the <cite>DWI</cite> object with the estimated parameters. This method accepts several parameters:</p>
+<ul class="simple">
+<li><p><cite>dwi_data</cite>: The target DWI dataset, represented by this tool’s internal type.</p></li>
+<li><p><cite>align_kwargs</cite>: Parameters to configure the image registration process.</p></li>
+<li><p><cite>models</cite>: list of diffusion models used to generate the registration target for each gradient map. For a list of available models, see <a class="reference internal" href="api/eddymotion.model.html"><span class="doc">eddymotion.model package</span></a>.</p></li>
+<li><p><cite>omp_nthreads</cite>: Maximum number of threads an individual process may use.</p></li>
+<li><p><cite>n_jobs</cite>: Number of parallel jobs.</p></li>
+<li><p><cite>seed</cite>: Seed for the random number generator (necessary for deterministic estimation).</p></li>
+</ul>
+<p>The method returns an Nx4x4 array of affine matrices encoding the estimated parameters of
+the deformations due to head motion and eddy currents.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example of fitting the model</span>
+<span class="n">estimated_affine</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span>
+    <span class="n">dwi_data</span><span class="p">,</span>
+    <span class="n">models</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;b0&quot;</span><span class="p">],</span>
+    <span class="n">omp_nthreads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Save Results</strong>: Once transformations are estimated, save the realigned DWI data in your preferred output format, either HDF5 or NIfTI:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save realigned DWI data in HDF5 format</span>
+<span class="n">output_filename</span> <span class="o">=</span> <span class="s1">&#39;/path/to/save/your/output.h5&#39;</span>
+<span class="n">dwi_data</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">output_filename</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or as a NIfTI file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save realigned DWI data in NIfTI format</span>
+<span class="n">output_filename</span> <span class="o">=</span> <span class="s1">&#39;/path/to/save/your/output.nii.gz&#39;</span>
+<span class="n">dwi_data</span><span class="o">.</span><span class="n">to_nifti</span><span class="p">(</span><span class="n">output_filename</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Plotting</strong>: Visualize data and results using built-in plotting functions of the DWI objects:</p>
+<ul class="simple">
+<li><p>Use <cite>plot_mosaic</cite> to visualize one direction of the dMRI dataset.</p></li>
+<li><p>Employ <cite>plot_gradients</cite> to visualize diffusion gradients.</p></li>
+</ul>
+<p>Example Usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize DWI data at a specific index</span>
+<span class="n">dwi_data</span><span class="o">.</span><span class="n">plot_mosaic</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># Visualize gradients</span>
+<span class="n">dwi_data</span><span class="o">.</span><span class="n">plot_gradients</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="running.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Running <em>Eddymotion</em></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="installation.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Installation</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -320,8 +432,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">How to Use</a><ul>
+<li><a class="reference internal" href="#incorporating-eddymotion-into-a-python-module-or-script">Incorporating Eddymotion into a Python module or script</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -331,8 +462,5 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="_static/js/version-switch.js?v=8028bf13"></script>
-    
-<script src="_static/searchtools.js"></script>
-<script src="_static/language_data.js"></script>
-<script src="searchindex.js"></script></body>
+    </body>
 </html>

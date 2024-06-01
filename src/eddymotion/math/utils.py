@@ -29,7 +29,7 @@ def is_positive_definite(matrix):
     matrix and its conjugate transpose by performing the Cholesky decomposition.
     Parameters
     ----------
-    matrix : np.ndarray
+    matrix : :obj:`~numpy.ndarray`
         The matrix to check.
     Returns
     -------

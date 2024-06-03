@@ -21,8 +21,9 @@
 #     https://www.nipreps.org/community/licensing/
 #
 import numpy as np
+import pytest
 
-from eddymotion.math.utils import is_positive_definite
+from eddymotion.math.utils import compute_angle, is_positive_definite
 
 
 def test_is_positive_definite():
@@ -31,3 +32,17 @@ def test_is_positive_definite():
 
     matrix = np.array([[4, 1, 2], [1, -3, 1], [2, 1, 5]])
     assert not is_positive_definite(matrix)
+
+
+@pytest.mark.parametrize(
+    ("v1", "v2", "closest_polarity", "expected"),
+    [
+        ([1, 0, 0], [1, 0, 0], False, 0),
+        ([1, 0, 0], [0, 1, 0], False, np.pi / 2),
+        ([1, 0, 0], [-1 / np.sqrt(2), 0, 1 / np.sqrt(2)], False, np.pi * 3 / 4),
+        ([1, 0, 0], [-1 / np.sqrt(2), 0, 1 / np.sqrt(2)], True, np.pi / 4),
+    ],
+)
+def test_compute_angle(v1, v2, closest_polarity, expected):
+    obtained = compute_angle(v1, v2, closest_polarity=closest_polarity)
+    assert np.isclose(obtained, expected)

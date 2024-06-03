@@ -29,7 +29,7 @@ def is_positive_definite(matrix):
     matrix and its conjugate transpose by performing the Cholesky decomposition.
     Parameters
     ----------
-    matrix : np.ndarray
+    matrix : :obj:`~numpy.ndarray`
         The matrix to check.
     Returns
     -------
@@ -43,3 +43,47 @@ def is_positive_definite(matrix):
     except np.linalg.LinAlgError:
         # Matrix is not positive definite
         return False
+
+
+def compute_angle(v1, v2, closest_polarity=False):
+    """Compute the angle between two vectors.
+
+    Parameters
+    ----------
+    v1 : :obj:`~numpy.ndarray`
+        First vector.
+    v2 : :obj:`~numpy.ndarray`
+        Second vector.
+    closest_polarity : :obj:`bool`
+        ``True`` to consider the smallest of the two angles between the crossing
+         lines resulting from reversing both vectors.
+
+    Returns
+    -------
+    :obj:`float`
+        The angle between the two vectors in radians.
+
+    Examples
+    --------
+    >>> compute_angle(
+    ...     np.array((1.0, 0.0, 0.0)),
+    ...     np.array((-1.0, 0.0, 0.0)),
+    ... )  # doctest: +ELLIPSIS
+    3.1415...
+    >>> compute_angle(
+    ...     np.array((1.0, 0.0, 0.0)),
+    ...     np.array((-1.0, 0.0, 0.0)),
+    ...     closest_polarity=True,
+    ... )
+    0.0
+
+    """
+
+    cosine_angle = (v1 / np.linalg.norm(v1)) @ (v2 / np.linalg.norm(v2))
+    # Clip values to handle numerical errors
+    cosine_angle = np.clip(
+        np.abs(cosine_angle) if closest_polarity else cosine_angle,
+        -1.0,
+        1.0,
+    )
+    return np.arccos(cosine_angle)

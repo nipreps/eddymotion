@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.math.utils - eddymotion 24.0.0.dev24 documentation</title>
+        <title>eddymotion.math.utils - eddymotion 24.0.0.dev27 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -179,7 +179,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev24 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev27 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,14 +202,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev24</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev27</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev24</span>
+  <span class="sidebar-brand-text">24.0.0.dev27</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -245,6 +245,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/eddymotion.model.html">eddymotion.model package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of eddymotion.model package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/eddymotion.model.base.html">eddymotion.model.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/eddymotion.model.gradient_utils.html">eddymotion.model.gradient_utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/eddymotion.utils.html">eddymotion.utils module</a></li>
@@ -320,7 +321,7 @@
 <span class="sd">    matrix and its conjugate transpose by performing the Cholesky decomposition.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    matrix : np.ndarray</span>
+<span class="sd">    matrix : :obj:`~numpy.ndarray`</span>
 <span class="sd">        The matrix to check.</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -334,6 +335,53 @@
     <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">:</span>
         <span class="c1"># Matrix is not positive definite</span>
         <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="compute_angle">
+<a class="viewcode-back" href="../../../api/eddymotion.math.utils.html#eddymotion.math.utils.compute_angle">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_angle</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">closest_polarity</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the angle between two vectors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v1 : :obj:`~numpy.ndarray`</span>
+<span class="sd">        First vector.</span>
+<span class="sd">    v2 : :obj:`~numpy.ndarray`</span>
+<span class="sd">        Second vector.</span>
+<span class="sd">    closest_polarity : :obj:`bool`</span>
+<span class="sd">        ``True`` to consider the smallest of the two angles between the crossing</span>
+<span class="sd">         lines resulting from reversing both vectors.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`float`</span>
+<span class="sd">        The angle between the two vectors in radians.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; compute_angle(</span>
+<span class="sd">    ...     np.array((1.0, 0.0, 0.0)),</span>
+<span class="sd">    ...     np.array((-1.0, 0.0, 0.0)),</span>
+<span class="sd">    ... )  # doctest: +ELLIPSIS</span>
+<span class="sd">    3.1415...</span>
+<span class="sd">    &gt;&gt;&gt; compute_angle(</span>
+<span class="sd">    ...     np.array((1.0, 0.0, 0.0)),</span>
+<span class="sd">    ...     np.array((-1.0, 0.0, 0.0)),</span>
+<span class="sd">    ...     closest_polarity=True,</span>
+<span class="sd">    ... )</span>
+<span class="sd">    0.0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cosine_angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">v1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v1</span><span class="p">))</span> <span class="o">@</span> <span class="p">(</span><span class="n">v2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v2</span><span class="p">))</span>
+    <span class="c1"># Clip values to handle numerical errors</span>
+    <span class="n">cosine_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cosine_angle</span><span class="p">)</span> <span class="k">if</span> <span class="n">closest_polarity</span> <span class="k">else</span> <span class="n">cosine_angle</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">cosine_angle</span><span class="p">)</span></div>
 
 </pre></div>
         </article>
@@ -367,7 +415,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=094bbdfb"></script>
+</div><script src="../../../_static/documentation_options.js?v=3eb33791"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>

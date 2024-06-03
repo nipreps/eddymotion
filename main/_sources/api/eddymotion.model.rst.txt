@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 1
 
    eddymotion.model.base
+   eddymotion.model.gradient_utils

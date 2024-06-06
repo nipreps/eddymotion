@@ -132,7 +132,7 @@ def loo_cross_validation(beta, y_all, X, kernel):
         # Compute the error
         error = (y_all[i] - y_pred) ** 2
         errors.append(error)
-    print(f'Error: {np.mean(errors)}')
+    print(f"Error: {np.mean(errors)}")
     return np.mean(errors)
 
 

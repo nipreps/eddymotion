@@ -77,7 +77,7 @@ def test_loo_cross_validation(sample_multivoxel_data):
     # Compute the LOO-CV error
     loo_error = loo_cross_validation(initial_beta, y_all, X, kernel_factory)
 
-    # Check if the LOO-CV error is finite
+    # Check if the LOO-CV error is finitetest_model_optimizers.py
     assert np.isfinite(loo_error), "LOO-CV error should be finite."
 
 

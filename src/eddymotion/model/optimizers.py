@@ -58,7 +58,9 @@ def negative_log_likelihood(beta, y, X, kernel, reg_param=1e-6):
         print("Non-positive definite kernel matrix")
         return 1e10  # Penalize non-positive definite kernel
 
-    log_likelihood = -0.5 * (np.dot(y.T, np.linalg.solve(K, y)) + np.linalg.slogdet(K)[1] + len(y) * np.log(2 * np.pi))
+    log_likelihood = -0.5 * (
+        np.dot(y.T, np.linalg.solve(K, y)) + np.linalg.slogdet(K)[1] + len(y) * np.log(2 * np.pi)
+    )
     regularization = reg_param * (np.sum(beta**2))
     return -log_likelihood + regularization
 
@@ -86,7 +88,7 @@ def total_negative_log_likelihood(beta, y_all, X, kernel, reg_param=1e-6):
         Total negative log marginal likelihood.
     """
     total_log_likelihood = 0
-    for y in y_all.T:  #transposed to have shape (n_voxels, n_samples) and iterate over voxels
+    for y in y_all.T:  # transposed to have shape (n_voxels, n_samples) and iterate over voxels
         total_log_likelihood += negative_log_likelihood(beta, y, X, kernel, reg_param)
     return total_log_likelihood
 
@@ -128,7 +130,7 @@ def loo_cross_validation(beta, y_all, X, kernel):
         y_pred = K_test @ alpha
 
         # Compute the error
-        error = (y_all[i] - y_pred)**2
+        error = (y_all[i] - y_pred) ** 2
         errors.append(error)
     print(f'Error: {np.mean(errors)}')
     return np.mean(errors)
@@ -165,7 +167,7 @@ def stochastic_optimization_with_early_stopping(
         Optimized log-transformed hyperparameters.
     """
     beta = initial_beta
-    best_loss = float('inf')
+    best_loss = float("inf")
     no_improve_count = 0
     num_voxels = data.shape[1]
 
@@ -173,7 +175,12 @@ def stochastic_optimization_with_early_stopping(
         batch_indices = np.random.choice(num_voxels, size=batch_size, replace=False)
         batch_data = data[:, batch_indices]
 
-        result = minimize(total_negative_log_likelihood, beta, args=(batch_data, angles, kernel, 1e-6), method='L-BFGS-B')
+        result = minimize(
+            total_negative_log_likelihood,
+            beta,
+            args=(batch_data, angles, kernel, 1e-6),
+            method="L-BFGS-B",
+        )
         current_loss = result.fun
 
         if iteration == 0 or current_loss < best_loss - tolerance:
@@ -188,7 +195,7 @@ def stochastic_optimization_with_early_stopping(
             break
 
         beta = result.x
-        print(f'Iteration {iteration + 1}: Loss = {current_loss}')
-        print(f'Current hyperparameters: {np.exp(beta)}')
+        print(f"Iteration {iteration + 1}: Loss = {current_loss}")
+        print(f"Current hyperparameters: {np.exp(beta)}")
 
     return best_beta

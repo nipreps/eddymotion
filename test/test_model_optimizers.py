@@ -24,7 +24,9 @@ def sample_multivoxel_data():
     # Generate synthetic multivoxel data
     np.random.seed(0)
     X = np.linspace(0, 10, 100).reshape(-1, 1)
-    y_all = np.vstack([np.sin(X).ravel() + np.random.normal(0, 0.1, X.shape[0]) for _ in range(10)]).T
+    y_all = np.vstack(
+        [np.sin(X).ravel() + np.random.normal(0, 0.1, X.shape[0]) for _ in range(10)]
+    ).T
     return X, y_all
 
 
@@ -98,7 +100,7 @@ def test_stochastic_optimization_with_early_stopping(sample_multivoxel_data):
         batch_size=5,
         max_iter=50,
         patience=5,
-        tolerance=1e-4
+        tolerance=1e-4,
     )
 
     # Check if the best beta is finite

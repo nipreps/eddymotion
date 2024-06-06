@@ -30,14 +30,14 @@ class SphericalCovarianceKernel(Kernel):
 
     Parameters
     ----------
-    lambda_ : float, default=1.0
+    lambda_s : float, default=1.0
         Scale parameter for the covariance function.
     a : float, default=1.0
         Distance parameter where the covariance function goes to zero.
     sigma_sq : float, default=1.0
         Noise variance term.
-    lambda_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4)
-        The lower and upper bound on lambda_.
+    lambda_s_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4)
+        The lower and upper bound on lambda_s.
     a_bounds : pair of floats >= 0 or "fixed", default=(1e-5, np.pi)
         The lower and upper bound on a.
     sigma_sq_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4).
@@ -45,23 +45,23 @@ class SphericalCovarianceKernel(Kernel):
 
     def __init__(
         self,
-        lambda_=2.0,
+        lambda_s=2.0,
         a=0.1,
         sigma_sq=1.0,
-        lambda_bounds=(1e-5, 1e4),
+        lambda_s_bounds=(1e-5, 1e4),
         a_bounds=(1e-5, np.pi),
         sigma_sq_bounds=(1e-5, 1e4),
     ):
-        self.lambda_ = lambda_
+        self.lambda_s = lambda_s
         self.a = a
         self.sigma_sq = sigma_sq
-        self.lambda_bounds = lambda_bounds
+        self.lambda_s_bounds = lambda_s_bounds
         self.a_bounds = a_bounds
         self.sigma_sq_bounds = sigma_sq_bounds
 
     @property
-    def hyperparameter_lambda(self):
-        return Hyperparameter("lambda_", "numeric", self.lambda_bounds)
+    def hyperparameter_lambda_s(self):
+        return Hyperparameter("lambda_s", "numeric", self.lambda_s_bounds)
 
     @property
     def hyperparameter_a(self):
@@ -104,12 +104,12 @@ class SphericalCovarianceKernel(Kernel):
             dists_deriv[mask] = (3 * theta[mask] / self.a**2) - (
                 1.5 * (theta[mask] / self.a) ** 2
             ) / self.a
-            K_gradient[:, :, 0] = K / self.lambda_
-            K_gradient[:, :, 1] = self.lambda_ * dists_deriv
+            K_gradient[:, :, 0] = K / self.lambda_s
+            K_gradient[:, :, 1] = self.lambda_s * dists_deriv
             K_gradient[:, :, 2] = np.eye(len(theta))
-            return self.lambda_ * K + self.sigma_sq * np.eye(len(theta)), K_gradient
+            return self.lambda_s * K + self.sigma_sq * np.eye(len(theta)), K_gradient
         else:
-            return self.lambda_ * K + self.sigma_sq * np.eye(len(theta))
+            return self.lambda_s * K + self.sigma_sq * np.eye(len(theta))
 
     def diag(self, X):
         """
@@ -125,7 +125,7 @@ class SphericalCovarianceKernel(Kernel):
         array-like of shape (n_samples,)
             Diagonal of the kernel matrix.
         """
-        return np.full(X.shape[0], self.lambda_ + self.sigma_sq)
+        return np.full(X.shape[0], self.lambda_s + self.sigma_sq)
 
     def is_stationary(self):
         """
@@ -152,7 +152,7 @@ class SphericalCovarianceKernel(Kernel):
         params : dict
             Parameter names mapped to their values.
         """
-        return {"lambda_": self.lambda_, "a": self.a, "sigma_sq": self.sigma_sq}
+        return {"lambda_s": self.lambda_s, "a": self.a, "sigma_sq": self.sigma_sq}
 
     def set_params(self, **params):
         """
@@ -168,7 +168,7 @@ class SphericalCovarianceKernel(Kernel):
         self : object
             Returns self.
         """
-        self.lambda_ = params.get("lambda_", self.lambda_)
+        self.lambda_s = params.get("lambda_s", self.lambda_s)
         self.a = params.get("a", self.a)
         self.sigma_sq = params.get("sigma_sq", self.sigma_sq)
         return self

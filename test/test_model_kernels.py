@@ -42,12 +42,12 @@ def numerical_gradient(kernel, theta, epsilon=1e-5):
     Returns
     -------
     num_grad : array-like of shape (n_samples, n_samples, 3)
-        Numerical gradients with respect to lambda_, a, and sigma_sq.
+        Numerical gradients with respect to lambda_s, a, and sigma_sq.
     """
     original_params = kernel.get_params()
     num_grad = np.zeros((theta.shape[0], theta.shape[1], 3))
 
-    for i, param in enumerate(["lambda_", "a", "sigma_sq"]):
+    for i, param in enumerate(["lambda_s", "a", "sigma_sq"]):
         original_value = original_params[param]
 
         # use a delta of 2 epsilon to compute the numerical gradient
@@ -63,7 +63,7 @@ def numerical_gradient(kernel, theta, epsilon=1e-5):
 
 def test_kernel_call():
     # Create a SphericalCovarianceKernel instance
-    kernel = SphericalCovarianceKernel(lambda_=2.0, a=1.0, sigma_sq=0.5)
+    kernel = SphericalCovarianceKernel(lambda_s=2.0, a=1.0, sigma_sq=0.5)
 
     # Create trivial data (pairwise angles)
     theta = np.array([[0.0, 0.5, 1.0], [0.5, 0.0, 0.5], [1.0, 0.5, 0.0]])
@@ -94,7 +94,7 @@ def test_kernel_call():
 
 def test_kernel_diag():
     # Create a SphericalCovarianceKernel instance
-    kernel = SphericalCovarianceKernel(lambda_=2.0, a=1.0, sigma_sq=0.5)
+    kernel = SphericalCovarianceKernel(lambda_s=2.0, a=1.0, sigma_sq=0.5)
 
     # Create trivial data
     X = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])

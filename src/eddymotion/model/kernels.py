@@ -101,9 +101,7 @@ class SphericalCovarianceKernel(Kernel):
         """
         if theta_prime is not None:
             theta = theta_prime
-        theta = np.atleast_2d(theta)
-        K = np.where(theta <= self.a, 1 - 1.5 * (theta / self.a) + 0.5 * (theta / self.a)**3, 0)
-        K = self.lambda_ * K + self.sigma_sq * np.eye(len(theta))
+        K = np.where(theta <= self.a, 1 - 3 * (theta / self.a) ** 2 + 2 * (theta / self.a) ** 3, 0)
 
         if eval_gradient:
             K_gradient = np.zeros((theta.shape[0], theta.shape[1], 3))
@@ -113,9 +111,9 @@ class SphericalCovarianceKernel(Kernel):
             K_gradient[:, :, 0] = K / self.lambda_
             K_gradient[:, :, 1] = self.lambda_ * dists_deriv
             K_gradient[:, :, 2] = np.eye(len(theta))
-            return K, K_gradient
+            return self.lambda_ * K + self.sigma_sq * np.eye(len(theta)), K_gradient
         else:
-            return K
+            return self.lambda_ * K + self.sigma_sq * np.eye(len(theta))
 
     def diag(self, X):
         """

@@ -56,8 +56,15 @@ class SphericalCovarianceKernel(Kernel):
         The lower and upper bound on 'sigma_sq'.
     """
 
-    def __init__(self, lambda_=2.0, a=0.1, sigma_sq=1.0,
-                 lambda_bounds=(1e-5, 1e4), a_bounds=(1e-5, np.pi), sigma_sq_bounds=(1e-5, 1e4)):
+    def __init__(
+        self,
+        lambda_=2.0,
+        a=0.1,
+        sigma_sq=1.0,
+        lambda_bounds=(1e-5, 1e4),
+        a_bounds=(1e-5, np.pi),
+        sigma_sq_bounds=(1e-5, 1e4),
+    ):
         self.lambda_ = lambda_
         self.a = a
         self.sigma_sq = sigma_sq
@@ -107,7 +114,9 @@ class SphericalCovarianceKernel(Kernel):
             K_gradient = np.zeros((theta.shape[0], theta.shape[1], 3))
             dists_deriv = np.zeros_like(theta)
             mask = theta <= self.a
-            dists_deriv[mask] = (3 * theta[mask] / self.a**2) - (1.5 * (theta[mask] / self.a)**2) / self.a
+            dists_deriv[mask] = (3 * theta[mask] / self.a**2) - (
+                1.5 * (theta[mask] / self.a) ** 2
+            ) / self.a
             K_gradient[:, :, 0] = K / self.lambda_
             K_gradient[:, :, 1] = self.lambda_ * dists_deriv
             K_gradient[:, :, 2] = np.eye(len(theta))

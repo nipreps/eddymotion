@@ -37,9 +37,9 @@ class SphericalCovarianceKernel(Kernel):
     sigma_sq : float, default=1.0
         Noise variance term.
     lambda_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4)
-        The lower and upper bound on 'lambda_'.
+        The lower and upper bound on lambda_.
     a_bounds : pair of floats >= 0 or "fixed", default=(1e-5, np.pi)
-        The lower and upper bound on 'a'.
+        The lower and upper bound on a.
     sigma_sq_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4).
     """
 

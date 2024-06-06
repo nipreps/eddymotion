@@ -86,7 +86,7 @@ def total_negative_log_likelihood(beta, y_all, X, kernel, reg_param=1e-6):
         Total negative log marginal likelihood.
     """
     total_log_likelihood = 0
-    for y in y_all.T:  # Iterate over voxels
+    for y in y_all.T:  #transposed to have shape (n_voxels, n_samples) and iterate over voxels
         total_log_likelihood += negative_log_likelihood(beta, y, X, kernel, reg_param)
     return total_log_likelihood
 

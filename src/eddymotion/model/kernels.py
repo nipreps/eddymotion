@@ -36,24 +36,11 @@ class SphericalCovarianceKernel(Kernel):
         Distance parameter where the covariance function goes to zero.
     sigma_sq : float, default=1.0
         Noise variance term.
-    """
-    """
-    Custom kernel based on spherical covariance function.
-
-    Parameters
-    ----------
-    lambda_ : float, default=1.0
-        Scale parameter for the covariance function.
-    a : float, default=1.0
-        Distance parameter where the covariance function goes to zero.
-    sigma_sq : float, default=1.0
-        Noise variance term.
-    lambda_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e5)
+    lambda_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4)
         The lower and upper bound on 'lambda_'.
-    a_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e5)
+    a_bounds : pair of floats >= 0 or "fixed", default=(1e-5, np.pi)
         The lower and upper bound on 'a'.
-    sigma_sq_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e5)
-        The lower and upper bound on 'sigma_sq'.
+    sigma_sq_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4).
     """
 
     def __init__(

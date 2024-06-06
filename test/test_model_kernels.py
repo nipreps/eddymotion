@@ -26,19 +26,60 @@ import pytest
 from eddymotion.model.kernels import SphericalCovarianceKernel
 
 
+def numerical_gradient(kernel, theta, epsilon=1e-5):
+    """
+    Compute the numerical gradient of the kernel with respect to its hyperparameters.
+
+    Parameters
+    ----------
+    kernel : SphericalCovarianceKernel
+        The kernel object with current hyperparameters.
+    theta : array-like of shape (n_samples, n_samples)
+        Precomputed pairwise angles.
+    epsilon : float, default=1e-5
+        The finite difference step size.
+
+    Returns
+    -------
+    num_grad : array-like of shape (n_samples, n_samples, 3)
+        Numerical gradients with respect to lambda_, a, and sigma_sq.
+    """
+    original_params = kernel.get_params()
+    num_grad = np.zeros((theta.shape[0], theta.shape[1], 3))
+
+    for i, param in enumerate(["lambda_", "a", "sigma_sq"]):
+        original_value = original_params[param]
+
+        # use a delta of 2 epsilon to compute the numerical gradient
+        kernel.set_params(**{param: original_value + epsilon})
+        K_plus = kernel(theta)
+        kernel.set_params(**{param: original_value - epsilon})
+        K_minus = kernel(theta)
+        num_grad[:, :, i] = (K_plus - K_minus) / (2 * epsilon)
+        kernel.set_params(**{param: original_value})
+
+    return num_grad
+
+
 def test_kernel_call():
     # Create a SphericalCovarianceKernel instance
     kernel = SphericalCovarianceKernel(lambda_=2.0, a=1.0, sigma_sq=0.5)
 
     # Create trivial data (pairwise angles)
-    theta = np.array([[0.0, 0.5, 1.0],
-                      [0.5, 0.0, 0.5],
-                      [1.0, 0.5, 0.0]])
+    theta = np.array([[0.0, 0.5, 1.0], [0.5, 0.0, 0.5], [1.0, 0.5, 0.0]])
 
     # Expected kernel matrix
-    expected_K = np.array([[2.5, 2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3), 0.0],
-                           [2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3), 2.5, 2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3)],
-                           [0.0, 2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3), 2.5]])
+    expected_K = np.array(
+        [
+            [2.5, 2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3), 0.0],
+            [
+                2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3),
+                2.5,
+                2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3),
+            ],
+            [0.0, 2.0 * (1 - 3 * (0.5 / 1.0) ** 2 + 2 * (0.5 / 1.0) ** 3), 2.5],
+        ]
+    )
 
     # Compute the kernel matrix using the kernel instance
     K = kernel(theta)
@@ -56,9 +97,7 @@ def test_kernel_diag():
     kernel = SphericalCovarianceKernel(lambda_=2.0, a=1.0, sigma_sq=0.5)
 
     # Create trivial data
-    X = np.array([[1.0, 0.0, 0.0],
-                  [0.0, 1.0, 0.0],
-                  [0.0, 0.0, 1.0]])
+    X = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
     # Expected diagonal
     expected_diag = np.array([2.5, 2.5, 2.5])

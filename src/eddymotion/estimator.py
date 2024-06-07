@@ -34,9 +34,9 @@ from nitransforms.linear import Affine
 from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
+from eddymotion import utils as eutils
 from eddymotion.data.splitting import lovo_split
 from eddymotion.model import ModelFactory
-from eddymotion.utils import random_iterator
 
 
 class EddyMotionEstimator:
@@ -47,10 +47,10 @@ class EddyMotionEstimator:
         dwdata,
         *,
         align_kwargs=None,
+        iter_kwargs=None,
         models=("b0",),
         omp_nthreads=None,
         n_jobs=None,
-        seed=None,
         **kwargs,
     ):
         r"""
@@ -67,6 +67,8 @@ class EddyMotionEstimator:
             Number of iterations this particular model is going to be repeated.
         align_kwargs : :obj:`dict`
             Parameters to configure the image registration process.
+        iter_kwargs : :obj:`dict`
+            Parameters to configure the iterator strategy to traverse timepoints/orientations.
         models : :obj:`list`
             Selects the diffusion model that will generate the registration target
             corresponding to each gradient map.
@@ -76,9 +78,7 @@ class EddyMotionEstimator:
             Maximum number of threads an individual process may use.
         n_jobs : :obj:`int`
             Number of parallel jobs.
-        seed : :obj:`int` or :obj:`bool`
-            Seed the random number generator (necessary when we want deterministic
-            estimation). See :func:`_sort_dwdata_indices`.
+
         Return
         ------
         :obj:`list` of :obj:`numpy.ndarray`
@@ -87,9 +87,18 @@ class EddyMotionEstimator:
 
         """
 
-        align_kwargs = align_kwargs or {}
+        # Massage iterator configuration
+        iter_kwargs = iter_kwargs or {}
+        iter_kwargs = {
+            "seed": None,
+            "bvals": None,  # TODO: extract b-vals here if pertinent
+        } | iter_kwargs
+        iter_kwargs["size"] = len(dwdata)
 
-        index_order = list(_sort_dwdata_indices(len(dwdata), seed))
+        iterfunc = getattr(eutils, f'{iter_kwargs.pop("strategy", "random")}_iterator')
+        index_order = list(iterfunc(**iter_kwargs))
+
+        align_kwargs = align_kwargs or {}
 
         if "num_threads" not in align_kwargs and omp_nthreads is not None:
             align_kwargs["num_threads"] = omp_nthreads
@@ -240,25 +249,6 @@ def _to_nifti(data, affine, filename, clip=True):
     nii.header.set_sform(affine, code=1)
     nii.header.set_qform(affine, code=1)
     nii.to_filename(filename)
-
-
-def _sort_dwdata_indices(dwi_vol_count, seed):
-    """Sort the DWI data volume indices randomly.
-
-    Parameters
-    ----------
-    dwi_vol_count : :obj:`int`
-        Number of DWI volumes.
-    seed : :obj:`int` or :obj:`bool`
-        Seed the random number generator. See :func:`eddymotion.utils.random_iterator`.
-
-    Returns
-    -------
-    :func:`eddymotion.utils.random_iterator`
-        Index order.
-    """
-
-    return random_iterator(dwi_vol_count, seed=seed)
 
 
 def _prepare_brainmask_data(brainmask, affine):

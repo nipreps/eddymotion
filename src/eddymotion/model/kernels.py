@@ -71,15 +71,15 @@ class SphericalCovarianceKernel(Kernel):
     def hyperparameter_sigma_sq(self):
         return Hyperparameter("sigma_sq", "numeric", self.sigma_sq_bounds)
 
-    def __call__(self, theta, theta_prime=None, eval_gradient=False):
+    def __call__(self, X, Y=None, eval_gradient=False):
         """
         Compute the kernel matrix.
 
         Parameters
         ----------
-        theta : array-like of shape (n_samples, n_samples)
+        X : array-like of shape (n_samples, n_samples)
             Precomputed pairwise angles.
-        theta_prime : array-like of shape (n_samples, n_samples), default=None
+        Y : array-like of shape (n_samples, n_samples), default=None
             Second input for the kernel function.
         eval_gradient : bool, default=False
             Evaluate the gradient with respect to the log of

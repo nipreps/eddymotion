@@ -82,8 +82,8 @@ class SphericalCovarianceKernel(Kernel):
         theta_prime : array-like of shape (n_samples, n_samples), default=None
             Second input for the kernel function.
         eval_gradient : bool, default=False
-            Determines whether the gradient with respect to the log of
-            the kernel hyperparameter is computed.
+            Evaluate the gradient with respect to the log of
+            the kernel hyperparameter.
 
         Returns
         -------
@@ -97,6 +97,7 @@ class SphericalCovarianceKernel(Kernel):
             theta = theta_prime
         K = np.where(theta <= self.a, 1 - 3 * (theta / self.a) ** 2 + 2 * (theta / self.a) ** 3, 0)
 
+        K_gradient = None
         if eval_gradient:
             K_gradient = np.zeros((theta.shape[0], theta.shape[1], 3))
             dists_deriv = np.zeros_like(theta)
@@ -107,9 +108,8 @@ class SphericalCovarianceKernel(Kernel):
             K_gradient[:, :, 0] = K / self.lambda_s
             K_gradient[:, :, 1] = self.lambda_s * dists_deriv
             K_gradient[:, :, 2] = np.eye(len(theta))
-            return self.lambda_s * K + self.sigma_sq * np.eye(len(theta)), K_gradient
-        else:
-            return self.lambda_s * K + self.sigma_sq * np.eye(len(theta))
+
+        return self.lambda_s * K + self.sigma_sq * np.eye(len(theta)), K_gradient
 
     def diag(self, X):
         """

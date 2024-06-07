@@ -28,10 +28,12 @@ Information on specific functions, classes, and methods.
 .. toctree::
    :glob:
 
+   api/eddymotion.cli
    api/eddymotion.data
    api/eddymotion.data.dmri
    api/eddymotion.estimator
    api/eddymotion.exceptions
+   api/eddymotion.math
    api/eddymotion.model
    api/eddymotion.utils
    api/eddymotion.validation

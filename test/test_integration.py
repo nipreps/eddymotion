@@ -67,7 +67,9 @@ def test_proximity_estimator_trivial_model(datadir):
     )
 
     estimator = EddyMotionEstimator()
-    em_affines = estimator.fit(dwdata=dwi_motion, models=("b0",), align_kwargs=None, seed=None)
+    em_affines = estimator.estimate(
+        dwdata=dwi_motion, models=("b0",), align_kwargs=None, seed=None
+    )
 
     # Uncomment to see the realigned dataset
     # nt.linear.LinearTransformsMapping(

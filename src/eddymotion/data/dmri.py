@@ -40,34 +40,42 @@ def _data_repr(value):
     return f"<{'x'.join(str(v) for v in value.shape)} ({value.dtype})>"
 
 
+def _cmp(lh, rh):
+    if isinstance(lh, np.ndarray) and isinstance(rh, np.ndarray):
+        return np.allclose(lh, rh)
+
+    return lh == rh
+
+
 @attr.s(slots=True)
 class DWI:
     """Data representation structure for dMRI data."""
 
-    dataobj = attr.ib(default=None, repr=_data_repr)
+    dataobj = attr.ib(default=None, repr=_data_repr, eq=attr.cmp_using(eq=_cmp))
     """A numpy ndarray object for the data array, without *b=0* volumes."""
-    affine = attr.ib(default=None, repr=_data_repr)
+    affine = attr.ib(default=None, repr=_data_repr, eq=attr.cmp_using(eq=_cmp))
     """Best affine for RAS-to-voxel conversion of coordinates (NIfTI header)."""
-    brainmask = attr.ib(default=None, repr=_data_repr)
+    brainmask = attr.ib(default=None, repr=_data_repr, eq=attr.cmp_using(eq=_cmp))
     """A boolean ndarray object containing a corresponding brainmask."""
-    bzero = attr.ib(default=None, repr=_data_repr)
+    bzero = attr.ib(default=None, repr=_data_repr, eq=attr.cmp_using(eq=_cmp))
     """
     A *b=0* reference map, preferably obtained by some smart averaging.
     If the :math:`B_0` fieldmap is set, this *b=0* reference map should also
     be unwarped.
     """
-    gradients = attr.ib(default=None, repr=_data_repr)
+    gradients = attr.ib(default=None, repr=_data_repr, eq=attr.cmp_using(eq=_cmp))
     """A 2D numpy array of the gradient table in RAS+B format."""
-    em_affines = attr.ib(default=None)
+    em_affines = attr.ib(default=None, eq=attr.cmp_using(eq=_cmp))
     """
     List of :obj:`nitransforms.linear.Affine` objects that bring
     DWIs (i.e., no b=0) into alignment.
     """
-    fieldmap = attr.ib(default=None, repr=_data_repr)
+    fieldmap = attr.ib(default=None, repr=_data_repr, eq=attr.cmp_using(eq=_cmp))
     """A 3D displacements field to unwarp susceptibility distortions."""
     _filepath = attr.ib(
         factory=lambda: Path(mkdtemp()) / "em_cache.h5",
         repr=False,
+        eq=False,
     )
     """A path to an HDF5 file to store the whole dataset."""
 
@@ -160,7 +168,7 @@ class DWI:
 
     def plot_mosaic(self, index=None, **kwargs):
         """Visualize one direction of the dMRI dataset."""
-        from eddymotion.viz import plot_dwi
+        from nireports.reportlets.modality.dwi import plot_dwi
 
         return plot_dwi(
             self.bzero if index is None else self.dataobj[..., index],
@@ -171,9 +179,9 @@ class DWI:
 
     def plot_gradients(self, **kwargs):
         """Visualize diffusion gradient."""
-        from eddymotion.viz import plot_gradients
+        from nireports.reportlets.modality.dwi import plot_gradients as rpt_plot_gradients
 
-        return plot_gradients(self.gradients, **kwargs)
+        return rpt_plot_gradients(self.gradients, **kwargs)
 
     @classmethod
     def from_filename(cls, filename):
@@ -239,6 +247,6 @@ def load(
 
     if fmap_file:
         fmapimg = nb.load(fmap_file)
-        retval.fieldmap = fmapimg.get_fdata(fmapimg, dtype="float32")
+        retval.fieldmap = fmapimg.get_fdata(dtype="float32")
 
     return retval

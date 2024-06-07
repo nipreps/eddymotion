@@ -5,7 +5,7 @@ orbs:
 jobs:
   tests:
     docker: # executor type
-      - image: nipreps/miniconda:py39_2205.0
+      - image: nipreps/miniconda:py39_2403.0
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PAT
@@ -42,7 +42,7 @@ jobs:
           paths:
             - /tmp/ants
 
-      - run: 
+      - run:
           name: Configure git (pacify datalad)
           command: |
             git config --global user.name "First Last"
@@ -55,7 +55,7 @@ jobs:
             - data-v1-{{ .Branch }}-
             - data-v1-main-
             - data-v1-
-      - run: 
+      - run:
           name: Pull down test data
           command: |
             if [[ ! -d "${TEST_DATA_HOME}" ]]; then

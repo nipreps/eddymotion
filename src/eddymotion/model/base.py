@@ -28,7 +28,7 @@ import numpy as np
 from dipy.core.gradients import gradient_table
 from joblib import Parallel, delayed
 
-from eddymotion.validation import check_is_fitted
+from eddymotion.exceptions import ModelNotFittedError
 
 
 def _exec_fit(model, data, chunk=None):
@@ -92,11 +92,14 @@ class BaseModel:
         "_b_max",
         "_models",
         "_datashape",
+        "_is_fitted",
     )
     _modelargs = ()
 
     def __init__(self, gtab, S0=None, mask=None, b_max=None, **kwargs):
         """Base initialization."""
+
+        self._is_fitted = False
 
         # Setup B0 map
         self._S0 = None
@@ -138,6 +141,10 @@ class BaseModel:
         self._models = None
         self._is_fitted = False
 
+    @property
+    def is_fitted(self):
+        return self._is_fitted
+
     def fit(self, data, n_jobs=None, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
         n_jobs = n_jobs or 1
@@ -172,7 +179,9 @@ class BaseModel:
 
     def predict(self, gradient, **kwargs):
         """Predict asynchronously chunk-by-chunk the diffusion signal."""
-        check_is_fitted(self)
+
+        if not self._is_fitted:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
 
         if self._b_max is not None:
             gradient[-1] = min(gradient[-1], self._b_max)
@@ -215,10 +224,6 @@ class BaseModel:
 
         return retval
 
-    def __model_is_fitted__(self):
-        """Check fitted status and return a Boolean value."""
-        return hasattr(self, "_is_fitted") and self._is_fitted
-
 
 class TrivialB0Model:
     """A trivial model that returns a *b=0* map always."""
@@ -232,22 +237,24 @@ class TrivialB0Model:
 
         self._S0 = S0
 
+    @property
+    def is_fitted(self):
+        return True
+
     def fit(self, *args, **kwargs):
         """Do nothing."""
-        # ToDo
-        # Does not inherit from BaseModel, so should be defined in __init__ ??
-        self._is_fitted = True
 
     def predict(self, gradient, **kwargs):
         """Return the *b=0* map."""
-        check_is_fitted(self)
+
+        # No need to check fit (if not fitted, has raised already)
         return self._S0
 
 
 class AverageDWModel:
     """A trivial model that returns an average map."""
 
-    __slots__ = ("_data", "_th_low", "_th_high", "_bias", "_stat")
+    __slots__ = ("_data", "_th_low", "_th_high", "_bias", "_stat", "_is_fitted")
 
     def __init__(self, **kwargs):
         r"""
@@ -276,6 +283,7 @@ class AverageDWModel:
         self._bias = kwargs.get("bias", True)
         self._stat = kwargs.get("stat", "median")
         self._data = None
+        self._is_fitted = False
 
     def fit(self, data, **kwargs):
         """Calculate the average."""
@@ -301,8 +309,18 @@ class AverageDWModel:
         # Calculate the average
         self._data = avg_func(shells, axis=-1)
 
+        self._is_fitted = self._data is not None
+
+    @property
+    def is_fitted(self):
+        return self._is_fitted
+
     def predict(self, gradient, **kwargs):
         """Return the average map."""
+
+        if not self._is_fitted:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
+
         return self._data
 
 
@@ -351,6 +369,10 @@ class PETModel:
         self._shape = None
         self._coeff = None
 
+    @property
+    def is_fitted(self):
+        return self._coeff is not None
+
     def fit(self, data, *args, **kwargs):
         """Fit the model."""
         from scipy.interpolate import BSpline
@@ -385,6 +407,9 @@ class PETModel:
     def predict(self, timepoint, **kwargs):
         """Return the *b=0* map."""
         from scipy.interpolate import BSpline
+
+        if not self._is_fitted:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
 
         # Project sample timing into B-Spline coordinates
         x = (timepoint / self._xlim) * self._n_ctrl

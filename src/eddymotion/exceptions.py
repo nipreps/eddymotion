@@ -24,7 +24,7 @@
 
 class ModelNotFittedError(ValueError, AttributeError):
     """
-    Exception class to raise if estimator is used before fitting.
+    Exception class to raise if a model is used before fitting.
 
     This class inherits from both ValueError and AttributeError to help with
     exception handling.

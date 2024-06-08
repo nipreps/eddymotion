@@ -415,7 +415,6 @@ class PETModel(BaseModel):
     @property
     def is_fitted(self):
         return self._coeff is not None
-        
     def fit(self, data, **kwargs):
         """Fit the model."""
         from scipy.interpolate import BSpline

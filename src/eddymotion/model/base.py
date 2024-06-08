@@ -29,26 +29,26 @@ from dipy.core.gradients import gradient_table
 from joblib import Parallel, delayed
 from eddymotion.exceptions import ModelNotFittedError
 
-#: Minimum value when considering the :math:`S_{0}` DWI signal.
 DEFAULT_MIN_S0 = 1e-5
+"""Minimum value when considering the :math:`S_{0}` DWI signal."""
 
-#: Maximum value when considering the :math:`S_{0}` DWI signal.
 DEFAULT_MAX_S0 = 1.0
+"""Maximum value when considering the :math:`S_{0}` DWI signal."""
 
-#: Maximum allowed value for the b-value.
 DEFAULT_MAX_BVALUE = 1000
+"""Maximum allowed value for the b-value."""
 
-#: b-value lower bound when considering DWI data.
 DEFAULT_LOWB_THRESHOLD = 50
+"""The lower bound for the b-value so that the orientation is considered a DW volume."""
 
-#: b-value upper bound when considering DWI data.
 DEFAULT_HIGHB_THRESHOLD = 10000
+"""A b-value cap for DWI data."""
 
-#: Percentile clipping value.
 DEFAULT_CLIP_PERCENTILE = 75
+"""Upper percentile threshold for intensity clipping."""
 
-#: Time frame tolerance in seconds.
 DEFAULT_TIMEFRAME_MIDPOINT_TOL = 1e-2
+"""Time frame tolerance in seconds."""
 
 
 def _exec_fit(model, data, chunk=None):

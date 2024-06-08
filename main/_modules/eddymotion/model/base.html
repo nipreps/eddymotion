@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model.base - eddymotion 24.0.0.dev27 documentation</title>
+        <title>eddymotion.model.base - eddymotion 24.0.0.dev31 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -179,7 +179,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev27 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev31 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,14 +202,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev27</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev31</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev27</span>
+  <span class="sidebar-brand-text">24.0.0.dev31</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -239,6 +239,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/eddymotion.estimator.html">eddymotion.estimator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/eddymotion.exceptions.html">eddymotion.exceptions module</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/eddymotion.math.html">eddymotion.math package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of eddymotion.math package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/eddymotion.math.utils.html">eddymotion.math.utils module</a></li>
 </ul>
@@ -318,6 +319,8 @@
 <span class="kn">from</span> <span class="nn">dipy.core.gradients</span> <span class="kn">import</span> <span class="n">gradient_table</span>
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
 
+<span class="kn">from</span> <span class="nn">eddymotion.exceptions</span> <span class="kn">import</span> <span class="n">ModelNotFittedError</span>
+
 
 <span class="k">def</span> <span class="nf">_exec_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">chunk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">retval</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -388,11 +391,14 @@
         <span class="s2">&quot;_b_max&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_models&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_datashape&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_is_fitted&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">_modelargs</span> <span class="o">=</span> <span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">b_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Base initialization.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Setup B0 map</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="kc">None</span>
@@ -432,6 +438,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_datashape</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span>
 
 <div class="viewcode-block" id="BaseModel.fit">
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.BaseModel.fit">[docs]</a>
@@ -464,6 +475,7 @@
         <span class="k">for</span> <span class="n">submodel</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">submodel</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Preempt further actions on the model</span></div>
 
 
@@ -471,6 +483,10 @@
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.BaseModel.predict">[docs]</a>
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Predict asynchronously chunk-by-chunk the diffusion signal.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ModelNotFittedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must be fitted before predicting&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">gradient</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">gradient</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_max</span><span class="p">)</span>
 
@@ -529,6 +545,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span> <span class="o">=</span> <span class="n">S0</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
 <div class="viewcode-block" id="TrivialB0Model.fit">
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.TrivialB0Model.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -539,6 +559,8 @@
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.TrivialB0Model.predict">[docs]</a>
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the *b=0* map.&quot;&quot;&quot;</span>
+
+        <span class="c1"># No need to check fit (if not fitted, has raised already)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_S0</span></div>
 </div>
 
@@ -549,7 +571,7 @@
 <span class="k">class</span> <span class="nc">AverageDWModel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A trivial model that returns an average map.&quot;&quot;&quot;</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="s2">&quot;_th_low&quot;</span><span class="p">,</span> <span class="s2">&quot;_th_high&quot;</span><span class="p">,</span> <span class="s2">&quot;_bias&quot;</span><span class="p">,</span> <span class="s2">&quot;_stat&quot;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="s2">&quot;_th_low&quot;</span><span class="p">,</span> <span class="s2">&quot;_th_high&quot;</span><span class="p">,</span> <span class="s2">&quot;_bias&quot;</span><span class="p">,</span> <span class="s2">&quot;_stat&quot;</span><span class="p">,</span> <span class="s2">&quot;_is_fitted&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -578,6 +600,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_bias</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="AverageDWModel.fit">
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.AverageDWModel.fit">[docs]</a>
@@ -603,13 +626,23 @@
         <span class="c1"># Select the summary statistic</span>
         <span class="n">avg_func</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span>
         <span class="c1"># Calculate the average</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">avg_func</span><span class="p">(</span><span class="n">shells</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">avg_func</span><span class="p">(</span><span class="n">shells</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span>
 
 <div class="viewcode-block" id="AverageDWModel.predict">
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.AverageDWModel.predict">[docs]</a>
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the average map.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ModelNotFittedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must be fitted before predicting&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span></div>
 </div>
 
@@ -662,6 +695,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_coeff</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coeff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
 <div class="viewcode-block" id="PETModel.fit">
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.PETModel.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -701,6 +738,9 @@
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the *b=0* map.&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">BSpline</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ModelNotFittedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must be fitted before predicting&quot;</span><span class="p">)</span>
 
         <span class="c1"># Project sample timing into B-Spline coordinates</span>
         <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">timepoint</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xlim</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ctrl</span>
@@ -795,7 +835,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=3eb33791"></script>
+</div><script src="../../../_static/documentation_options.js?v=358df301"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>

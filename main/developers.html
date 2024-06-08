@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="eddymotion.cli package" href="api/eddymotion.cli.html" /><link rel="prev" title="Running Eddymotion" href="running.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>For developers - eddymotion 24.0.0.dev27 documentation</title>
+        <title>For developers - eddymotion 24.0.0.dev31 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -180,7 +180,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">eddymotion 24.0.0.dev27 documentation</div></a>
+      <a href="index.html"><div class="brand">eddymotion 24.0.0.dev31 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -203,14 +203,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev27</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev31</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev27</span>
+  <span class="sidebar-brand-text">24.0.0.dev31</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -240,6 +240,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/eddymotion.estimator.html">eddymotion.estimator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/eddymotion.exceptions.html">eddymotion.exceptions module</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/eddymotion.math.html">eddymotion.math package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of eddymotion.math package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.math.utils.html">eddymotion.math.utils module</a></li>
 </ul>
@@ -416,6 +417,10 @@ $ make -C docs/ html
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="api/eddymotion.exceptions.html">eddymotion.exceptions module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/eddymotion.exceptions.html#eddymotion.exceptions.ModelNotFittedError"><code class="docutils literal notranslate"><span class="pre">ModelNotFittedError</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api/eddymotion.math.html">eddymotion.math package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/eddymotion.math.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.math.utils.html">eddymotion.math.utils module</a><ul>
@@ -430,6 +435,7 @@ $ make -C docs/ html
 <li class="toctree-l1"><a class="reference internal" href="api/eddymotion.model.html">eddymotion.model package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.AverageDWModel"><code class="docutils literal notranslate"><span class="pre">AverageDWModel</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.AverageDWModel.fit"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.AverageDWModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.is_fitted</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.AverageDWModel.predict"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.predict()</span></code></a></li>
 </ul>
 </li>
@@ -441,11 +447,13 @@ $ make -C docs/ html
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.PETModel"><code class="docutils literal notranslate"><span class="pre">PETModel</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.PETModel.fit"><code class="docutils literal notranslate"><span class="pre">PETModel.fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.PETModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">PETModel.is_fitted</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.PETModel.predict"><code class="docutils literal notranslate"><span class="pre">PETModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.TrivialB0Model"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.TrivialB0Model.fit"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.TrivialB0Model.is_fitted"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.is_fitted</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.html#eddymotion.model.TrivialB0Model.predict"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.predict()</span></code></a></li>
 </ul>
 </li>
@@ -453,11 +461,13 @@ $ make -C docs/ html
 <li class="toctree-l3"><a class="reference internal" href="api/eddymotion.model.base.html">eddymotion.model.base module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.AverageDWModel"><code class="docutils literal notranslate"><span class="pre">AverageDWModel</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.AverageDWModel.fit"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.fit()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.AverageDWModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.is_fitted</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.AverageDWModel.predict"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.BaseModel"><code class="docutils literal notranslate"><span class="pre">BaseModel</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.BaseModel.fit"><code class="docutils literal notranslate"><span class="pre">BaseModel.fit()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.BaseModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">BaseModel.is_fitted</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.BaseModel.predict"><code class="docutils literal notranslate"><span class="pre">BaseModel.predict()</span></code></a></li>
 </ul>
 </li>
@@ -469,11 +479,13 @@ $ make -C docs/ html
 </li>
 <li class="toctree-l4"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.PETModel"><code class="docutils literal notranslate"><span class="pre">PETModel</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.PETModel.fit"><code class="docutils literal notranslate"><span class="pre">PETModel.fit()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.PETModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">PETModel.is_fitted</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.PETModel.predict"><code class="docutils literal notranslate"><span class="pre">PETModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.TrivialB0Model"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.TrivialB0Model.fit"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.fit()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.TrivialB0Model.is_fitted"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.is_fitted</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/eddymotion.model.base.html#eddymotion.model.base.TrivialB0Model.predict"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.predict()</span></code></a></li>
 </ul>
 </li>
@@ -574,7 +586,7 @@ $ make -C docs/ html
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=3eb33791"></script>
+</div><script src="_static/documentation_options.js?v=358df301"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>

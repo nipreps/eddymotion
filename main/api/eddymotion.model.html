@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.model.base module" href="eddymotion.model.base.html" /><link rel="prev" title="eddymotion.math.utils module" href="eddymotion.math.utils.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model package - eddymotion 24.0.0.dev27 documentation</title>
+        <title>eddymotion.model package - eddymotion 24.0.0.dev31 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -180,7 +180,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev27 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev31 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -203,14 +203,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev27</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev31</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev27</span>
+  <span class="sidebar-brand-text">24.0.0.dev31</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -240,6 +240,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.estimator.html">eddymotion.estimator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eddymotion.exceptions.html">eddymotion.exceptions module</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="eddymotion.math.html">eddymotion.math package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of eddymotion.math package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.math.utils.html">eddymotion.math.utils module</a></li>
 </ul>
@@ -308,6 +309,11 @@
 <dd><p>Calculate the average.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="eddymotion.model.AverageDWModel.is_fitted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fitted</span></span><a class="headerlink" href="#eddymotion.model.AverageDWModel.is_fitted" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="eddymotion.model.AverageDWModel.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradient</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#AverageDWModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.AverageDWModel.predict" title="Link to this definition">¶</a></dt>
@@ -366,6 +372,11 @@ Options: <code class="docutils literal notranslate"><span class="pre">&quot;DTI&
 <dd><p>Fit the model.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="eddymotion.model.PETModel.is_fitted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fitted</span></span><a class="headerlink" href="#eddymotion.model.PETModel.is_fitted" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="eddymotion.model.PETModel.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timepoint</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#PETModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.PETModel.predict" title="Link to this definition">¶</a></dt>
@@ -384,6 +395,11 @@ Options: <code class="docutils literal notranslate"><span class="pre">&quot;DTI&
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/base.html#TrivialB0Model.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.TrivialB0Model.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Do nothing.</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="eddymotion.model.TrivialB0Model.is_fitted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fitted</span></span><a class="headerlink" href="#eddymotion.model.TrivialB0Model.is_fitted" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eddymotion.model.TrivialB0Model.predict">
@@ -462,6 +478,7 @@ Options: <code class="docutils literal notranslate"><span class="pre">&quot;DTI&
 <li><a class="reference internal" href="#">eddymotion.model package</a><ul>
 <li><a class="reference internal" href="#eddymotion.model.AverageDWModel"><code class="docutils literal notranslate"><span class="pre">AverageDWModel</span></code></a><ul>
 <li><a class="reference internal" href="#eddymotion.model.AverageDWModel.fit"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.fit()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.AverageDWModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.is_fitted</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.AverageDWModel.predict"><code class="docutils literal notranslate"><span class="pre">AverageDWModel.predict()</span></code></a></li>
 </ul>
 </li>
@@ -473,11 +490,13 @@ Options: <code class="docutils literal notranslate"><span class="pre">&quot;DTI&
 </li>
 <li><a class="reference internal" href="#eddymotion.model.PETModel"><code class="docutils literal notranslate"><span class="pre">PETModel</span></code></a><ul>
 <li><a class="reference internal" href="#eddymotion.model.PETModel.fit"><code class="docutils literal notranslate"><span class="pre">PETModel.fit()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.PETModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">PETModel.is_fitted</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.PETModel.predict"><code class="docutils literal notranslate"><span class="pre">PETModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#eddymotion.model.TrivialB0Model"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model</span></code></a><ul>
 <li><a class="reference internal" href="#eddymotion.model.TrivialB0Model.fit"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.fit()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.TrivialB0Model.is_fitted"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.is_fitted</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.TrivialB0Model.predict"><code class="docutils literal notranslate"><span class="pre">TrivialB0Model.predict()</span></code></a></li>
 </ul>
 </li>
@@ -493,7 +512,7 @@ Options: <code class="docutils literal notranslate"><span class="pre">&quot;DTI&
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=3eb33791"></script>
+</div><script src="../_static/documentation_options.js?v=358df301"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>

@@ -1,0 +1,7 @@
+eddymotion.exceptions module
+============================
+
+.. automodule:: eddymotion.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:

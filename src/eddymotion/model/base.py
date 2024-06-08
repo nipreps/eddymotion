@@ -27,6 +27,7 @@ import warnings
 import numpy as np
 from dipy.core.gradients import gradient_table
 from joblib import Parallel, delayed
+from eddymotion.exceptions import ModelNotFittedError
 
 #: Minimum value when considering the :math:`S_{0}` DWI signal.
 DEFAULT_MIN_S0 = 1e-5
@@ -109,6 +110,7 @@ class BaseModel:
         "_mask",
         "_models",
         "_datashape",
+        "_is_fitted",
     )
     _modelargs = ()
 
@@ -116,12 +118,18 @@ class BaseModel:
         """Base initialization."""
 
         self._model = None
+        self._is_fitted = False
 
         # Setup brain mask
         self._mask = mask
 
         self._datashape = None
         self._models = None
+        self._is_fitted = False
+
+    @property
+    def is_fitted(self):
+        return self._is_fitted
 
     def fit(self, data, n_jobs=None, **kwargs):
         """Fit the model chunk-by-chunk asynchronously"""
@@ -152,6 +160,7 @@ class BaseModel:
         for submodel, index in results:
             self._models[index] = submodel
 
+        self._is_fitted = True
         self._model = None  # Preempt further actions on the model
 
     def predict(self, *args, **kwargs):
@@ -217,6 +226,10 @@ class BaseDWIModel(BaseModel):
 
     def predict(self, index, **kwargs):
         """Predict asynchronously chunk-by-chunk the diffusion signal."""
+
+        if not self._is_fitted:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
+
         if self._b_max is not None:
             index[-1] = min(index[-1], self._b_max)
 
@@ -269,18 +282,24 @@ class TrivialB0Model(BaseDWIModel):
         if self._S0 is None:
             raise ValueError("S0 must be provided")
 
+    @property
+    def is_fitted(self):
+        return True
+
     def fit(self, data, **kwargs):
         """Do nothing."""
 
     def predict(self, *_, **kwargs):
         """Return the *b=0* map."""
+
+        # No need to check fit (if not fitted, has raised already)
         return self._S0
 
 
 class AverageDWModel(BaseDWIModel):
     """A trivial model that returns an average map."""
 
-    __slots__ = ("_data", "_th_low", "_th_high", "_bias", "_stat")
+    __slots__ = ("_data", "_th_low", "_th_high", "_bias", "_stat", "_is_fitted")
 
     def __init__(self, **kwargs):
         r"""
@@ -309,6 +328,7 @@ class AverageDWModel(BaseDWIModel):
         self._bias = kwargs.get("bias", True)
         self._stat = kwargs.get("stat", "median")
         self._data = None
+        self._is_fitted = False
 
     def fit(self, data, **kwargs):
         """Calculate the average."""
@@ -332,9 +352,18 @@ class AverageDWModel(BaseDWIModel):
         avg_func = np.median if self._stat == "median" else np.mean
         # Calculate the average
         self._data = avg_func(shells, axis=-1)
+        self._is_fitted = True
 
-    def predict(self, *_, **kwargs):
+    @property
+    def is_fitted(self):
+        return self._is_fitted
+
+    def predict(self, gradient, **kwargs):
         """Return the average map."""
+
+        if not self._is_fitted:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
+
         return self._data
 
 
@@ -383,6 +412,10 @@ class PETModel(BaseModel):
 
         self._coeff = None
 
+    @property
+    def is_fitted(self):
+        return self._coeff is not None
+        
     def fit(self, data, **kwargs):
         """Fit the model."""
         from scipy.interpolate import BSpline
@@ -417,6 +450,9 @@ class PETModel(BaseModel):
     def predict(self, index, **kwargs):
         """Return the corrected volume using B-spline interpolation."""
         from scipy.interpolate import BSpline
+
+        if not self._is_fitted:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
 
         # Project sample timing into B-Spline coordinates
         x = (index / self._xlim) * self._n_ctrl

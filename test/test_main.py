@@ -23,78 +23,47 @@
 
 import sys
 
+import pytest
+
 from eddymotion.__main__ import main
 
 
-def test_help(monkeypatch):
+@pytest.fixture(autouse=True)
+def set_command(monkeypatch):
     with monkeypatch.context() as m:
-        m.setattr(sys, "argv", ["main", "--help"])
-
-        try:
-            main()
-        except:
-            print(
-                "Help is printed. Unsure why it raises an exception"
-            )  # args is None parse_args, but help is printed
+        m.setattr(sys, "argv", ["eddymotion"])
+        yield
 
 
-def test_main(monkeypatch, tmp_path, datadir):
-    input_dir = datadir / "dwi.h5"
+def test_help(capsys):
+    with pytest.raises(SystemExit):
+        main(["--help"])
+    captured = capsys.readouterr()
+    assert captured.out.startswith("usage: eddymotion [-h]")
 
-    with monkeypatch.context() as m:
-        m.setattr(sys, "argv", ["main", input_dir])
 
-        try:
-            main()
-        except:
-            print(
-                "Unsure why it raises another exception"
-            )  # args is None parse_args, but help is not printed...
+def test_main(tmp_path, datadir):
+    input_file = datadir / "dwi.h5"
 
-    align_kwargs = dict({})
-    models = ["b0"]
-    omp_nthreads = 1
-    n_jobs = 1
-    seed = 1234
-    output_dir = tmp_path
+    with pytest.raises(SystemExit):
+        main([str(input_file), str(tmp_path)])
 
-    with monkeypatch.context() as m:
-        m.setattr(
-            sys,
-            "argv",
+    with pytest.raises(SystemExit):
+        main(
             [
-                "main",
-                input_dir,
-                "--align_kwargs",
-                align_kwargs,
+                str(input_file),
                 "--models",
-                models,
+                "b0",
                 "--omp_nthreads",
-                omp_nthreads,
+                "1",
                 "--n_jobs",
-                n_jobs,
+                "1",
                 "--seed",
-                seed,
+                "1234",
                 "--output_dir",
-                output_dir,
-            ],
+                str(tmp_path),
+            ]
         )
-
-        try:
-            main()
-        except:
-            print("Unsure why it raises an additional exception")  # args is None parse_args,
-
     # assert Path(output_dir).joinpath("dwi.h5").exists()  # Empty
 
     # Also, call python -m eddymotion or eddymotion from CircleCI ??
-
-
-def test_main2(tmp_path, datadir):
-    input_dir = datadir / "dwi.h5"
-    import pytest
-
-    with pytest.raises(SystemExit) as wrapped_exit:
-        main(
-            [str(input_dir), str(tmp_path)]
-        )  # adding argv=None to main allows to do this; fails to open file but OK

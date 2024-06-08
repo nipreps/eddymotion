@@ -220,8 +220,8 @@ def _advanced_clip(data, p_min=35, p_max=99.98, nonnegative=True, dtype="int16",
     # Calculate stats on denoised version, to preempt outliers from biasing
     denoised = ndimage.median_filter(data, footprint=ball(3))
 
-    a_min = np.percentile(denoised[denoised > 0] if nonnegative else denoised, p_min)
-    a_max = np.percentile(denoised[denoised > 0] if nonnegative else denoised, p_max)
+    a_min = np.percentile(denoised[denoised >= 0] if nonnegative else denoised, p_min)
+    a_max = np.percentile(denoised[denoised >= 0] if nonnegative else denoised, p_max)
 
     # Clip and cast
     data = np.clip(data, a_min=a_min, a_max=a_max)

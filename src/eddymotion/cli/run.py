@@ -29,7 +29,7 @@ from eddymotion.data.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
 
 
-def main() -> None:
+def main(argv=None) -> None:
     """
     Entry point.
 
@@ -37,7 +37,7 @@ def main() -> None:
     -------
     None
     """
-    args = parse_args()
+    args = parse_args(argv)
 
     # Open the data with the given file path
     dwi_dataset: DWI = DWI.from_filename(args.input_file)

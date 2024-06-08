@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.estimator - eddymotion 24.0.0.dev31 documentation</title>
+        <title>eddymotion.estimator - eddymotion 24.0.0.dev40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -179,7 +179,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev31 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev40 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,14 +202,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev31</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev40</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev31</span>
+  <span class="sidebar-brand-text">24.0.0.dev40</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -325,6 +325,7 @@
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span> <span class="k">as</span> <span class="n">pkg_fn</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
+<span class="kn">from</span> <span class="nn">eddymotion</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">eutils</span>
 <span class="kn">from</span> <span class="nn">eddymotion.data.splitting</span> <span class="kn">import</span> <span class="n">lovo_split</span>
 <span class="kn">from</span> <span class="nn">eddymotion.model</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 
@@ -341,10 +342,10 @@
         <span class="n">dwdata</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">align_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">iter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">models</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,),</span>
         <span class="n">omp_nthreads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -361,6 +362,8 @@
 <span class="sd">            Number of iterations this particular model is going to be repeated.</span>
 <span class="sd">        align_kwargs : :obj:`dict`</span>
 <span class="sd">            Parameters to configure the image registration process.</span>
+<span class="sd">        iter_kwargs : :obj:`dict`</span>
+<span class="sd">            Parameters to configure the iterator strategy to traverse timepoints/orientations.</span>
 <span class="sd">        models : :obj:`list`</span>
 <span class="sd">            Selects the diffusion model that will generate the registration target</span>
 <span class="sd">            corresponding to each gradient map.</span>
@@ -370,9 +373,7 @@
 <span class="sd">            Maximum number of threads an individual process may use.</span>
 <span class="sd">        n_jobs : :obj:`int`</span>
 <span class="sd">            Number of parallel jobs.</span>
-<span class="sd">        seed : :obj:`int` or :obj:`bool`</span>
-<span class="sd">            Seed the random number generator (necessary when we want deterministic</span>
-<span class="sd">            estimation). See :func:`_sort_dwdata_indices`.</span>
+
 <span class="sd">        Return</span>
 <span class="sd">        ------</span>
 <span class="sd">        :obj:`list` of :obj:`numpy.ndarray`</span>
@@ -381,9 +382,18 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">align_kwargs</span> <span class="o">=</span> <span class="n">align_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="c1"># Massage iterator configuration</span>
+        <span class="n">iter_kwargs</span> <span class="o">=</span> <span class="n">iter_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">iter_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;bvals&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># TODO: extract b-vals here if pertinent</span>
+        <span class="p">}</span> <span class="o">|</span> <span class="n">iter_kwargs</span>
+        <span class="n">iter_kwargs</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">)</span>
 
-        <span class="n">index_order</span> <span class="o">=</span> <span class="n">_sort_dwdata_indices</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">))</span>
+        <span class="n">iterfunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">eutils</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">iter_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;strategy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;random&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">_iterator&#39;</span><span class="p">)</span>
+        <span class="n">index_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterfunc</span><span class="p">(</span><span class="o">**</span><span class="n">iter_kwargs</span><span class="p">))</span>
+
+        <span class="n">align_kwargs</span> <span class="o">=</span> <span class="n">align_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="s2">&quot;num_threads&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_kwargs</span> <span class="ow">and</span> <span class="n">omp_nthreads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">align_kwargs</span><span class="p">[</span><span class="s2">&quot;num_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_nthreads</span>
@@ -507,8 +517,8 @@
     <span class="c1"># Calculate stats on denoised version, to preempt outliers from biasing</span>
     <span class="n">denoised</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 
-    <span class="n">a_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">denoised</span><span class="p">[</span><span class="n">denoised</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nonnegative</span> <span class="k">else</span> <span class="n">denoised</span><span class="p">,</span> <span class="n">p_min</span><span class="p">)</span>
-    <span class="n">a_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">denoised</span><span class="p">[</span><span class="n">denoised</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nonnegative</span> <span class="k">else</span> <span class="n">denoised</span><span class="p">,</span> <span class="n">p_max</span><span class="p">)</span>
+    <span class="n">a_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">denoised</span><span class="p">[</span><span class="n">denoised</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nonnegative</span> <span class="k">else</span> <span class="n">denoised</span><span class="p">,</span> <span class="n">p_min</span><span class="p">)</span>
+    <span class="n">a_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">denoised</span><span class="p">[</span><span class="n">denoised</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nonnegative</span> <span class="k">else</span> <span class="n">denoised</span><span class="p">,</span> <span class="n">p_max</span><span class="p">)</span>
 
     <span class="c1"># Clip and cast</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="n">a_min</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="n">a_max</span><span class="p">)</span>
@@ -536,35 +546,6 @@
     <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set_sform</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">nii</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">set_qform</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">nii</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_sort_dwdata_indices</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">dwi_vol_count</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort the DWI data volume indices.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    seed : :obj:`int` or :obj:`bool`</span>
-<span class="sd">        Seed the random number generator. If an integer, the value is used to initialize the</span>
-<span class="sd">        generator; if ``True``, the arbitrary value of ``20210324`` is used to initialize it.</span>
-<span class="sd">    dwi_vol_count : :obj:`int`</span>
-<span class="sd">        Number of DWI volumes.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    index_order : :obj:`numpy.ndarray`</span>
-<span class="sd">        Index order.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_seed</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">seed</span> <span class="ow">or</span> <span class="n">seed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">_seed</span> <span class="o">=</span> <span class="mi">20210324</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">seed</span>
-
-    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">_seed</span><span class="p">)</span>
-
-    <span class="n">index_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dwi_vol_count</span><span class="p">)</span>
-    <span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index_order</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">index_order</span>
 
 
 <span class="k">def</span> <span class="nf">_prepare_brainmask_data</span><span class="p">(</span><span class="n">brainmask</span><span class="p">,</span> <span class="n">affine</span><span class="p">):</span>
@@ -784,7 +765,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=358df301"></script>
+</div><script src="../../_static/documentation_options.js?v=74eb4085"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>

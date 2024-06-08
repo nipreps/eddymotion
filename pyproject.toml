@@ -103,7 +103,11 @@ packages = ["src/eddymotion"]
 [tool.hatch.version]
 validate-bump = true
 source = "vcs"
-raw-options = { version_scheme = "nipreps-calver" }
+
+[tool.hatch.version.raw-options]
+version_scheme = "nipreps-calver"
+local_scheme = "no-local-version"
+
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/eddymotion/_version.py"

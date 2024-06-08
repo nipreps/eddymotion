@@ -22,10 +22,85 @@
 #
 """Unit tests exercising the dMRI data structure."""
 
+import nibabel as nb
 import numpy as np
 import pytest
 
 from eddymotion.data.dmri import load
+
+
+def _create_dwi_random_dataobj():
+    rng = np.random.default_rng(1234)
+
+    n_gradients = 10
+    b0s = 1
+    volumes = n_gradients + b0s
+    b0_thres = 50
+    bvals = np.hstack([b0s * [0], n_gradients * [1000]])
+    bvecs = np.hstack([np.zeros((3, b0s)), rng.random((3, n_gradients))])
+
+    vol_size = (34, 36, 24)
+
+    dwi_dataobj = rng.random((*vol_size, volumes), dtype="float32")
+    affine = np.eye(4, dtype="float32")
+    brainmask_dataobj = rng.random(vol_size, dtype="float32")
+    b0_dataobj = rng.random(vol_size, dtype="float32")
+    gradients = np.vstack([bvecs, bvals[np.newaxis, :]], dtype="float32")
+    fieldmap_dataobj = rng.random(vol_size, dtype="float32")
+
+    return (
+        dwi_dataobj,
+        affine,
+        brainmask_dataobj,
+        b0_dataobj,
+        gradients,
+        fieldmap_dataobj,
+        b0_thres,
+    )
+
+
+def _create_dwi_random_data(
+    dwi_dataobj,
+    affine,
+    brainmask_dataobj,
+    b0_dataobj,
+    fieldmap_dataobj,
+):
+    dwi = nb.Nifti1Image(dwi_dataobj, affine)
+    brainmask = nb.Nifti1Image(brainmask_dataobj, affine)
+    b0 = nb.Nifti1Image(b0_dataobj, affine)
+    fieldmap = nb.Nifti1Image(fieldmap_dataobj, affine)
+
+    return dwi, brainmask, b0, fieldmap
+
+
+def _serialize_dwi_data(
+    dwi,
+    brainmask,
+    b0,
+    gradients,
+    fieldmap,
+    _tmp_path,
+):
+    dwi_fname = _tmp_path / "dwi.nii.gz"
+    brainmask_fname = _tmp_path / "brainmask.nii.gz"
+    b0_fname = _tmp_path / "b0.nii.gz"
+    gradients_fname = _tmp_path / "gradients.txt"
+    fieldmap_fname = _tmp_path / "fieldmap.nii.gz"
+
+    nb.save(dwi, dwi_fname)
+    nb.save(brainmask, brainmask_fname)
+    nb.save(b0, b0_fname)
+    np.savetxt(gradients_fname, gradients.T)
+    nb.save(fieldmap, fieldmap_fname)
+
+    return (
+        dwi_fname,
+        brainmask_fname,
+        b0_fname,
+        gradients_fname,
+        fieldmap_fname,
+    )
 
 
 def test_load(datadir, tmp_path):
@@ -65,3 +140,56 @@ def test_load(datadir, tmp_path):
     assert np.allclose(dwi_h5.dataobj, dwi_from_nifti2.dataobj)
     assert np.allclose(dwi_h5.bzero, dwi_from_nifti2.bzero)
     assert np.allclose(dwi_h5.gradients, dwi_from_nifti2.gradients)
+
+
+def test_equality_operator(tmp_path):
+    # Create some random data
+    (
+        dwi_dataobj,
+        affine,
+        brainmask_dataobj,
+        b0_dataobj,
+        gradients,
+        fieldmap_dataobj,
+        b0_thres,
+    ) = _create_dwi_random_dataobj()
+
+    dwi, brainmask, b0, fieldmap = _create_dwi_random_data(
+        dwi_dataobj,
+        affine,
+        brainmask_dataobj,
+        b0_dataobj,
+        fieldmap_dataobj,
+    )
+
+    (
+        dwi_fname,
+        brainmask_fname,
+        b0_fname,
+        gradients_fname,
+        fieldmap_fname,
+    ) = _serialize_dwi_data(
+        dwi,
+        brainmask,
+        b0,
+        gradients,
+        fieldmap,
+        tmp_path,
+    )
+
+    dwi_obj = load(
+        dwi_fname,
+        gradients_file=gradients_fname,
+        b0_file=b0_fname,
+        brainmask_file=brainmask_fname,
+        fmap_file=fieldmap_fname,
+        b0_thres=b0_thres,
+    )
+    hdf5_filename = tmp_path / "test_dwi.h5"
+    dwi_obj.to_filename(hdf5_filename)
+
+    round_trip_dwi_obj = load(hdf5_filename)
+
+    # Symmetric equality
+    assert dwi_obj == round_trip_dwi_obj
+    assert round_trip_dwi_obj == dwi_obj

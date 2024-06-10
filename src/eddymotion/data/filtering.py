@@ -28,13 +28,16 @@ import numpy as np
 from scipy.ndimage import median_filter
 from skimage.morphology import ball
 
+DEFAULT_DTYPE = "int16"
+"""The default image's data type."""
+
 
 def advanced_clip(
     data: np.ndarray,
     p_min: float = 35,
     p_max: float = 99.98,
     nonnegative: bool = True,
-    dtype: str | np.dtype = "int16",
+    dtype: str | np.dtype = DEFAULT_DTYPE,
     invert: bool = False,
 ) -> np.ndarray:
     """
@@ -58,7 +61,7 @@ def advanced_clip(
         are set to the threshold value.
     nonnegative : :obj:`bool`, optional (default=``True``)
         If True, only consider non-negative values when calculating thresholds.
-    dtype : :obj:`str` or :obj:`~numpy.dtype`, optional (default=``"int16"``)
+    dtype : :obj:`str` or :obj:`~numpy.dtype`, optional
         The desired data type for the output array. Supported types are "uint8"
         and "int16".
     invert : :obj:`bool`, optional (default=``False``)

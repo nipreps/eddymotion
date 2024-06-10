@@ -24,6 +24,7 @@ import numpy as np
 import pytest
 
 from eddymotion.model.kernels import SphericalCovarianceKernel
+from eddymotion.model.utils import is_positive_definite
 
 
 def numerical_gradient(kernel, theta, epsilon=1e-5):
@@ -88,8 +89,7 @@ def test_kernel_call():
     np.testing.assert_array_almost_equal(K, expected_K, decimal=6)
 
     # Check if the kernel matrix is positive definite
-    eigenvalues = np.linalg.eigvals(K)
-    assert np.all(eigenvalues > 0), "Kernel matrix is not positive definite"
+    assert is_positive_definite(K), "Kernel matrix is not positive definite"
 
 
 def test_kernel_diag():
@@ -107,7 +107,3 @@ def test_kernel_diag():
 
     # Assert the diagonal is as expected
     np.testing.assert_array_almost_equal(diag, expected_diag, decimal=6)
-
-
-if __name__ == "__main__":
-    pytest.main()

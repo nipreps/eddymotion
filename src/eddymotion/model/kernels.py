@@ -30,17 +30,18 @@ class SphericalCovarianceKernel(Kernel):
 
     Parameters
     ----------
-    lambda_s : float, default=1.0
+    lambda_s : :obj:`float`
         Scale parameter for the covariance function.
-    a : float, default=1.0
+    a : :obj:`float`
         Distance parameter where the covariance function goes to zero.
-    sigma_sq : float, default=1.0
+    sigma_sq : :obj:`float`
         Noise variance term.
-    lambda_s_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4)
+    lambda_s_bounds : :obj:`tuple` of :obj:`float` or "fixed"
         The lower and upper bound on lambda_s.
-    a_bounds : pair of floats >= 0 or "fixed", default=(1e-5, np.pi)
+    a_bounds : :obj:`tuple` of :obj:`float` or "fixed"
         The lower and upper bound on a.
-    sigma_sq_bounds : pair of floats >= 0 or "fixed", default=(1e-5, 1e4).
+    sigma_sq_bounds : :obj:`tuple` of :obj:`float` or "fixed"
+        The lower and upper bound on sigma_sq.
     """
 
     def __init__(
@@ -77,39 +78,39 @@ class SphericalCovarianceKernel(Kernel):
 
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_samples)
+        X : :obj:`array-like` of shape (n_samples, n_samples)
             Precomputed pairwise angles.
-        Y : array-like of shape (n_samples, n_samples), default=None
+        Y : :obj:`array-like` of shape (n_samples, n_samples), optional
             Second input for the kernel function.
-        eval_gradient : bool, default=False
+        eval_gradient : :obj:`bool`
             Evaluate the gradient with respect to the log of
             the kernel hyperparameter.
 
         Returns
         -------
-        K : array-like of shape (n_samples, n_samples)
+        K : :obj:`array-like` of shape (n_samples, n_samples)
             Kernel matrix.
-        K_gradient : array-like of shape (n_samples, n_samples, n_dims), optional
+        K_gradient : :obj:`array-like` of shape (n_samples, n_samples, n_dims), optional
             The gradient of the kernel matrix with respect to the log of the
             hyperparameters. Only returned when `eval_gradient` is True.
         """
         if Y is not None:
-            raise RuntimeError('Y should not be set')
+            X = Y
         K = np.where(X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0)
 
         K_gradient = None
         if eval_gradient:
             K_gradient = np.zeros((X.shape[0], X.shape[1], 3))
-            dists_deriv = np.zeros_like(theta)
-            mask = theta <= self.a
-            dists_deriv[mask] = (3 * theta[mask] / self.a**2) - (
-                1.5 * (theta[mask] / self.a) ** 2
+            dists_deriv = np.zeros_like(X)
+            mask = X <= self.a
+            dists_deriv[mask] = (3 * X[mask] / self.a**2) - (
+                1.5 * (X[mask] / self.a) ** 2
             ) / self.a
             K_gradient[:, :, 0] = K / self.lambda_s
             K_gradient[:, :, 1] = self.lambda_s * dists_deriv
-            K_gradient[:, :, 2] = np.eye(len(theta))
+            K_gradient[:, :, 2] = np.eye(len(X))
 
-        return self.lambda_s * K + self.sigma_sq * np.eye(len(theta)), K_gradient
+        return self.lambda_s * K + self.sigma_sq * np.eye(len(X)), K_gradient
 
     def diag(self, X):
         """
@@ -117,12 +118,12 @@ class SphericalCovarianceKernel(Kernel):
 
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
+        X : :obj:`array-like` of shape (n_samples, n_features)
             Input data.
 
         Returns
         -------
-        array-like of shape (n_samples,)
+        :obj:`array-like` of shape (n_samples,)
             Diagonal of the kernel matrix.
         """
         return np.full(X.shape[0], self.lambda_s + self.sigma_sq)
@@ -133,7 +134,7 @@ class SphericalCovarianceKernel(Kernel):
 
         Returns
         -------
-        bool
+        :obj:`bool`
             True if the kernel is stationary.
         """
         return True
@@ -144,12 +145,12 @@ class SphericalCovarianceKernel(Kernel):
 
         Parameters
         ----------
-        deep : bool, default=True
+        deep : :obj:`bool`
             Whether to return the parameters of the contained subobjects.
 
         Returns
         -------
-        params : dict
+        params : :obj:`dict`
             Parameter names mapped to their values.
         """
         return {"lambda_s": self.lambda_s, "a": self.a, "sigma_sq": self.sigma_sq}
@@ -160,12 +161,12 @@ class SphericalCovarianceKernel(Kernel):
 
         Parameters
         ----------
-        params : dict
+        params : :obj:`dict`
             Kernel parameters.
 
         Returns
         -------
-        self : object
+        self : :obj:`object`
             Returns self.
         """
         self.lambda_s = params.get("lambda_s", self.lambda_s)

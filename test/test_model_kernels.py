@@ -21,7 +21,6 @@
 #     https://www.nipreps.org/community/licensing/
 #
 import numpy as np
-import pytest
 
 from eddymotion.model.kernels import SphericalCovarianceKernel
 from eddymotion.model.utils import is_positive_definite

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model.gradient_utils - eddymotion 24.0.0.dev46 documentation</title>
+        <title>eddymotion.data.filtering - eddymotion 24.0.0.dev46 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -289,11 +289,11 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for eddymotion.model.gradient_utils</h1><div class="highlight"><pre>
+          <h1>Source code for eddymotion.data.filtering</h1><div class="highlight"><pre>
 <span></span><span class="c1"># emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-</span>
 <span class="c1"># vi: set ft=python sts=4 ts=4 sw=4 et:</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright 2024 The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
+<span class="c1"># Copyright 2022 The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
@@ -312,61 +312,80 @@
 <span class="c1">#</span>
 <span class="c1">#     https://www.nipreps.org/community/licensing/</span>
 <span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;Filtering data.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">median_filter</span>
+<span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span>
+
+<span class="n">DEFAULT_DTYPE</span> <span class="o">=</span> <span class="s2">&quot;int16&quot;</span>
+<span class="sd">&quot;&quot;&quot;The default image&#39;s data type.&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="compute_pairwise_angles">
-<a class="viewcode-back" href="../../../api/eddymotion.model.gradient_utils.html#eddymotion.model.gradient_utils.compute_pairwise_angles">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_pairwise_angles</span><span class="p">(</span><span class="n">bvecs</span><span class="p">,</span> <span class="n">closest_polarity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise angles across diffusion gradient encoding directions.</span>
+<div class="viewcode-block" id="advanced_clip">
+<a class="viewcode-back" href="../../../api/eddymotion.data.filtering.html#eddymotion.data.filtering.advanced_clip">[docs]</a>
+<span class="k">def</span> <span class="nf">advanced_clip</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">p_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">35</span><span class="p">,</span>
+    <span class="n">p_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">99.98</span><span class="p">,</span>
+    <span class="n">nonnegative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">DEFAULT_DTYPE</span><span class="p">,</span>
+    <span class="n">invert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clips outliers from a n-dimensional array and scales/casts to a specified data type.</span>
 
-<span class="sd">    Following [Andersson15]_, it computes the smallest of the angles between</span>
-<span class="sd">    each pair if ``closest_polarity`` is ``True``, i.e.</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        \theta(\mathbf{g}, \mathbf{g&#39;}) = \arccos(\abs{\langle \mathbf{g}, \mathbf{g&#39;} \rangle})</span>
+<span class="sd">    This function removes outliers from both ends of the intensity distribution</span>
+<span class="sd">    in a n-dimensional array using percentiles. It optionally enforces non-negative</span>
+<span class="sd">    values and scales the data to fit within a specified data type (e.g., uint8</span>
+<span class="sd">    for image registration). To remove outliers more robustly, the function</span>
+<span class="sd">    first applies a median filter to the data before calculating clipping thresholds.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bvecs : :obj:`~numpy.ndarray`</span>
-<span class="sd">        Diffusion gradient encoding directions in FSL format.</span>
-<span class="sd">    closest_polarity : :obj:`bool`</span>
-<span class="sd">        ``True`` to consider the smallest of the two angles between the crossing</span>
-<span class="sd">         lines resulting from reversing each vector pair.</span>
+<span class="sd">    data : :obj:`~numpy.ndarray`</span>
+<span class="sd">        The input n-dimensional data array.</span>
+<span class="sd">    p_min : :obj:`float`, optional (default=35)</span>
+<span class="sd">        The lower percentile threshold for clipping. Values below this percentile</span>
+<span class="sd">        are set to the threshold value.</span>
+<span class="sd">    p_max : :obj:`float`, optional (default=99.98)</span>
+<span class="sd">        The upper percentile threshold for clipping. Values above this percentile</span>
+<span class="sd">        are set to the threshold value.</span>
+<span class="sd">    nonnegative : :obj:`bool`, optional (default=``True``)</span>
+<span class="sd">        If True, only consider non-negative values when calculating thresholds.</span>
+<span class="sd">    dtype : :obj:`str` or :obj:`~numpy.dtype`, optional</span>
+<span class="sd">        The desired data type for the output array. Supported types are &quot;uint8&quot;</span>
+<span class="sd">        and &quot;int16&quot;.</span>
+<span class="sd">    invert : :obj:`bool`, optional (default=``False``)</span>
+<span class="sd">        If True, inverts the intensity values after scaling (1.0 - data).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :obj:`~numpy.ndarray`</span>
-<span class="sd">        Pairwise angles across diffusion gradient encoding directions.</span>
+<span class="sd">        The clipped and scaled data array with the specified data type.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; compute_pairwise_angles(</span>
-<span class="sd">    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),</span>
-<span class="sd">    ...     False,</span>
-<span class="sd">    ... )[0, 1]  # doctest: +ELLIPSIS</span>
-<span class="sd">    3.1415...</span>
-<span class="sd">    &gt;&gt;&gt; compute_pairwise_angles(</span>
-<span class="sd">    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),</span>
-<span class="sd">    ...     True,</span>
-<span class="sd">    ... )[0, 1]</span>
-<span class="sd">    0.0</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [Andersson15] J. L. R. Andersson. et al., An integrated approach to</span>
-<span class="sd">       correction for off-resonance effects and subject movement in diffusion MR</span>
-<span class="sd">       imaging, NeuroImage 125 (2016) 1063–1078</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">bvecs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bvecs must be of shape (3, N). Found: </span><span class="si">{</span><span class="n">bvecs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Calculate stats on denoised version to avoid outlier bias</span>
+    <span class="n">denoised</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 
-    <span class="c1"># Ensure b-vectors are unit-norm</span>
-    <span class="n">bvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bvecs</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">cosines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">bvecs</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">bvecs</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cosines</span><span class="p">)</span> <span class="k">if</span> <span class="n">closest_polarity</span> <span class="k">else</span> <span class="n">cosines</span><span class="p">)</span></div>
+    <span class="n">a_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">denoised</span><span class="p">[</span><span class="n">denoised</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nonnegative</span> <span class="k">else</span> <span class="n">denoised</span><span class="p">,</span> <span class="n">p_min</span><span class="p">)</span>
+    <span class="n">a_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">denoised</span><span class="p">[</span><span class="n">denoised</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nonnegative</span> <span class="k">else</span> <span class="n">denoised</span><span class="p">,</span> <span class="n">p_max</span><span class="p">)</span>
+
+    <span class="c1"># Clip and scale data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="n">a_min</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="n">a_max</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">-=</span> <span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">/=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">data</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">,</span> <span class="s2">&quot;int16&quot;</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
 
 </pre></div>
         </article>

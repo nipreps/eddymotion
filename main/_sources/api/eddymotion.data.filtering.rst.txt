@@ -1,0 +1,7 @@
+eddymotion.data.filtering module
+================================
+
+.. automodule:: eddymotion.data.filtering
+   :members:
+   :undoc-members:
+   :show-inheritance:

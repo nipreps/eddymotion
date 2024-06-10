@@ -13,6 +13,7 @@ Submodules
    :maxdepth: 1
 
    eddymotion.data.dmri
+   eddymotion.data.filtering
    eddymotion.data.pet
    eddymotion.data.splitting
    eddymotion.data.utils

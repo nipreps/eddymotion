@@ -93,13 +93,13 @@ class SphericalCovarianceKernel(Kernel):
             The gradient of the kernel matrix with respect to the log of the
             hyperparameters. Only returned when `eval_gradient` is True.
         """
-        if theta_prime is not None:
-            theta = theta_prime
-        K = np.where(theta <= self.a, 1 - 3 * (theta / self.a) ** 2 + 2 * (theta / self.a) ** 3, 0)
+        if Y is not None:
+            raise RuntimeError('Y should not be set')
+        K = np.where(X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0)
 
         K_gradient = None
         if eval_gradient:
-            K_gradient = np.zeros((theta.shape[0], theta.shape[1], 3))
+            K_gradient = np.zeros((X.shape[0], X.shape[1], 3))
             dists_deriv = np.zeros_like(theta)
             mask = theta <= self.a
             dists_deriv[mask] = (3 * theta[mask] / self.a**2) - (

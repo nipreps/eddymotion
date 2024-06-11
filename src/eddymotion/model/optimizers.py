@@ -30,20 +30,20 @@ def negative_log_likelihood(beta, y, X, kernel, reg_param=1e-6):
 
     Parameters
     ----------
-    beta : array-like of shape (n_params,)
+    beta : :obj:`~numpy.ndarray` of shape (n_params,)
         Log-transformed hyperparameters.
-    y : array-like of shape (n_samples,)
+    y : :obj:`~numpy.ndarray` of shape (n_samples,)
         Observed data.
-    X : array-like of shape (n_samples, n_features)
+    X : :obj:`~numpy.ndarray` of shape (n_samples, n_features)
         Input data for kernel function.
-    kernel : callable
-        Kernel function which takes hyperparameters and returns a kernel instance.
-    reg_param : float, default=1e-6
+    kernel : :obj:`~sklearn.gaussian_process.kernels`
+        Kernel instance.
+    reg_param : :obj:`float`
         Regularization parameter.
 
     Returns
     -------
-    float
+    :obj:`float`
         Negative log marginal likelihood.
     """
     kernel_instance = kernel(*np.exp(beta))
@@ -71,20 +71,20 @@ def total_negative_log_likelihood(beta, y_all, X, kernel, reg_param=1e-6):
 
     Parameters
     ----------
-    beta : array-like of shape (n_params,)
+    beta : :obj:`~numpy.ndarray` of shape (n_params,)
         Log-transformed hyperparameters.
-    y_all : array-like of shape (n_samples, n_voxels)
+    y_all : :obj:`~numpy.ndarray` of shape (n_samples, n_voxels)
         Observed data for all voxels.
-    X : array-like of shape (n_samples, n_features)
+    X : :obj:`~numpy.ndarray` of shape (n_samples, n_features)
         Input data for kernel function.
-    kernel : callable
-        Kernel function which takes hyperparameters and returns a kernel instance.
-    reg_param : float, default=1e-6
+    kernel : :obj:`~sklearn.gaussian_process.kernels`
+        Kernel instance.
+    reg_param : :obj:`float`
         Regularization parameter.
 
     Returns
     -------
-    float
+    :obj:`float`
         Total negative log marginal likelihood.
     """
     total_log_likelihood = 0
@@ -99,18 +99,18 @@ def loo_cross_validation(beta, y_all, X, kernel):
 
     Parameters
     ----------
-    beta : array-like of shape (n_params,)
+    beta : :obj:`~numpy.ndarray` of shape (n_params,)
         Log-transformed hyperparameters.
-    y_all : array-like of shape (n_samples, n_voxels)
+    y_all : :obj:`~numpy.ndarray` of shape (n_samples, n_voxels)
         Observed data for all voxels.
-    X : array-like of shape (n_samples, n_features)
+    X : :obj:`~numpy.ndarray` of shape (n_samples, n_features)
         Input data for kernel function.
-    kernel : callable
-        Kernel function which takes hyperparameters and returns a kernel instance.
+    kernel : :obj:`~sklearn.gaussian_process.kernels`
+        Kernel instance.
 
     Returns
     -------
-    float
+    :obj:`float`
         Mean LOO-CV error.
     """
     kernel_instance = kernel(*np.exp(beta))
@@ -144,26 +144,26 @@ def stochastic_optimization_with_early_stopping(
 
     Parameters
     ----------
-    initial_beta : array-like of shape (n_params,)
+    initial_beta : :obj:`~numpy.ndarray` of shape (n_params,)
         Initial guess for the log-transformed hyperparameters.
-    data : array-like of shape (n_samples, n_voxels)
+    data : :obj:`~numpy.ndarray` of shape (n_samples, n_voxels)
         Observed data for all voxels.
-    angles : array-like of shape (n_samples, n_features)
+    angles : :obj:`~numpy.ndarray` of shape (n_samples, n_features)
         Pairwise angles between gradient directions.
-    kernel : Kernel instance
+    kernel : :obj:`~sklearn.gaussian_process.kernels`
         A kernel instance with hyperparameters to be optimized.
     batch_size : int
         Size of the mini-batches for optimization.
-    max_iter : int, default=10000
+    max_iter : int
         Maximum number of iterations.
-    patience : int, default=100
+    patience : int
         Patience for early stopping.
-    tolerance : float, default=1e-4
+    tolerance : float
         Tolerance for improvement in loss.
 
     Returns
     -------
-    best_beta : array-like of shape (n_params,)
+    best_beta : :obj:`~numpy.ndarray` of shape (n_params,)
         Optimized log-transformed hyperparameters.
     """
     beta = initial_beta

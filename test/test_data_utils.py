@@ -6,8 +6,10 @@ from eddymotion.data.utils import apply_affines
 
 
 def test_apply_affines():
+    rng = np.random.default_rng(1234)
+
     # Create synthetic dataset
-    nii_data = np.random.rand(10, 10, 10, 10)
+    nii_data = rng.random((10, 10, 10, 10))
 
     # Generate Nifti1Image
     nii = nib.Nifti1Image(nii_data, np.eye(4))

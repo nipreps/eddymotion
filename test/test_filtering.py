@@ -26,23 +26,70 @@ import numpy as np
 
 import pytest
 
-from eddymotion.data.filtering import decimate
+from eddymotion.data.filtering import decimate, downsample
 
 
 @pytest.mark.parametrize(
     ("size", "block_size"),
     [
-        ((20, 20, 20), (5, 5, 5),)
+        ((20, 20, 20), (5, 5, 5),),
+        ((21, 21, 21), (5, 5, 5),),
     ],
 )
-def test_decimation(tmp_path, size, block_size):
+@pytest.mark.parametrize(
+    ("zoom_x", ),
+    # [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
+    [(2.0,)],
+)
+@pytest.mark.parametrize(
+    ("zoom_y", ),
+    # [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
+    [(-2.0,)],
+)
+@pytest.mark.parametrize(
+    ("zoom_z", ),
+    # [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
+    [(-2.0,)],
+)
+@pytest.mark.parametrize(
+    ("angle_x", ),
+    # [(0.0, ), (0.2, ), (-0.05, )],
+    [(-0.05,)]
+)
+@pytest.mark.parametrize(
+    ("angle_y", ),
+    [(0.0, ), (0.2, ), (-0.05, )],
+)
+@pytest.mark.parametrize(
+    ("angle_z", ),
+    [(0.0, ), (0.2, ), (-0.05, )],
+)
+@pytest.mark.parametrize(
+    ("offsets", ),
+    [
+        (None, ),
+        ((0.0, 0.0, 0.0),),
+    ],
+)
+def test_decimation(
+    tmp_path,
+    size,
+    block_size,
+    zoom_x,
+    zoom_y,
+    zoom_z,
+    angle_x,
+    angle_y,
+    angle_z,
+    offsets,
+):
     """Exercise decimation."""
 
     # Calculate the number of sub-blocks in each dimension
     num_blocks = [s // b for s, b in zip(size, block_size)]
 
     # Create the empty array
-    voxel_array = np.zeros(size, dtype=int)
+    voxel_array = np.zeros(size, dtype=np.uint16)
 
     # Fill the array with increasing values based on sub-block position
     current_block = 0
@@ -58,11 +105,23 @@ def test_decimation(tmp_path, size, block_size):
 
     fname = tmp_path / "test_img.nii.gz"
 
-    nb.Nifti1Image(voxel_array, None, None).to_filename(fname)
+    affine = np.eye(4)
+    affine[:3, :3] = (
+        nb.eulerangles.euler2mat(x=angle_x, y=angle_y, z=angle_z)
+        @ np.diag((zoom_x, zoom_y, zoom_z))
+        @ affine[:3, :3]
+    )
+
+    if offsets is None:
+        affine[:3, 3] = -0.5 * nb.affines.apply_affine(affine, np.array(size) - 1)
+
+    test_image = nb.Nifti1Image(voxel_array.astype(np.uint16), affine, None)
+    test_image.header.set_data_dtype(np.uint16)
+    test_image.to_filename(fname)
 
     # Need to define test oracle. For now, just see if it doesn't smoke.
-    decimate(fname, factor=2, smooth=False, order=1)
+    out = decimate(fname, factor=2, smooth=False, order=1)
+    out.to_filename(tmp_path / "decimated.nii.gz")
 
-    # out.to_filename(tmp_path / "decimated.nii.gz")
-
-    # import pdb; pdb.set_trace()
+    out = downsample(fname, shape=(10, 10, 10), smooth=False, order=1)
+    out.to_filename(tmp_path / "downsampled.nii.gz")

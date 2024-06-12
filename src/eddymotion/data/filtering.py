@@ -28,6 +28,7 @@ from numbers import Number
 
 import numpy as np
 from nibabel import Nifti1Image, load
+from nibabel.affines import apply_affine, voxel_sizes
 from scipy.ndimage import gaussian_filter as _gs
 from scipy.ndimage import map_coordinates, median_filter
 from skimage.morphology import ball
@@ -141,6 +142,112 @@ def gaussian_filter(
     return _gs(data, vox_width)
 
 
+def downsample(
+    in_file: str,
+    shape: tuple[int, int, int],
+    smooth: bool | tuple[int, int, int] = True,
+    order: int = 3,
+    nonnegative: bool = True,
+) -> Nifti1Image:
+    """
+    Downsamples a 3D or 4D Nifti image by a specified downsampling factor.
+
+    This function downsamples a Nifti image by averaging voxels within a user-defined
+    factor in each spatial dimension. It optionally applies Gaussian smoothing
+    before downsampling to reduce aliasing artifacts. The function also handles
+    updating the affine transformation matrix to reflect the change in voxel size.
+
+    Parameters
+    ----------
+    in_file : :obj:`str`
+        Path to the input NIfTI image file.
+    factor : :obj:`int` or :obj:`tuple`
+        The downsampling factor. If a single integer is provided, it is applied
+        uniformly across all spatial dimensions. Alternatively, a tuple of three
+        integers can be provided to specify different downsampling factors for each
+        spatial dimension (x, y, z). Values must be greater than 0.
+    smooth : :obj:`bool` or :obj:`tuple`, optional (default=``True``)
+        Controls application of Gaussian smoothing before downsampling. If True,
+        a smoothing kernel size equal to the downsampling factor is applied.
+        Alternatively, a tuple of three integers can be provided to specify
+        different smoothing kernel sizes for each spatial dimension. Setting to
+        False disables smoothing.
+    order : :obj:`int`, optional (default=3)
+        The order of the spline interpolation used for downsampling. Higher
+        orders provide smoother results but are computationally more expensive.
+    nonnegative : :obj:`bool`, optional (default=``True``)
+        If True, negative values in the downsampled data are set to zero.
+
+    Returns
+    -------
+    :obj:`~nibabel.Nifti1Image`
+        The downsampled NIfTI image object.
+
+    """
+
+    imnii = load(in_file)
+    data = np.squeeze(imnii.get_fdata())  # Remove unused dimensions
+    datashape = np.array(data.shape)
+    shape = np.array(shape)
+    ndim = data.ndim
+
+    if smooth:
+        if smooth is True:
+            smooth = datashape[:3] / shape[:3]
+        data = gaussian_filter(data, smooth)
+
+    extents = (
+        apply_affine(imnii.affine, datashape - 0.5)
+        - apply_affine(imnii.affine, (-0.5, -0.5, -0.5))
+    )
+    newzooms = extents / shape
+
+    # Update affine transformation
+    newaffine = np.eye(4)
+    oldzooms = voxel_sizes(imnii.affine)
+    newaffine[:3, :3] = np.diag(newzooms / oldzooms) @ imnii.affine[:3, :3]
+
+    # Update offset so new array is aligned with original
+    newaffine[:3, 3] = (
+        apply_affine(imnii.affine, 0.5 * datashape)
+        - apply_affine(newaffine, 0.5 * shape)
+    )
+
+    xfm = np.linalg.inv(imnii.affine) @ newaffine
+
+    # Create downsampled grid
+    down_grid = np.array(
+        np.meshgrid(
+            *[np.arange(_s, step=1) for _s in shape],
+            indexing="ij",
+        )
+    )
+
+    # Locations is an Nx3 array of index coordinates of the original image where we sample
+    locations = apply_affine(xfm, down_grid.reshape((ndim, np.prod(shape))).T)
+
+    # Resample data on the new grid
+    resampled = map_coordinates(
+        data,
+        locations.T,
+        order=order,
+        mode="constant",
+        cval=0,
+        prefilter=True,
+    ).reshape(shape)
+
+    # Set negative values to zero (optional)
+    if order > 2 and nonnegative:
+        resampled[resampled < 0] = 0
+
+    # Create new Nifti image with updated information
+    newnii = Nifti1Image(resampled, newaffine, imnii.header)
+    newnii.set_sform(newaffine, code=1)
+    newnii.set_qform(newaffine, code=1)
+
+    return newnii
+
+
 def decimate(
     in_file: str,
     factor: int | tuple[int, int, int],
@@ -186,7 +293,6 @@ def decimate(
 
     imnii = load(in_file)
     data = np.squeeze(imnii.get_fdata())  # Remove unused dimensions
-    datashape = data.shape
     ndim = data.ndim
 
     if isinstance(factor, Number):
@@ -203,37 +309,16 @@ def decimate(
             smooth = factor
         data = gaussian_filter(data, smooth)
 
-    # Create downsampled grid
-    down_grid = np.array(
-        np.meshgrid(
-            *[np.arange(_s, step=int(_f) or 1) for _s, _f in zip(datashape, factor)],
-            indexing="ij",
-        )
-    )
-    new_shape = down_grid.shape[1:]
-
     # Update affine transformation
     newaffine = imnii.affine.copy()
     newaffine[:3, :3] = np.array(factor[:3]) * newaffine[:3, :3]
 
-    # TODO: Update offset so new array is aligned with original
-
-    # Resample data on the new grid
-    resampled = map_coordinates(
-        data,
-        down_grid.reshape((ndim, np.prod(new_shape))),
-        order=order,
-        mode="constant",
-        cval=0,
-        prefilter=True,
-    ).reshape(new_shape)
-
-    # Set negative values to zero (optional)
-    if order > 2 and nonnegative:
-        resampled[resampled < 0] = 0
-
     # Create new Nifti image with updated information
-    newnii = Nifti1Image(resampled, newaffine, imnii.header)
+    newnii = Nifti1Image(
+        data[::factor[0], ::factor[1], ::factor[2]],
+        newaffine,
+        imnii.header,
+    )
     newnii.set_sform(newaffine, code=1)
     newnii.set_qform(newaffine, code=1)
 

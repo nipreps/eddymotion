@@ -65,7 +65,7 @@ def advanced_clip(
         The desired data type for the output array. Supported types are "uint8"
         and "int16".
     invert : :obj:`bool`, optional
-        If True, inverts the intensity values after scaling (1.0 - data).
+        If ``True``, inverts the intensity values after scaling (1.0 - ``data``).
 
     Returns
     -------

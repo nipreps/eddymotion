@@ -53,18 +53,18 @@ def advanced_clip(
     ----------
     data : :obj:`~numpy.ndarray`
         The input n-dimensional data array.
-    p_min : :obj:`float`, optional (default=35)
+    p_min : :obj:`float`, optional
         The lower percentile threshold for clipping. Values below this percentile
         are set to the threshold value.
-    p_max : :obj:`float`, optional (default=99.98)
+    p_max : :obj:`float`, optional
         The upper percentile threshold for clipping. Values above this percentile
         are set to the threshold value.
-    nonnegative : :obj:`bool`, optional (default=``True``)
+    nonnegative : :obj:`bool`, optional
         If True, only consider non-negative values when calculating thresholds.
     dtype : :obj:`str` or :obj:`~numpy.dtype`, optional
         The desired data type for the output array. Supported types are "uint8"
         and "int16".
-    invert : :obj:`bool`, optional (default=``False``)
+    invert : :obj:`bool`, optional
         If True, inverts the intensity values after scaling (1.0 - data).
 
     Returns

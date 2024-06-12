@@ -33,7 +33,7 @@ _datadir = (Path(__file__).parent.parent.parent / "data").absolute()
 
 
 @pytest.mark.parametrize(
-    ("bvals", "exp_scheme", "exp_bval_groups"),
+    ("bvals", "exp_scheme", "exp_bval_groups", "exp_bval_estimated"),
     [
         (
             np.asarray(
@@ -175,20 +175,22 @@ _datadir = (Path(__file__).parent.parent.parent / "data").absolute()
                     ]
                 ),
             ],
+            [5, 300, 1000, 2000],
         ),
     ],
 )
-def test_find_shelling_scheme_array(bvals, exp_scheme, exp_bval_groups):
-    obt_scheme, obt_bval_groups = find_shelling_scheme(bvals)
+def test_find_shelling_scheme_array(bvals, exp_scheme, exp_bval_groups, exp_bval_estimated):
+    obt_scheme, obt_bval_groups, obt_bval_estimated = find_shelling_scheme(bvals)
     assert obt_scheme == exp_scheme
     assert all(
         np.allclose(obt_arr, exp_arr)
         for obt_arr, exp_arr in zip(obt_bval_groups, exp_bval_groups, strict=True)
     )
+    assert np.allclose(obt_bval_estimated, exp_bval_estimated)
 
 
 @pytest.mark.parametrize(
-    ("dwi_btable", "exp_scheme", "exp_bval_groups"),
+    ("dwi_btable", "exp_scheme", "exp_bval_groups", "exp_bval_estimated"),
     [
         (
             "ds000114_singleshell",
@@ -264,6 +266,7 @@ def test_find_shelling_scheme_array(bvals, exp_scheme, exp_bval_groups):
                     ]
                 ),
             ],
+            [0.0, 1000.0],
         ),
         (
             "hcph_multishell",
@@ -546,6 +549,7 @@ def test_find_shelling_scheme_array(bvals, exp_scheme, exp_bval_groups):
                     ]
                 ),
             ],
+            [0.0, 700.0, 1000.0, 2000.0, 3000.0],
         ),
         (
             "ds004737_dsi",
@@ -606,15 +610,31 @@ def test_find_shelling_scheme_array(bvals, exp_scheme, exp_bval_groups):
                     ]
                 ),
             ],
+            [
+                5.0,
+                995.0,
+                1195.0,
+                1595.0,
+                1797.5,
+                2190.0,
+                2595.0,
+                2795.0,
+                3400.0,
+                3790.0,
+                4195.0,
+                4390.0,
+                4990.0,
+            ],
         ),
     ],
 )
-def test_find_shelling_scheme_files(dwi_btable, exp_scheme, exp_bval_groups):
+def test_find_shelling_scheme_files(dwi_btable, exp_scheme, exp_bval_groups, exp_bval_estimated):
     bvals = np.loadtxt(_datadir / f"{dwi_btable}.bval")
 
-    obt_scheme, obt_bval_groups = find_shelling_scheme(bvals)
+    obt_scheme, obt_bval_groups, obt_bval_estimated = find_shelling_scheme(bvals)
     assert obt_scheme == exp_scheme
     assert all(
         np.allclose(obt_arr, exp_arr)
         for obt_arr, exp_arr in zip(obt_bval_groups, exp_bval_groups, strict=True)
     )
+    assert np.allclose(obt_bval_estimated, exp_bval_estimated)

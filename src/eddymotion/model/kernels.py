@@ -96,9 +96,13 @@ class SphericalCovarianceKernel(Kernel):
         """
         if Y is not None:
             X = Y
-            K = self.lambda_s * np.where(X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0)
+            K = self.lambda_s * np.where(
+                X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0
+            )
         else:
-            K = self.lambda_s * np.where(X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0) + self.sigma_sq * np.eye(len(X))
+            K = self.lambda_s * np.where(
+                X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0
+            ) + self.sigma_sq * np.eye(len(X))
 
         K_gradient = None
         if eval_gradient:
@@ -115,7 +119,7 @@ class SphericalCovarianceKernel(Kernel):
             else:
                 K_gradient[:, :, 2] = np.eye(len(X))
 
-            return self.lambda_s * K, K_gradient
+            return K, K_gradient
 
         return K
 

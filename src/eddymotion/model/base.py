@@ -358,7 +358,7 @@ class BaseDWIModel(BaseModel):
         # Cap the b-value if b_max is defined
         gradient[-1] = min(gradient[-1], self._b_max or gradient[-1])
 
-        self._gtab = _rasb2dipy(gradient)
+        gradient = _rasb2dipy(gradient)
 
         S0 = None
         if self._S0 is not None:
@@ -371,7 +371,7 @@ class BaseDWIModel(BaseModel):
         n_models = len(self._models) if self._model is None and self._models else 1
 
         if n_models == 1:
-            predicted, _ = _exec_predict(self._model, **(kwargs | {"gtab": self._gtab, "S0": S0}))
+            predicted, _ = _exec_predict(self._model, **(kwargs | {"gtab": gradient, "S0": S0}))
         else:
             S0 = np.array_split(S0, n_models) if S0 is not None else [None] * n_models
 
@@ -383,7 +383,7 @@ class BaseDWIModel(BaseModel):
                     delayed(_exec_predict)(
                         model,
                         chunk=i,
-                        **(kwargs | {"gtab": self._gtab, "S0": S0[i]}),
+                        **(kwargs | {"gtab": gradient, "S0": S0[i]}),
                     )
                     for i, model in enumerate(self._models)
                 )

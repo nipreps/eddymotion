@@ -121,7 +121,6 @@ class BaseModel:
         # Keep model state
         self._model = None  # "Main" model
         self._models = None  # For parallel (chunked) execution
-        self._is_fitted = False
 
         # Setup brain mask
         self._mask = mask
@@ -457,7 +456,6 @@ class AverageDWModel(BaseDWIModel):
         self._bias = kwargs.get("bias", True)
         self._stat = kwargs.get("stat", "median")
         self._data = None
-        self._is_fitted = False
 
     def fit(self, data, **kwargs):
         """Calculate the average."""
@@ -486,10 +484,6 @@ class AverageDWModel(BaseDWIModel):
         # Calculate the average
         self._data = avg_func(shells, axis=-1)
         self._is_fitted = True
-
-    @property
-    def is_fitted(self):
-        return self._is_fitted
 
     def predict(self, *_, **kwargs):
         """Return the average map."""

@@ -22,8 +22,8 @@
 #
 import numpy as np
 
-from eddymotion.model.kernels import SphericalCovarianceKernel
 from eddymotion.math.utils import is_positive_definite
+from eddymotion.model.kernels import SphericalCovarianceKernel
 
 
 def numerical_gradient(kernel, theta, epsilon=1e-5):

@@ -1,0 +1,7 @@
+eddymotion.model.dmri\_utils module
+===================================
+
+.. automodule:: eddymotion.model.dmri_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

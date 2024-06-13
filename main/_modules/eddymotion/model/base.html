@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model.base - eddymotion 24.0.0.dev61 documentation</title>
+        <title>eddymotion.model.base - eddymotion 24.0.0.dev63 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -179,7 +179,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev61 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev63 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,14 +202,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev61</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev63</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev61</span>
+  <span class="sidebar-brand-text">24.0.0.dev63</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -422,7 +422,6 @@
         <span class="c1"># Keep model state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &quot;Main&quot; model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># For parallel (chunked) execution</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Setup brain mask</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">mask</span>
@@ -794,7 +793,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_bias</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stat</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="AverageDWModel.fit">
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.AverageDWModel.fit">[docs]</a>
@@ -826,10 +824,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">avg_func</span><span class="p">(</span><span class="n">shells</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fitted</span>
 
 <div class="viewcode-block" id="AverageDWModel.predict">
 <a class="viewcode-back" href="../../../api/eddymotion.model.base.html#eddymotion.model.AverageDWModel.predict">[docs]</a>
@@ -919,7 +913,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=190c6414"></script>
+</div><script src="../../../_static/documentation_options.js?v=8a8c6a67"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>

@@ -29,22 +29,32 @@ from eddymotion import model
 from eddymotion.data.dmri import DWI
 from eddymotion.data.splitting import lovo_split
 from eddymotion.exceptions import ModelNotFittedError
+from eddymotion.model.base import DEFAULT_MAX_S0, DEFAULT_MIN_S0
 
 
 def test_trivial_model():
     """Check the implementation of the trivial B0 model."""
 
+    rng = np.random.default_rng(1234)
+
     # Should not allow initialization without a B0
     with pytest.raises(ValueError):
         model.TrivialB0Model(gtab=np.eye(4))
 
-    _S0 = np.random.normal(size=(10, 10, 10))
+    _S0 = rng.normal(size=(2, 2, 2))
 
-    tmodel = model.TrivialB0Model(gtab=np.eye(4), S0=_S0)
+    _clipped_S0 = np.clip(
+        _S0.astype("float32") / _S0.max(),
+        a_min=DEFAULT_MIN_S0,
+        a_max=DEFAULT_MAX_S0,
+    )
 
-    assert tmodel.fit() is None
+    tmodel = model.TrivialB0Model(gtab=np.eye(4), S0=_clipped_S0)
 
-    assert np.all(_S0 == tmodel.predict((1, 0, 0)))
+    data = None
+    assert tmodel.fit(data) is None
+
+    assert np.all(_clipped_S0 == tmodel.predict((1, 0, 0)))
 
 
 def test_average_model():
@@ -106,6 +116,7 @@ def test_two_initialisations(datadir):
 
     # Direct initialisation
     model1 = model.AverageDWModel(
+        gtab=data_train[1],
         S0=dmri_dataset.bzero,
         th_low=100,
         th_high=1000,

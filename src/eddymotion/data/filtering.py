@@ -196,9 +196,9 @@ def downsample(
             smooth = datashape[:3] / shape[:3]
         data = gaussian_filter(data, smooth)
 
-    extents = (
-        apply_affine(imnii.affine, datashape - 0.5)
-        - apply_affine(imnii.affine, (-0.5, -0.5, -0.5))
+    extents = np.abs(
+        apply_affine(imnii.affine, datashape - 1)
+        - apply_affine(imnii.affine, (0.0, 0.0, 0.0))
     )
     newzooms = extents / shape
 
@@ -231,8 +231,7 @@ def downsample(
         data,
         locations.T,
         order=order,
-        mode="constant",
-        cval=0,
+        mode="mirror",
         prefilter=True,
     ).reshape(shape)
 
@@ -252,7 +251,6 @@ def decimate(
     in_file: str,
     factor: int | tuple[int, int, int],
     smooth: bool | tuple[int, int, int] = True,
-    order: int = 3,
     nonnegative: bool = True,
 ) -> Nifti1Image:
     """
@@ -278,9 +276,6 @@ def decimate(
         Alternatively, a tuple of three integers can be provided to specify
         different smoothing kernel sizes for each spatial dimension. Setting to
         False disables smoothing.
-    order : :obj:`int`, optional (default=3)
-        The order of the spline interpolation used for downsampling. Higher
-        orders provide smoother results but are computationally more expensive.
     nonnegative : :obj:`bool`, optional (default=``True``)
         If True, negative values in the downsampled data are set to zero.
 

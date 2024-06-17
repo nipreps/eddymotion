@@ -38,23 +38,19 @@ from eddymotion.data.filtering import decimate, downsample
 )
 @pytest.mark.parametrize(
     ("zoom_x", ),
-    # [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
-    [(2.0,)],
+    [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
 )
 @pytest.mark.parametrize(
     ("zoom_y", ),
-    # [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
-    [(-2.0,)],
+    [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
 )
 @pytest.mark.parametrize(
     ("zoom_z", ),
-    # [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
-    [(-2.0,)],
+    [(1.0, ), (-1.0, ), (2.0, ), (-2.0, )],
 )
 @pytest.mark.parametrize(
     ("angle_x", ),
-    # [(0.0, ), (0.2, ), (-0.05, )],
-    [(-0.05,)]
+    [(0.0, ), (0.2, ), (-0.05, )],
 )
 @pytest.mark.parametrize(
     ("angle_y", ),
@@ -82,6 +78,7 @@ def test_decimation(
     angle_y,
     angle_z,
     offsets,
+    outdir,
 ):
     """Exercise decimation."""
 
@@ -120,8 +117,30 @@ def test_decimation(
     test_image.to_filename(fname)
 
     # Need to define test oracle. For now, just see if it doesn't smoke.
-    out = decimate(fname, factor=2, smooth=False, order=1)
-    out.to_filename(tmp_path / "decimated.nii.gz")
+    out = decimate(fname, factor=2, smooth=False)
 
-    out = downsample(fname, shape=(10, 10, 10), smooth=False, order=1)
-    out.to_filename(tmp_path / "downsampled.nii.gz")
+    out = downsample(fname, shape=(10, 10, 10), smooth=False, order=0)
+
+    if outdir:
+        from niworkflows.interfaces.reportlets.registration import (
+            SimpleBeforeAfterRPT as SimpleBeforeAfter,
+        )
+
+        out.to_filename(tmp_path / "decimated.nii.gz")
+
+        SimpleBeforeAfter(
+            after_label="Decimated",
+            before_label="Original",
+            after=str(tmp_path / "decimated.nii.gz"),
+            before=str(fname),
+            out_report=str(outdir / f'decimated-{tmp_path.name}.svg'),
+        ).run()
+
+        out.to_filename(tmp_path / "downsampled.nii.gz")
+        SimpleBeforeAfter(
+            after_label="Downsampled",
+            before_label="Original",
+            after=str(tmp_path / "downsampled.nii.gz"),
+            before=str(fname),
+            out_report=str(outdir / f'downsampled-{tmp_path.name}.svg'),
+        ).run()

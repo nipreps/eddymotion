@@ -23,6 +23,8 @@
 import numpy as np
 from sklearn.gaussian_process.kernels import Hyperparameter, Kernel
 
+from eddymotion.model.utils import compute_pairwise_angles
+
 
 class SphericalCovarianceKernel(Kernel):
     """
@@ -78,46 +80,47 @@ class SphericalCovarianceKernel(Kernel):
 
         Parameters
         ----------
-        X : :obj:`array-like` of shape (n_samples, n_samples)
-            Precomputed pairwise angles.
-        Y : :obj:`array-like` of shape (n_samples, n_samples), optional
-            Second input for the kernel function.
+        X : :obj:`~numpy.ndarray`
+            Diffusion gradient encoding directions in FSL format.
+        Y : :obj:`~numpy.ndarray`
+            Diffusion gradient encoding directions in FSL format., optional
         eval_gradient : :obj:`bool`
             Evaluate the gradient with respect to the log of
             the kernel hyperparameter.
 
         Returns
         -------
-        K : :obj:`array-like` of shape (n_samples, n_samples)
+        K : :obj:`~numpy.ndarray` of shape (n_samples, n_samples)
             Kernel matrix.
-        K_gradient : :obj:`array-like` of shape (n_samples, n_samples, n_dims), optional
+        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples, n_samples, n_dims), optional
             The gradient of the kernel matrix with respect to the log of the
             hyperparameters. Only returned when `eval_gradient` is True.
         """
         if Y is not None:
-            X = Y
+            angles = compute_pairwise_angles(X.T, Y.T, closest_polarity=True)
             K = self.lambda_s * np.where(
-                X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0
+                angles <= self.a, 1 - 3 * (angles / self.a) ** 2 + 2 * (angles / self.a) ** 3, 0
             )
         else:
+            angles = compute_pairwise_angles(X.T, X.T, closest_polarity=True)
             K = self.lambda_s * np.where(
-                X <= self.a, 1 - 3 * (X / self.a) ** 2 + 2 * (X / self.a) ** 3, 0
-            ) + self.sigma_sq * np.eye(len(X))
+                angles <= self.a, 1 - 3 * (angles / self.a) ** 2 + 2 * (angles / self.a) ** 3, 0
+            ) + self.sigma_sq * np.eye(len(angles))
 
         K_gradient = None
         if eval_gradient:
-            K_gradient = np.zeros((X.shape[0], X.shape[1], 3))
-            dists_deriv = np.zeros_like(X)
-            mask = X <= self.a
-            dists_deriv[mask] = (3 * X[mask] / self.a**2) - (
-                1.5 * (X[mask] / self.a) ** 2
+            K_gradient = np.zeros((angles.shape[0], angles.shape[1], 3))
+            dists_deriv = np.zeros_like(angles)
+            mask = angles <= self.a
+            dists_deriv[mask] = (3 * angles[mask] / self.a**2) - (
+                1.5 * (angles[mask] / self.a) ** 2
             ) / self.a
             K_gradient[:, :, 0] = K / self.lambda_s
             K_gradient[:, :, 1] = self.lambda_s * dists_deriv
             if Y is not None:
-                K_gradient[:, :, 2] = np.zeros(np.shape(X))
+                K_gradient[:, :, 2] = np.zeros(np.shape(angles))
             else:
-                K_gradient[:, :, 2] = np.eye(len(X))
+                K_gradient[:, :, 2] = np.eye(len(angles))
 
             return K, K_gradient
 
@@ -129,15 +132,16 @@ class SphericalCovarianceKernel(Kernel):
 
         Parameters
         ----------
-        X : :obj:`array-like` of shape (n_samples, n_features)
-            Input data.
+        :obj:`~numpy.ndarray`
+            Diffusion gradient encoding directions in FSL format.
 
         Returns
         -------
-        :obj:`array-like` of shape (n_samples,)
+        :obj:`~numpy.ndarray` of shape (n_samples,)
             Diagonal of the kernel matrix.
         """
-        return np.full(X.shape[0], self.lambda_s + self.sigma_sq)
+        angles = compute_pairwise_angles(X.T, X.T, closest_polarity=True)
+        return np.full(angles.shape[0], self.lambda_s + self.sigma_sq)
 
     def is_stationary(self):
         """

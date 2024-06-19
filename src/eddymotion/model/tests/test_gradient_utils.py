@@ -21,42 +21,107 @@
 #     https://www.nipreps.org/community/licensing/
 #
 import numpy as np
+import pytest
 
 from eddymotion.model.gradient_utils import compute_pairwise_angles
 
 
-def test_compute_pairwise_angles():
-    # No need to use normalized vectors: compute_angle takes care of dealing
-    # with it.
-    # The last vector serves as a case where e.g. the angle between the first
-    # vector and the last one is 135, and the method yielding the smallest
-    # resulting angle between the crossing lines (45 vs 135)
-    bvecs = np.array(
-        [
-            [1, 0, 0, 1, 1, 0, -1],
-            [0, 1, 0, 1, 0, 1, 0],
-            [0, 0, 1, 0, 1, 1, 1],
-        ]
-    )
+# No need to use normalized vectors: compute_pairwise_angles takes care of it.
+# The [-1, 0, 1].T vector serves as a case where e.g. the angle between vector
+# [1, 0, 0] and the former is 135 unless the closest polarity flag is set to
+# True, in which case it yields 45
+@pytest.mark.parametrize(
+    ("bvecs1", "bvecs2", "closest_polarity", "expected"),
+    [
+        (
+            np.array(
+                [
+                    [1, 0, 0, 1, 1, 0, -1],
+                    [0, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 1, 0, 1, 1, 1],
+                ]
+            ),
+            np.array(
+                [
+                    [1, 0, 0, 1, 1, 0, -1],
+                    [0, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 1, 0, 1, 1, 1],
+                ]
+            ),
+            True,
+            np.array(
+                [
+                    [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, np.pi / 4],
+                    [np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 2],
+                    [np.pi / 2, np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 4],
+                    [np.pi / 4, np.pi / 4, np.pi / 2, 0.0, np.pi / 3, np.pi / 3, np.pi / 3],
+                    [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, 0.0, np.pi / 3, np.pi / 2],
+                    [np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 3, np.pi / 3, 0.0, np.pi / 3],
+                    [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, np.pi / 2, np.pi / 3, 0.0],
+                ]
+            ),
+        ),
+        (
+            np.array(
+                [
+                    [1, 0, 0, 1, 1, 0, -1],
+                    [0, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 1, 0, 1, 1, 1],
+                ]
+            ),
+            np.array(
+                [
+                    [1, -1],
+                    [0, 0],
+                    [0, 1],
+                ]
+            ),
+            True,
+            np.array(
+                [
+                    [0.0, np.pi / 4],
+                    [np.pi / 2, np.pi / 2],
+                    [np.pi / 2, np.pi / 4],
+                    [np.pi / 4, np.pi / 3],
+                    [np.pi / 4, np.pi / 2],
+                    [np.pi / 2, np.pi / 3],
+                    [np.pi / 4, 0.0],
+                ]
+            ),
+        ),
+        (
+            np.array(
+                [
+                    [1, 0, 0, 1, 1, 0, -1],
+                    [0, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 1, 0, 1, 1, 1],
+                ]
+            ),
+            np.array(
+                [
+                    [1, -1],
+                    [0, 0],
+                    [0, 1],
+                ]
+            ),
+            False,
+            np.array(
+                [
+                    [0.0, 3 * np.pi / 4],
+                    [np.pi / 2, np.pi / 2],
+                    [np.pi / 2, np.pi / 4],
+                    [np.pi / 4, 2 * np.pi / 3],
+                    [np.pi / 4, np.pi / 2],
+                    [np.pi / 2, np.pi / 3],
+                    [3 * np.pi / 4, 0.0],
+                ]
+            ),
+        ),
+    ],
+)
+def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
+    obtained = compute_pairwise_angles(bvecs1, bvecs2, closest_polarity)
 
-    expected = np.array(
-        [
-            [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, np.pi / 4],
-            [np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 2],
-            [np.pi / 2, np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 4],
-            [np.pi / 4, np.pi / 4, np.pi / 2, 0.0, np.pi / 3, np.pi / 3, np.pi / 3],
-            [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, 0.0, np.pi / 3, np.pi / 2],
-            [np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 3, np.pi / 3, 0.0, np.pi / 3],
-            [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, np.pi / 2, np.pi / 3, 0.0],
-        ]
-    )
-
-    smallest = True
-    obtained = compute_pairwise_angles(bvecs, smallest)
-
-    # Expect N*N elements
-    assert bvecs.shape[-1] ** 2 == np.prod(obtained.shape)
+    assert (bvecs1.shape[-1], bvecs2.shape[-1]) == obtained.shape
     assert obtained.shape == expected.shape
-    # Check that the matrix is symmetric
-    assert np.allclose(expected, expected.T)
     np.testing.assert_array_almost_equal(obtained, expected, decimal=2)

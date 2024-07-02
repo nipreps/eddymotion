@@ -1,7 +1,0 @@
-eddymotion.viz module
-=====================
-
-.. automodule:: eddymotion.viz
-   :members:
-   :undoc-members:
-   :show-inheritance:

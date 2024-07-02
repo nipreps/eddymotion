@@ -13,5 +13,6 @@ Submodules
    :maxdepth: 1
 
    eddymotion.model.base
+   eddymotion.model.dmri_covariance
    eddymotion.model.dmri_utils
    eddymotion.model.gradient_utils

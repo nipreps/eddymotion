@@ -27,6 +27,7 @@ import warnings
 import numpy as np
 from dipy.core.gradients import gradient_table
 from joblib import Parallel, delayed
+from sklearn.gaussian_process import GaussianProcessRegressor
 
 from eddymotion.exceptions import ModelNotFittedError
 
@@ -513,6 +514,72 @@ class DKIModel(BaseDWIModel):
 
     _modelargs = DTIModel._modelargs
     _model_class = "dipy.reconst.dki.DiffusionKurtosisModel"
+
+
+class GaussianProcessModel(BaseModel):
+    """A Gaussian process model for DWI data based on [Andersson15]_."""
+
+    __slots__ = (
+        "_dwi",
+        "_kernel",
+        "_gpr",
+    )
+
+    def __init__(self, dwi, kernel, **kwargs):
+        """Implement object initialization.
+
+        Parameters
+        ----------
+        dwi : :obj:`~eddymotion.dmri.DWI`
+            The DWI data.
+        kernel : :obj:`~sklearn.gaussian_process.kernels.Kernel`
+            Kernel instance.
+        """
+
+        self._dwi = dwi
+        self._kernel = kernel
+
+    def fit(self, X, y, *args, **kwargs):
+        """Fit the Gaussian process model to the training data.
+
+        Parameters
+        ----------
+        X : :obj:`~numpy.ndarray` of shape (n_samples, n_features)
+            Feature values for training. For the DWI cae, ``n_samples`` is the
+            number of diffusion-encoding gradient vectors, and ``n_features``
+            being 3 (the spatial coordinates).
+        y : :obj:`~numpy.ndarray` of shape (n_samples,) or (n_samples, n_targets)
+            Target values: the DWI signal values.
+        """
+
+        self._gpr = GaussianProcessRegressor(kernel=self._kernel, random_state=0)
+        self._gpr.fit(X, y)
+        self._is_fitted = True
+
+    def predict(self, X, **kwargs):
+        """Predict using the Gaussian process model of the DWI signal, where
+        ``X`` is a diffusion-encoding gradient vector whose DWI data needs to be
+        estimated.
+
+        Parameters
+        ----------
+        X : :obj:`~numpy.ndarray` of shape (n_samples,)
+            Query points where the Gaussian process is evaluated: the
+            diffusion-encoding gradient vectors of interest.
+
+        Returns
+        -------
+        y_mean : :obj:`~numpy.ndarray` of shape (n_samples,) or (n_samples, n_targets)
+            Mean of predictive distribution at query points.
+        y_std : :obj:`~numpy.ndarray` of shape (n_samples,) or (n_samples, n_targets)
+            Standard deviation of predictive distribution at query points.
+        """
+
+        if not self._is_fitted:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
+
+        y_mean, y_std = self._gpr.predict(X, return_std=True)
+        return y_mean, y_std
 
 
 def _rasb2dipy(gradient):

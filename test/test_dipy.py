@@ -22,6 +22,7 @@
 #
 import numpy as np
 import pytest
+from dipy.core.gradients import gradient_table
 
 from eddymotion.model.dipy import (
     compute_exponential_covariance,
@@ -124,7 +125,9 @@ from eddymotion.model.dipy import (
     ],
 )
 def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
-    obtained = compute_pairwise_angles(bvecs1, bvecs2, closest_polarity)
+    gtab1 = gradient_table([1000] * len(bvecs1), bvecs1)
+    gtab2 = gradient_table([1000] * len(bvecs2), bvecs2)
+    obtained = compute_pairwise_angles(gtab1, gtab2, closest_polarity)
 
     assert (bvecs1.shape[-1], bvecs2.shape[-1]) == obtained.shape
     assert obtained.shape == expected.shape

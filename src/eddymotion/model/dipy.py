@@ -64,11 +64,11 @@ def gp_prediction(
     # Check it's fitted as they do in sklearn internally
     # https://github.com/scikit-learn/scikit-learn/blob/972e17fe1aa12d481b120ad4a3dc076bae736931/\
     # sklearn/gaussian_process/_gpr.py#L410C9-L410C42
-    if not hasattr(model._gpr, "X_train_"):
+    if not hasattr(model, "X_train_"):
         raise RuntimeError("Model is not yet fitted.")
 
     # Extract orientations from gtab, and highly likely, the b-value too.
-    return model._gpr.predict(gtab, return_std=False)
+    return model.predict(gtab, return_std=False)
 
 
 def get_kernel(
@@ -175,9 +175,11 @@ class GaussianProcessModel(ReconstModel):
             data[mask[..., None]] if mask is not None else np.reshape(data, (-1, data.shape[-1]))
         )
 
-        if data.shape[-1] != len(gtab):
+        signal_dirs = data.shape[-1]
+        grad_dirs = gtab.gradients.shape[0]
+        if signal_dirs != grad_dirs:
             raise ValueError(
-                f"Mismatched data {data.shape[-1]} and gradient table {len(gtab)} sizes."
+                f"Mismatched data {signal_dirs} and gradient table {grad_dirs} sizes."
             )
 
         gpr = GaussianProcessRegressor(
@@ -185,8 +187,8 @@ class GaussianProcessModel(ReconstModel):
             random_state=random_state,
         )
         self._modelfit = GPFit(
-            gpr.fit(gtab.gradients, data),
             gtab=gtab,
+            model=gpr.fit(gtab.gradients, data[0]),
             mask=mask,
         )
         return self._modelfit

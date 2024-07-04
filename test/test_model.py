@@ -24,7 +24,8 @@
 
 import numpy as np
 import pytest
-from sklearn.datasets import make_friedman2
+from dipy.core.gradients import gradient_table
+from sklearn.datasets import make_regression
 
 from eddymotion import model
 from eddymotion.data.dmri import DWI
@@ -108,14 +109,17 @@ def test_average_model():
 
 
 def test_gp_model():
-    gp = GaussianProcessModel(kernel="default")
+    gp = GaussianProcessModel("test", kernel="default")
 
     assert isinstance(gp, model.dipy.GaussianProcessModel)
 
-    X, y = make_friedman2(n_samples=500, noise=0, random_state=0)
-    gp.fit(X, y)
-    X_qry = X[:2, :]
-    prediction, _ = gp.predict(X_qry, return_std=True)
+    X, y = make_regression(n_samples=100, n_features=3, noise=0, random_state=0)
+
+    bvecs = X.T / np.linalg.norm(X.T, axis=0)
+    gtab = gradient_table([1000] * bvecs.shape[-1], bvecs)
+    gp.fit(y, gtab)
+    X_qry = bvecs[:, :2].T
+    prediction = gp.predict(X_qry, return_std=True)
 
     assert prediction.shape == (X_qry.shape[0],)
 

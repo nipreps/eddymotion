@@ -23,7 +23,7 @@
 import numpy as np
 
 
-def compute_pairwise_angles(bvecs, closest_polarity):
+def compute_pairwise_angles(bvecs1, bvecs2, closest_polarity):
     r"""Compute pairwise angles across diffusion gradient encoding directions.
 
     Following [Andersson15]_, it computes the smallest of the angles between
@@ -35,7 +35,9 @@ def compute_pairwise_angles(bvecs, closest_polarity):
 
     Parameters
     ----------
-    bvecs : :obj:`~numpy.ndarray`
+    bvecs1 : :obj:`~numpy.ndarray`
+        Diffusion gradient encoding directions in FSL format.
+    bvecs2 : :obj:`~numpy.ndarray`
         Diffusion gradient encoding directions in FSL format.
     closest_polarity : :obj:`bool`
         ``True`` to consider the smallest of the two angles between the crossing
@@ -50,10 +52,12 @@ def compute_pairwise_angles(bvecs, closest_polarity):
     --------
     >>> compute_pairwise_angles(
     ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
+    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
     ...     False,
     ... )[0, 1]  # doctest: +ELLIPSIS
     3.1415...
     >>> compute_pairwise_angles(
+    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
     ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
     ...     True,
     ... )[0, 1]
@@ -66,10 +70,14 @@ def compute_pairwise_angles(bvecs, closest_polarity):
        imaging, NeuroImage 125 (2016) 1063–1078
     """
 
-    if np.shape(bvecs)[0] != 3:
-        raise ValueError(f"bvecs must be of shape (3, N). Found: {bvecs.shape}")
+    if np.shape(bvecs1)[0] != 3:
+        raise ValueError(f"bvecs1 must be of shape (3, N). Found: {bvecs1.shape}")
+
+    if np.shape(bvecs2)[0] != 3:
+        raise ValueError(f"bvecs2 must be of shape (3, N). Found: {bvecs2.shape}")
 
     # Ensure b-vectors are unit-norm
-    bvecs = np.array(bvecs) / np.linalg.norm(bvecs, axis=0)
-    cosines = np.clip(bvecs.T @ bvecs, -1.0, 1.0)
+    bvecs1 = np.array(bvecs1) / np.linalg.norm(bvecs1, axis=0)
+    bvecs2 = np.array(bvecs2) / np.linalg.norm(bvecs2, axis=0)
+    cosines = np.clip(bvecs1.T @ bvecs2, -1.0, 1.0)
     return np.arccos(np.abs(cosines) if closest_polarity else cosines)

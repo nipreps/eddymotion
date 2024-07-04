@@ -109,7 +109,7 @@ def test_average_model():
 
 
 def test_gp_model():
-    gp = GaussianProcessModel("test", kernel="default")
+    gp = GaussianProcessModel("test")
 
     assert isinstance(gp, model.dipy.GaussianProcessModel)
 

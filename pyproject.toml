@@ -28,6 +28,7 @@ dependencies = [
     "numpy>=1.17.3",
     "nest-asyncio>=1.5.1",
     "scikit-image>=0.14.2",
+    "scikit_learn",
     "scipy>=1.8.0",
 ]
 dynamic = ["version"]

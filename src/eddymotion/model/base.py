@@ -515,6 +515,13 @@ class DKIModel(BaseDWIModel):
     _model_class = "dipy.reconst.dki.DiffusionKurtosisModel"
 
 
+class GPModel(BaseDWIModel):
+    """A wrapper of :obj:`~eddymotion.model.dipy.GaussianProcessModel`."""
+
+    _modelargs = ("kernel_model",)
+    _model_class = "eddymotion.model.dipy.GaussianProcessModel"
+
+
 def _rasb2dipy(gradient):
     gradient = np.asanyarray(gradient)
     if gradient.ndim == 1:

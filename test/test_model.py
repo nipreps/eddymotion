@@ -24,12 +24,15 @@
 
 import numpy as np
 import pytest
+from dipy.core.gradients import gradient_table
+from sklearn.datasets import make_regression
 
 from eddymotion import model
 from eddymotion.data.dmri import DWI
 from eddymotion.data.splitting import lovo_split
 from eddymotion.exceptions import ModelNotFittedError
 from eddymotion.model.base import DEFAULT_MAX_S0, DEFAULT_MIN_S0
+from eddymotion.model.dipy import GaussianProcessModel
 
 
 def test_trivial_model():
@@ -103,6 +106,22 @@ def test_average_model():
     # Verify that the threshold for b-value selection works as expected
     assert np.all(tmodel_1000.predict([0, 0, 0]) == 1000)
     assert np.all(tmodel_2000.predict([0, 0, 0]) == 1100)
+
+
+def test_gp_model():
+    gp = GaussianProcessModel("test")
+
+    assert isinstance(gp, model.dipy.GaussianProcessModel)
+
+    X, y = make_regression(n_samples=100, n_features=3, noise=0, random_state=0)
+
+    bvecs = X.T / np.linalg.norm(X.T, axis=0)
+    gtab = gradient_table([1000] * bvecs.shape[-1], bvecs)
+    gp.fit(y, gtab)
+    X_qry = bvecs[:, :2].T
+    prediction = gp.predict(X_qry, return_std=True)
+
+    assert prediction.shape == (X_qry.shape[0],)
 
 
 def test_two_initialisations(datadir):

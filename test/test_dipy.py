@@ -22,8 +22,13 @@
 #
 import numpy as np
 import pytest
+from dipy.core.gradients import gradient_table
 
-from eddymotion.model.gradient_utils import compute_pairwise_angles
+from eddymotion.model.dipy import (
+    compute_exponential_covariance,
+    compute_pairwise_angles,
+    compute_spherical_covariance,
+)
 
 
 # No need to use normalized vectors: compute_pairwise_angles takes care of it.
@@ -41,13 +46,7 @@ from eddymotion.model.gradient_utils import compute_pairwise_angles
                     [0, 0, 1, 0, 1, 1, 1],
                 ]
             ),
-            np.array(
-                [
-                    [1, 0, 0, 1, 1, 0, -1],
-                    [0, 1, 0, 1, 0, 1, 0],
-                    [0, 0, 1, 0, 1, 1, 1],
-                ]
-            ),
+            None,
             True,
             np.array(
                 [
@@ -58,6 +57,36 @@ from eddymotion.model.gradient_utils import compute_pairwise_angles
                     [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, 0.0, np.pi / 3, np.pi / 2],
                     [np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 3, np.pi / 3, 0.0, np.pi / 3],
                     [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, np.pi / 2, np.pi / 3, 0.0],
+                ]
+            ),
+        ),
+        (
+            np.array(
+                [
+                    [1, 0, 0, 1, 1, 0, -1],
+                    [0, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 1, 0, 1, 1, 1],
+                ]
+            ),
+            None,
+            False,
+            np.array(
+                [
+                    [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, 3 * np.pi / 4],
+                    [np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 2],
+                    [np.pi / 2, np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 4],
+                    [np.pi / 4, np.pi / 4, np.pi / 2, 0.0, np.pi / 3, np.pi / 3, 2 * np.pi / 3],
+                    [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, 0.0, np.pi / 3, np.pi / 2],
+                    [np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 3, np.pi / 3, 0.0, np.pi / 3],
+                    [
+                        3 * np.pi / 4,
+                        np.pi / 2,
+                        np.pi / 4,
+                        2 * np.pi / 3,
+                        np.pi / 2,
+                        np.pi / 3,
+                        0.0,
+                    ],
                 ]
             ),
         ),
@@ -120,8 +149,55 @@ from eddymotion.model.gradient_utils import compute_pairwise_angles
     ],
 )
 def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
-    obtained = compute_pairwise_angles(bvecs1, bvecs2, closest_polarity)
+    # DIPY requires the vectors to be normalized
+    _bvecs1 = bvecs1 / np.linalg.norm(bvecs1, axis=0)
+    gtab1 = gradient_table([1000] * _bvecs1.shape[-1], _bvecs1)
 
-    assert (bvecs1.shape[-1], bvecs2.shape[-1]) == obtained.shape
+    _bvecs2 = None
+    gtab2 = None
+    if bvecs2 is not None:
+        _bvecs2 = bvecs2 / np.linalg.norm(bvecs2, axis=0)
+        gtab2 = gradient_table([1000] * _bvecs2.shape[-1], _bvecs2)
+
+    obtained = compute_pairwise_angles(gtab1, gtab2, closest_polarity)
+
+    if _bvecs2 is not None:
+        assert (_bvecs1.shape[-1], _bvecs2.shape[-1]) == obtained.shape
     assert obtained.shape == expected.shape
     np.testing.assert_array_almost_equal(obtained, expected, decimal=2)
+
+
+@pytest.mark.parametrize(
+    ("theta", "a", "expected"),
+    [
+        (
+            np.asarray(
+                [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, np.pi / 4],
+            ),
+            1.0,
+            np.asarray(
+                [1.0, 0.20787958, 0.20787958, 0.45593813, 0.45593813, 0.20787958, 0.45593813]
+            ),
+        )
+    ],
+)
+def test_compute_exponential_covariance(theta, a, expected):
+    obtained = compute_exponential_covariance(theta, a)
+    assert np.allclose(obtained, expected)
+
+
+@pytest.mark.parametrize(
+    ("theta", "a", "expected"),
+    [
+        (
+            np.asarray(
+                [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, np.pi / 4],
+            ),
+            1.0,
+            np.asarray([1.0, 0.0, 0.0, 0.11839532, 0.11839532, 0.0, 0.11839532]),
+        )
+    ],
+)
+def test_compute_spherical_covariance(theta, a, expected):
+    obtained = compute_spherical_covariance(theta, a)
+    assert np.allclose(obtained, expected)

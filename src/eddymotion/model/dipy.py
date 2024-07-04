@@ -380,20 +380,20 @@ def compute_pairwise_angles(
 
     Examples
     --------
-    >>> compute_pairwise_angles(
-    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
-    ...     closest_polarity=False,
-    ... )[0, 1]  # doctest: +ELLIPSIS
+    >>> from dipy.core.gradients import gradient_table
+    >>> bvecs = np.asarray([(1.0, -1.0), (0.0, 0.0), (0.0, 0.0)])
+    >>> gtab = gradient_table([1000] * bvecs.shape[-1], bvecs)
+    >>> compute_pairwise_angles(gtab, closest_polarity=False)[0, 1]  # doctest: +ELLIPSIS
     3.1415...
-    >>> compute_pairwise_angles(
-    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
-    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
-    ...     closest_polarity=False,
-    ... )[0, 1]  # doctest: +ELLIPSIS
+    >>> bvecs1 = np.asarray([(1.0, -1.0), (0.0, 0.0), (0.0, 0.0)])
+    >>> bvecs2 = np.asarray([(1.0, -1.0), (0.0, 0.0), (0.0, 0.0)])
+    >>> gtab1 = gradient_table([1000] * bvecs1.shape[-1], bvecs1)
+    >>> gtab2 = gradient_table([1000] * bvecs2.shape[-1], bvecs2)
+    >>> compute_pairwise_angles(gtab1, gtab2, closest_polarity=False)[0, 1]  # doctest: +ELLIPSIS
     3.1415...
-    >>> compute_pairwise_angles(
-    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),
-    ... )[0, 1]
+    >>> bvecs = np.asarray([(1.0, -1.0), (0.0, 0.0), (0.0, 0.0)])
+    >>> gtab = gradient_table([1000] * bvecs.shape[-1], bvecs)
+    >>> compute_pairwise_angles(gtab)[0, 1]
     0.0
 
     References

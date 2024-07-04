@@ -46,13 +46,7 @@ from eddymotion.model.dipy import (
                     [0, 0, 1, 0, 1, 1, 1],
                 ]
             ),
-            np.array(
-                [
-                    [1, 0, 0, 1, 1, 0, -1],
-                    [0, 1, 0, 1, 0, 1, 0],
-                    [0, 0, 1, 0, 1, 1, 1],
-                ]
-            ),
+            None,
             True,
             np.array(
                 [
@@ -63,6 +57,36 @@ from eddymotion.model.dipy import (
                     [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, 0.0, np.pi / 3, np.pi / 2],
                     [np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 3, np.pi / 3, 0.0, np.pi / 3],
                     [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, np.pi / 2, np.pi / 3, 0.0],
+                ]
+            ),
+        ),
+        (
+            np.array(
+                [
+                    [1, 0, 0, 1, 1, 0, -1],
+                    [0, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 1, 0, 1, 1, 1],
+                ]
+            ),
+            None,
+            False,
+            np.array(
+                [
+                    [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, 3 * np.pi / 4],
+                    [np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 2],
+                    [np.pi / 2, np.pi / 2, 0.0, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 4],
+                    [np.pi / 4, np.pi / 4, np.pi / 2, 0.0, np.pi / 3, np.pi / 3, 2 * np.pi / 3],
+                    [np.pi / 4, np.pi / 2, np.pi / 4, np.pi / 3, 0.0, np.pi / 3, np.pi / 2],
+                    [np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 3, np.pi / 3, 0.0, np.pi / 3],
+                    [
+                        3 * np.pi / 4,
+                        np.pi / 2,
+                        np.pi / 4,
+                        2 * np.pi / 3,
+                        np.pi / 2,
+                        np.pi / 3,
+                        0.0,
+                    ],
                 ]
             ),
         ),
@@ -125,11 +149,20 @@ from eddymotion.model.dipy import (
     ],
 )
 def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
-    gtab1 = gradient_table([1000] * len(bvecs1), bvecs1)
-    gtab2 = gradient_table([1000] * len(bvecs2), bvecs2)
+    # DIPY requires the vectors to be normalized
+    _bvecs1 = bvecs1 / np.linalg.norm(bvecs1, axis=0)
+    gtab1 = gradient_table([1000] * _bvecs1.shape[-1], _bvecs1)
+
+    _bvecs2 = None
+    gtab2 = None
+    if bvecs2 is not None:
+        _bvecs2 = bvecs2 / np.linalg.norm(bvecs2, axis=0)
+        gtab2 = gradient_table([1000] * _bvecs2.shape[-1], _bvecs2)
+
     obtained = compute_pairwise_angles(gtab1, gtab2, closest_polarity)
 
-    assert (bvecs1.shape[-1], bvecs2.shape[-1]) == obtained.shape
+    if _bvecs2 is not None:
+        assert (_bvecs1.shape[-1], _bvecs2.shape[-1]) == obtained.shape
     assert obtained.shape == expected.shape
     np.testing.assert_array_almost_equal(obtained, expected, decimal=2)
 

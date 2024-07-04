@@ -110,7 +110,7 @@ def test_average_model():
 def test_gp_model():
     gp = GaussianProcessModel(kernel="default")
 
-    assert isinstance(gp, model.GaussianProcessModel)
+    assert isinstance(gp, model.dipy.GaussianProcessModel)
 
     X, y = make_friedman2(n_samples=500, noise=0, random_state=0)
     gp.fit(X, y)

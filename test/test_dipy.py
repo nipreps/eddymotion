@@ -24,8 +24,8 @@ import numpy as np
 import pytest
 
 from eddymotion.model.dipy import (
-    compute_pairwise_angles,
     compute_exponential_covariance,
+    compute_pairwise_angles,
     compute_spherical_covariance,
 )
 

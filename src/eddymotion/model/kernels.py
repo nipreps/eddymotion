@@ -23,7 +23,7 @@
 import numpy as np
 from sklearn.gaussian_process.kernels import Hyperparameter, Kernel
 
-from eddymotion.model.utils import compute_pairwise_angles
+from eddymotion.model.dipy import compute_pairwise_angles, compute_spherical_covariance
 
 
 class SphericalCovarianceKernel(Kernel):
@@ -98,14 +98,12 @@ class SphericalCovarianceKernel(Kernel):
         """
         if Y is not None:
             angles = compute_pairwise_angles(X.T, Y.T, closest_polarity=True)
-            K = self.lambda_s * np.where(
-                angles <= self.a, 1 - 3 * (angles / self.a) ** 2 + 2 * (angles / self.a) ** 3, 0
-            )
+            cov_matrix = compute_spherical_covariance(angles, self.a)
+            K = self.lambda_s * cov_matrix
         else:
             angles = compute_pairwise_angles(X.T, X.T, closest_polarity=True)
-            K = self.lambda_s * np.where(
-                angles <= self.a, 1 - 3 * (angles / self.a) ** 2 + 2 * (angles / self.a) ** 3, 0
-            ) + self.sigma_sq * np.eye(len(angles))
+            cov_matrix = compute_spherical_covariance(angles, self.a)
+            K = self.lambda_s * cov_matrix + self.sigma_sq * np.eye(len(angles))
 
         K_gradient = None
         if eval_gradient:

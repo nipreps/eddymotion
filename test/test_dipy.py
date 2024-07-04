@@ -23,7 +23,11 @@
 import numpy as np
 import pytest
 
-from eddymotion.model.gradient_utils import compute_pairwise_angles
+from eddymotion.model.dipy import (
+    compute_pairwise_angles,
+    compute_exponential_covariance,
+    compute_spherical_covariance,
+)
 
 
 # No need to use normalized vectors: compute_pairwise_angles takes care of it.
@@ -125,3 +129,39 @@ def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
     assert (bvecs1.shape[-1], bvecs2.shape[-1]) == obtained.shape
     assert obtained.shape == expected.shape
     np.testing.assert_array_almost_equal(obtained, expected, decimal=2)
+
+
+@pytest.mark.parametrize(
+    ("theta", "a", "expected"),
+    [
+        (
+            np.asarray(
+                [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, np.pi / 4],
+            ),
+            1.0,
+            np.asarray(
+                [1.0, 0.20787958, 0.20787958, 0.45593813, 0.45593813, 0.20787958, 0.45593813]
+            ),
+        )
+    ],
+)
+def test_compute_exponential_covariance(theta, a, expected):
+    obtained = compute_exponential_covariance(theta, a)
+    assert np.allclose(obtained, expected)
+
+
+@pytest.mark.parametrize(
+    ("theta", "a", "expected"),
+    [
+        (
+            np.asarray(
+                [0.0, np.pi / 2, np.pi / 2, np.pi / 4, np.pi / 4, np.pi / 2, np.pi / 4],
+            ),
+            1.0,
+            np.asarray([1.0, 0.0, 0.0, 0.11839532, 0.11839532, 0.0, 0.11839532]),
+        )
+    ],
+)
+def test_compute_spherical_covariance(theta, a, expected):
+    obtained = compute_spherical_covariance(theta, a)
+    assert np.allclose(obtained, expected)

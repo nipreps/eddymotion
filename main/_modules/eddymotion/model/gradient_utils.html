@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model.gradient_utils - eddymotion 24.0.0.dev67 documentation</title>
+        <title>eddymotion.model.gradient_utils - eddymotion 24.0.0.dev69 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -179,7 +179,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev67 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev69 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,14 +202,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev67</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev69</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev67</span>
+  <span class="sidebar-brand-text">24.0.0.dev69</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -318,7 +318,7 @@
 
 <div class="viewcode-block" id="compute_pairwise_angles">
 <a class="viewcode-back" href="../../../api/eddymotion.model.gradient_utils.html#eddymotion.model.gradient_utils.compute_pairwise_angles">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_pairwise_angles</span><span class="p">(</span><span class="n">bvecs</span><span class="p">,</span> <span class="n">closest_polarity</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">compute_pairwise_angles</span><span class="p">(</span><span class="n">bvecs1</span><span class="p">,</span> <span class="n">bvecs2</span><span class="p">,</span> <span class="n">closest_polarity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise angles across diffusion gradient encoding directions.</span>
 
 <span class="sd">    Following [Andersson15]_, it computes the smallest of the angles between</span>
@@ -330,7 +330,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bvecs : :obj:`~numpy.ndarray`</span>
+<span class="sd">    bvecs1 : :obj:`~numpy.ndarray`</span>
+<span class="sd">        Diffusion gradient encoding directions in FSL format.</span>
+<span class="sd">    bvecs2 : :obj:`~numpy.ndarray`</span>
 <span class="sd">        Diffusion gradient encoding directions in FSL format.</span>
 <span class="sd">    closest_polarity : :obj:`bool`</span>
 <span class="sd">        ``True`` to consider the smallest of the two angles between the crossing</span>
@@ -345,10 +347,12 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; compute_pairwise_angles(</span>
 <span class="sd">    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),</span>
+<span class="sd">    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),</span>
 <span class="sd">    ...     False,</span>
 <span class="sd">    ... )[0, 1]  # doctest: +ELLIPSIS</span>
 <span class="sd">    3.1415...</span>
 <span class="sd">    &gt;&gt;&gt; compute_pairwise_angles(</span>
+<span class="sd">    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),</span>
 <span class="sd">    ...     ((1.0, -1.0), (0.0, 0.0), (0.0, 0.0)),</span>
 <span class="sd">    ...     True,</span>
 <span class="sd">    ... )[0, 1]</span>
@@ -361,12 +365,16 @@
 <span class="sd">       imaging, NeuroImage 125 (2016) 1063–1078</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">bvecs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bvecs must be of shape (3, N). Found: </span><span class="si">{</span><span class="n">bvecs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">bvecs1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bvecs1 must be of shape (3, N). Found: </span><span class="si">{</span><span class="n">bvecs1</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">bvecs2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bvecs2 must be of shape (3, N). Found: </span><span class="si">{</span><span class="n">bvecs2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Ensure b-vectors are unit-norm</span>
-    <span class="n">bvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bvecs</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">cosines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">bvecs</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">bvecs</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">bvecs1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bvecs1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">bvecs2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bvecs2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">cosines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">bvecs1</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">bvecs2</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cosines</span><span class="p">)</span> <span class="k">if</span> <span class="n">closest_polarity</span> <span class="k">else</span> <span class="n">cosines</span><span class="p">)</span></div>
 
 </pre></div>
@@ -401,7 +409,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=76fd70c0"></script>
+</div><script src="../../../_static/documentation_options.js?v=3a9f571b"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>

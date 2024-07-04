@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.utils module" href="eddymotion.utils.html" /><link rel="prev" title="eddymotion.model.dmri_utils module" href="eddymotion.model.dmri_utils.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model.gradient_utils module - eddymotion 24.0.0.dev67 documentation</title>
+        <title>eddymotion.model.gradient_utils module - eddymotion 24.0.0.dev69 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -180,7 +180,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev67 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev69 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -203,14 +203,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev67</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev69</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev67</span>
+  <span class="sidebar-brand-text">24.0.0.dev69</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -301,7 +301,7 @@
 <span id="eddymotion-model-gradient-utils-module"></span><h1>eddymotion.model.gradient_utils module<a class="headerlink" href="#module-eddymotion.model.gradient_utils" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.model.gradient_utils.compute_pairwise_angles">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.gradient_utils.</span></span><span class="sig-name descname"><span class="pre">compute_pairwise_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bvecs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closest_polarity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/gradient_utils.html#compute_pairwise_angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.gradient_utils.compute_pairwise_angles" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.model.gradient_utils.</span></span><span class="sig-name descname"><span class="pre">compute_pairwise_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bvecs1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bvecs2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closest_polarity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/gradient_utils.html#compute_pairwise_angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.gradient_utils.compute_pairwise_angles" title="Link to this definition">¶</a></dt>
 <dd><p>Compute pairwise angles across diffusion gradient encoding directions.</p>
 <p>Following <a class="reference internal" href="#andersson15" id="id1"><span>[Andersson15]</span></a>, it computes the smallest of the angles between
 each pair if <code class="docutils literal notranslate"><span class="pre">closest_polarity</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, i.e.</p>
@@ -312,7 +312,8 @@ each pair if <code class="docutils literal notranslate"><span class="pre">closes
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul>
-<li><p><strong>bvecs</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Diffusion gradient encoding directions in FSL format.</p></li>
+<li><p><strong>bvecs1</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Diffusion gradient encoding directions in FSL format.</p></li>
+<li><p><strong>bvecs2</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Diffusion gradient encoding directions in FSL format.</p></li>
 <li><p><strong>closest_polarity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) –</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">True</span></code> to consider the smallest of the two angles between the crossing</dt><dd><p>lines resulting from reversing each vector pair.</p>
@@ -331,10 +332,12 @@ each pair if <code class="docutils literal notranslate"><span class="pre">closes
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compute_pairwise_angles</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
 <span class="gp">... </span>    <span class="kc">False</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  
 <span class="go">3.1415...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">compute_pairwise_angles</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
 <span class="gp">... </span>    <span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
 <span class="gp">... </span>    <span class="kc">True</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
@@ -422,7 +425,7 @@ imaging, NeuroImage 125 (2016) 1063–1078</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=76fd70c0"></script>
+</div><script src="../_static/documentation_options.js?v=3a9f571b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>

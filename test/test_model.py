@@ -25,13 +25,13 @@
 import numpy as np
 import pytest
 from sklearn.datasets import make_friedman2
-from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 
 from eddymotion import model
 from eddymotion.data.dmri import DWI
 from eddymotion.data.splitting import lovo_split
 from eddymotion.exceptions import ModelNotFittedError
 from eddymotion.model.base import DEFAULT_MAX_S0, DEFAULT_MIN_S0
+from eddymotion.model.dipy import GaussianProcessModel
 
 
 def test_trivial_model():
@@ -107,12 +107,8 @@ def test_average_model():
     assert np.all(tmodel_2000.predict([0, 0, 0]) == 1100)
 
 
-def test_gp_model(datadir):
-    dwi = DWI.from_filename(datadir / "dwi.h5")
-
-    kernel = DotProduct() + WhiteKernel()
-
-    gp = model.GaussianProcessModel(dwi=dwi, kernel=kernel)
+def test_gp_model():
+    gp = GaussianProcessModel(kernel="default")
 
     assert isinstance(gp, model.GaussianProcessModel)
 

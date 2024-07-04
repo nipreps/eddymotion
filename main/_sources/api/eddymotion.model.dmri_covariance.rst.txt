@@ -1,7 +1,0 @@
-eddymotion.model.dmri\_covariance module
-========================================
-
-.. automodule:: eddymotion.model.dmri_covariance
-   :members:
-   :undoc-members:
-   :show-inheritance:

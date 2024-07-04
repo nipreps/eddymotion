@@ -1,7 +1,0 @@
-eddymotion.model.gradient\_utils module
-=======================================
-
-.. automodule:: eddymotion.model.gradient_utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

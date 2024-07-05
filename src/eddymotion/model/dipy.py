@@ -28,14 +28,17 @@ import numpy as np
 from dipy.core.gradients import GradientTable
 from dipy.reconst.base import ReconstModel
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import DotProduct, Hyperparameter, Kernel, WhiteKernel
-
-# from dipy.reconst.multi_voxel import multi_voxel_fit
+from sklearn.gaussian_process.kernels import (
+    DotProduct,
+    Hyperparameter,
+    Kernel,
+    WhiteKernel,
+)
 
 
 def gp_prediction(
     model_gtab: GradientTable,
-    gtab: GradientTable,
+    gtab: GradientTable | np.ndarray,
     model: GaussianProcessRegressor,
     mask: np.ndarray | None = None,
 ) -> np.ndarray:
@@ -144,24 +147,27 @@ class GaussianProcessModel(ReconstModel):
 
         """
 
-        data = (
+        y = (
             data[mask[..., None]] if mask is not None else np.reshape(data, (-1, data.shape[-1]))
-        )
+        ).T
 
-        signal_dirs = data.shape[-1]
-        grad_dirs = gtab.gradients.shape[0]
-        if signal_dirs != grad_dirs:
+        # sklearn wants (n_samples, n_features) as X's shape
+        X = gtab.bvecs
+
+        # sklearn wants (n_samples, n_targets) for Y, where n_targets = n_voxels to simulate.
+        if (signal_dirs := y.shape[0]) != (grad_dirs := X.shape[0]):
             raise ValueError(
                 f"Mismatched data {signal_dirs} and gradient table {grad_dirs} sizes."
             )
 
         gpr = GaussianProcessRegressor(
-            kernel=self.kernel(gtab),
+            kernel=self.kernel,
             random_state=random_state,
+            n_targets=y.shape[1],
         )
         self._modelfit = GPFit(
             gtab=gtab,
-            model=gpr.fit(gtab.gradients, data[0]),
+            model=gpr.fit(X, y),
             mask=mask,
         )
         return self._modelfit
@@ -325,8 +331,8 @@ def compute_spherical_covariance(
 
 
 def compute_pairwise_angles(
-    gtab_X: GradientTable,
-    gtab_Y: GradientTable | None = None,
+    gtab_X: GradientTable | np.ndarray,
+    gtab_Y: GradientTable | np.ndarray | None = None,
     closest_polarity: bool = True,
 ) -> np.ndarray:
     r"""Compute pairwise angles across diffusion gradient encoding directions.
@@ -379,14 +385,14 @@ def compute_pairwise_angles(
 
     """
 
-    bvecs_X = gtab_X.bvecs.T
-    bvecs_X = np.array(bvecs_X) / np.linalg.norm(bvecs_X, axis=0)
+    bvecs_X = getattr(gtab_X, "bvecs", gtab_X)
+    bvecs_X = np.array(bvecs_X.T) / np.linalg.norm(bvecs_X, axis=1)
 
     if gtab_Y is None:
         bvecs_Y = bvecs_X
     else:
-        bvecs_Y = gtab_Y.bvecs.T
-        bvecs_Y = np.array(bvecs_Y) / np.linalg.norm(bvecs_Y, axis=0)
+        bvecs_Y = getattr(gtab_Y, "bvecs", gtab_Y)
+        bvecs_Y = np.array(bvecs_Y.T) / np.linalg.norm(bvecs_Y, axis=1)
 
     cosines = np.clip(bvecs_X.T @ bvecs_Y, -1.0, 1.0)
     return np.arccos(np.abs(cosines) if closest_polarity else cosines)
@@ -500,3 +506,40 @@ class PairwiseOrientationKernel(Kernel):
             f"{self._weighting} kernel"
             f"(a={self.a}, lambda_s={self.lambda_s}, sigma_sq={self.sigma_sq})"
         )
+
+    def get_params(self, deep=True):
+        """
+        Get parameters of the kernel.
+
+        Parameters
+        ----------
+        deep : :obj:`bool`
+            Whether to return the parameters of the contained subobjects.
+
+        Returns
+        -------
+        params : :obj:`dict`
+            Parameter names mapped to their values.
+
+        """
+        return {"lambda_s": self.lambda_s, "a": self.a, "sigma_sq": self.sigma_sq}
+
+    def set_params(self, **params):
+        """
+        Set parameters of the kernel.
+
+        Parameters
+        ----------
+        params : :obj:`dict`
+            Kernel parameters.
+
+        Returns
+        -------
+        self : :obj:`object`
+            Returns self.
+
+        """
+        self.lambda_s = params.get("lambda_s", self.lambda_s)
+        self.a = params.get("a", self.a)
+        self.sigma_sq = params.get("sigma_sq", self.sigma_sq)
+        return self

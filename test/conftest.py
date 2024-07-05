@@ -33,6 +33,8 @@ test_data_env = os.getenv("TEST_DATA_HOME", str(Path.home() / "eddymotion-tests"
 test_output_dir = os.getenv("TEST_OUTPUT_DIR")
 test_workdir = os.getenv("TEST_WORK_DIR")
 
+_datadir = (Path(__file__).parent.parent / "src" / "eddymotion" / "data").absolute()
+
 
 def pytest_report_header(config):
     return f"""\
@@ -49,6 +51,7 @@ def doctest_imports(doctest_namespace):
     doctest_namespace["nb"] = nibabel
     doctest_namespace["os"] = os
     doctest_namespace["Path"] = Path
+    doctest_namespace["repodata"] = _datadir
 
 
 @pytest.fixture
@@ -61,3 +64,9 @@ def outdir():
 def datadir():
     """Return a data path outside the package's structure (i.e., large datasets)."""
     return Path(test_data_env)
+
+
+@pytest.fixture
+def repodata():
+    """Return the path to this repository's test data folder."""
+    return _datadir

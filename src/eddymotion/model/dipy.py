@@ -28,6 +28,7 @@ import numpy as np
 from dipy.core.gradients import GradientTable
 from dipy.reconst.base import ReconstModel
 from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import DotProduct, Hyperparameter, Kernel, WhiteKernel
 
 # from dipy.reconst.multi_voxel import multi_voxel_fit
 
@@ -71,57 +72,20 @@ def gp_prediction(
     return model.predict(gtab, return_std=False)
 
 
-def get_kernel(
-    kernel_model: str,
-    gtab: GradientTable | None = None,
-) -> GaussianProcessRegressor.kernel:
-    """
-    Returns a Gaussian process kernel based on the provided string.
-
-    Currently supports 'test' kernel which is a combination of DotProduct and WhiteKernel
-    from scikit-learn. Raises a TypeError for unknown kernel models.
-
-    Parameters
-    ----------
-    kernel_model: :obj:`str`
-        The string representing the desired kernel model.
-
-    Returns
-    -------
-    :obj:`GaussianProcessRegressor.kernel`
-        A GaussianProcessRegressor kernel object.
-
-    Raises
-    ------
-    TypeError: If the provided ``kernel_model`` is not supported.
-
-    """
-
-    if kernel_model == "spherical":
-        raise NotImplementedError("Spherical kernel is not currently implemented.")
-
-    if kernel_model == "exponential":
-        raise NotImplementedError("Exponential kernel is not currently implemented.")
-
-    if kernel_model == "test":
-        from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
-
-        return DotProduct() + WhiteKernel()
-
-    raise TypeError(f"Unknown kernel '{kernel_model}'.")
-
-
 class GaussianProcessModel(ReconstModel):
     """A Gaussian Process (GP) model to simulate single- and multi-shell DWI data."""
 
     __slots__ = (
-        "kernel_model",
+        "kernel",
         "_modelfit",
     )
 
     def __init__(
         self,
         kernel_model: str = "spherical",
+        lambda_s: float = 2.0,
+        a: float = 0.1,
+        sigma_sq: float = 1.0,
         *args,
         **kwargs,
     ) -> None:
@@ -143,7 +107,16 @@ class GaussianProcessModel(ReconstModel):
         """
 
         ReconstModel.__init__(self, None)
-        self.kernel_model = kernel_model
+        self.kernel = (
+            PairwiseOrientationKernel(
+                weighting=kernel_model,
+                a=a,
+                lambda_s=lambda_s,
+                sigma_sq=sigma_sq,
+            )
+            if kernel_model != "test"
+            else DotProduct() + WhiteKernel()
+        )
 
     def fit(
         self,
@@ -183,7 +156,7 @@ class GaussianProcessModel(ReconstModel):
             )
 
         gpr = GaussianProcessRegressor(
-            kernel=get_kernel(self.kernel_model, gtab=gtab),
+            kernel=self.kernel(gtab),
             random_state=random_state,
         )
         self._modelfit = GPFit(
@@ -417,3 +390,113 @@ def compute_pairwise_angles(
 
     cosines = np.clip(bvecs_X.T @ bvecs_Y, -1.0, 1.0)
     return np.arccos(np.abs(cosines) if closest_polarity else cosines)
+
+
+class PairwiseOrientationKernel(Kernel):
+    """A scikit-learn's kernel for DWI signals."""
+
+    def __init__(
+        self,
+        weighting: str = "exponential",
+        lambda_s: float = 2.0,
+        a: float = 0.1,
+        sigma_sq: float = 1.0,
+        lambda_s_bounds: tuple[float, float] = (1e-5, 1e4),
+        a_bounds: tuple[float, float] = (1e-5, np.pi),
+        sigma_sq_bounds: tuple[float, float] = (1e-5, 1e4),
+    ):
+        from sys import modules
+
+        self._weighting = weighting  # For __repr__
+        self.covariance = getattr(modules[__name__], f"compute_{weighting}_covariance")
+        self.lambda_s = lambda_s
+        self.a = a
+        self.sigma_sq = sigma_sq
+        self.lambda_s_bounds = lambda_s_bounds
+        self.a_bounds = a_bounds
+        self.sigma_sq_bounds = sigma_sq_bounds
+
+    @property
+    def hyperparameter_lambda_s(self):
+        return Hyperparameter("lambda_s", "numeric", self.lambda_s_bounds)
+
+    @property
+    def hyperparameter_a(self):
+        return Hyperparameter("a", "numeric", self.a_bounds)
+
+    @property
+    def hyperparameter_sigma_sq(self):
+        return Hyperparameter("sigma_sq", "numeric", self.sigma_sq_bounds)
+
+    def __call__(self, gtab_X, gtab_Y=None, eval_gradient=False):
+        """
+        Return the kernel K(gtab_X, gtab_Y) and optionally its gradient.
+
+        Parameters
+        ----------
+        gtab_X: :obj:`~dipy.core.gradients.GradientTable`
+            Gradient table (X)
+        gtab_Y: :obj:`~dipy.core.gradients.GradientTable`
+            Gradient table (Y, optional)
+        eval_gradient : :obj:`bool`
+            Determines whether the gradient with respect to the log of
+            the kernel hyperparameter is computed.
+            Only supported when gtab_Y is ``None``.
+
+        Returns
+        -------
+        K : ndarray of shape (n_samples_X, n_samples_Y)
+            Kernel k(X, Y)
+
+        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
+                optional
+            The gradient of the kernel k(X, X) with respect to the log of the
+            hyperparameter of the kernel. Only returned when `eval_gradient`
+            is True.
+
+        """
+        thetas = compute_pairwise_angles(gtab_X, gtab_Y)
+        collinear = np.abs(thetas) < 1e-5
+        thetas[collinear] = 0.0
+
+        K = self.lambda_s * self.covariance(thetas, self.a)
+        K[collinear] += self.sigma_sq
+
+        if eval_gradient:
+            raise NotImplementedError
+
+        return K
+
+    def diag(self, X):
+        """Returns the diagonal of the kernel k(X, X).
+
+        The result of this method is identical to np.diag(self(X)); however,
+        it can be evaluated more efficiently since only the diagonal is
+        evaluated.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples_X, n_features)
+            Left argument of the returned kernel k(X, Y)
+
+        Returns
+        -------
+        K_diag : ndarray of shape (n_samples_X,)
+            Diagonal of kernel k(X, X)
+        """
+        try:
+            n = len(X)
+        except TypeError:
+            n = len(X.bvals)
+
+        return self.lambda_s * self.covariance(np.zeros(n), self.a) + self.sigma_sq
+
+    def is_stationary(self):
+        """Returns whether the kernel is stationary."""
+        return True
+
+    def __repr__(self):
+        return (
+            f"{self._weighting} kernel"
+            f"(a={self.a}, lambda_s={self.lambda_s}, sigma_sq={self.sigma_sq})"
+        )

@@ -20,15 +20,21 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
+from collections import namedtuple
+
 import numpy as np
 import pytest
 from dipy.core.gradients import gradient_table
+from dipy.io import read_bvals_bvecs
 
 from eddymotion.model.dipy import (
+    PairwiseOrientationKernel,
     compute_exponential_covariance,
     compute_pairwise_angles,
     compute_spherical_covariance,
 )
+
+GradientTablePatch = namedtuple("gtab", ["bvals", "bvecs"])
 
 
 # No need to use normalized vectors: compute_pairwise_angles takes care of it.
@@ -201,3 +207,38 @@ def test_compute_exponential_covariance(theta, a, expected):
 def test_compute_spherical_covariance(theta, a, expected):
     obtained = compute_spherical_covariance(theta, a)
     assert np.allclose(obtained, expected)
+
+
+def test_kernel(repodata):
+    """Check kernel construction."""
+
+    bvals, bvecs = read_bvals_bvecs(
+        str(repodata / "ds000114_singleshell.bval"),
+        str(repodata / "ds000114_singleshell.bvec"),
+    )
+    gtab_original = gradient_table(bvals, bvecs)
+
+    bvals = gtab_original.bvals[~gtab_original.b0s_mask]
+    bvecs = gtab_original.bvecs[~gtab_original.b0s_mask, :]
+    gtab = gradient_table(bvals, bvecs)
+
+    kernel = PairwiseOrientationKernel()
+
+    K = kernel(gtab)
+
+    assert K.shape == (len(bvals), len(bvals))
+    assert np.allclose(np.diagonal(K), kernel.diag(gtab))
+
+    # DIPY bug - gradient tables cannot be created with just one bvec/bval
+    # https://github.com/dipy/dipy/issues/3283
+    gtab_Y = GradientTablePatch(bvals[10], bvecs[10, ...])
+
+    K_predict = kernel(gtab, gtab_Y)
+
+    assert K_predict.shape == (K.shape[0],)
+
+    gtab_Y = gradient_table(bvals[10:14], bvecs[10:14, ...])
+
+    K_predict = kernel(gtab, gtab_Y)
+
+    assert K_predict.shape == (K.shape[0], 4)

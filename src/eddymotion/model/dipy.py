@@ -391,8 +391,10 @@ def compute_pairwise_angles(
     if gtab_Y is None:
         bvecs_Y = bvecs_X
     else:
-        bvecs_Y = getattr(gtab_Y, "bvecs", gtab_Y)
-        bvecs_Y = np.array(bvecs_Y.T) / np.linalg.norm(bvecs_Y, axis=1)
+        bvecs_Y = np.array(getattr(gtab_Y, "bvecs", gtab_Y))
+        if bvecs_Y.ndim == 1:
+            bvecs_Y = bvecs_Y[np.newaxis, ...]
+        bvecs_Y = bvecs_Y.T / np.linalg.norm(bvecs_Y, axis=1)
 
     cosines = np.clip(bvecs_X.T @ bvecs_Y, -1.0, 1.0)
     return np.arccos(np.abs(cosines) if closest_polarity else cosines)

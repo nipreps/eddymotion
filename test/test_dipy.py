@@ -235,7 +235,7 @@ def test_kernel(repodata):
 
     K_predict = kernel(gtab, gtab_Y)
 
-    assert K_predict.shape == (K.shape[0],)
+    assert K_predict.shape == (K.shape[0], 1)
 
     gtab_Y = gradient_table(bvals[10:14], bvecs[10:14, ...])
 

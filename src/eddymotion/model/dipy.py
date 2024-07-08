@@ -24,6 +24,8 @@
 
 from __future__ import annotations
 
+from sys import modules
+
 import numpy as np
 from dipy.core.gradients import GradientTable
 from dipy.reconst.base import ReconstModel
@@ -330,6 +332,55 @@ def compute_spherical_covariance(
     return np.where(theta <= a, 1 - 3 * (theta / a) ** 2 + 2 * (theta / a) ** 3, 0)
 
 
+def compute_derivative(
+    theta: np.ndarray,
+    kernel: np.ndarray,
+    weighting: str,
+    params: dict[float],
+):
+    """
+    Compute the analytical derivative of the kernel.
+
+    Parameters
+    ----------
+    theta : :obj:`~numpy.ndarray`
+        Pairwise angles across diffusion gradient encoding directions.
+    kernel : :obj:`~numpy.ndarray`
+        Current kernel.
+    weighting : :obj:`str`
+        The kind of kernel which derivatives will be calculated.
+    params : :obj:`dict`
+        Current parameter values.
+
+    Returns
+    -------
+    :obj:`~numpy.ndarray`
+        Gradients of the kernel.
+
+    """
+
+    n_partials = len(params)
+
+    a = params.pop("a")
+    lambda_s = params.pop("lambda_s")
+
+    min_angles = theta > a
+
+    if weighting == "spherical":
+        deriv_a = (3 * theta[min_angles] / a**2) - (1.5 * (theta[min_angles] / a) ** 2) / a
+    elif weighting == "exponential":
+        deriv_a = theta[min_angles] * a * np.exp(-theta[min_angles] / a)
+    else:
+        raise ValueError(f"Unknown kernel weighting '{weighting}'.")
+
+    K_gradient = np.zeros((*theta.shape, n_partials))
+    K_gradient[..., 0] = kernel / lambda_s
+    K_gradient[..., 1][min_angles] = lambda_s * deriv_a
+    K_gradient[..., 2][theta > 1e-5] = 2
+
+    return K_gradient
+
+
 def compute_pairwise_angles(
     gtab_X: GradientTable | np.ndarray,
     gtab_Y: GradientTable | np.ndarray | None = None,
@@ -413,10 +464,7 @@ class PairwiseOrientationKernel(Kernel):
         a_bounds: tuple[float, float] = (1e-5, np.pi),
         sigma_sq_bounds: tuple[float, float] = (1e-5, 1e4),
     ):
-        from sys import modules
-
         self._weighting = weighting  # For __repr__
-        self.covariance = getattr(modules[__name__], f"compute_{weighting}_covariance")
         self.lambda_s = lambda_s
         self.a = a
         self.sigma_sq = sigma_sq
@@ -467,13 +515,25 @@ class PairwiseOrientationKernel(Kernel):
         collinear = np.abs(thetas) < 1e-5
         thetas[collinear] = 0.0
 
-        K = self.lambda_s * self.covariance(thetas, self.a)
+        covfunc = getattr(modules[__name__], f"compute_{self._weighting}_covariance")
+
+        K = self.lambda_s * covfunc(thetas, self.a)
         K[collinear] += self.sigma_sq
 
-        if eval_gradient:
-            raise NotImplementedError
+        if not eval_gradient:
+            return K
 
-        return K
+        if gtab_Y is not None:
+            raise RuntimeError("Gradients should not be calculated in inference time")
+
+        K_gradient = compute_derivative(
+            thetas,
+            K,
+            weighting=self._weighting,
+            params=self.get_params(),
+        )
+
+        return K, K_gradient
 
     def diag(self, X):
         """Returns the diagonal of the kernel k(X, X).
@@ -497,7 +557,8 @@ class PairwiseOrientationKernel(Kernel):
         except TypeError:
             n = len(X.bvals)
 
-        return self.lambda_s * self.covariance(np.zeros(n), self.a) + self.sigma_sq
+        covfunc = getattr(modules[__name__], f"compute_{self._weighting}_covariance")
+        return self.lambda_s * covfunc(np.zeros(n), self.a) + self.sigma_sq
 
     def is_stationary(self):
         """Returns whether the kernel is stationary."""

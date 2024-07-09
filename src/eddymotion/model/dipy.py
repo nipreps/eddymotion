@@ -329,7 +329,7 @@ def compute_spherical_covariance(
 
     _ensure_positive_scale(a)
 
-    return np.where(theta <= a, 1 - 3 * theta / (2 * a) + 2 * theta ** 3 / (2 * a ** 3), 0)
+    return np.where(theta <= a, 1 - 3 * theta / (2 * a) + theta ** 3 / (2 * a ** 3), 0)
 
 
 def compute_derivative(

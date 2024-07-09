@@ -329,7 +329,7 @@ def compute_spherical_covariance(
 
     _ensure_positive_scale(a)
 
-    return np.where(theta <= a, 1 - 3 * (theta / a) ** 2 + 2 * (theta / a) ** 3, 0)
+    return np.where(theta <= a, 1 - 3 * theta / (2 * a) + 2 * theta ** 3 / (2 * a ** 3), 0)
 
 
 def compute_derivative(
@@ -367,9 +367,9 @@ def compute_derivative(
     min_angles = theta > a
 
     if weighting == "spherical":
-        deriv_a = (3 * theta[min_angles] / a**2) - (1.5 * (theta[min_angles] / a) ** 2) / a
+        deriv_a = 1.5 * (theta[min_angles] / a ** 2 - theta[min_angles] ** 3 / a ** 4)
     elif weighting == "exponential":
-        deriv_a = theta[min_angles] * a * np.exp(-theta[min_angles] / a)
+        deriv_a = np.exp(-theta[min_angles] / a) * theta[min_angles] / a ** 2
     else:
         raise ValueError(f"Unknown kernel weighting '{weighting}'.")
 

@@ -20,7 +20,70 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""DIPY-like models (a sandbox to trial them out before upstreaming to DIPY)."""
+r"""
+DIPY-like models (a sandbox to trial them out before upstreaming to DIPY).
+
+Gaussian Process Model: Pairwise orientation angles
+---------------------------------------------------
+Squared Exponential covariance kernel
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Kernel based on a squared exponential function for Gaussian processes on
+multi-shell DWI data following to eqs. 14 and 16 in [Andersson15]_.
+For a 2-shell case, the :math:`\mathbf{K}` kernel can be written as:
+
+.. math::
+    \begin{equation}
+    \mathbf{K} = \left[
+    \begin{matrix}
+        \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &
+        \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
+        \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &
+        \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\
+    \end{matrix}
+    \right]
+    \end{equation}
+
+**Squared exponential shell-wise covariance kernel**:
+Compute the squared exponential smooth function describing how the
+covariance changes along the b direction.
+It uses the log of the b-values as the measure of distance along the
+b-direction according to eq. 15 in [Andersson15]_.
+
+.. math::
+    C_{b}(b, b'; \ell) = \exp\left( - \frac{(\log b - \log b')^2}{2 \ell^2} \right).
+
+**Squared exponential covariance kernel**:
+Compute the squared exponential covariance matrix following to eq. 14 in [Andersson15]_.
+
+.. math::
+    k(\textbf{x}, \textbf{x'}) = C_{\theta}(\mathbf{g}, \mathbf{g'}; a) C_{b}(|b - b'|; \ell)
+
+where :math:`C_{\theta}` is given by:
+
+.. math::
+    \begin{equation}
+    C(\theta) =
+    \begin{cases}
+    1 - \frac{3 \theta}{2 a} + \frac{\theta^3}{2 a^3} & \textnormal{if} \; \theta \leq a \\
+    0 & \textnormal{if} \; \theta > a
+    \end{cases}
+    \end{equation}
+
+:math:`\theta` being computed as:
+
+.. math::
+    \theta(\mathbf{g}, \mathbf{g'}) = \arccos(|\langle \mathbf{g}, \mathbf{g'} \rangle|)
+
+and :math:`C_{b}` is given by:
+
+.. math::
+    C_{b}(b, b'; \ell) = \exp\left( - \frac{(\log b - \log b')^2}{2 \ell^2} \right)
+
+:math:`b` and :math:`b'` being the b-values, and :math:`\mathbf{g}` and
+:math:`\mathbf{g'}` the unit diffusion-encoding gradient unit vectors of the
+shells; and :math:`{a, \ell}` some hyperparameters.
+
+"""
 
 from __future__ import annotations
 
@@ -393,7 +456,7 @@ def compute_pairwise_angles(
 
     .. math::
 
-        \theta(\mathbf{g}, \mathbf{g'}) = \arccos(\abs{\langle \mathbf{g}, \mathbf{g'} \rangle})
+        \theta(\mathbf{g}, \mathbf{g'}) = \arccos(|\langle \mathbf{g}, \mathbf{g'} \rangle|)
 
     Parameters
     ----------

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.model.dmri_utils module" href="eddymotion.model.dmri_utils.html" /><link rel="prev" title="eddymotion.model.base module" href="eddymotion.model.base.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model.dipy module - eddymotion 24.0.0.dev81 documentation</title>
+        <title>eddymotion.model.dipy module - eddymotion 24.0.0.dev92 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -180,7 +180,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev81 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev92 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -203,14 +203,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev81</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev92</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev81</span>
+  <span class="sidebar-brand-text">24.0.0.dev92</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -299,6 +299,67 @@
           <section id="module-eddymotion.model.dipy">
 <span id="eddymotion-model-dipy-module"></span><h1>eddymotion.model.dipy module<a class="headerlink" href="#module-eddymotion.model.dipy" title="Link to this heading">¶</a></h1>
 <p>DIPY-like models (a sandbox to trial them out before upstreaming to DIPY).</p>
+<section id="gaussian-process-model-pairwise-orientation-angles">
+<h2>Gaussian Process Model: Pairwise orientation angles<a class="headerlink" href="#gaussian-process-model-pairwise-orientation-angles" title="Link to this heading">¶</a></h2>
+<section id="squared-exponential-covariance-kernel">
+<h3>Squared Exponential covariance kernel<a class="headerlink" href="#squared-exponential-covariance-kernel" title="Link to this heading">¶</a></h3>
+<p>Kernel based on a squared exponential function for Gaussian processes on
+multi-shell DWI data following to eqs. 14 and 16 in <a class="reference internal" href="#andersson15" id="id1"><span>[Andersson15]</span></a>.
+For a 2-shell case, the <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> kernel can be written as:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}
+\mathbf{K} = \left[
+\begin{matrix}
+    \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &amp;
+    \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
+    \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &amp;
+    \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\
+\end{matrix}
+\right]
+\end{equation}\end{split}\]</div>
+</div>
+<p><strong>Squared exponential shell-wise covariance kernel</strong>:
+Compute the squared exponential smooth function describing how the
+covariance changes along the b direction.
+It uses the log of the b-values as the measure of distance along the
+b-direction according to eq. 15 in <a class="reference internal" href="#andersson15" id="id2"><span>[Andersson15]</span></a>.</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[C_{b}(b, b'; \ell) = \exp\left( - \frac{(\log b - \log b')^2}{2 \ell^2} \right).\]</div>
+</div>
+<p><strong>Squared exponential covariance kernel</strong>:
+Compute the squared exponential covariance matrix following to eq. 14 in <a class="reference internal" href="#andersson15" id="id3"><span>[Andersson15]</span></a>.</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[k(\textbf{x}, \textbf{x'}) = C_{\theta}(\mathbf{g}, \mathbf{g'}; a) C_{b}(|b - b'|; \ell)\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(C_{\theta}\)</span> is given by:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}
+C(\theta) =
+\begin{cases}
+1 - \frac{3 \theta}{2 a} + \frac{\theta^3}{2 a^3} &amp; \textnormal{if} \; \theta \leq a \\
+0 &amp; \textnormal{if} \; \theta &gt; a
+\end{cases}
+\end{equation}\end{split}\]</div>
+</div>
+<p><span class="math notranslate nohighlight">\(\theta\)</span> being computed as:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\theta(\mathbf{g}, \mathbf{g'}) = \arccos(|\langle \mathbf{g}, \mathbf{g'} \rangle|)\]</div>
+</div>
+<p>and <span class="math notranslate nohighlight">\(C_{b}\)</span> is given by:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[C_{b}(b, b'; \ell) = \exp\left( - \frac{(\log b - \log b')^2}{2 \ell^2} \right)\]</div>
+</div>
+<p><span class="math notranslate nohighlight">\(b\)</span> and <span class="math notranslate nohighlight">\(b'\)</span> being the b-values, and <span class="math notranslate nohighlight">\(\mathbf{g}\)</span> and
+<span class="math notranslate nohighlight">\(\mathbf{g'}\)</span> the unit diffusion-encoding gradient unit vectors of the
+shells; and <span class="math notranslate nohighlight">\({a, \ell}\)</span> some hyperparameters.</p>
+</section>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="eddymotion.model.dipy.GPFit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">GPFit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.dipy.org/stable/reference/dipy.core.html#dipy.core.gradients.GradientTable" title="(in dipy v1.9.0)"><span class="pre">dipy.core.gradients.GradientTable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sklearn.gaussian_process.GaussianProcessRegressor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#GPFit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.GPFit" title="Link to this definition">¶</a></dt>
@@ -362,8 +423,8 @@ should be analyzed that has the shape data.shape[:-1]</p></li>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="eddymotion.model.dipy.GaussianProcessModel.kernel_model">
-<span class="sig-name descname"><span class="pre">kernel_model</span></span><a class="headerlink" href="#eddymotion.model.dipy.GaussianProcessModel.kernel_model" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="eddymotion.model.dipy.GaussianProcessModel.kernel">
+<span class="sig-name descname"><span class="pre">kernel</span></span><a class="headerlink" href="#eddymotion.model.dipy.GaussianProcessModel.kernel" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -385,10 +446,114 @@ should be analyzed that has the shape data.shape[:-1]</p></li>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">PairwiseOrientationKernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#PairwiseOrientationKernel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Kernel</span></code></p>
+<p>A scikit-learn’s kernel for DWI signals.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel.diag">
+<span class="sig-name descname"><span class="pre">diag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#PairwiseOrientationKernel.diag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel.diag" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the diagonal of the kernel k(X, X).</p>
+<p>The result of this method is identical to np.diag(self(X)); however,
+it can be evaluated more efficiently since only the diagonal is
+evaluated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>ndarray of shape (n_samples_X, n_features)</em>) – Left argument of the returned kernel k(X, Y)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>K_diag</strong> – Diagonal of kernel k(X, X)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray of shape (n_samples_X,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#PairwiseOrientationKernel.get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel.get_params" title="Link to this definition">¶</a></dt>
+<dd><p>Get parameters of the kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether to return the parameters of the contained subobjects.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>params</strong> – Parameter names mapped to their values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_a">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameter_a</span></span><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_a" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_lambda_s">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameter_lambda_s</span></span><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_lambda_s" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_sigma_sq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameter_sigma_sq</span></span><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_sigma_sq" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel.is_stationary">
+<span class="sig-name descname"><span class="pre">is_stationary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#PairwiseOrientationKernel.is_stationary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel.is_stationary" title="Link to this definition">¶</a></dt>
+<dd><p>Returns whether the kernel is stationary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.PairwiseOrientationKernel.set_params">
+<span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#PairwiseOrientationKernel.set_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.PairwiseOrientationKernel.set_params" title="Link to this definition">¶</a></dt>
+<dd><p>Set parameters of the kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Kernel parameters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – Returns self.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.model.dipy.compute_derivative">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">compute_derivative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weighting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#compute_derivative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.compute_derivative" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the analytical derivative of the kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Pairwise angles across diffusion gradient encoding directions.</p></li>
+<li><p><strong>kernel</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Current kernel.</p></li>
+<li><p><strong>weighting</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The kind of kernel which derivatives will be calculated.</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Current parameter values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Gradients of the kernel.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.model.dipy.compute_exponential_covariance">
 <span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">compute_exponential_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#compute_exponential_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.compute_exponential_covariance" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the exponential covariance matrix following eq. 9 in <a class="reference internal" href="#andersson15" id="id1"><span>[Andersson15]</span></a>.</p>
+<dd><p>Compute the exponential covariance matrix following eq. 9 in <a class="reference internal" href="#andersson15" id="id4"><span>[Andersson15]</span></a>.</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[C(\theta) = \exp(- \frac{\theta}{a})\]</div>
@@ -412,13 +577,13 @@ the covariance goes to zero.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.model.dipy.compute_pairwise_angles">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">compute_pairwise_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab_X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab_Y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closest_polarity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#compute_pairwise_angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.compute_pairwise_angles" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">compute_pairwise_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtab_X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab_Y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closest_polarity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#compute_pairwise_angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.compute_pairwise_angles" title="Link to this definition">¶</a></dt>
 <dd><p>Compute pairwise angles across diffusion gradient encoding directions.</p>
-<p>Following <a class="reference internal" href="#andersson15" id="id2"><span>[Andersson15]</span></a>, it computes the smallest of the angles between
+<p>Following <a class="reference internal" href="#andersson15" id="id5"><span>[Andersson15]</span></a>, it computes the smallest of the angles between
 each pair if <code class="docutils literal notranslate"><span class="pre">closest_polarity</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, i.e.</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
-\[\theta(\mathbf{g}, \mathbf{g'}) = \arccos(\abs{\langle \mathbf{g}, \mathbf{g'} \rangle})\]</div>
+\[\theta(\mathbf{g}, \mathbf{g'}) = \arccos(|\langle \mathbf{g}, \mathbf{g'} \rangle|)\]</div>
 </div>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -462,7 +627,7 @@ each pair if <code class="docutils literal notranslate"><span class="pre">closes
 <div role="list" class="citation-list">
 <div class="citation" id="andersson15" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>Andersson15<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id4">4</a>,<a role="doc-backlink" href="#id5">5</a>,<a role="doc-backlink" href="#id6">6</a>)</span>
 <p>J. L. R. Andersson. et al., An integrated approach to
 correction for off-resonance effects and subject movement in diffusion MR
 imaging, NeuroImage 125 (2016) 1063–1078</p>
@@ -473,7 +638,7 @@ imaging, NeuroImage 125 (2016) 1063–1078</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.model.dipy.compute_spherical_covariance">
 <span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">compute_spherical_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#compute_spherical_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.compute_spherical_covariance" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the spherical covariance matrix following eq. 10 in <a class="reference internal" href="#andersson15" id="id3"><span>[Andersson15]</span></a>.</p>
+<dd><p>Compute the spherical covariance matrix following eq. 10 in <a class="reference internal" href="#andersson15" id="id6"><span>[Andersson15]</span></a>.</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\begin{split}C(\theta) = \begin{cases}
@@ -499,30 +664,8 @@ the covariance goes to zero.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="eddymotion.model.dipy.get_kernel">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">get_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GaussianProcessRegressor.kernel</span></span></span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#get_kernel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.get_kernel" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a Gaussian process kernel based on the provided string.</p>
-<p>Currently supports ‘test’ kernel which is a combination of DotProduct and WhiteKernel
-from scikit-learn. Raises a TypeError for unknown kernel models.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kernel_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The string representing the desired kernel model.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A GaussianProcessRegressor kernel object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GaussianProcessRegressor.kernel</span></code></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If the provided <code class="docutils literal notranslate"><span class="pre">kernel_model</span></code> is not supported.:</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.model.dipy.gp_prediction">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">gp_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_gtab</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.dipy.org/stable/reference/dipy.core.html#dipy.core.gradients.GradientTable" title="(in dipy v1.9.0)"><span class="pre">dipy.core.gradients.GradientTable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.dipy.org/stable/reference/dipy.core.html#dipy.core.gradients.GradientTable" title="(in dipy v1.9.0)"><span class="pre">dipy.core.gradients.GradientTable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sklearn.gaussian_process.GaussianProcessRegressor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#gp_prediction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.gp_prediction" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dipy.</span></span><span class="sig-name descname"><span class="pre">gp_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_gtab</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GaussianProcessRegressor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/eddymotion/model/dipy.html#gp_prediction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dipy.gp_prediction" title="Link to this definition">¶</a></dt>
 <dd><p>Predicts one or more DWI orientations given a model.</p>
 <p>This function checks if the model is fitted and then extracts
 orientations and potentially b-values from the gtab. It predicts the mean
@@ -602,20 +745,34 @@ and standard deviation of the DWI signal using the model.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">eddymotion.model.dipy module</a><ul>
+<li><a class="reference internal" href="#gaussian-process-model-pairwise-orientation-angles">Gaussian Process Model: Pairwise orientation angles</a><ul>
+<li><a class="reference internal" href="#squared-exponential-covariance-kernel">Squared Exponential covariance kernel</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#eddymotion.model.dipy.GPFit"><code class="docutils literal notranslate"><span class="pre">GPFit</span></code></a><ul>
 <li><a class="reference internal" href="#eddymotion.model.dipy.GPFit.predict"><code class="docutils literal notranslate"><span class="pre">GPFit.predict()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#eddymotion.model.dipy.GaussianProcessModel"><code class="docutils literal notranslate"><span class="pre">GaussianProcessModel</span></code></a><ul>
 <li><a class="reference internal" href="#eddymotion.model.dipy.GaussianProcessModel.fit"><code class="docutils literal notranslate"><span class="pre">GaussianProcessModel.fit()</span></code></a></li>
-<li><a class="reference internal" href="#eddymotion.model.dipy.GaussianProcessModel.kernel_model"><code class="docutils literal notranslate"><span class="pre">GaussianProcessModel.kernel_model</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.GaussianProcessModel.kernel"><code class="docutils literal notranslate"><span class="pre">GaussianProcessModel.kernel</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.dipy.GaussianProcessModel.predict"><code class="docutils literal notranslate"><span class="pre">GaussianProcessModel.predict()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel</span></code></a><ul>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel.diag"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel.diag()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel.get_params"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel.get_params()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_a"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel.hyperparameter_a</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_lambda_s"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel.hyperparameter_lambda_s</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel.hyperparameter_sigma_sq"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel.hyperparameter_sigma_sq</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel.is_stationary"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel.is_stationary()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.PairwiseOrientationKernel.set_params"><code class="docutils literal notranslate"><span class="pre">PairwiseOrientationKernel.set_params()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eddymotion.model.dipy.compute_derivative"><code class="docutils literal notranslate"><span class="pre">compute_derivative()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.dipy.compute_exponential_covariance"><code class="docutils literal notranslate"><span class="pre">compute_exponential_covariance()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.dipy.compute_pairwise_angles"><code class="docutils literal notranslate"><span class="pre">compute_pairwise_angles()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.dipy.compute_spherical_covariance"><code class="docutils literal notranslate"><span class="pre">compute_spherical_covariance()</span></code></a></li>
-<li><a class="reference internal" href="#eddymotion.model.dipy.get_kernel"><code class="docutils literal notranslate"><span class="pre">get_kernel()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.dipy.gp_prediction"><code class="docutils literal notranslate"><span class="pre">gp_prediction()</span></code></a></li>
 </ul>
 </li>
@@ -628,7 +785,7 @@ and standard deviation of the DWI signal using the model.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=08410d6f"></script>
+</div><script src="../_static/documentation_options.js?v=5b765741"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>

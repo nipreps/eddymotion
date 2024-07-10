@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>eddymotion.model.dipy - eddymotion 24.0.0.dev81 documentation</title>
+        <title>eddymotion.model.dipy - eddymotion 24.0.0.dev92 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -179,7 +179,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev81 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev92 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,14 +202,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev81</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev92</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev81</span>
+  <span class="sidebar-brand-text">24.0.0.dev92</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -312,23 +312,92 @@
 <span class="c1">#</span>
 <span class="c1">#     https://www.nipreps.org/community/licensing/</span>
 <span class="c1">#</span>
-<span class="sd">&quot;&quot;&quot;DIPY-like models (a sandbox to trial them out before upstreaming to DIPY).&quot;&quot;&quot;</span>
+<span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">DIPY-like models (a sandbox to trial them out before upstreaming to DIPY).</span>
+
+<span class="sd">Gaussian Process Model: Pairwise orientation angles</span>
+<span class="sd">---------------------------------------------------</span>
+<span class="sd">Squared Exponential covariance kernel</span>
+<span class="sd">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">Kernel based on a squared exponential function for Gaussian processes on</span>
+<span class="sd">multi-shell DWI data following to eqs. 14 and 16 in [Andersson15]_.</span>
+<span class="sd">For a 2-shell case, the :math:`\mathbf{K}` kernel can be written as:</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \begin{equation}</span>
+<span class="sd">    \mathbf{K} = \left[</span>
+<span class="sd">    \begin{matrix}</span>
+<span class="sd">        \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &amp;</span>
+<span class="sd">        \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\</span>
+<span class="sd">        \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &amp;</span>
+<span class="sd">        \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\</span>
+<span class="sd">    \end{matrix}</span>
+<span class="sd">    \right]</span>
+<span class="sd">    \end{equation}</span>
+
+<span class="sd">**Squared exponential shell-wise covariance kernel**:</span>
+<span class="sd">Compute the squared exponential smooth function describing how the</span>
+<span class="sd">covariance changes along the b direction.</span>
+<span class="sd">It uses the log of the b-values as the measure of distance along the</span>
+<span class="sd">b-direction according to eq. 15 in [Andersson15]_.</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    C_{b}(b, b&#39;; \ell) = \exp\left( - \frac{(\log b - \log b&#39;)^2}{2 \ell^2} \right).</span>
+
+<span class="sd">**Squared exponential covariance kernel**:</span>
+<span class="sd">Compute the squared exponential covariance matrix following to eq. 14 in [Andersson15]_.</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    k(\textbf{x}, \textbf{x&#39;}) = C_{\theta}(\mathbf{g}, \mathbf{g&#39;}; a) C_{b}(|b - b&#39;|; \ell)</span>
+
+<span class="sd">where :math:`C_{\theta}` is given by:</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \begin{equation}</span>
+<span class="sd">    C(\theta) =</span>
+<span class="sd">    \begin{cases}</span>
+<span class="sd">    1 - \frac{3 \theta}{2 a} + \frac{\theta^3}{2 a^3} &amp; \textnormal{if} \; \theta \leq a \\</span>
+<span class="sd">    0 &amp; \textnormal{if} \; \theta &gt; a</span>
+<span class="sd">    \end{cases}</span>
+<span class="sd">    \end{equation}</span>
+
+<span class="sd">:math:`\theta` being computed as:</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \theta(\mathbf{g}, \mathbf{g&#39;}) = \arccos(|\langle \mathbf{g}, \mathbf{g&#39;} \rangle|)</span>
+
+<span class="sd">and :math:`C_{b}` is given by:</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    C_{b}(b, b&#39;; \ell) = \exp\left( - \frac{(\log b - \log b&#39;)^2}{2 \ell^2} \right)</span>
+
+<span class="sd">:math:`b` and :math:`b&#39;` being the b-values, and :math:`\mathbf{g}` and</span>
+<span class="sd">:math:`\mathbf{g&#39;}` the unit diffusion-encoding gradient unit vectors of the</span>
+<span class="sd">shells; and :math:`{a, \ell}` some hyperparameters.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">modules</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">dipy.core.gradients</span> <span class="kn">import</span> <span class="n">GradientTable</span>
 <span class="kn">from</span> <span class="nn">dipy.reconst.base</span> <span class="kn">import</span> <span class="n">ReconstModel</span>
 <span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
-
-<span class="c1"># from dipy.reconst.multi_voxel import multi_voxel_fit</span>
+<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DotProduct</span><span class="p">,</span>
+    <span class="n">Hyperparameter</span><span class="p">,</span>
+    <span class="n">Kernel</span><span class="p">,</span>
+    <span class="n">WhiteKernel</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="gp_prediction">
 <a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.gp_prediction">[docs]</a>
 <span class="k">def</span> <span class="nf">gp_prediction</span><span class="p">(</span>
     <span class="n">model_gtab</span><span class="p">:</span> <span class="n">GradientTable</span><span class="p">,</span>
-    <span class="n">gtab</span><span class="p">:</span> <span class="n">GradientTable</span><span class="p">,</span>
+    <span class="n">gtab</span><span class="p">:</span> <span class="n">GradientTable</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">GaussianProcessRegressor</span><span class="p">,</span>
     <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -366,62 +435,22 @@
 
 
 
-<div class="viewcode-block" id="get_kernel">
-<a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.get_kernel">[docs]</a>
-<span class="k">def</span> <span class="nf">get_kernel</span><span class="p">(</span>
-    <span class="n">kernel_model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">gtab</span><span class="p">:</span> <span class="n">GradientTable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GaussianProcessRegressor</span><span class="o">.</span><span class="n">kernel</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a Gaussian process kernel based on the provided string.</span>
-
-<span class="sd">    Currently supports &#39;test&#39; kernel which is a combination of DotProduct and WhiteKernel</span>
-<span class="sd">    from scikit-learn. Raises a TypeError for unknown kernel models.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    kernel_model: :obj:`str`</span>
-<span class="sd">        The string representing the desired kernel model.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    :obj:`GaussianProcessRegressor.kernel`</span>
-<span class="sd">        A GaussianProcessRegressor kernel object.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError: If the provided ``kernel_model`` is not supported.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">kernel_model</span> <span class="o">==</span> <span class="s2">&quot;spherical&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Spherical kernel is not currently implemented.&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">kernel_model</span> <span class="o">==</span> <span class="s2">&quot;exponential&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Exponential kernel is not currently implemented.&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">kernel_model</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">DotProduct</span><span class="p">,</span> <span class="n">WhiteKernel</span>
-
-        <span class="k">return</span> <span class="n">DotProduct</span><span class="p">()</span> <span class="o">+</span> <span class="n">WhiteKernel</span><span class="p">()</span>
-
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown kernel &#39;</span><span class="si">{</span><span class="n">kernel_model</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="GaussianProcessModel">
 <a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.GaussianProcessModel">[docs]</a>
 <span class="k">class</span> <span class="nc">GaussianProcessModel</span><span class="p">(</span><span class="n">ReconstModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A Gaussian Process (GP) model to simulate single- and multi-shell DWI data.&quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;kernel_model&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;kernel&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_modelfit&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">kernel_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spherical&quot;</span><span class="p">,</span>
+        <span class="n">lambda_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">sigma_sq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -443,7 +472,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">ReconstModel</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_model</span> <span class="o">=</span> <span class="n">kernel_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">PairwiseOrientationKernel</span><span class="p">(</span>
+                <span class="n">weighting</span><span class="o">=</span><span class="n">kernel_model</span><span class="p">,</span>
+                <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span>
+                <span class="n">lambda_s</span><span class="o">=</span><span class="n">lambda_s</span><span class="p">,</span>
+                <span class="n">sigma_sq</span><span class="o">=</span><span class="n">sigma_sq</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">kernel_model</span> <span class="o">!=</span> <span class="s2">&quot;test&quot;</span>
+            <span class="k">else</span> <span class="n">DotProduct</span><span class="p">()</span> <span class="o">+</span> <span class="n">WhiteKernel</span><span class="p">()</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="GaussianProcessModel.fit">
 <a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.GaussianProcessModel.fit">[docs]</a>
@@ -473,24 +511,27 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">data</span><span class="p">[</span><span class="n">mask</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
-        <span class="n">signal_dirs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">grad_dirs</span> <span class="o">=</span> <span class="n">gtab</span><span class="o">.</span><span class="n">gradients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">signal_dirs</span> <span class="o">!=</span> <span class="n">grad_dirs</span><span class="p">:</span>
+        <span class="c1"># sklearn wants (n_samples, n_features) as X&#39;s shape</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">gtab</span><span class="o">.</span><span class="n">bvecs</span>
+
+        <span class="c1"># sklearn wants (n_samples, n_targets) for Y, where n_targets = n_voxels to simulate.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">signal_dirs</span> <span class="o">:=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span><span class="n">grad_dirs</span> <span class="o">:=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Mismatched data </span><span class="si">{</span><span class="n">signal_dirs</span><span class="si">}</span><span class="s2"> and gradient table </span><span class="si">{</span><span class="n">grad_dirs</span><span class="si">}</span><span class="s2"> sizes.&quot;</span>
             <span class="p">)</span>
 
         <span class="n">gpr</span> <span class="o">=</span> <span class="n">GaussianProcessRegressor</span><span class="p">(</span>
-            <span class="n">kernel</span><span class="o">=</span><span class="n">get_kernel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_model</span><span class="p">,</span> <span class="n">gtab</span><span class="o">=</span><span class="n">gtab</span><span class="p">),</span>
+            <span class="n">kernel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="n">n_targets</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_modelfit</span> <span class="o">=</span> <span class="n">GPFit</span><span class="p">(</span>
             <span class="n">gtab</span><span class="o">=</span><span class="n">gtab</span><span class="p">,</span>
-            <span class="n">model</span><span class="o">=</span><span class="n">gpr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">gtab</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">gpr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
             <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_modelfit</span></div>
@@ -666,15 +707,67 @@
 
     <span class="n">_ensure_positive_scale</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">theta</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">theta</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">theta</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">theta</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">theta</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">theta</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">a</span><span class="o">**</span><span class="mi">3</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_derivative">
+<a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.compute_derivative">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_derivative</span><span class="p">(</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">weighting</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the analytical derivative of the kernel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    theta : :obj:`~numpy.ndarray`</span>
+<span class="sd">        Pairwise angles across diffusion gradient encoding directions.</span>
+<span class="sd">    kernel : :obj:`~numpy.ndarray`</span>
+<span class="sd">        Current kernel.</span>
+<span class="sd">    weighting : :obj:`str`</span>
+<span class="sd">        The kind of kernel which derivatives will be calculated.</span>
+<span class="sd">    params : :obj:`dict`</span>
+<span class="sd">        Current parameter values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`~numpy.ndarray`</span>
+<span class="sd">        Gradients of the kernel.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n_partials</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+    <span class="n">lambda_s</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;lambda_s&quot;</span><span class="p">)</span>
+
+    <span class="n">min_angles</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">&gt;</span> <span class="n">a</span>
+
+    <span class="k">if</span> <span class="n">weighting</span> <span class="o">==</span> <span class="s2">&quot;spherical&quot;</span><span class="p">:</span>
+        <span class="n">deriv_a</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="n">min_angles</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">theta</span><span class="p">[</span><span class="n">min_angles</span><span class="p">]</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">/</span> <span class="n">a</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">weighting</span> <span class="o">==</span> <span class="s2">&quot;exponential&quot;</span><span class="p">:</span>
+        <span class="n">deriv_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">theta</span><span class="p">[</span><span class="n">min_angles</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[</span><span class="n">min_angles</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown kernel weighting &#39;</span><span class="si">{</span><span class="n">weighting</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="n">K_gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="o">*</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">n_partials</span><span class="p">))</span>
+    <span class="n">K_gradient</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">kernel</span> <span class="o">/</span> <span class="n">lambda_s</span>
+    <span class="n">K_gradient</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">][</span><span class="n">min_angles</span><span class="p">]</span> <span class="o">=</span> <span class="n">lambda_s</span> <span class="o">*</span> <span class="n">deriv_a</span>
+    <span class="n">K_gradient</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">][</span><span class="n">theta</span> <span class="o">&gt;</span> <span class="mf">1e-5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">K_gradient</span></div>
 
 
 
 <div class="viewcode-block" id="compute_pairwise_angles">
 <a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.compute_pairwise_angles">[docs]</a>
 <span class="k">def</span> <span class="nf">compute_pairwise_angles</span><span class="p">(</span>
-    <span class="n">gtab_X</span><span class="p">:</span> <span class="n">GradientTable</span><span class="p">,</span>
-    <span class="n">gtab_Y</span><span class="p">:</span> <span class="n">GradientTable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gtab_X</span><span class="p">:</span> <span class="n">GradientTable</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">gtab_Y</span><span class="p">:</span> <span class="n">GradientTable</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">closest_polarity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise angles across diffusion gradient encoding directions.</span>
@@ -684,7 +777,7 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \theta(\mathbf{g}, \mathbf{g&#39;}) = \arccos(\abs{\langle \mathbf{g}, \mathbf{g&#39;} \rangle})</span>
+<span class="sd">        \theta(\mathbf{g}, \mathbf{g&#39;}) = \arccos(|\langle \mathbf{g}, \mathbf{g&#39;} \rangle|)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -727,17 +820,212 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">bvecs_X</span> <span class="o">=</span> <span class="n">gtab_X</span><span class="o">.</span><span class="n">bvecs</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">bvecs_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bvecs_X</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs_X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">bvecs_X</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">gtab_X</span><span class="p">,</span> <span class="s2">&quot;bvecs&quot;</span><span class="p">,</span> <span class="n">gtab_X</span><span class="p">)</span>
+    <span class="n">bvecs_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bvecs_X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs_X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">gtab_Y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bvecs_Y</span> <span class="o">=</span> <span class="n">bvecs_X</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">bvecs_Y</span> <span class="o">=</span> <span class="n">gtab_Y</span><span class="o">.</span><span class="n">bvecs</span><span class="o">.</span><span class="n">T</span>
-        <span class="n">bvecs_Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bvecs_Y</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs_Y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">bvecs_Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">gtab_Y</span><span class="p">,</span> <span class="s2">&quot;bvecs&quot;</span><span class="p">,</span> <span class="n">gtab_Y</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">bvecs_Y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">bvecs_Y</span> <span class="o">=</span> <span class="n">bvecs_Y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="n">bvecs_Y</span> <span class="o">=</span> <span class="n">bvecs_Y</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bvecs_Y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">cosines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">bvecs_X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">bvecs_Y</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cosines</span><span class="p">)</span> <span class="k">if</span> <span class="n">closest_polarity</span> <span class="k">else</span> <span class="n">cosines</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="PairwiseOrientationKernel">
+<a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.PairwiseOrientationKernel">[docs]</a>
+<span class="k">class</span> <span class="nc">PairwiseOrientationKernel</span><span class="p">(</span><span class="n">Kernel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A scikit-learn&#39;s kernel for DWI signals.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">weighting</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;exponential&quot;</span><span class="p">,</span>
+        <span class="n">lambda_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">sigma_sq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">lambda_s_bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">),</span>
+        <span class="n">a_bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+        <span class="n">sigma_sq_bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">),</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a kernel with pairwise angles.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weighting : :obj:`str`</span>
+<span class="sd">            The type of kernel to build (either &quot;exponential&quot;, &quot;sphere&quot;, or &quot;test&quot;).</span>
+<span class="sd">        lambda_s : :obj:`float`</span>
+<span class="sd">            The :math:`\lambda_s` hyperparameter.</span>
+<span class="sd">        a : :obj:`float`</span>
+<span class="sd">            Minimum angle in rads.</span>
+<span class="sd">        sigma_sq : :obj:`float`</span>
+<span class="sd">            Error allowed in collinear orientations.</span>
+<span class="sd">        lambda_s_bounds : :obj:`tuple`</span>
+<span class="sd">            Bounds for the :math:`\lambda_s` hyperparameter.</span>
+<span class="sd">        a_bounds : :obj:`tuple`</span>
+<span class="sd">            Bounds for the a parameter.</span>
+<span class="sd">        sigma_sq_bounds : :obj:`tuple`</span>
+<span class="sd">            Bounds for the error parameter.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weighting</span> <span class="o">=</span> <span class="n">weighting</span>  <span class="c1"># For __repr__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s</span> <span class="o">=</span> <span class="n">lambda_s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq</span> <span class="o">=</span> <span class="n">sigma_sq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s_bounds</span> <span class="o">=</span> <span class="n">lambda_s_bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a_bounds</span> <span class="o">=</span> <span class="n">a_bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq_bounds</span> <span class="o">=</span> <span class="n">sigma_sq_bounds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hyperparameter_lambda_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Hyperparameter</span><span class="p">(</span><span class="s2">&quot;lambda_s&quot;</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s_bounds</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hyperparameter_a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Hyperparameter</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_bounds</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hyperparameter_sigma_sq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Hyperparameter</span><span class="p">(</span><span class="s2">&quot;sigma_sq&quot;</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq_bounds</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gtab_X</span><span class="p">,</span> <span class="n">gtab_Y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eval_gradient</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the kernel K(gtab_X, gtab_Y) and optionally its gradient.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        gtab_X: :obj:`~dipy.core.gradients.GradientTable`</span>
+<span class="sd">            Gradient table (X)</span>
+<span class="sd">        gtab_Y: :obj:`~dipy.core.gradients.GradientTable`, optional</span>
+<span class="sd">            Gradient table (Y, optional)</span>
+<span class="sd">        eval_gradient : :obj:`bool`, optional</span>
+<span class="sd">            Determines whether the gradient with respect to the log of</span>
+<span class="sd">            the kernel hyperparameter is computed.</span>
+<span class="sd">            Only supported when gtab_Y is ``None``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        K : ndarray of shape (n_samples_X, n_samples_Y)</span>
+<span class="sd">            Kernel k(X, Y)</span>
+
+<span class="sd">        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\</span>
+<span class="sd">                optional</span>
+<span class="sd">            The gradient of the kernel k(X, X) with respect to the log of the</span>
+<span class="sd">            hyperparameter of the kernel. Only returned when `eval_gradient`</span>
+<span class="sd">            is True.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thetas</span> <span class="o">=</span> <span class="n">compute_pairwise_angles</span><span class="p">(</span><span class="n">gtab_X</span><span class="p">,</span> <span class="n">gtab_Y</span><span class="p">)</span>
+        <span class="n">collinear</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">thetas</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-5</span>
+        <span class="n">thetas</span><span class="p">[</span><span class="n">collinear</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">covfunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;compute_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighting</span><span class="si">}</span><span class="s2">_covariance&quot;</span><span class="p">)</span>
+
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s</span> <span class="o">*</span> <span class="n">covfunc</span><span class="p">(</span><span class="n">thetas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">K</span><span class="p">[</span><span class="n">collinear</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">eval_gradient</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">K</span>
+
+        <span class="k">if</span> <span class="n">gtab_Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Gradients should not be calculated in inference time&quot;</span><span class="p">)</span>
+
+        <span class="n">K_gradient</span> <span class="o">=</span> <span class="n">compute_derivative</span><span class="p">(</span>
+            <span class="n">thetas</span><span class="p">,</span>
+            <span class="n">K</span><span class="p">,</span>
+            <span class="n">weighting</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighting</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">K</span><span class="p">,</span> <span class="n">K_gradient</span>
+
+<div class="viewcode-block" id="PairwiseOrientationKernel.diag">
+<a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.PairwiseOrientationKernel.diag">[docs]</a>
+    <span class="k">def</span> <span class="nf">diag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the diagonal of the kernel k(X, X).</span>
+
+<span class="sd">        The result of this method is identical to np.diag(self(X)); however,</span>
+<span class="sd">        it can be evaluated more efficiently since only the diagonal is</span>
+<span class="sd">        evaluated.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : ndarray of shape (n_samples_X, n_features)</span>
+<span class="sd">            Left argument of the returned kernel k(X, Y)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        K_diag : ndarray of shape (n_samples_X,)</span>
+<span class="sd">            Diagonal of kernel k(X, X)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">bvals</span><span class="p">)</span>
+
+        <span class="n">covfunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;compute_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighting</span><span class="si">}</span><span class="s2">_covariance&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s</span> <span class="o">*</span> <span class="n">covfunc</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq</span></div>
+
+
+<div class="viewcode-block" id="PairwiseOrientationKernel.is_stationary">
+<a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.PairwiseOrientationKernel.is_stationary">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_stationary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns whether the kernel is stationary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighting</span><span class="si">}</span><span class="s2"> kernel&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(a=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="si">}</span><span class="s2">, lambda_s=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_s</span><span class="si">}</span><span class="s2">, sigma_sq=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="PairwiseOrientationKernel.get_params">
+<a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.PairwiseOrientationKernel.get_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get parameters of the kernel.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        deep : :obj:`bool`</span>
+<span class="sd">            Whether to return the parameters of the contained subobjects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        params : :obj:`dict`</span>
+<span class="sd">            Parameter names mapped to their values.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;lambda_s&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;sigma_sq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="PairwiseOrientationKernel.set_params">
+<a class="viewcode-back" href="../../../api/eddymotion.model.dipy.html#eddymotion.model.dipy.PairwiseOrientationKernel.set_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set parameters of the kernel.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        params : :obj:`dict`</span>
+<span class="sd">            Kernel parameters.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : :obj:`object`</span>
+<span class="sd">            Returns self.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lambda_s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sigma_sq&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_sq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -771,7 +1059,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=08410d6f"></script>
+</div><script src="../../../_static/documentation_options.js?v=5b765741"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>

@@ -73,7 +73,10 @@ def _build_parser() -> ArgumentParser:
         action="store",
         type=_parse_yaml_config,
         default=None,
-        help="Path to the yaml file containing the parameters to configure the image registration process.",
+        help=(
+            "Path to the yaml file containing the parameters "
+            "to configure the image registration process."
+        ),
     )
     parser.add_argument(
         "--models",
@@ -108,7 +111,10 @@ def _build_parser() -> ArgumentParser:
         action="store",
         type=Path,
         default=Path.cwd(),
-        help="Path to the output directory. Defaults to the current directory. The output file will have the same name as the input file.",
+        help=(
+            "Path to the output directory. Defaults to the current directory."
+            "The output file will have the same name as the input file."
+        ),
     )
 
     return parser

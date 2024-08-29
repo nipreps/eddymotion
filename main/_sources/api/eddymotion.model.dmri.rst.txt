@@ -1,7 +1,7 @@
-eddymotion.model.dipy module
+eddymotion.model.dmri module
 ============================
 
-.. automodule:: eddymotion.model.dipy
+.. automodule:: eddymotion.model.dmri
    :members:
    :undoc-members:
    :show-inheritance:

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.utils module" href="eddymotion.utils.html" /><link rel="prev" title="eddymotion.model.dipy module" href="eddymotion.model.dipy.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.registration package" href="eddymotion.registration.html" /><link rel="prev" title="eddymotion.model.dmri module" href="eddymotion.model.dmri.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.model.dmri_utils module - eddymotion 24.0.0.dev106 documentation</title>
+        <title>eddymotion.model.pet module - eddymotion 24.0.0.dev114 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev106 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev114 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,14 +190,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev106</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev114</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev106</span>
+  <span class="sidebar-brand-text">24.0.0.dev114</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -235,8 +235,12 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="eddymotion.model.html">eddymotion.model package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of eddymotion.model package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.model.base.html">eddymotion.model.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="eddymotion.model.dipy.html">eddymotion.model.dipy module</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">eddymotion.model.dmri_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="eddymotion.model.dmri.html">eddymotion.model.dmri module</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">eddymotion.model.pet module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="eddymotion.registration.html">eddymotion.registration package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of eddymotion.registration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="eddymotion.registration.ants.html">eddymotion.registration.ants module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.utils.html">eddymotion.utils module</a></li>
@@ -263,7 +267,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/eddymotion.model.dmri_utils.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/eddymotion.model.pet.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -283,51 +287,37 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-eddymotion.model.dmri_utils">
-<span id="eddymotion-model-dmri-utils-module"></span><h1>eddymotion.model.dmri_utils module<a class="headerlink" href="#module-eddymotion.model.dmri_utils" title="Link to this heading">¶</a></h1>
+          <section id="module-eddymotion.model.pet">
+<span id="eddymotion-model-pet-module"></span><h1>eddymotion.model.pet module<a class="headerlink" href="#module-eddymotion.model.pet" title="Link to this heading">¶</a></h1>
+<p>Models for nuclear imaging.</p>
 <dl class="py data">
-<dt class="sig sig-object py" id="eddymotion.model.dmri_utils.DEFAULT_MAX_BVAL">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dmri_utils.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_MAX_BVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8000</span></em><a class="headerlink" href="#eddymotion.model.dmri_utils.DEFAULT_MAX_BVAL" title="Link to this definition">¶</a></dt>
-<dd><p>Maximum b-value cap.</p>
+<dt class="sig sig-object py" id="eddymotion.model.pet.DEFAULT_TIMEFRAME_MIDPOINT_TOL">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.model.pet.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_TIMEFRAME_MIDPOINT_TOL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></em><a class="headerlink" href="#eddymotion.model.pet.DEFAULT_TIMEFRAME_MIDPOINT_TOL" title="Link to this definition">¶</a></dt>
+<dd><p>Time frame tolerance in seconds.</p>
 </dd></dl>
 
-<dl class="py data">
-<dt class="sig sig-object py" id="eddymotion.model.dmri_utils.DEFAULT_MULTISHELL_BIN_COUNT_THR">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dmri_utils.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_MULTISHELL_BIN_COUNT_THR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#eddymotion.model.dmri_utils.DEFAULT_MULTISHELL_BIN_COUNT_THR" title="Link to this definition">¶</a></dt>
-<dd><p>Default bin count to consider a multishell scheme.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="eddymotion.model.pet.PETModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.pet.</span></span><span class="sig-name descname"><span class="pre">PETModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timepoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_ctrl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/pet.html#PETModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.pet.PETModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="eddymotion.model.base.html#eddymotion.model.base.BaseModel" title="eddymotion.model.base.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>A PET imaging realignment model based on B-Spline approximation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.pet.PETModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/pet.html#PETModel.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.pet.PETModel.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Fit the model.</p>
 </dd></dl>
 
-<dl class="py data">
-<dt class="sig sig-object py" id="eddymotion.model.dmri_utils.DEFAULT_NUM_BINS">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dmri_utils.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_NUM_BINS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#eddymotion.model.dmri_utils.DEFAULT_NUM_BINS" title="Link to this definition">¶</a></dt>
-<dd><p>Number of bins to classify b-values.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="eddymotion.model.pet.PETModel.is_fitted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fitted</span></span><a class="headerlink" href="#eddymotion.model.pet.PETModel.is_fitted" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.pet.PETModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/pet.html#PETModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.pet.PETModel.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Return the corrected volume using B-spline interpolation.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="eddymotion.model.dmri_utils.find_shelling_scheme">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.model.dmri_utils.</span></span><span class="sig-name descname"><span class="pre">find_shelling_scheme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bvals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multishell_nonempty_bin_count_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bval_cap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dmri_utils.html#find_shelling_scheme"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.dmri_utils.find_shelling_scheme" title="Link to this definition">¶</a></dt>
-<dd><p>Find the shelling scheme on the given b-values.</p>
-<p>Computes the histogram of the b-values according to <code class="docutils literal notranslate"><span class="pre">num_bins</span></code>
-and depending on the nonempty bin count, classify the shelling scheme
-as single-shell if they are 2 (low-b and a shell); multi-shell if they are
-below the <code class="docutils literal notranslate"><span class="pre">multishell_nonempty_bin_count_thr</span></code> value; and DSI otherwise.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>bvals</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – List or array of b-values.</p></li>
-<li><p><strong>num_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Number of bins.</p></li>
-<li><p><strong>multishell_nonempty_bin_count_thr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Bin count to consider a multi-shell scheme.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>scheme</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Shelling scheme.</p></li>
-<li><p><strong>bval_groups</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – List of grouped b-values.</p></li>
-<li><p><strong>bval_estimated</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – List of ‘estimated’ b-values as the median value of each b-value group.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
@@ -337,23 +327,23 @@ below the <code class="docutils literal notranslate"><span class="pre">multishel
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="eddymotion.utils.html">
+          <a class="next-page" href="eddymotion.registration.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">eddymotion.utils module</div>
+                <div class="title">eddymotion.registration package</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="eddymotion.model.dipy.html">
+          <a class="prev-page" href="eddymotion.model.dmri.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">eddymotion.model.dipy module</div>
+                <div class="title">eddymotion.model.dmri module</div>
                 
               </div>
             </a>
@@ -387,11 +377,14 @@ below the <code class="docutils literal notranslate"><span class="pre">multishel
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">eddymotion.model.dmri_utils module</a><ul>
-<li><a class="reference internal" href="#eddymotion.model.dmri_utils.DEFAULT_MAX_BVAL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_MAX_BVAL</span></code></a></li>
-<li><a class="reference internal" href="#eddymotion.model.dmri_utils.DEFAULT_MULTISHELL_BIN_COUNT_THR"><code class="docutils literal notranslate"><span class="pre">DEFAULT_MULTISHELL_BIN_COUNT_THR</span></code></a></li>
-<li><a class="reference internal" href="#eddymotion.model.dmri_utils.DEFAULT_NUM_BINS"><code class="docutils literal notranslate"><span class="pre">DEFAULT_NUM_BINS</span></code></a></li>
-<li><a class="reference internal" href="#eddymotion.model.dmri_utils.find_shelling_scheme"><code class="docutils literal notranslate"><span class="pre">find_shelling_scheme()</span></code></a></li>
+<li><a class="reference internal" href="#">eddymotion.model.pet module</a><ul>
+<li><a class="reference internal" href="#eddymotion.model.pet.DEFAULT_TIMEFRAME_MIDPOINT_TOL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_TIMEFRAME_MIDPOINT_TOL</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.pet.PETModel"><code class="docutils literal notranslate"><span class="pre">PETModel</span></code></a><ul>
+<li><a class="reference internal" href="#eddymotion.model.pet.PETModel.fit"><code class="docutils literal notranslate"><span class="pre">PETModel.fit()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.pet.PETModel.is_fitted"><code class="docutils literal notranslate"><span class="pre">PETModel.is_fitted</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.model.pet.PETModel.predict"><code class="docutils literal notranslate"><span class="pre">PETModel.predict()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -403,7 +396,7 @@ below the <code class="docutils literal notranslate"><span class="pre">multishel
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e498a51a"></script>
+</div><script src="../_static/documentation_options.js?v=13d77b2d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

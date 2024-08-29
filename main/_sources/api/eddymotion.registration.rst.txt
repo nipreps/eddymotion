@@ -1,0 +1,15 @@
+eddymotion.registration package
+===============================
+
+.. automodule:: eddymotion.registration
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   eddymotion.registration.ants

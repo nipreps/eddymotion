@@ -1,7 +1,7 @@
-eddymotion.model.dmri\_utils module
+eddymotion.registration.ants module
 ===================================
 
-.. automodule:: eddymotion.model.dmri_utils
+.. automodule:: eddymotion.registration.ants
    :members:
    :undoc-members:
    :show-inheritance:

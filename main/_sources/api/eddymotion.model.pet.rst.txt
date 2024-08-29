@@ -1,0 +1,7 @@
+eddymotion.model.pet module
+===========================
+
+.. automodule:: eddymotion.model.pet
+   :members:
+   :undoc-members:
+   :show-inheritance:

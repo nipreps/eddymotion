@@ -29,7 +29,7 @@ from eddymotion.model.base import (
     GPModel,
     ModelFactory,
     PETModel,
-    TrivialB0Model,
+    TrivialModel,
 )
 
 __all__ = (
@@ -38,6 +38,6 @@ __all__ = (
     "DKIModel",
     "DTIModel",
     "GPModel",
-    "TrivialB0Model",
+    "TrivialModel",
     "PETModel",
 )

@@ -85,8 +85,11 @@ class ModelFactory:
         if model.lower() in ("s0", "b0"):
             return TrivialB0Model(S0=kwargs.pop("S0"), gtab=kwargs.pop("gtab"))
 
-        if model.lower() in ("avg", "average", "mean"):
+        if model.lower() in ("avgdwi", "averagedwi", "meandwi"):
             return AverageDWModel(**kwargs)
+
+        if model.lower() in ("avg", "average", "mean"):
+            return AverageModel(**kwargs)
 
         if model.lower() in ("dti", "dki", "pet"):
             Model = globals()[f"{model.upper()}Model"]
@@ -247,6 +250,79 @@ class PETModel(BaseModel):
         retval = np.zeros(self._datashape, dtype="float32")
         retval[self._mask] = predicted
         return retval
+    
+class TrivialModel(BaseModel):
+    """A trivial model that returns a given map always."""
+
+    __slots__ = ("_predicted", )
+
+    def __init__(self, predicted=None, **kwargs):
+        """Implement object initialization."""
+        if predicted is None:
+            raise TypeError(
+                "This model requires the predicted map at initialization"
+            )
+        
+        super().__init__(**kwargs)
+        self._predicted = predicted
+        self._datashape = predicted.shape
+
+    @property
+    def is_fitted(self):
+        return True
+
+    def fit(self, data, **kwargs):
+        """Do nothing."""
+
+    def predict(self, *_, **kwargs):
+        """Return the *b=0* map."""
+
+        # No need to check fit (if not fitted, has raised already)
+        return self._predicted
+
+
+class AverageModel(BaseModel):
+    """A trivial model that returns an average map."""
+
+    __slots__ = ("_data", )
+
+    def __init__(self, **kwargs):
+        """Initialize a new model."""
+        super().__init__(**kwargs)
+        self._data = None
+
+    def fit(self, data, **kwargs):
+        """Calculate the average."""
+
+        # Regress out global signal differences
+        if kwargs.pop("equalize", False):
+            data = data.copy().astype('float32')
+            reshaped_data = (
+                data.reshape((-1, data.shape[-1]))
+                if self._mask is None
+                else data[self._mask]
+            )
+            p5 = np.percentile(reshaped_data, 5.0, axis=0)
+            p95 = np.percentile(reshaped_data, 95.0, axis=0) - p5
+            data = (data - p5) * p95.mean() / p95 + p5.mean()
+
+        # Select the summary statistic
+        avg_func = getattr(np, kwargs.pop("stat", "mean"))
+
+        # Calculate the average
+        self._data = avg_func(data, axis=-1)
+
+    @property
+    def is_fitted(self):
+        return self._data is not None
+
+    def predict(self, *_, **kwargs):
+        """Return the average map."""
+
+        if self._data is None:
+            raise ModelNotFittedError(f"{type(self).__name__} must be fitted before predicting")
+
+        return self._data
 
 
 class BaseDWIModel(BaseModel):
@@ -398,30 +474,6 @@ class BaseDWIModel(BaseModel):
             retval = predicted.reshape(self._datashape[:-1])
 
         return retval
-
-
-class TrivialB0Model(BaseDWIModel):
-    """A trivial model that returns a *b=0* map always."""
-
-    def __init__(self, **kwargs):
-        """Implement object initialization."""
-        super().__init__(**kwargs)
-
-        if self._S0 is None:
-            raise ValueError("S0 must be provided")
-
-    @property
-    def is_fitted(self):
-        return True
-
-    def fit(self, data, **kwargs):
-        """Do nothing."""
-
-    def predict(self, *_, **kwargs):
-        """Return the *b=0* map."""
-
-        # No need to check fit (if not fitted, has raised already)
-        return self._S0
 
 
 class AverageDWModel(BaseDWIModel):

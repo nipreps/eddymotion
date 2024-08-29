@@ -27,7 +27,7 @@ import pytest
 from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
-from eddymotion.model.dipy import (
+from eddymotion.model._dipy import (
     PairwiseOrientationKernel,
     compute_exponential_covariance,
     compute_pairwise_angles,

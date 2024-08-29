@@ -31,8 +31,8 @@ from eddymotion import model
 from eddymotion.data.dmri import DWI
 from eddymotion.data.splitting import lovo_split
 from eddymotion.exceptions import ModelNotFittedError
-from eddymotion.model.base import DEFAULT_MAX_S0, DEFAULT_MIN_S0
-from eddymotion.model.dipy import GaussianProcessModel
+from eddymotion.model._dipy import GaussianProcessModel
+from eddymotion.model.dmri import DEFAULT_MAX_S0, DEFAULT_MIN_S0
 
 
 def test_trivial_model():
@@ -40,9 +40,9 @@ def test_trivial_model():
 
     rng = np.random.default_rng(1234)
 
-    # Should not allow initialization without a B0
-    with pytest.raises(ValueError):
-        model.TrivialB0Model(gtab=np.eye(4))
+    # Should not allow initialization without an oracle
+    with pytest.raises(TypeError):
+        model.TrivialModel()
 
     _S0 = rng.normal(size=(2, 2, 2))
 
@@ -52,7 +52,7 @@ def test_trivial_model():
         a_max=DEFAULT_MAX_S0,
     )
 
-    tmodel = model.TrivialB0Model(gtab=np.eye(4), S0=_clipped_S0)
+    tmodel = model.TrivialModel(predicted=_clipped_S0)
 
     data = None
     assert tmodel.fit(data) is None
@@ -111,7 +111,7 @@ def test_average_model():
 def test_gp_model():
     gp = GaussianProcessModel("test")
 
-    assert isinstance(gp, model.dipy.GaussianProcessModel)
+    assert isinstance(gp, model._dipy.GaussianProcessModel)
 
     X, y = make_regression(n_samples=100, n_features=3, noise=0, random_state=0)
 
@@ -150,7 +150,7 @@ def test_two_initialisations(datadir):
     # Initialisation via ModelFactory
     model2 = model.ModelFactory.init(
         gtab=data_train[1],
-        model="avg",
+        model="avgdwi",
         S0=dmri_dataset.bzero,
         th_low=100,
         th_high=1000,

@@ -87,10 +87,11 @@ shells; and :math:`{a, \ell}` some hyperparameters.
 
 from __future__ import annotations
 
+import warnings
 from sys import modules
 
 import numpy as np
-from dipy.core.gradients import GradientTable
+from dipy.core.gradients import GradientTable, gradient_table
 from dipy.reconst.base import ReconstModel
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import (
@@ -690,3 +691,21 @@ class PairwiseOrientationKernel(Kernel):
         self.a = params.get("a", self.a)
         self.sigma_sq = params.get("sigma_sq", self.sigma_sq)
         return self
+
+
+def _rasb2dipy(gradient):
+    gradient = np.asanyarray(gradient)
+    if gradient.ndim == 1:
+        if gradient.size != 4:
+            raise ValueError("Missing gradient information.")
+        gradient = gradient[..., np.newaxis]
+
+    if gradient.shape[0] != 4:
+        gradient = gradient.T
+    elif gradient.shape == (4, 4):
+        print("Warning: make sure gradient information is not transposed!")
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning)
+        retval = gradient_table(gradient[3, :], gradient[:3, :].T)
+    return retval

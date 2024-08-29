@@ -23,21 +23,25 @@
 """Data models."""
 
 from eddymotion.model.base import (
+    AverageModel,
+    ModelFactory,
+    TrivialModel,
+)
+from eddymotion.model.dmri import (
     AverageDWModel,
     DKIModel,
     DTIModel,
     GPModel,
-    ModelFactory,
-    PETModel,
-    TrivialB0Model,
 )
+from eddymotion.model.pet import PETModel
 
 __all__ = (
     "ModelFactory",
+    "AverageModel",
     "AverageDWModel",
     "DKIModel",
     "DTIModel",
     "GPModel",
-    "TrivialB0Model",
+    "TrivialModel",
     "PETModel",
 )

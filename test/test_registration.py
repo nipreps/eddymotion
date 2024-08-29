@@ -22,6 +22,8 @@
 #
 """Unit tests exercising the estimator."""
 
+from os import cpu_count
+
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
@@ -61,12 +63,13 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
     registration = Registration(
         terminal_output="file",
         from_file=pkg_fn(
-            "eddymotion",
+            "eddymotion.registration",
             "config/dwi-to-b0_level0.json",
         ),
         fixed_image=str(fixed.absolute()),
         moving_image=str(moving.absolute()),
         random_seed=1234,
+        num_threads=cpu_count(),
     )
 
     result = registration.run(cwd=str(tmp_path)).outputs

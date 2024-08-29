@@ -22,21 +22,16 @@
 #
 """A model-based algorithm for the realignment of dMRI data."""
 
-from collections import namedtuple
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkstemp
 
 import nibabel as nb
-import nitransforms as nt
-import numpy as np
-from nipype.interfaces.ants.registration import Registration
-from nitransforms.linear import Affine
-from pkg_resources import resource_filename as pkg_fn
 from tqdm import tqdm
 
 from eddymotion import utils as eutils
 from eddymotion.data.splitting import lovo_split
 from eddymotion.model import ModelFactory
+from eddymotion.registration.ants import _prepare_registration_data, _run_registration
 
 
 class EddyMotionEstimator:
@@ -104,11 +99,13 @@ class EddyMotionEstimator:
             align_kwargs["num_threads"] = omp_nthreads
 
         n_iter = len(models)
-        for i_iter, model in enumerate(models):
-            reg_target_type = (
-                "dwi" if model.lower() not in ("b0", "s0", "avg", "average", "mean") else "b0"
-            )
 
+        reg_target_type = (
+            align_kwargs.pop("fixed_modality", None),
+            align_kwargs.pop("moving_modality", None),
+        )
+
+        for i_iter, model in enumerate(models):
             # When downsampling these need to be set per-level
             bmask_img = _prepare_brainmask_data(dwdata.brainmask, dwdata.affine)
 
@@ -199,22 +196,6 @@ class EddyMotionEstimator:
         return dwdata.em_affines
 
 
-def _to_nifti(data, affine, filename, clip=True):
-    data = np.squeeze(data)
-    if clip:
-        from eddymotion.data.filtering import advanced_clip
-
-        data = advanced_clip(data)
-    nii = nb.Nifti1Image(
-        data,
-        affine,
-        None,
-    )
-    nii.header.set_sform(affine, code=1)
-    nii.header.set_qform(affine, code=1)
-    nii.to_filename(filename)
-
-
 def _prepare_brainmask_data(brainmask, affine):
     """Prepare the brainmask data: save the data to disk.
 
@@ -268,136 +249,3 @@ def _prepare_kwargs(dwdata, kwargs):
 
     if hasattr(dwdata, "total_duration"):
         kwargs["xlim"] = dwdata.total_duration
-
-
-def _prepare_registration_data(dwframe, predicted, affine, vol_idx, dirname, reg_target_type):
-    """Prepare the registration data: save the fixed and moving images to disk.
-
-    Parameters
-    ----------
-    dwframe : :obj:`numpy.ndarray`
-        DWI data object.
-    predicted : :obj:`numpy.ndarray`
-        Predicted data.
-    affine : :obj:`numpy.ndarray`
-        Affine transformation matrix.
-    vol_idx : :obj:`int
-        DWI volume index.
-    dirname : :obj:`Path`
-        Directory name where the data is saved.
-    reg_target_type : :obj:`str`
-        Target registration type.
-
-    Returns
-    -------
-    fixed : :obj:`Path`
-        Fixed image filename.
-    moving : :obj:`Path`
-        Moving image filename.
-    """
-
-    moving = dirname / f"moving{vol_idx:05d}.nii.gz"
-    fixed = dirname / f"fixed{vol_idx:05d}.nii.gz"
-    _to_nifti(dwframe, affine, moving)
-    _to_nifti(
-        predicted,
-        affine,
-        fixed,
-        clip=reg_target_type == "dwi",
-    )
-    return fixed, moving
-
-
-def _run_registration(
-    fixed,
-    moving,
-    bmask_img,
-    em_affines,
-    affine,
-    shape,
-    bval,
-    fieldmap,
-    i_iter,
-    vol_idx,
-    dirname,
-    reg_target_type,
-    align_kwargs,
-):
-    """Register the moving image to the fixed image.
-
-    Parameters
-    ----------
-    fixed : :obj:`Path`
-        Fixed image filename.
-    moving : :obj:`Path`
-        Moving image filename.
-    bmask_img : :class:`~nibabel.nifti1.Nifti1Image`
-        Brainmask image.
-    em_affines : :obj:`numpy.ndarray`
-        Estimated eddy motion affine transformation matrices.
-    affine : :obj:`numpy.ndarray`
-        Affine transformation matrix.
-    shape : :obj:`tuple`
-        Shape of the DWI frame.
-    bval : :obj:`int`
-        b-value of the corresponding DWI volume.
-    fieldmap : :class:`~nibabel.nifti1.Nifti1Image`
-        Fieldmap.
-    i_iter : :obj:`int`
-        Iteration number.
-    vol_idx : :obj:`int`
-        DWI frame index.
-    dirname : :obj:`Path`
-        Directory name where the transformation is saved.
-    reg_target_type : :obj:`str`
-        Target registration type.
-    align_kwargs : :obj:`dict`
-        Parameters to configure the image registration process.
-
-    Returns
-    -------
-    xform : :class:`~nitransforms.linear.Affine`
-        Registration transformation.
-    """
-
-    registration = Registration(
-        terminal_output="file",
-        from_file=pkg_fn(
-            "eddymotion",
-            f"config/dwi-to-{reg_target_type}_level{i_iter}.json",
-        ),
-        fixed_image=str(fixed.absolute()),
-        moving_image=str(moving.absolute()),
-        **align_kwargs,
-    )
-    if bmask_img:
-        registration.inputs.fixed_image_masks = ["NULL", bmask_img]
-
-    if em_affines is not None and np.any(em_affines[vol_idx, ...]):
-        reference = namedtuple("ImageGrid", ("shape", "affine"))(shape=shape, affine=affine)
-
-        # create a nitransforms object
-        if fieldmap:
-            # compose fieldmap into transform
-            raise NotImplementedError
-        else:
-            initial_xform = Affine(matrix=em_affines[vol_idx], reference=reference)
-        mat_file = dirname / f"init_{i_iter}_{vol_idx:05d}.mat"
-        initial_xform.to_filename(mat_file, fmt="itk")
-        registration.inputs.initial_moving_transform = str(mat_file)
-
-    # execute ants command line
-    result = registration.run(cwd=str(dirname)).outputs
-
-    # read output transform
-    xform = nt.linear.Affine(
-        nt.io.itk.ITKLinearTransform.from_filename(result.forward_transforms[0]).to_ras(
-            reference=fixed, moving=moving
-        ),
-    )
-    # debugging: generate aligned file for testing
-    xform.apply(moving, reference=fixed).to_filename(
-        dirname / f"aligned{vol_idx:05d}_{int(bval):04d}.nii.gz"
-    )
-
-    return xform

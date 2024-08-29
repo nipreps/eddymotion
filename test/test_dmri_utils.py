@@ -20,7 +20,6 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -28,8 +27,6 @@ import pytest
 from eddymotion.model.dmri_utils import (
     find_shelling_scheme,
 )
-
-_datadir = (Path(__file__).parent.parent.parent / "data").absolute()
 
 
 @pytest.mark.parametrize(
@@ -628,8 +625,10 @@ def test_find_shelling_scheme_array(bvals, exp_scheme, exp_bval_groups, exp_bval
         ),
     ],
 )
-def test_find_shelling_scheme_files(dwi_btable, exp_scheme, exp_bval_groups, exp_bval_estimated):
-    bvals = np.loadtxt(_datadir / f"{dwi_btable}.bval")
+def test_find_shelling_scheme_files(
+    dwi_btable, exp_scheme, exp_bval_groups, exp_bval_estimated, repodata
+):
+    bvals = np.loadtxt(repodata / f"{dwi_btable}.bval")
 
     obt_scheme, obt_bval_groups, obt_bval_estimated = find_shelling_scheme(bvals)
     assert obt_scheme == exp_scheme

@@ -23,6 +23,9 @@
 """Using ANTs for image registration."""
 
 from collections import namedtuple
+from json import loads
+from pathlib import Path
+from warnings import warn
 
 import nibabel as nb
 import nitransforms as nt
@@ -84,6 +87,172 @@ def _prepare_registration_data(dwframe, predicted, affine, vol_idx, dirname, reg
         clip=reg_target_type == "dwi",
     )
     return fixed, moving
+
+
+def _get_ants_settings(settings="b0-to-b0_level0"):
+    return Path(
+        pkg_fn(
+            "eddymotion.registration",
+            f"config/{settings}.json",
+        )
+    )
+
+
+def generate_command(
+    fixed_path,
+    moving_path,
+    fixedmask_path=None,
+    movingmask_path=None,
+    init_affine=None,
+    default="b0-to-b0_level0",
+    **kwargs,
+):
+    """
+    Generate an ANTs' command line.
+
+    Examples
+    --------
+    >>> generate_command(
+    ...     fixed_path=repodata / 'fileA.nii.gz',
+    ...     moving_path=repodata / 'fileB.nii.gz',
+    ... )  # doctest: +NORMALIZE_WHITESPACE
+    'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
+    --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
+    --transform Rigid[ 20.0 ] \
+    --metric GC[ /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 5, Random, 0.1 ] \
+    --convergence [ 20, 1e-05, 2 ] --smoothing-sigmas 2.0vox --shrink-factors 2 \
+    --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.01, 0.998 ] \
+    --write-composite-transform 0'
+
+    >>> generate_command(
+    ...     fixed_path=repodata / 'fileA.nii.gz',
+    ...     moving_path=repodata / 'fileB.nii.gz',
+    ...     default="dwi-to-b0_level0",
+    ... )  # doctest: +NORMALIZE_WHITESPACE
+    'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
+    --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
+    --transform Rigid[ 0.01 ] --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Regular, 0.2 \
+    ] --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox \
+    --shrink-factors 2x1 --use-histogram-matching 1 --transform Rigid[ 0.001 ] \
+    --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Random, 0.1 \
+    ] --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
+    --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.0001, 0.9998 ] \
+    --write-composite-transform 0'
+
+    >>> generate_command(
+    ...     fixed_path=repodata / 'fileA.nii.gz',
+    ...     moving_path=repodata / 'fileB.nii.gz',
+    ...     fixedmask_path=repodata / 'maskA.nii.gz',
+    ...     default="dwi-to-b0_level0",
+    ... )  # doctest: +NORMALIZE_WHITESPACE
+    'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
+    --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
+    --transform Rigid[ 0.01 ] --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Regular, 0.2 ] \
+    --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox --shrink-factors 2x1 \
+    --use-histogram-matching 1 --masks [ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/maskA.nii.gz, NULL ] \
+    --transform Rigid[ 0.001 ] --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Random, 0.1 ] \
+    --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
+    --use-histogram-matching 1 --masks [ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/maskA.nii.gz, NULL ] \
+    -v --winsorize-image-intensities [ 0.0001, 0.9998 ]  --write-composite-transform 0'
+
+    >>> generate_command(
+    ...     fixed_path=repodata / 'fileA.nii.gz',
+    ...     moving_path=repodata / 'fileB.nii.gz',
+    ...     default="dwi-to-b0_level0",
+    ... )  # doctest: +NORMALIZE_WHITESPACE
+    'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
+    --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
+    --transform Rigid[ 0.01 ] --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Regular, 0.2 \
+    ] --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox \
+    --shrink-factors 2x1 --use-histogram-matching 1 --transform Rigid[ 0.001 ] \
+    --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Random, 0.1 \
+    ] --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
+    --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.0001, 0.9998 ] \
+    --write-composite-transform 0'
+
+    >>> generate_command(
+    ...     fixed_path=repodata / 'fileA.nii.gz',
+    ...     moving_path=repodata / 'fileB.nii.gz',
+    ...     fixedmask_path=[repodata / 'maskA.nii.gz'],
+    ...     default="dwi-to-b0_level0",
+    ... )  # doctest: +NORMALIZE_WHITESPACE
+    'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
+    --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
+    --transform Rigid[ 0.01 ] --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Regular, 0.2 ] \
+    --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox --shrink-factors 2x1 \
+    --use-histogram-matching 1 --masks [ NULL, NULL ] \
+    --transform Rigid[ 0.001 ] --metric Mattes[ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 32, Random, 0.1 ] \
+    --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
+    --use-histogram-matching 1 --masks [ \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/maskA.nii.gz, NULL ] \
+    -v --winsorize-image-intensities [ 0.0001, 0.9998 ]  --write-composite-transform 0'
+
+    """
+
+    settings = loads(_get_ants_settings(default).read_text()) | kwargs
+
+    nlevels = len(settings["metric"])
+    fixed_path = Path(fixed_path).absolute()
+    moving_path = Path(moving_path).absolute()
+
+    if fixedmask_path is not None:
+        if isinstance(fixedmask_path, (str, Path)):
+            fixedmask_path = [str(fixedmask_path)] * nlevels
+        elif len(fixedmask_path) < nlevels:
+            fixedmask_path = ["NULL"] * (nlevels - len(fixedmask_path)) + fixedmask_path
+        elif len(fixedmask_path) > nlevels:
+            warn("More fixed mask paths than levels", stacklevel=1)
+            fixedmask_path = fixedmask_path[:nlevels]
+
+        settings["fixed_image_masks"] = [str(f) for f in fixedmask_path]
+
+    if movingmask_path is not None:
+        if isinstance(movingmask_path, (str, Path)):
+            movingmask_path = [movingmask_path] * nlevels
+        elif len(movingmask_path) < nlevels:
+            movingmask_path = ["NULL"] * (nlevels - len(movingmask_path)) + movingmask_path
+        elif len(movingmask_path) > nlevels:
+            warn("More moving mask paths than levels", stacklevel=1)
+            movingmask_path = movingmask_path[:nlevels]
+
+        settings["moving_image_masks"] = [str(m) for m in movingmask_path]
+
+    if init_affine is not None:
+        settings["initial_moving_transform"] = str(init_affine)
+
+    return Registration(
+        fixed_image=str(fixed_path),
+        moving_image=str(moving_path),
+        **settings,
+    ).cmdline
 
 
 def _run_registration(

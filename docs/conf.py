@@ -58,6 +58,7 @@ autodoc_mock_imports = [
     "pandas",
     "scipy",
     "seaborn",
+    "scipy",
     "skimage",
     "sklearn",
     "svgutils",

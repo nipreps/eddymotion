@@ -34,6 +34,14 @@ from nipype.interfaces.ants.registration import Registration
 from nitransforms.linear import Affine
 from pkg_resources import resource_filename as pkg_fn
 
+PARAMETERS_SINGLE_LIST = {
+    "radius_or_number_of_bins",
+    "sampling_percentage",
+    "metric",
+    "sampling_strategy",
+}
+PARAMETERS_DOUBLE_LIST = {"shrink_factors", "smoothing_sigmas", "transform_parameters"}
+
 
 def _to_nifti(data, affine, filename, clip=True):
     data = np.squeeze(data)
@@ -217,7 +225,15 @@ def generate_command(
 
     """
 
-    settings = loads(_get_ants_settings(default).read_text()) | kwargs
+    settings = loads(_get_ants_settings(default).read_text())
+
+    for key, value in kwargs.items():
+        if key in PARAMETERS_SINGLE_LIST:
+            value = [value]
+        elif key in PARAMETERS_DOUBLE_LIST:
+            value = [[value]]
+
+        settings[key] = value
 
     nlevels = len(settings["metric"])
     fixed_path = Path(fixed_path).absolute()

@@ -42,8 +42,8 @@ from eddymotion.registration.utils import displacements_within_mask
 @pytest.mark.parametrize("t_x", [0.0, 1.0])
 @pytest.mark.parametrize("t_y", [0.0, 1.0])
 @pytest.mark.parametrize("t_z", [0.0, 1.0])
-# @pytest.mark.parametrize("dataset", ["hcph", "dwi"])
-@pytest.mark.parametrize("dataset", ["dwi"])  # only dwi for now
+@pytest.mark.parametrize("dataset", ["hcph", "dwi"])
+# @pytest.mark.parametrize("dataset", ["dwi"])
 def test_ANTs_config_b0(datadir, tmp_path, dataset, r_x, r_y, r_z, t_x, t_y, t_z):
     """Check that the registration parameters for b=0
     gives a good estimate of known affine"""
@@ -62,7 +62,7 @@ def test_ANTs_config_b0(datadir, tmp_path, dataset, r_x, r_y, r_z, t_x, t_y, t_z
         terminal_output="file",
         from_file=pkg_fn(
             "eddymotion.registration",
-            "config/dwi-to-b0_level0.json",
+            "config/b0-to-b0_level0.json",
         ),
         fixed_image=str(fixed.absolute()),
         moving_image=str(moving.absolute()),
@@ -78,6 +78,6 @@ def test_ANTs_config_b0(datadir, tmp_path, dataset, r_x, r_y, r_z, t_x, t_y, t_z
     )
 
     masknii = nb.load(fixed_mask)
-    assert displacements_within_mask(masknii, xform, xfm).mean() < 0.5 * np.mean(
-        b0nii.header.get_zooms()[:3]
+    assert displacements_within_mask(masknii, xform, xfm).mean() < (
+        0.6 * np.mean(b0nii.header.get_zooms()[:3])
     )

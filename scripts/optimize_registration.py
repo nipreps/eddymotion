@@ -24,17 +24,16 @@
 
 import asyncio
 import logging
-import random
 from os import getenv
 from pathlib import Path
 from shutil import rmtree
-from tempfile import mkdtemp
 
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
 from ConfigSpace import Configuration, ConfigurationSpace
 from smac import HyperparameterOptimizationFacade, Scenario
+from smac.utils.configspace import get_config_hash
 
 from eddymotion.registration import ants as erants
 from eddymotion.registration import utils
@@ -46,17 +45,18 @@ logger = logging.getLogger("ants-optimization")
 # nest_asyncio.apply()
 
 TIME_PENALTY_WEIGHT = 0.1
+SEED = 2390232
 
 ## Generate config dictionary
 configdict = {
     # "convergence_threshold": (1e-5, 1e-6),
     "winsorize_lower_quantile": (0.001, 0.2),
-    "winsorize_upper_quantile": (0.98, 0.999),
-    "transform_parameters": (0.1, 50.0),
-    "smoothing_sigmas": (0.0, 8.0),
+    "winsorize_upper_quantile": (0.9, 0.999),
+    "transform_parameters": (0.01, 20.0),
+    "smoothing_sigmas": (0.0, 4.0),
     "shrink_factors": (1, 4),
-    "radius_or_number_of_bins": (3, 12),
-    "sampling_percentage": (0.1, 0.8),
+    "radius_or_number_of_bins": (3, 6),
+    "sampling_percentage": (0.1, 0.6),
     "metric": ["GC"],
     "sampling_strategy": ["Random", "Regular"],
 }
@@ -86,77 +86,75 @@ if EXPERIMENTDIR.exists():
 
 EXPERIMENTDIR.mkdir(parents=True, exist_ok=True)
 
+rng = np.random.default_rng(SEED)
+MOTION_PARAMETERS = np.hstack(
+    (rng.uniform(-0.4, 0.4, size=(60, 3)), rng.uniform(-2.0, 2.0, size=(60, 3)))
+)
+CONVERSIONS = [
+    nb.affines.from_matvec(nb.eulerangles.euler2mat(*parameters[:3]), parameters[3:])
+    for parameters in MOTION_PARAMETERS
+]
+
+REFERENCES = (
+    DATASET_PATH / "dwi-b0_desc-avg.nii.gz",
+    DATASET_PATH / "hcph-b0_desc-avg.nii.gz",
+)
+
 
 async def train_coro(
     config: Configuration,
-    conversions: int = 100,
     seed: int = 0,
     verbose: bool = False,
 ) -> float:
-    random.seed(seed)
-
-    tmp_folder = Path(mkdtemp(prefix="i-", dir=EXPERIMENTDIR))
+    tmp_folder = EXPERIMENTDIR / get_config_hash(config)
+    tmp_folder.mkdir(parents=True, exist_ok=True)
     align_kwargs = {k: config[k] for k in configdict.keys()}
 
     ref_xfms = []
     tasks = []
-    semaphore = asyncio.Semaphore(12)
-    for i in range(conversions):
-        r_x, r_y, r_z = (
-            random.uniform(-0.1, 0.1),
-            random.uniform(-0.1, 0.1),
-            random.uniform(-0.1, 0.1),
-        )
-        t_x, t_y, t_z = (
-            random.uniform(-1.0, 1.0),
-            random.uniform(-1.0, 1.0),
-            random.uniform(-1.0, 1.0),
-        )
-        T = nb.affines.from_matvec(
-            nb.eulerangles.euler2mat(x=r_x, y=r_y, z=r_z),
-            (t_x, t_y, t_z),
-        )
+    semaphore = asyncio.Semaphore(18)
+    nconv = len(CONVERSIONS)
+    for i, T in enumerate(CONVERSIONS):
+        for j in (0, 1):
+            fixed_path = REFERENCES[j]
+            brainmask_path = DATASET_PATH / fixed_path.name.replace("desc-avg", "desc-brain_mask")
+            refnii = nb.load(fixed_path)
+            xfm = nt.linear.Affine(T, reference=refnii)
+            ref_xfms.append(xfm)
 
-        fixed_path = (
-            DATASET_PATH / f"{'dwi' if i < (conversions // 2) else 'hcph'}-b0_desc-avg.nii.gz"
-        )
-        brainmask_path = DATASET_PATH / fixed_path.name.replace("desc-avg", "desc-brain_mask")
-        refnii = nb.load(fixed_path)
-        xfm = nt.linear.Affine(T, reference=refnii)
-        ref_xfms.append(xfm)
+            index = i * len(REFERENCES) + j
+            moving_path = tmp_folder / f"test-{index:04d}.nii.gz"
+            (~xfm).apply(refnii, reference=refnii).to_filename(moving_path)
 
-        moving_path = tmp_folder / f"test-{i:04d}.nii.gz"
-        (~xfm).apply(refnii, reference=refnii).to_filename(moving_path)
-
-        cmdline = erants.generate_command(
-            fixed_path,
-            moving_path,
-            fixedmask_path=brainmask_path,
-            output_transform_prefix=f"conversion-{i:04d}",
-            **align_kwargs,
-        )
-
-        tasks.append(
-            ants(
-                cmdline,
-                cwd=str(tmp_folder),
-                stdout=Path(tmp_folder / f"ants-{i:04d}.out").open("w+"),
-                stderr=Path(tmp_folder / f"ants-{i:04d}.err").open("w+"),
-                semaphore=semaphore,
+            cmdline = erants.generate_command(
+                fixed_path,
+                moving_path,
+                fixedmask_path=brainmask_path,
+                output_transform_prefix=f"conversion-{index:04d}",
+                **align_kwargs,
             )
-        )
+
+            tasks.append(
+                ants(
+                    cmdline,
+                    cwd=str(tmp_folder),
+                    stdout=Path(tmp_folder / f"ants-{index:04d}.out").open("w+"),
+                    stderr=Path(tmp_folder / f"ants-{index:04d}.err").open("w+"),
+                    semaphore=semaphore,
+                )
+            )
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     diff = []
     times = []
+    start = []
     for i, r in enumerate(results):
         if r:
             return 1e6
 
-        fixed_path = (
-            DATASET_PATH / f"{'dwi' if i < (conversions // 2) else 'hcph'}-b0_desc-avg.nii.gz"
-        )
+        j = i % 2
+        fixed_path = REFERENCES[j]
         brainmask_path = DATASET_PATH / fixed_path.name.replace("desc-avg", "desc-brain_mask")
 
         fixednii = nb.load(fixed_path)
@@ -169,35 +167,46 @@ async def train_coro(
                 moving=movingnii,
             ),
         )
+
+        masknii = nb.load(brainmask_path)
+        initial_error = utils.displacements_within_mask(
+            masknii,
+            ref_xfms[i],
+        )
+
         disps = utils.displacements_within_mask(
-            nb.load(brainmask_path),
+            masknii,
             xform,
             ref_xfms[i],
         )
-        diff.append(np.mean(disps))
+        diff.append(np.percentile(disps, 95))
+        start.append(np.percentile(initial_error, 95))
 
         # Parse log -- Total elapsed time: 1.0047e+00
         for line in reversed(Path(tmp_folder / f"ants-{i:04d}.out").read_text().splitlines()):
             if line.strip().startswith("Total elapsed time:"):
                 times.append(float(line.strip().split(" ")[-1]))
 
-    maxdiff = max(diff)
+    meandiff = np.mean(diff)
     meantime = np.mean(times)
-    error = (1.0 - TIME_PENALTY_WEIGHT) * maxdiff + TIME_PENALTY_WEIGHT * meantime
+    error = ((1.0 - TIME_PENALTY_WEIGHT) * meandiff + TIME_PENALTY_WEIGHT * meantime) / np.mean(
+        start
+    )
 
-    logger.warning(
-        f"Max. error ({conversions} it.): {error:0.3f} "
-        f"({maxdiff:0.2f} mm | {meantime:0.2f} s)."
+    logger.info(
+        f"Normalized objective ({nconv} it.): {error:0.3f} "
+        f"({meandiff:0.2f} mm | {meantime:0.2f} s). "
+        f"Avg. p95 initial error: {np.mean(start):0.2f} mm."
     )
     if verbose:
-        logger.warning(f"\n\nParameters:\n{align_kwargs}" f"\n\nConversions folder: {tmp_folder}.")
+        logger.info(f"\n\nParameters:\n{align_kwargs}" f"\n\nConversions folder: {tmp_folder}.")
 
     return error
 
 
-def train(config: Configuration, conversions: int = 100, seed: int = 0) -> float:
+def train(config: Configuration, seed: int = 0) -> float:
     loop = asyncio.get_event_loop()
-    return loop.run_until_complete(train_coro(config, conversions, seed))
+    return loop.run_until_complete(train_coro(config, seed))
 
 
 # Scenario object specifying the optimization environment
@@ -210,4 +219,4 @@ incumbent = smac.optimize()
 print(incumbent)
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(train_coro(incumbent, conversions=200, verbose=True))
+loop.run_until_complete(train_coro(incumbent, verbose=True))

@@ -50,14 +50,14 @@ SEED = 2390232
 ## Generate config dictionary
 configdict = {
     # "convergence_threshold": (1e-5, 1e-6),
-    "winsorize_lower_quantile": (0.001, 0.2),
-    "winsorize_upper_quantile": (0.9, 0.999),
-    "transform_parameters": (0.01, 20.0),
-    "smoothing_sigmas": (0.0, 4.0),
-    "shrink_factors": (1, 4),
-    "radius_or_number_of_bins": (3, 6),
-    "sampling_percentage": (0.1, 0.6),
-    "metric": ["GC"],
+    # "winsorize_lower_quantile": (0.001, 0.2),
+    # "winsorize_upper_quantile": (0.9, 0.999),
+    "transform_parameters": (0.01, 2.0),
+    "smoothing_sigmas": (0.0, 1.0),
+    "shrink_factors": (1, 2),
+    "radius_or_number_of_bins": (3, 5),
+    "sampling_percentage": (0.1, 0.4),
+    # "metric": ["GC"],
     "sampling_strategy": ["Random", "Regular"],
 }
 paramspace = ConfigurationSpace(configdict)

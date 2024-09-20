@@ -34,6 +34,19 @@ from nipype.interfaces.ants.registration import Registration
 from nitransforms.linear import Affine
 from pkg_resources import resource_filename as pkg_fn
 
+PARAMETERS_SINGLE_VALUE = {
+    "collapse_output_transforms",
+    "dimension",
+    "initial_moving_transform",
+    "initialize_transforms_per_stage",
+    "interpolation",
+    "output_transform_prefix",
+    "verbose",
+    "winsorize_lower_quantile",
+    "winsorize_upper_quantile",
+    "write_composite_transform",
+}
+
 PARAMETERS_SINGLE_LIST = {
     "radius_or_number_of_bins",
     "sampling_percentage",
@@ -106,6 +119,35 @@ def _get_ants_settings(settings="b0-to-b0_level0"):
     )
 
 
+def _massage_mask_path(mask_path, nlevels):
+    """
+    Generate nipype-compatible masks paths.
+
+    Examples
+    --------
+    >>> _massage_mask_path("/some/path", 2)
+    ['/some/path', '/some/path']
+
+    >>> _massage_mask_path(["/some/path"] * 2, 2)
+    ['/some/path', '/some/path']
+
+    >>> _massage_mask_path(["/some/path"] * 2, 4)
+    ['NULL', 'NULL', '/some/path', '/some/path']
+
+    >>> _massage_mask_path(["/some/path"] * 2, 1)
+    ['/some/path']
+
+    """
+    if isinstance(mask_path, (str, Path)):
+        return [str(mask_path)] * nlevels
+    if len(mask_path) < nlevels:
+        return ["NULL"] * (nlevels - len(mask_path)) + mask_path
+    if len(mask_path) > nlevels:
+        warn("More mask paths than levels", stacklevel=1)
+        return mask_path[:nlevels]
+    return mask_path
+
+
 def generate_command(
     fixed_path,
     moving_path,
@@ -126,12 +168,19 @@ def generate_command(
     ... )  # doctest: +NORMALIZE_WHITESPACE
     'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
     --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
-    --transform Rigid[ 20.0 ] \
+    --transform Rigid[ 12.0 ] \
     --metric GC[ /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
         /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
-        1, 5, Random, 0.1 ] \
-    --convergence [ 20, 1e-05, 2 ] --smoothing-sigmas 2.0vox --shrink-factors 2 \
-    --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.01, 0.998 ] \
+        1, 3, Random, 0.4 ] \
+    --convergence [ 20, 1e-06, 4 ] --smoothing-sigmas 2.71vox --shrink-factors 3 \
+    --use-histogram-matching 1 \
+    --transform Rigid[ 1.96 ] \
+    --metric GC[ /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
+        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        1, 4, Random, 0.18 ] \
+    --convergence [ 10, 1e-07, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 2 \
+    --use-histogram-matching 1 \
+    -v --winsorize-image-intensities [ 0.063, 0.991 ] \
     --write-composite-transform 0'
 
     >>> generate_command(
@@ -225,48 +274,49 @@ def generate_command(
 
     """
 
-    settings = loads(_get_ants_settings(default).read_text())
+    # Bootstrap settings from defaults file and override with single-valued parameters in args
+    settings = loads(_get_ants_settings(default).read_text()) | {
+        k: kwargs.pop(k) for k in PARAMETERS_SINGLE_VALUE if k in kwargs
+    }
 
+    # Determine number of levels and assert consistency of levels
+    levels = {len(settings[p]) for p in PARAMETERS_SINGLE_LIST if p in settings}
+    nlevels = levels.pop()
+    if levels:
+        raise RuntimeError(f"Malformed settings file (levels: {levels})")
+
+    # Override list (and nested-list) parameters
     for key, value in kwargs.items():
-        if key in PARAMETERS_SINGLE_LIST:
+        if key in PARAMETERS_DOUBLE_LIST:
             value = [value]
-        elif key in PARAMETERS_DOUBLE_LIST:
-            value = [[value]]
+        elif key not in PARAMETERS_SINGLE_LIST:
+            continue
 
-        settings[key] = value
+        if levels == 1:
+            settings[key] = [value]
+        else:
+            settings[key][-1] = value
 
-    nlevels = len(settings["metric"])
-    fixed_path = Path(fixed_path).absolute()
-    moving_path = Path(moving_path).absolute()
-
+    # Set fixed masks if provided
     if fixedmask_path is not None:
-        if isinstance(fixedmask_path, (str, Path)):
-            fixedmask_path = [str(fixedmask_path)] * nlevels
-        elif len(fixedmask_path) < nlevels:
-            fixedmask_path = ["NULL"] * (nlevels - len(fixedmask_path)) + fixedmask_path
-        elif len(fixedmask_path) > nlevels:
-            warn("More fixed mask paths than levels", stacklevel=1)
-            fixedmask_path = fixedmask_path[:nlevels]
+        settings["fixed_image_masks"] = [
+            str(p) for p in _massage_mask_path(fixedmask_path, nlevels)
+        ]
 
-        settings["fixed_image_masks"] = [str(f) for f in fixedmask_path]
-
+    # Set moving masks if provided
     if movingmask_path is not None:
-        if isinstance(movingmask_path, (str, Path)):
-            movingmask_path = [movingmask_path] * nlevels
-        elif len(movingmask_path) < nlevels:
-            movingmask_path = ["NULL"] * (nlevels - len(movingmask_path)) + movingmask_path
-        elif len(movingmask_path) > nlevels:
-            warn("More moving mask paths than levels", stacklevel=1)
-            movingmask_path = movingmask_path[:nlevels]
+        settings["moving_image_masks"] = [
+            str(p) for p in _massage_mask_path(movingmask_path, nlevels)
+        ]
 
-        settings["moving_image_masks"] = [str(m) for m in movingmask_path]
-
+    # Set initalizing affine if provided
     if init_affine is not None:
         settings["initial_moving_transform"] = str(init_affine)
 
+    # Generate command line with nipype and return
     return Registration(
-        fixed_image=str(fixed_path),
-        moving_image=str(moving_path),
+        fixed_image=str(Path(fixed_path).absolute()),
+        moving_image=str(Path(moving_path).absolute()),
         **settings,
     ).cmdline
 

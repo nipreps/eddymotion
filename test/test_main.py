@@ -66,4 +66,4 @@ def test_main(tmp_path, datadir):
         )
     # assert Path(output_dir).joinpath("dwi.h5").exists()  # Empty
 
-    # Also, call python -m eddymotion or eddymotion from CircleCI ??
+    # Also, call python -m eddymotion or eddymotion from GHA ??

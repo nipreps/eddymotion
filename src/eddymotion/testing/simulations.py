@@ -31,7 +31,11 @@ from dipy.core.gradients import gradient_table
 from dipy.core.sphere import HemiSphere, Sphere, disperse_charges
 from dipy.sims.voxel import all_tensor_evecs, single_tensor
 
+<<<<<<< HEAD
 # Bounds defined following Canales-Rodriguez, NIMG 184 2019, https://doi.org/10.1016/j.neuroimage.2018.08.071
+=======
+# Set according to Canales-Rodriguez, NIMG 184 2019, https://doi.org/10.1016/j.neuroimage.2018.08.071
+>>>>>>> 73963e0 (ENH: Add a script to plot the signal estimated by the GP)
 BOUNDS_LAMBDA1: tuple[float, float] = (1.4e-3, 1.8e-3)
 BOUNDS_LAMBDA23: tuple[float, float] = (0.1e-3, 0.5e-3)
 

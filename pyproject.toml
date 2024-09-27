@@ -171,7 +171,7 @@ filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.coverage.run]
 branch = true
-concurrency = 'multiprocessing'
+concurrency = ['multiprocessing']
 omit = [
     '*/tests/*',
     '*/__init__.py',

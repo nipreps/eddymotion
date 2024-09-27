@@ -14,8 +14,8 @@
    :target: https://pypi.python.org/pypi/eddymotion/
    :alt: Latest Version
 
-.. image:: https://circleci.com/gh/nipreps/eddymotion/tree/main.svg?style=shield
-   :target: https://circleci.com/gh/nipreps/eddymotion/tree/main
+.. image:: https://github.com/nipreps/eddymotion/actions/workflows/test.yml/badge.svg
+   :target: https://github.com/nipreps/eddymotion/actions/workflows/test.yml
    :alt: Testing
 
 .. image:: https://github.com/nipreps/eddymotion/actions/workflows/pages/pages-build-deployment/badge.svg

@@ -138,7 +138,7 @@ def gp_prediction(
         raise RuntimeError("Model is not yet fitted.")
 
     # Extract orientations from gtab, and highly likely, the b-value too.
-    return model.predict(gtab, return_std=False)
+    return model.predict(gtab, return_std=True)
 
 
 class GaussianProcessModel(ReconstModel):

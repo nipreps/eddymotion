@@ -164,16 +164,16 @@ def perform_experiment(gtab, S0, evals1, evecs, snr, repeats, kfold):
 
         # Simulate the fitting a number of times: every time the signal created will be a little
         # different
-        for _ in range(repeats):
-            # Create the DWI signal using a single tensor
-            signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr, rng=rng)
-            # Fit the Gaussian process
-            gpfit = gp_model.fit(signal[train_mask], gtab[train_mask])
+        # for _ in range(repeats):
+        # Create the DWI signal using a single tensor
+        signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr, rng=rng)
+        # Fit the Gaussian process
+        gpfit = gp_model.fit(signal[train_mask], gtab[train_mask])
 
-            # Predict the signal
-            X_qry, idx_qry = get_query_vectors(gtab, train_mask)
-            _y_pred = gpfit.predict(X_qry)
-            data.append((idx_qry, signal[idx_qry], _y_pred))
+        # Predict the signal
+        X_qry, idx_qry = get_query_vectors(gtab, train_mask)
+        _y_pred, _y_std = gpfit.predict(X_qry)
+        data.append((idx_qry, signal[idx_qry], _y_pred, _y_std))
 
     return data
 
@@ -186,10 +186,11 @@ def compute_error(data, repeats, kfolds):
 
     # Loop over the range of indices that were predicted
     for n in range(len(kfolds)):
+        repeats = 1
         _data = np.array(data[n * repeats : n * repeats + repeats])
-        _rmse = list(map(root_mean_squared_error, _data[:, 1], _data[:, 2]))
-        _std_dev = np.std(_rmse)
-        mean_rmse.append(np.mean(_rmse))
+        _rmse = root_mean_squared_error(_data[0][1], _data[0][2])
+        _std_dev = np.mean(_data[0][3])  #  np.std(_rmse)
+        mean_rmse.append(_rmse)
         std_dev.append(_std_dev)
 
     return np.asarray(mean_rmse), np.asarray(std_dev)

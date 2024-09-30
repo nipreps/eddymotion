@@ -164,7 +164,7 @@ known-first-party=["eddymotion"]
 pythonpath = "src/ test/"
 norecursedirs = [".*", "_*"]
 addopts = "-v --doctest-modules"
-doctest_optionflags = "ALLOW_UNICODE NORMALIZE_WHITESPACE"
+doctest_optionflags = "ALLOW_UNICODE NORMALIZE_WHITESPACE ELLIPSIS"
 env = "PYTHONHASHSEED=0"
 filterwarnings = ["ignore::DeprecationWarning"]
 

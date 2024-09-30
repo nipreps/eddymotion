@@ -169,14 +169,14 @@ def generate_command(
     'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
     --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
     --transform Rigid[ 12.0 ] \
-    --metric GC[ /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+    --metric GC[ .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 3, Random, 0.4 ] \
     --convergence [ 20, 1e-06, 4 ] --smoothing-sigmas 2.71vox --shrink-factors 3 \
     --use-histogram-matching 1 \
     --transform Rigid[ 1.96 ] \
-    --metric GC[ /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+    --metric GC[ .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 4, Random, 0.18 ] \
     --convergence [ 10, 1e-07, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 2 \
     --use-histogram-matching 1 \
@@ -191,14 +191,14 @@ def generate_command(
     'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
     --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
     --transform Rigid[ 0.01 ] --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Regular, 0.2 \
     ] --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox \
     --shrink-factors 2x1 --use-histogram-matching 1 --transform Rigid[ 0.001 ] \
     --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Random, 0.1 \
     ] --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
     --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.0001, 0.9998 ] \
@@ -213,19 +213,19 @@ def generate_command(
     'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
     --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
     --transform Rigid[ 0.01 ] --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Regular, 0.2 ] \
     --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox --shrink-factors 2x1 \
     --use-histogram-matching 1 --masks [ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/maskA.nii.gz, NULL ] \
+        .../maskA.nii.gz, NULL ] \
     --transform Rigid[ 0.001 ] --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Random, 0.1 ] \
     --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
     --use-histogram-matching 1 --masks [ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/maskA.nii.gz, NULL ] \
+        .../maskA.nii.gz, NULL ] \
     -v --winsorize-image-intensities [ 0.0001, 0.9998 ]  --write-composite-transform 0'
 
     >>> generate_command(
@@ -236,14 +236,14 @@ def generate_command(
     'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
     --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
     --transform Rigid[ 0.01 ] --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Regular, 0.2 \
     ] --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox \
     --shrink-factors 2x1 --use-histogram-matching 1 --transform Rigid[ 0.001 ] \
     --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Random, 0.1 \
     ] --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
     --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.0001, 0.9998 ] \
@@ -258,18 +258,18 @@ def generate_command(
     'antsRegistration --collapse-output-transforms 1 --dimensionality 3 \
     --initialize-transforms-per-stage 0 --interpolation Linear --output transform \
     --transform Rigid[ 0.01 ] --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Regular, 0.2 ] \
     --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox --shrink-factors 2x1 \
     --use-histogram-matching 1 --masks [ NULL, NULL ] \
     --transform Rigid[ 0.001 ] --metric Mattes[ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileA.nii.gz, \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/fileB.nii.gz, \
+        .../fileA.nii.gz, \
+        .../fileB.nii.gz, \
         1, 32, Random, 0.1 ] \
     --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1 \
     --use-histogram-matching 1 --masks [ \
-        /data/home/oesteban/workspace/eddymotion/src/eddymotion/data/maskA.nii.gz, NULL ] \
+        .../maskA.nii.gz, NULL ] \
     -v --winsorize-image-intensities [ 0.0001, 0.9998 ]  --write-composite-transform 0'
 
     """

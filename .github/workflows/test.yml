@@ -1,4 +1,4 @@
-name: Tests
+name: Unit and integration tests
 
 on:
   push:
@@ -19,6 +19,7 @@ defaults:
 # Force tox and pytest to use color
 env:
   FORCE_COLOR: true
+  TEST_DATA_HOME: /home/runner/eddymotion-tests/
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,41 +29,54 @@ permissions:
   contents: read
 
 jobs:
-  stable:
-    # Check each OS, all supported Python, minimum versions and latest releases
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ['ubuntu-latest']
-        python-version: ['3.10', '3.11', '3.12']
-        dependencies: ['full', 'pre']
-        include:
-          - os: ubuntu-latest
-            python-version: '3.10'
-            dependencies: 'min'
-
-    env:
-      DEPENDS: ${{ matrix.dependencies }}
+  test:
+    runs-on: 'ubuntu-latest'
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+
+      - uses: mamba-org/setup-micromamba@v1.9.0
         with:
-          python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
-      - name: Install tox
+          environment-file: env.yml
+          init-shell: bash
+          cache-environment: true
+          cache-environment-key: environment-v1
+          cache-downloads: false
+          post-cleanup: 'none'
+          generate-run-shell: true
+          # https://github.com/mamba-org/setup-micromamba/issues/225
+          micromamba-version: 1.5.10-0
+          micromamba-binary-path: /home/runner/micromamba-bin-versioned/micromamba
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: /home/runner/eddymotion-tests/
+          key: data-v0
+
+      - name: Get test data with DataLad
+        shell: micromamba-shell {0}
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install tox tox-gh-actions
+          if [[ ! -d "${TEST_DATA_HOME}" ]]; then
+            datalad install -rg --source=https://gin.g-node.org/nipreps-data/tests-eddymotion.git ${TEST_DATA_HOME}
+          else
+            cd ${TEST_DATA_HOME}
+            datalad update --merge -r .
+            datalad get -r -J4 *
+          fi
+
+      - uses: actions/cache/save@v4
+        with:
+          path: /home/runner/eddymotion-tests/
+          key: data-v0
+
       - name: Show tox config
+        shell: micromamba-shell {0}
         run: tox c
       - name: Run tox
+        shell: micromamba-shell {0}
         run: tox -v --exit-and-dump-after 1200
       - uses: codecov/codecov-action@v4
         if: ${{ always() }}

@@ -20,6 +20,7 @@ defaults:
 env:
   FORCE_COLOR: true
   TEST_DATA_HOME: /home/runner/eddymotion-tests/
+  ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS: 4
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

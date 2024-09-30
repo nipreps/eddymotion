@@ -23,10 +23,10 @@
 """Integration tests."""
 
 import os
+
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
-
 import pytest
 
 from eddymotion.data.dmri import DWI

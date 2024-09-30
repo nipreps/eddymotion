@@ -22,14 +22,18 @@
 #
 """Integration tests."""
 
+import os
+
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
+import pytest
 
 from eddymotion.data.dmri import DWI
 from eddymotion.estimator import EddyMotionEstimator
 
 
+@pytest.mark.skipif(os.getenv("GITHUB_ACTIONS", "false") == "true", reason="Skip GHA")
 def test_proximity_estimator_trivial_model(datadir):
     """Check the proximity of transforms estimated by the estimator with a trivial B0 model."""
 

@@ -22,6 +22,8 @@
 #
 """Using ANTs for image registration."""
 
+from __future__ import annotations
+
 from collections import namedtuple
 from json import loads
 from pathlib import Path
@@ -56,7 +58,24 @@ PARAMETERS_SINGLE_LIST = {
 PARAMETERS_DOUBLE_LIST = {"shrink_factors", "smoothing_sigmas", "transform_parameters"}
 
 
-def _to_nifti(data, affine, filename, clip=True):
+def _to_nifti(
+    data: np.ndarray, affine: np.ndarray, filename: str | Path, clip: bool = True
+) -> None:
+    """
+    Save data as a NIfTI file, optionally applying clipping.
+
+    Parameters
+    ----------
+    data : :obj:`~numpy.ndarray`
+        The image data to be saved.
+    affine : :obj:`~numpy.ndarray`
+        The affine transformation matrix.
+    filename : :obj:`os.pathlike`
+        The file path where the NIfTI file will be saved.
+    clip : :obj:`bool`, optional
+        Whether to apply clipping to the data before saving, by default True.
+
+    """
     data = np.squeeze(data)
     if clip:
         from eddymotion.data.filtering import advanced_clip
@@ -72,34 +91,42 @@ def _to_nifti(data, affine, filename, clip=True):
     nii.to_filename(filename)
 
 
-def _prepare_registration_data(dwframe, predicted, affine, vol_idx, dirname, reg_target_type):
-    """Prepare the registration data: save the fixed and moving images to disk.
+def _prepare_registration_data(
+    dwframe: np.ndarray,
+    predicted: np.ndarray,
+    affine: np.ndarray,
+    vol_idx: int,
+    dirname: Path | str,
+    reg_target_type: str,
+) -> tuple[Path, Path]:
+    """
+    Prepare the registration data: save the fixed and moving images to disk.
 
     Parameters
     ----------
-    dwframe : :obj:`numpy.ndarray`
+    dwframe : :obj:`~numpy.ndarray`
         DWI data object.
-    predicted : :obj:`numpy.ndarray`
+    predicted : :obj:`~numpy.ndarray`
         Predicted data.
     affine : :obj:`numpy.ndarray`
         Affine transformation matrix.
-    vol_idx : :obj:`int
+    vol_idx : :obj:`int`
         DWI volume index.
-    dirname : :obj:`Path`
+    dirname : :obj:`os.pathlike`
         Directory name where the data is saved.
     reg_target_type : :obj:`str`
         Target registration type.
 
     Returns
     -------
-    fixed : :obj:`Path`
+    fixed : :obj:`~pathlib.Path`
         Fixed image filename.
-    moving : :obj:`Path`
+    moving : :obj:`~pathlib.Path`
         Moving image filename.
     """
 
-    moving = dirname / f"moving{vol_idx:05d}.nii.gz"
-    fixed = dirname / f"fixed{vol_idx:05d}.nii.gz"
+    moving = Path(dirname) / f"moving{vol_idx:05d}.nii.gz"
+    fixed = Path(dirname) / f"fixed{vol_idx:05d}.nii.gz"
     _to_nifti(dwframe, affine, moving)
     _to_nifti(
         predicted,
@@ -110,7 +137,29 @@ def _prepare_registration_data(dwframe, predicted, affine, vol_idx, dirname, reg
     return fixed, moving
 
 
-def _get_ants_settings(settings="b0-to-b0_level0"):
+def _get_ants_settings(settings: str = "b0-to-b0_level0") -> Path:
+    """
+    Retrieve the path to ANTs settings configuration file.
+
+    Parameters
+    ----------
+    settings : :obj:`str`, optional
+        Name of the settings configuration, by default ``"b0-to-b0_level0"``.
+
+    Returns
+    -------
+    :obj:`~pathlib.Path`
+        The path to the configuration file.
+
+    Examples
+    --------
+    >>> _get_ants_settings()
+    PosixPath('.../config/b0-to-b0_level0.json')
+
+    >>> _get_ants_settings("b0-to-b0_level1")
+    PosixPath('.../config/b0-to-b0_level1.json')
+
+    """
     return Path(
         pkg_fn(
             "eddymotion.registration",
@@ -119,9 +168,21 @@ def _get_ants_settings(settings="b0-to-b0_level0"):
     )
 
 
-def _massage_mask_path(mask_path, nlevels):
+def _massage_mask_path(mask_path: str | Path | list[str], nlevels: int) -> list[str]:
     """
     Generate nipype-compatible masks paths.
+
+    Parameters
+    ----------
+    mask_path : :obj:`os.pathlike` or :obj:`list`
+        Path(s) to the mask file(s).
+    nlevels : :obj:`int`
+        Number of registration levels.
+
+    Returns
+    -------
+    :obj:`list`
+        A list of mask paths formatted for *Nipype*.
 
     Examples
     --------
@@ -133,9 +194,6 @@ def _massage_mask_path(mask_path, nlevels):
 
     >>> _massage_mask_path(["/some/path"] * 2, 4)
     ['NULL', 'NULL', '/some/path', '/some/path']
-
-    >>> _massage_mask_path(["/some/path"] * 2, 1)
-    ['/some/path']
 
     """
     if isinstance(mask_path, (str, Path)):
@@ -149,16 +207,38 @@ def _massage_mask_path(mask_path, nlevels):
 
 
 def generate_command(
-    fixed_path,
-    moving_path,
-    fixedmask_path=None,
-    movingmask_path=None,
-    init_affine=None,
-    default="b0-to-b0_level0",
-    **kwargs,
-):
+    fixed_path: str | Path,
+    moving_path: str | Path,
+    fixedmask_path: str | Path | list[str] | None = None,
+    movingmask_path: str | Path | list[str] | None = None,
+    init_affine: str | Path | None = None,
+    default: str = "b0-to-b0_level0",
+    **kwargs: dict,
+) -> str:
     """
     Generate an ANTs' command line.
+
+    Parameters
+    ----------
+    fixed_path : :obj:`os.pathlike`
+        Path to the fixed image.
+    moving_path : :obj:`os.pathlike`
+        Path to the moving image.
+    fixedmask_path : :obj:`os.pathlike` or :obj:`list`, optional
+        Path to the fixed image mask, by default None.
+    movingmask_path : :obj:`os.pathlike` or :obj:`list`, optional
+        Path to the moving image mask, by default None.
+    init_affine : :obj:`os.pathlike`, optional
+        Initial affine transformation, by default None.
+    default : :obj:`str`, optional
+        Default settings configuration, by default "b0-to-b0_level0".
+    **kwargs : :obj:`dict`
+        Additional parameters for ANTs registration.
+
+    Returns
+    -------
+    :obj:`str`
+        The ANTs registration command line string.
 
     Examples
     --------
@@ -322,21 +402,22 @@ def generate_command(
 
 
 def _run_registration(
-    fixed,
-    moving,
-    bmask_img,
-    em_affines,
-    affine,
-    shape,
-    bval,
-    fieldmap,
-    i_iter,
-    vol_idx,
-    dirname,
-    reg_target_type,
-    align_kwargs,
-):
-    """Register the moving image to the fixed image.
+    fixed: Path,
+    moving: Path,
+    bmask_img: nb.spatialimages.SpatialImage,
+    em_affines: np.ndarray,
+    affine: np.ndarray,
+    shape: tuple[int, int, int],
+    bval: int,
+    fieldmap: nb.spatialimages.SpatialImage,
+    i_iter: int,
+    vol_idx: int,
+    dirname: Path,
+    reg_target_type: str,
+    align_kwargs: dict,
+) -> nt.base.BaseTransform:
+    """
+    Register the moving image to the fixed image.
 
     Parameters
     ----------
@@ -344,7 +425,7 @@ def _run_registration(
         Fixed image filename.
     moving : :obj:`Path`
         Moving image filename.
-    bmask_img : :class:`~nibabel.nifti1.Nifti1Image`
+    bmask_img : :class:`~nibabel.spatialimages.SpatialImage`
         Brainmask image.
     em_affines : :obj:`numpy.ndarray`
         Estimated eddy motion affine transformation matrices.
@@ -354,7 +435,7 @@ def _run_registration(
         Shape of the DWI frame.
     bval : :obj:`int`
         b-value of the corresponding DWI volume.
-    fieldmap : :class:`~nibabel.nifti1.Nifti1Image`
+    fieldmap : :class:`~nibabel.spatialimages.SpatialImage`
         Fieldmap.
     i_iter : :obj:`int`
         Iteration number.
@@ -369,8 +450,9 @@ def _run_registration(
 
     Returns
     -------
-    xform : :class:`~nitransforms.linear.Affine`
+    xform : :obj:`~nitransforms.base.BaseTransform`
         Registration transformation.
+
     """
 
     if isinstance(reg_target_type, str):

@@ -33,6 +33,7 @@ from nibabel.eulerangles import euler2mat
 from nipype.interfaces.ants.registration import Registration
 from pkg_resources import resource_filename as pkg_fn
 
+from eddymotion.registration.ants import _massage_mask_path
 from eddymotion.registration.utils import displacements_within_mask
 
 
@@ -81,3 +82,11 @@ def test_ANTs_config_b0(datadir, tmp_path, dataset, r_x, r_y, r_z, t_x, t_y, t_z
     assert displacements_within_mask(masknii, xform, xfm).mean() < (
         0.6 * np.mean(b0nii.header.get_zooms()[:3])
     )
+
+
+def test_massage_mask_path():
+    """Test the case where a warning must be issued."""
+    with pytest.warns(UserWarning, match="More mask paths than levels"):
+        maskpath = _massage_mask_path(["/some/path"] * 2, 1)
+
+    assert maskpath == ["/some/path"]

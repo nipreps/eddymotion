@@ -22,6 +22,8 @@
 #
 """Integration tests."""
 
+from os import cpu_count
+
 import nibabel as nb
 import nitransforms as nt
 import numpy as np
@@ -72,8 +74,9 @@ def test_proximity_estimator_trivial_model(datadir):
         models=("b0",),
         seed=None,
         align_kwargs={
-            "fixed_modality": "dwi",
+            "fixed_modality": "b0",
             "moving_modality": "b0",
+            "num_threads": min(cpu_count(), 8),
         },
     )
 

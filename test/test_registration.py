@@ -33,7 +33,8 @@ from nibabel.eulerangles import euler2mat
 from nipype.interfaces.ants.registration import Registration
 from pkg_resources import resource_filename as pkg_fn
 
-from eddymotion.data.dmri import DWI
+from eddymotion.registration.ants import _massage_mask_path
+from eddymotion.registration.utils import displacements_within_mask
 
 
 @pytest.mark.parametrize("r_x", [0.0, 0.1, 0.3])
@@ -42,19 +43,17 @@ from eddymotion.data.dmri import DWI
 @pytest.mark.parametrize("t_x", [0.0, 1.0])
 @pytest.mark.parametrize("t_y", [0.0, 1.0])
 @pytest.mark.parametrize("t_z", [0.0, 1.0])
-def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
+@pytest.mark.parametrize("dataset", ["hcph", "dwi"])
+# @pytest.mark.parametrize("dataset", ["dwi"])
+def test_ANTs_config_b0(datadir, tmp_path, dataset, r_x, r_y, r_z, t_x, t_y, t_z):
     """Check that the registration parameters for b=0
     gives a good estimate of known affine"""
 
-    fixed = tmp_path / "b0.nii.gz"
+    fixed = datadir / f"{dataset}-b0_desc-avg.nii.gz"
+    fixed_mask = datadir / f"{dataset}-b0_desc-brain.nii.gz"
     moving = tmp_path / "moving.nii.gz"
 
-    dwdata = DWI.from_filename(datadir / "dwi.h5")
-    b0nii = nb.Nifti1Image(dwdata.bzero, dwdata.affine, None)
-    b0nii.header.set_qform(dwdata.affine, code=1)
-    b0nii.header.set_sform(dwdata.affine, code=1)
-    b0nii.to_filename(fixed)
-
+    b0nii = nb.load(fixed)
     T = from_matvec(euler2mat(x=r_x, y=r_y, z=r_z), (t_x, t_y, t_z))
     xfm = nt.linear.Affine(T, reference=b0nii)
 
@@ -64,10 +63,11 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
         terminal_output="file",
         from_file=pkg_fn(
             "eddymotion.registration",
-            "config/dwi-to-b0_level0.json",
+            "config/b0-to-b0_level0.json",
         ),
         fixed_image=str(fixed.absolute()),
         moving_image=str(moving.absolute()),
+        fixed_image_masks=[str(fixed_mask)],
         random_seed=1234,
         num_threads=cpu_count(),
     )
@@ -78,6 +78,15 @@ def test_ANTs_config_b0(datadir, tmp_path, r_x, r_y, r_z, t_x, t_y, t_z):
         reference=b0nii,
     )
 
-    coords = xfm.reference.ndcoords.T
-    rms = np.sqrt(((xfm.map(coords) - xform.map(coords)) ** 2).sum(1)).mean()
-    assert rms < 0.8
+    masknii = nb.load(fixed_mask)
+    assert displacements_within_mask(masknii, xform, xfm).mean() < (
+        0.6 * np.mean(b0nii.header.get_zooms()[:3])
+    )
+
+
+def test_massage_mask_path():
+    """Test the case where a warning must be issued."""
+    with pytest.warns(UserWarning, match="More mask paths than levels"):
+        maskpath = _massage_mask_path(["/some/path"] * 2, 1)
+
+    assert maskpath == ["/some/path"]

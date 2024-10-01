@@ -66,8 +66,6 @@ plotting = ["nilearn"]
 
 resmon = ["psutil >=5.4"]
 
-popylar = ["popylar >= 0.2"]
-
 test = [
     "coverage",
     "pytest >= 4.4",
@@ -76,10 +74,15 @@ test = [
     "pytest-xdist >= 1.28"
 ]
 
+antsopt = [
+    "ConfigSpace",
+    "smac",
+]
+
 # Aliases
 docs = ["eddymotion[doc]"]
 tests = ["eddymotion[test]"]
-all = ["eddymotion[doc,test,dev,plotting,resmon,popylar]"]
+all = ["eddymotion[doc,test,dev,plotting,resmon,antsopt]"]
 
 [project.scripts]
 eddymotion = "eddymotion.cli.run:main"
@@ -164,7 +167,7 @@ known-first-party=["eddymotion"]
 pythonpath = "src/ test/"
 norecursedirs = [".*", "_*"]
 addopts = "-v --doctest-modules"
-doctest_optionflags = "ALLOW_UNICODE NORMALIZE_WHITESPACE"
+doctest_optionflags = "ALLOW_UNICODE NORMALIZE_WHITESPACE ELLIPSIS"
 env = "PYTHONHASHSEED=0"
 filterwarnings = ["ignore::DeprecationWarning"]
 

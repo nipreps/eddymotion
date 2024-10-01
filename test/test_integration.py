@@ -91,4 +91,4 @@ def test_proximity_estimator_trivial_model(datadir):
     for i, est in enumerate(em_affines):
         xfm = nt.linear.Affine(xfms.matrix[i], reference=b0nii)
         est = nt.linear.Affine(est, reference=b0nii)
-        assert np.sqrt(((xfm.map(coords) - est.map(coords)) ** 2).sum(1)).mean() < 2.5
+        assert np.sqrt(((xfm.map(coords) - est.map(coords)) ** 2).sum(1)).mean() < 0.2

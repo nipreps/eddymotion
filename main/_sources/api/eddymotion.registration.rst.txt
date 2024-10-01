@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 1
 
    eddymotion.registration.ants
+   eddymotion.registration.utils

@@ -1,0 +1,7 @@
+eddymotion.registration.utils module
+====================================
+
+.. automodule:: eddymotion.registration.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

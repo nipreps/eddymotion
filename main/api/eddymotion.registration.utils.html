@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.data.pet module" href="eddymotion.data.pet.html" /><link rel="prev" title="eddymotion.data.dmri module" href="eddymotion.data.dmri.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.utils module" href="eddymotion.utils.html" /><link rel="prev" title="eddymotion.registration.ants module" href="eddymotion.registration.ants.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.data.filtering module - eddymotion 24.0.0.dev138 documentation</title>
+        <title>eddymotion.registration.utils module - eddymotion 24.0.0.dev138 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -218,9 +218,9 @@
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.cli.run.html">eddymotion.cli.run module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="eddymotion.data.html">eddymotion.data package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of eddymotion.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="eddymotion.data.html">eddymotion.data package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of eddymotion.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.dmri.html">eddymotion.data.dmri module</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">eddymotion.data.filtering module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="eddymotion.data.filtering.html">eddymotion.data.filtering module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.pet.html">eddymotion.data.pet module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.splitting.html">eddymotion.data.splitting module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.data.utils.html">eddymotion.data.utils module</a></li>
@@ -239,9 +239,9 @@
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.model.pet.html">eddymotion.model.pet module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="eddymotion.registration.html">eddymotion.registration package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of eddymotion.registration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="eddymotion.registration.html">eddymotion.registration package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of eddymotion.registration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="eddymotion.registration.ants.html">eddymotion.registration.ants module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="eddymotion.registration.utils.html">eddymotion.registration.utils module</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">eddymotion.registration.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.utils.html">eddymotion.utils module</a></li>
@@ -268,7 +268,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/eddymotion.data.filtering.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/eddymotion.registration.utils.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -288,40 +288,51 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-eddymotion.data.filtering">
-<span id="eddymotion-data-filtering-module"></span><h1>eddymotion.data.filtering module<a class="headerlink" href="#module-eddymotion.data.filtering" title="Link to this heading">¶</a></h1>
-<p>Filtering data.</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="eddymotion.data.filtering.DEFAULT_DTYPE">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.data.filtering.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_DTYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'int16'</span></em><a class="headerlink" href="#eddymotion.data.filtering.DEFAULT_DTYPE" title="Link to this definition">¶</a></dt>
-<dd><p>The default image’s data type.</p>
-</dd></dl>
-
+          <section id="module-eddymotion.registration.utils">
+<span id="eddymotion-registration-utils-module"></span><h1>eddymotion.registration.utils module<a class="headerlink" href="#module-eddymotion.registration.utils" title="Link to this heading">¶</a></h1>
+<p>Utilities to aid in performing and evaluating image registration.</p>
+<p>This module provides functions to compute displacements of image coordinates
+under a transformation, useful for assessing the accuracy of image registration
+processes.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="eddymotion.data.filtering.advanced_clip">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.data.filtering.</span></span><span class="sig-name descname"><span class="pre">advanced_clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">35</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">99.98</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonnegative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><span class="pre">dtype</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'int16'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/eddymotion/data/filtering.html#advanced_clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.data.filtering.advanced_clip" title="Link to this definition">¶</a></dt>
-<dd><p>Clips outliers from a n-dimensional array and scales/casts to a specified data type.</p>
-<p>This function removes outliers from both ends of the intensity distribution
-in a n-dimensional array using percentiles. It optionally enforces non-negative
-values and scales the data to fit within a specified data type (e.g., uint8
-for image registration). To remove outliers more robustly, the function
-first applies a median filter to the data before calculating clipping thresholds.</p>
+<dt class="sig sig-object py" id="eddymotion.registration.utils.displacement_framewise">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.registration.utils.</span></span><span class="sig-name descname"><span class="pre">displacement_framewise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.3.0.dev5+g773e3c40)"><span class="pre">nibabel.spatialimages.SpatialImage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nitransforms.base.BaseTransform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/registration/utils.html#displacement_framewise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.registration.utils.displacement_framewise" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the framewise displacement (FD) for a given transformation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – The input n-dimensional data array.</p></li>
-<li><p><strong>p_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The lower percentile threshold for clipping. Values below this percentile
-are set to the threshold value.</p></li>
-<li><p><strong>p_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The upper percentile threshold for clipping. Values above this percentile
-are set to the threshold value.</p></li>
-<li><p><strong>nonnegative</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – If True, only consider non-negative values when calculating thresholds.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>, optional) – The desired data type for the output array. Supported types are “uint8”
-and “int16”.</p></li>
-<li><p><strong>invert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, inverts the intensity values after scaling (1.0 - <code class="docutils literal notranslate"><span class="pre">data</span></code>).</p></li>
+<li><p><strong>img</strong> (<a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.3.0.dev5+g773e3c40)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialImage</span></code></a>) – The reference image. Used to extract the center coordinates.</p></li>
+<li><p><strong>test_xfm</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTransform</span></code>) – The transformation to test. Applied to coordinates around the image center.</p></li>
+<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The radius (in mm) of the spherical neighborhood around the center of the image.
+Default is 50.0 mm.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The clipped and scaled data array with the specified data type.</p>
+<dd class="field-even"><p>The average framewise displacement (FD) for the test transformation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.registration.utils.displacements_within_mask">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.registration.utils.</span></span><span class="sig-name descname"><span class="pre">displacements_within_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask_img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nb.spatialimages.SpatialImage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nt.base.BaseTransform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nt.base.BaseTransform</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/eddymotion/registration/utils.html#displacements_within_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.registration.utils.displacements_within_mask" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the distance between voxel coordinates mapped through two transforms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mask_img</strong> (<a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.3.0.dev5+g773e3c40)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialImage</span></code></a>) – A mask image that defines the region of interest. Voxel coordinates
+within the mask are transformed.</p></li>
+<li><p><strong>test_xfm</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTransform</span></code>) – The transformation to test. This transformation is applied to the
+voxel coordinates.</p></li>
+<li><p><strong>reference_xfm</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTransform</span></code>, optional) – A reference transformation to compare with. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the identity
+transformation is assumed (no transformation).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array of displacements (in mm) for each voxel within the mask.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
@@ -336,23 +347,23 @@ and “int16”.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="eddymotion.data.pet.html">
+          <a class="next-page" href="eddymotion.utils.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">eddymotion.data.pet module</div>
+                <div class="title">eddymotion.utils module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="eddymotion.data.dmri.html">
+          <a class="prev-page" href="eddymotion.registration.ants.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">eddymotion.data.dmri module</div>
+                <div class="title">eddymotion.registration.ants module</div>
                 
               </div>
             </a>
@@ -386,9 +397,9 @@ and “int16”.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">eddymotion.data.filtering module</a><ul>
-<li><a class="reference internal" href="#eddymotion.data.filtering.DEFAULT_DTYPE"><code class="docutils literal notranslate"><span class="pre">DEFAULT_DTYPE</span></code></a></li>
-<li><a class="reference internal" href="#eddymotion.data.filtering.advanced_clip"><code class="docutils literal notranslate"><span class="pre">advanced_clip()</span></code></a></li>
+<li><a class="reference internal" href="#">eddymotion.registration.utils module</a><ul>
+<li><a class="reference internal" href="#eddymotion.registration.utils.displacement_framewise"><code class="docutils literal notranslate"><span class="pre">displacement_framewise()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.registration.utils.displacements_within_mask"><code class="docutils literal notranslate"><span class="pre">displacements_within_mask()</span></code></a></li>
 </ul>
 </li>
 </ul>

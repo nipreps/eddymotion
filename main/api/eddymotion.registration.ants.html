@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.utils module" href="eddymotion.utils.html" /><link rel="prev" title="eddymotion.registration package" href="eddymotion.registration.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.registration.utils module" href="eddymotion.registration.utils.html" /><link rel="prev" title="eddymotion.registration package" href="eddymotion.registration.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.registration.ants module - eddymotion 24.0.0.dev125 documentation</title>
+        <title>eddymotion.registration.ants module - eddymotion 24.0.0.dev138 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev125 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev138 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -179,7 +179,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -190,14 +190,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev125</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev138</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev125</span>
+  <span class="sidebar-brand-text">24.0.0.dev138</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -241,6 +241,7 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="eddymotion.registration.html">eddymotion.registration package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of eddymotion.registration package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">eddymotion.registration.ants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="eddymotion.registration.utils.html">eddymotion.registration.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="eddymotion.utils.html">eddymotion.utils module</a></li>
@@ -281,7 +282,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -290,6 +291,73 @@
           <section id="module-eddymotion.registration.ants">
 <span id="eddymotion-registration-ants-module"></span><h1>eddymotion.registration.ants module<a class="headerlink" href="#module-eddymotion.registration.ants" title="Link to this heading">¶</a></h1>
 <p>Using ANTs for image registration.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.registration.ants.generate_command">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.registration.ants.</span></span><span class="sig-name descname"><span class="pre">generate_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fixed_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">moving_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixedmask_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movingmask_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_affine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'b0-to-b0_level0'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/eddymotion/registration/ants.html#generate_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.registration.ants.generate_command" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an ANTs’ command line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fixed_path</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">os.pathlike</span></code>) – Path to the fixed image.</p></li>
+<li><p><strong>moving_path</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">os.pathlike</span></code>) – Path to the moving image.</p></li>
+<li><p><strong>fixedmask_path</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">os.pathlike</span></code> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Path to the fixed image mask, by default None.</p></li>
+<li><p><strong>movingmask_path</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">os.pathlike</span></code> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Path to the moving image mask, by default None.</p></li>
+<li><p><strong>init_affine</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">os.pathlike</span></code>, optional) – Initial affine transformation, by default None.</p></li>
+<li><p><strong>default</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Default settings configuration, by default “b0-to-b0_level0”.</p></li>
+<li><p><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Additional parameters for ANTs registration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ANTs registration command line string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_command</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fixed_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileA.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">moving_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileB.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>  
+<span class="go">&#39;antsRegistration --collapse-output-transforms 1 --dimensionality 3     --initialize-transforms-per-stage 0 --interpolation Linear --output transform     --transform Rigid[ 12.0 ]     --metric GC[ .../fileA.nii.gz,         .../fileB.nii.gz,         1, 3, Random, 0.4 ]     --convergence [ 20, 1e-06, 4 ] --smoothing-sigmas 2.71vox --shrink-factors 3     --use-histogram-matching 1     --transform Rigid[ 1.96 ]     --metric GC[ .../fileA.nii.gz,         .../fileB.nii.gz,         1, 4, Random, 0.18 ]     --convergence [ 10, 1e-07, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 2     --use-histogram-matching 1     -v --winsorize-image-intensities [ 0.063, 0.991 ]     --write-composite-transform 0&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_command</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fixed_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileA.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">moving_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileB.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;dwi-to-b0_level0&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>  
+<span class="go">&#39;antsRegistration --collapse-output-transforms 1 --dimensionality 3     --initialize-transforms-per-stage 0 --interpolation Linear --output transform     --transform Rigid[ 0.01 ] --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Regular, 0.2     ] --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox     --shrink-factors 2x1 --use-histogram-matching 1 --transform Rigid[ 0.001 ]     --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Random, 0.1     ] --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1     --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.0001, 0.9998 ]     --write-composite-transform 0&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_command</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fixed_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileA.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">moving_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileB.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">fixedmask_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;maskA.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;dwi-to-b0_level0&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>  
+<span class="go">&#39;antsRegistration --collapse-output-transforms 1 --dimensionality 3     --initialize-transforms-per-stage 0 --interpolation Linear --output transform     --transform Rigid[ 0.01 ] --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Regular, 0.2 ]     --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox --shrink-factors 2x1     --use-histogram-matching 1 --masks [         .../maskA.nii.gz, NULL ]     --transform Rigid[ 0.001 ] --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Random, 0.1 ]     --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1     --use-histogram-matching 1 --masks [         .../maskA.nii.gz, NULL ]     -v --winsorize-image-intensities [ 0.0001, 0.9998 ]  --write-composite-transform 0&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_command</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fixed_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileA.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">moving_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileB.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;dwi-to-b0_level0&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>  
+<span class="go">&#39;antsRegistration --collapse-output-transforms 1 --dimensionality 3     --initialize-transforms-per-stage 0 --interpolation Linear --output transform     --transform Rigid[ 0.01 ] --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Regular, 0.2     ] --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox     --shrink-factors 2x1 --use-histogram-matching 1 --transform Rigid[ 0.001 ]     --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Random, 0.1     ] --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1     --use-histogram-matching 1 -v --winsorize-image-intensities [ 0.0001, 0.9998 ]     --write-composite-transform 0&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_command</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fixed_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileA.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">moving_path</span><span class="o">=</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;fileB.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">fixedmask_path</span><span class="o">=</span><span class="p">[</span><span class="n">repodata</span> <span class="o">/</span> <span class="s1">&#39;maskA.nii.gz&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;dwi-to-b0_level0&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>  
+<span class="go">&#39;antsRegistration --collapse-output-transforms 1 --dimensionality 3     --initialize-transforms-per-stage 0 --interpolation Linear --output transform     --transform Rigid[ 0.01 ] --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Regular, 0.2 ]     --convergence [ 100x50, 1e-05, 10 ] --smoothing-sigmas 2.0x0.0vox --shrink-factors 2x1     --use-histogram-matching 1 --masks [ NULL, NULL ]     --transform Rigid[ 0.001 ] --metric Mattes[         .../fileA.nii.gz,         .../fileB.nii.gz,         1, 32, Random, 0.1 ]     --convergence [ 25, 1e-06, 2 ] --smoothing-sigmas 0.0vox --shrink-factors 1     --use-histogram-matching 1 --masks [         .../maskA.nii.gz, NULL ]     -v --winsorize-image-intensities [ 0.0001, 0.9998 ]  --write-composite-transform 0&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
         </article>
@@ -297,12 +365,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="eddymotion.utils.html">
+          <a class="next-page" href="eddymotion.registration.utils.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">eddymotion.utils module</div>
+                <div class="title">eddymotion.registration.utils module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -335,13 +403,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">eddymotion.registration.ants module</a><ul>
+<li><a class="reference internal" href="#eddymotion.registration.ants.generate_command"><code class="docutils literal notranslate"><span class="pre">generate_command()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1aff8ff8"></script>
+</div><script src="../_static/documentation_options.js?v=05aaf20d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

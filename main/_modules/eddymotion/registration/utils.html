@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.math.utils - eddymotion 24.0.0.dev138 documentation</title>
+        <title>eddymotion.registration.utils - eddymotion 24.0.0.dev138 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -281,7 +281,7 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for eddymotion.math.utils</h1><div class="highlight"><pre>
+          <h1>Source code for eddymotion.registration.utils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-</span>
 <span class="c1"># vi: set ft=python sts=4 ts=4 sw=4 et:</span>
 <span class="c1">#</span>
@@ -295,7 +295,7 @@
 <span class="c1">#</span>
 <span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
 <span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
-<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY kIND, either express or implied.</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
 <span class="c1">#</span>
@@ -304,78 +304,103 @@
 <span class="c1">#</span>
 <span class="c1">#     https://www.nipreps.org/community/licensing/</span>
 <span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utilities to aid in performing and evaluating image registration.</span>
+
+<span class="sd">This module provides functions to compute displacements of image coordinates</span>
+<span class="sd">under a transformation, useful for assessing the accuracy of image registration</span>
+<span class="sd">processes.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nb</span>
+<span class="kn">import</span> <span class="nn">nitransforms</span> <span class="k">as</span> <span class="nn">nt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="is_positive_definite">
-<a class="viewcode-back" href="../../../api/eddymotion.math.utils.html#eddymotion.math.utils.is_positive_definite">[docs]</a>
-<span class="k">def</span> <span class="nf">is_positive_definite</span><span class="p">(</span><span class="n">matrix</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether the given matrix is positive definite. Any positive</span>
-<span class="sd">    definite matrix can be decomposed as the product of a lower triangular</span>
-<span class="sd">    matrix and its conjugate transpose by performing the Cholesky decomposition.</span>
+<div class="viewcode-block" id="displacements_within_mask">
+<a class="viewcode-back" href="../../../api/eddymotion.registration.utils.html#eddymotion.registration.utils.displacements_within_mask">[docs]</a>
+<span class="k">def</span> <span class="nf">displacements_within_mask</span><span class="p">(</span>
+    <span class="n">mask_img</span><span class="p">:</span> <span class="n">nb</span><span class="o">.</span><span class="n">spatialimages</span><span class="o">.</span><span class="n">SpatialImage</span><span class="p">,</span>
+    <span class="n">test_xfm</span><span class="p">:</span> <span class="n">nt</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTransform</span><span class="p">,</span>
+    <span class="n">reference_xfm</span><span class="p">:</span> <span class="n">nt</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTransform</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the distance between voxel coordinates mapped through two transforms.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    matrix : :obj:`~numpy.ndarray`</span>
-<span class="sd">        The matrix to check.</span>
+<span class="sd">    mask_img : :obj:`~nibabel.spatialimages.SpatialImage`</span>
+<span class="sd">        A mask image that defines the region of interest. Voxel coordinates</span>
+<span class="sd">        within the mask are transformed.</span>
+<span class="sd">    test_xfm : :obj:`~nitransforms.base.BaseTransform`</span>
+<span class="sd">        The transformation to test. This transformation is applied to the</span>
+<span class="sd">        voxel coordinates.</span>
+<span class="sd">    reference_xfm : :obj:`~nitransforms.base.BaseTransform`, optional</span>
+<span class="sd">        A reference transformation to compare with. If ``None``, the identity</span>
+<span class="sd">        transformation is assumed (no transformation).</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    True is the matrix is positive definite; False otherwise</span>
+<span class="sd">    :obj:`~numpy.ndarray`</span>
+<span class="sd">        An array of displacements (in mm) for each voxel within the mask.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Mask data as boolean (True for voxels inside the mask)</span>
+    <span class="n">maskdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">mask_img</span><span class="o">.</span><span class="n">dataobj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="c1"># Convert voxel coordinates to world coordinates using affine transform</span>
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span>
+        <span class="n">mask_img</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">maskdata</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># Apply the test transformation</span>
+    <span class="n">targets</span> <span class="o">=</span> <span class="n">test_xfm</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Attempt Cholesky decomposition</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">:</span>
-        <span class="c1"># Matrix is not positive definite</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+    <span class="c1"># Compute the difference (displacement) between the test and reference transformations</span>
+    <span class="n">diffs</span> <span class="o">=</span> <span class="n">targets</span> <span class="o">-</span> <span class="n">xyz</span> <span class="k">if</span> <span class="n">reference_xfm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">targets</span> <span class="o">-</span> <span class="n">reference_xfm</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diffs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="compute_angle">
-<a class="viewcode-back" href="../../../api/eddymotion.math.utils.html#eddymotion.math.utils.compute_angle">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_angle</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">closest_polarity</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the angle between two vectors.</span>
+<div class="viewcode-block" id="displacement_framewise">
+<a class="viewcode-back" href="../../../api/eddymotion.registration.utils.html#eddymotion.registration.utils.displacement_framewise">[docs]</a>
+<span class="k">def</span> <span class="nf">displacement_framewise</span><span class="p">(</span>
+    <span class="n">img</span><span class="p">:</span> <span class="n">nb</span><span class="o">.</span><span class="n">spatialimages</span><span class="o">.</span><span class="n">SpatialImage</span><span class="p">,</span>
+    <span class="n">test_xfm</span><span class="p">:</span> <span class="n">nt</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTransform</span><span class="p">,</span>
+    <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the framewise displacement (FD) for a given transformation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    v1 : :obj:`~numpy.ndarray`</span>
-<span class="sd">        First vector.</span>
-<span class="sd">    v2 : :obj:`~numpy.ndarray`</span>
-<span class="sd">        Second vector.</span>
-<span class="sd">    closest_polarity : :obj:`bool`</span>
-<span class="sd">        ``True`` to consider the smallest of the two angles between the crossing</span>
-<span class="sd">         lines resulting from reversing both vectors.</span>
+<span class="sd">    img : :obj:`~nibabel.spatialimages.SpatialImage`</span>
+<span class="sd">        The reference image. Used to extract the center coordinates.</span>
+<span class="sd">    test_xfm : :obj:`~nitransforms.base.BaseTransform`</span>
+<span class="sd">        The transformation to test. Applied to coordinates around the image center.</span>
+<span class="sd">    radius : :obj:`float`, optional</span>
+<span class="sd">        The radius (in mm) of the spherical neighborhood around the center of the image.</span>
+<span class="sd">        Default is 50.0 mm.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :obj:`float`</span>
-<span class="sd">        The angle between the two vectors in radians.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; compute_angle(</span>
-<span class="sd">    ...     np.array((1.0, 0.0, 0.0)),</span>
-<span class="sd">    ...     np.array((-1.0, 0.0, 0.0)),</span>
-<span class="sd">    ... )  # doctest: +ELLIPSIS</span>
-<span class="sd">    3.1415...</span>
-<span class="sd">    &gt;&gt;&gt; compute_angle(</span>
-<span class="sd">    ...     np.array((1.0, 0.0, 0.0)),</span>
-<span class="sd">    ...     np.array((-1.0, 0.0, 0.0)),</span>
-<span class="sd">    ...     closest_polarity=True,</span>
-<span class="sd">    ... )</span>
-<span class="sd">    0.0</span>
+<span class="sd">        The average framewise displacement (FD) for the test transformation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">cosine_angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">v1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v1</span><span class="p">))</span> <span class="o">@</span> <span class="p">(</span><span class="n">v2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v2</span><span class="p">))</span>
-    <span class="c1"># Clip values to handle numerical errors</span>
-    <span class="n">cosine_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cosine_angle</span><span class="p">)</span> <span class="k">if</span> <span class="n">closest_polarity</span> <span class="k">else</span> <span class="n">cosine_angle</span><span class="p">,</span>
-        <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="mf">1.0</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">cosine_angle</span><span class="p">)</span></div>
+    <span class="n">affine</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">affine</span>
+    <span class="c1"># Compute the center of the image in voxel space</span>
+    <span class="n">center_ijk</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Convert to world coordinates</span>
+    <span class="n">center_xyz</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">center_ijk</span><span class="p">)</span>
+    <span class="c1"># Generate coordinates of points at radius distance from center</span>
+    <span class="n">fd_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">radius</span><span class="p">,</span> <span class="o">-</span><span class="n">radius</span><span class="p">),)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)))</span> <span class="o">+</span> <span class="n">center_xyz</span>
+    <span class="c1"># Compute the average displacement from the test transformation</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">test_xfm</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">fd_coords</span><span class="p">)</span> <span class="o">-</span> <span class="n">fd_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span></div>
 
 </pre></div>
         </article>

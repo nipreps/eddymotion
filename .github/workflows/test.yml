@@ -73,12 +73,16 @@ jobs:
           path: /home/runner/eddymotion-tests/
           key: data-v0
 
-      - name: Show tox config
+      - name: Install editable
         shell: micromamba-shell {0}
-        run: tox c
-      - name: Run tox
+        run: |
+          pip install -e .
+
+      - name: Run tests
         shell: micromamba-shell {0}
-        run: tox -v --exit-and-dump-after 1200
+        run: |
+          pytest --doctest-modules --cov eddymotion -n auto -x --cov-report xml \
+                 --junitxml=test-results.xml -v src test
       - uses: codecov/codecov-action@v4
         if: ${{ always() }}
         with:

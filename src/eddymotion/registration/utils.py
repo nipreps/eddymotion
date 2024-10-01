@@ -39,7 +39,7 @@ import numpy as np
 
 
 def displacements_within_mask(
-    maskimg: nb.spatialimages.SpatialImage,
+    mask_img: nb.spatialimages.SpatialImage,
     test_xfm: nt.base.BaseTransform,
     reference_xfm: nt.base.BaseTransform | None = None,
 ) -> np.ndarray:
@@ -48,7 +48,7 @@ def displacements_within_mask(
 
     Parameters
     ----------
-    maskimg : :obj:`~nibabel.spatialimages.SpatialImage`
+    mask_img : :obj:`~nibabel.spatialimages.SpatialImage`
         A mask image that defines the region of interest. Voxel coordinates
         within the mask are transformed.
     test_xfm : :obj:`~nitransforms.base.BaseTransform`
@@ -65,10 +65,10 @@ def displacements_within_mask(
 
     """
     # Mask data as boolean (True for voxels inside the mask)
-    maskdata = np.asanyarray(maskimg.dataobj) > 0
+    maskdata = np.asanyarray(mask_img.dataobj) > 0
     # Convert voxel coordinates to world coordinates using affine transform
     xyz = nb.affines.apply_affine(
-        maskimg.affine,
+        mask_img.affine,
         np.argwhere(maskdata),
     )
     # Apply the test transformation

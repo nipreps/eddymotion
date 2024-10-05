@@ -23,7 +23,7 @@ dependencies = [
     "dipy>=1.3.0",
     "joblib",
     "nipype>= 1.5.1, < 2.0",
-    "nitransforms>=21.0.0",
+    "nitransforms>=21.0.0,<24",
     "nireports",
     "numpy>=1.17.3",
     "nest-asyncio>=1.5.1",

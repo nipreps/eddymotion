@@ -103,10 +103,10 @@ from sklearn.gaussian_process.kernels import (
 
 
 def gp_prediction(
-    model_gtab: GradientTable,
-    gtab: GradientTable | np.ndarray,
+    X: np.ndarray,
     model: GaussianProcessRegressor,
     mask: np.ndarray | None = None,
+    return_std: bool = False,
 ) -> np.ndarray:
     """
     Predicts one or more DWI orientations given a model.
@@ -138,7 +138,7 @@ def gp_prediction(
         raise RuntimeError("Model is not yet fitted.")
 
     # Extract orientations from gtab, and highly likely, the b-value too.
-    return model.predict(gtab, return_std=True)
+    return model.predict(X, return_std=return_std)
 
 
 class GaussianProcessModel(ReconstModel):
@@ -189,8 +189,8 @@ class GaussianProcessModel(ReconstModel):
 
     def fit(
         self,
-        data: np.ndarray,
-        gtab: GradientTable | None = None,
+        X: np.ndarray,
+        y: np.ndarray | None = None,
         mask: np.ndarray[bool] | None = None,
         random_state: int = 0,
     ) -> GPFit:
@@ -198,10 +198,10 @@ class GaussianProcessModel(ReconstModel):
 
         Parameters
         ----------
-        data : :obj:`~numpy.ndarray`
+        X : :obj:`~numpy.ndarray`
+            The gradient table corresponding to the training data (n_samples, n_features).
+        y : :obj:`~numpy.ndarray`
             The measured signal from one voxel.
-        gtab : :obj:`~dipy.core.gradients.GradientTable`
-            The gradient table corresponding to the training data.
         mask : :obj:`~numpy.ndarray`
             A boolean array used to mark the coordinates in the data that
             should be analyzed that has the shape data.shape[:-1]
@@ -214,14 +214,11 @@ class GaussianProcessModel(ReconstModel):
         """
 
         y = (
-            data[mask[..., None]] if mask is not None else np.reshape(data, (-1, data.shape[-1]))
+            y[mask[..., None]] if mask is not None else np.reshape(y, (-1, y.shape[-1]))
         ).T
 
-        # sklearn wants (n_samples, n_features) as X's shape
-        X = gtab.bvecs
-
         # sklearn wants (n_samples, n_targets) for Y, where n_targets = n_voxels to simulate.
-        if (signal_dirs := y.shape[0]) != (grad_dirs := X.shape[0]):
+        if (grad_dirs := X.shape[0]) != (signal_dirs := y.shape[0]):
             raise ValueError(
                 f"Mismatched data {signal_dirs} and gradient table {grad_dirs} sizes."
             )
@@ -232,7 +229,6 @@ class GaussianProcessModel(ReconstModel):
             n_targets=y.shape[1],
         )
         self._modelfit = GPFit(
-            gtab=gtab,
             model=gpr.fit(X, y),
             mask=mask,
         )
@@ -263,6 +259,40 @@ class GaussianProcessModel(ReconstModel):
         """
         return self._modelfit.predict(gtab)
 
+    def get_params(self, deep=True):
+        """
+        Get parameters of the kernel.
+
+        Parameters
+        ----------
+        deep : :obj:`bool`
+            Whether to return the parameters of the contained subobjects.
+
+        Returns
+        -------
+        params : :obj:`dict`
+            Parameter names mapped to their values.
+
+        """
+        return self.kernel.get_params(deep=deep)
+
+    def set_params(self, **params):
+        """
+        Set parameters of the kernel.
+
+        Parameters
+        ----------
+        params : :obj:`dict`
+            Kernel parameters.
+
+        Returns
+        -------
+        self : :obj:`object`
+            Returns self.
+
+        """
+        return self.kernel.set_params(**params)
+
 
 class GPFit:
     """
@@ -284,7 +314,6 @@ class GPFit:
 
     def __init__(
         self,
-        gtab: GradientTable,
         model: GaussianProcessRegressor,
         mask: np.ndarray | None = None,
     ) -> None:
@@ -293,21 +322,18 @@ class GPFit:
 
         Parameters
         ----------
-        gtab : :obj:`~dipy.core.gradients.GradientTable`
-            The gradient table with which the GP has been fitted.
         model: :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
             The fitted Gaussian process regressor object.
         mask: :obj:`~numpy.ndarray`
             The boolean mask used during fitting (can be ``None``).
 
         """
-        self.fitted_gtab = gtab
         self.model = model
         self.mask = mask
 
     def predict(
         self,
-        gtab: GradientTable,
+        X: np.ndarray,
     ) -> np.ndarray:
         """
         Generate DWI signal based on a fitted Gaussian Process.
@@ -323,7 +349,7 @@ class GPFit:
             A 3D or 4D array with the simulated gradient(s).
 
         """
-        return gp_prediction(self.fitted_gtab, gtab, self.model, mask=self.mask)
+        return gp_prediction(X, self.model, mask=self.mask)
 
 
 def _ensure_positive_scale(

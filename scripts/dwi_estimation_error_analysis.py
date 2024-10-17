@@ -29,6 +29,7 @@ Gaussian processes.
 from __future__ import annotations
 
 import argparse
+
 import numpy as np
 from dipy.core.geometry import sphere2cart
 from dipy.core.gradients import gradient_table
@@ -37,6 +38,7 @@ from dipy.sims.voxel import all_tensor_evecs, single_tensor
 from matplotlib import pyplot as plt
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import KFold
+
 from eddymotion.model._dipy import GaussianProcessModel
 
 
@@ -62,7 +64,7 @@ def add_b0(bvals: np.ndarray, bvecs: np.ndarray) -> tuple[np.ndarray, np.ndarray
     return _bvals, _bvecs
 
 
-def create_single_fiber_evecs(theta : float = 0, phi : float = 0) -> np.ndarray:
+def create_single_fiber_evecs(theta: float = 0, phi: float = 0) -> np.ndarray:
     """
     Create eigenvectors for a simulated fiber given the polar coordinates of its pricipal axis.
 
@@ -86,7 +88,9 @@ def create_single_fiber_evecs(theta : float = 0, phi : float = 0) -> np.ndarray:
     return evecs
 
 
-def create_random_polar_coordinates(hsph_dirs: int, seed: int = 1234) -> tuple[np.ndarray, np.ndarray]:
+def create_random_polar_coordinates(
+    hsph_dirs: int, seed: int = 1234
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Create random polar coordinates.
 
@@ -164,7 +168,7 @@ def create_single_shell_gradient_table(
     """
     # Create diffusion-encoding gradient directions
     sph = create_diffusion_encoding_gradient_dirs(hsph_dirs, iterations=iterations)
-    
+
     # Create the gradient bvals and bvecs
     vertices = sph.vertices
     values = np.ones(vertices.shape[0])
@@ -176,7 +180,9 @@ def create_single_shell_gradient_table(
     return gradient_table(bvals, bvecs)
 
 
-def get_query_vectors(gtab: gradient_table, train_mask: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def get_query_vectors(
+    gtab: gradient_table, train_mask: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Get the diffusion-encoding gradient vectors for estimation from the gradient table.
 
@@ -248,7 +254,13 @@ def create_random_train_mask(gtab: gradient_table, size: int, seed: int = 1234) 
 
 
 def perform_experiment(
-    gtab: gradient_table, S0: float, evals1: np.ndarray, evecs: np.ndarray, snr: float, repeats: int, kfold: list[int]
+    gtab: gradient_table,
+    S0: float,
+    evals1: np.ndarray,
+    evecs: np.ndarray,
+    snr: float,
+    repeats: int,
+    kfold: list[int],
 ) -> dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]]:
     """
     Perform the experiment by estimating the dMRI signal using a Gaussian process model.
@@ -327,7 +339,11 @@ def perform_experiment(
     return data
 
 
-def compute_error(data: dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]], repeats: int, kfolds: list[int]) -> tuple[np.ndarray, np.ndarray]:
+def compute_error(
+    data: dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]],
+    repeats: int,
+    kfolds: list[int],
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Compute the error and standard deviation.
 
@@ -369,7 +385,9 @@ def compute_error(data: dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray,
     return np.asarray(mean_rmse), np.asarray(std_dev)
 
 
-def plot_error(kfolds: list[int], mean: np.ndarray, std_dev: np.ndarray, xlabel: str, ylabel: str, title: str) -> plt.Figure:
+def plot_error(
+    kfolds: list[int], mean: np.ndarray, std_dev: np.ndarray, xlabel: str, ylabel: str, title: str
+) -> plt.Figure:
     """
     Plot the error and standard deviation.
 
@@ -430,7 +448,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--evals1", help="Eigenvalues of the tensor", nargs="+", type=float)
     parser.add_argument("--snr", help="Signal to noise ratio", type=float)
     parser.add_argument("--repeats", help="Number of repeats", type=int, default=5)
-    parser.add_argument("--kfold", help="Number of directions to leave out/predict", nargs="+", type=int)
+    parser.add_argument(
+        "--kfold", help="Number of directions to leave out/predict", nargs="+", type=int
+    )
     return parser
 
 
@@ -468,7 +488,9 @@ def main() -> None:
     # changes on every fold and we do not return it. Maybe we can set a random
     # value so that we return that one and we can plot it much like in the
     # notebook or maybe we leave that for a separate script/notebook ??
-    data = perform_experiment(gtab, args.S0, args.evals1, evecs, args.snr, args.repeats, args.kfold)
+    data = perform_experiment(
+        gtab, args.S0, args.evals1, evecs, args.snr, args.repeats, args.kfold
+    )
 
     # Compute the error
     rmse, std_dev = compute_error(data, args.repeats, args.kfold)
@@ -480,6 +502,7 @@ def main() -> None:
     _ = plot_error(args.kfold, rmse, std_dev, xlabel, ylabel, title)
     # fig = plot_error(args.kfold, rmse, std_dev)
     # fig.save(args.gp_pred_plot_error_fname, format="svg")
+
 
 if __name__ == "__main__":
     main()

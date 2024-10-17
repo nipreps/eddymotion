@@ -36,6 +36,7 @@ from dipy.core.gradients import gradient_table
 from dipy.core.sphere import HemiSphere, Sphere, disperse_charges
 from dipy.sims.voxel import all_tensor_evecs, single_tensor
 from matplotlib import pyplot as plt
+from sklearn.model_selection import cross_val_score
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import KFold
 
@@ -308,6 +309,8 @@ def perform_experiment(
     # Create the DWI signal using a single tensor
     signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr, rng=rng)
 
+    import pdb; pdb.set_trace()
+
     # Loop over the number of indices that are left out from the training/need to be predicted
     for n in kfold:
         # Assumptions:
@@ -337,6 +340,56 @@ def perform_experiment(
             _data.append((idx_qry, signal[idx_qry], _y_pred, _y_std))
         data.update({n: _data})
     return data
+
+
+def cross_validate(
+    gtab: gradient_table,
+    S0: float,
+    evals1: np.ndarray,
+    evecs: np.ndarray,
+    snr: float,
+    cv: int,
+) -> dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]]:
+    """
+    Perform the experiment by estimating the dMRI signal using a Gaussian process model.
+
+    Parameters
+    ----------
+    gtab : :obj:`~dipy.core.gradients.gradient_table`
+        Gradient table.
+    S0 : :obj:`float`
+        S0 value.
+    evals1 : :obj:`~numpy.ndarray`
+        Eigenvalues of the tensor.
+    evecs : :obj:`~numpy.ndarray`
+        Eigenvectors of the tensor.
+    snr : :obj:`float`
+        Signal-to-noise ratio.
+    cv : :obj:`int`
+        number of folds
+
+    Returns
+    -------
+    :obj:`dict`
+        Data for the predicted signal and its error.
+
+    """
+
+    gp_params = {
+        "kernel_model": "spherical",
+        "lambda_s": 2.0,
+        "a": 1.0,
+        "sigma_sq": 0.5,
+    }
+
+    signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr)
+    gpm = GaussianProcessModel(**gp_params)
+
+    X = gtab[~gtab.b0s_mask].bvecs
+    y = signal[~gtab.b0s_mask]
+
+    scores = cross_val_score(gpm, X, y, scoring="neg_root_mean_squared_error", cv=cv)
+    return scores
 
 
 def compute_error(
@@ -488,18 +541,21 @@ def main() -> None:
     # changes on every fold and we do not return it. Maybe we can set a random
     # value so that we return that one and we can plot it much like in the
     # notebook or maybe we leave that for a separate script/notebook ??
-    data = perform_experiment(
-        gtab, args.S0, args.evals1, evecs, args.snr, args.repeats, args.kfold
-    )
+    scores = {
+        n: cross_validate(gtab, args.S0, args.evals1, evecs, args.snr, n)
+        for n in args.kfold for _ in range(args.repeats)
+    }
+
+    print({n: (np.mean(scores[n]), np.std(scores[n])) for n in args.kfold})
 
     # Compute the error
-    rmse, std_dev = compute_error(data, args.repeats, args.kfold)
+    # rmse, std_dev = compute_error(data, args.repeats, args.kfold)
 
     # Plot
-    xlabel = "N"
-    ylabel = "RMSE"
-    title = f"Gaussian process estimation\n(SNR={args.snr})"
-    _ = plot_error(args.kfold, rmse, std_dev, xlabel, ylabel, title)
+    # xlabel = "N"
+    # ylabel = "RMSE"
+    # title = f"Gaussian process estimation\n(SNR={args.snr})"
+    # _ = plot_error(args.kfold, rmse, std_dev, xlabel, ylabel, title)
     # fig = plot_error(args.kfold, rmse, std_dev)
     # fig.save(args.gp_pred_plot_error_fname, format="svg")
 

@@ -30,12 +30,17 @@ from __future__ import annotations
 
 import argparse
 
+import matplotlib.gridspec as gridspec
+# import nibabel as nib
 import numpy as np
 from dipy.core.geometry import sphere2cart
 from dipy.core.gradients import gradient_table
 from dipy.core.sphere import HemiSphere, Sphere, disperse_charges
 from dipy.sims.voxel import all_tensor_evecs, single_tensor
 from matplotlib import pyplot as plt
+from nireports.reportlets.modality.dwi import nii_to_carpetplot_data
+from nireports.reportlets.nuisance import plot_carpet
+from scipy.stats import pearsonr
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import KFold
@@ -478,6 +483,49 @@ def plot_error(
     return fig
 
 
+def plot_estimation_carpet(gt_nii, gp_nii, gtab, suptitle, **kwargs):
+    fig = plt.figure(layout="tight")
+    gs = gridspec.GridSpec(ncols=1, nrows=2, figure=fig)
+    fig.suptitle(suptitle)
+
+    divide_by_b0 = False
+    gt_data, segments = nii_to_carpetplot_data(gt_nii, bvals=gtab.bvals, divide_by_b0=divide_by_b0)
+
+    title = "Ground truth"
+    plot_carpet(gt_data, segments, subplot=gs[0, :], title=title, **kwargs)
+
+    gp_data, segments = nii_to_carpetplot_data(gp_nii, bvals=gtab.bvals, divide_by_b0=divide_by_b0)
+
+    title = "Estimated (GP)"
+    plot_carpet(gt_data, segments, subplot=gs[1, :], title=title, **kwargs)
+
+    return fig
+
+
+def plot_correlation(x, y, title):
+    r = pearsonr(x, y)
+
+    # Fit a linear curve and estimate its y-values and their error
+    a, b = np.polyfit(x, y, deg=1)
+    y_est = a * x + b
+    y_err = x.std() * np.sqrt(1 / len(x) + (x - x.mean()) ** 2 / np.sum((x - x.mean()) ** 2))
+
+    fig, ax = plt.subplots()
+    ax.plot(x, y_est, "-", color="black", label=f"r = {r.correlation:.2f}")
+    ax.fill_between(x, y_est - y_err, y_est + y_err, alpha=0.2, color="lightgray")
+    ax.plot(x, y, marker="o", markersize="4", color="gray")
+
+    ax.set_ylabel("Ground truth")
+    ax.set_xlabel("Estimated")
+
+    plt.title(title)
+    plt.legend(loc="lower right")
+
+    fig.tight_layout()
+
+    return fig, r
+
+
 def _build_arg_parser() -> argparse.ArgumentParser:
     """
     Build argument parser for command-line interface.
@@ -558,6 +606,29 @@ def main() -> None:
     # _ = plot_error(args.kfold, rmse, std_dev, xlabel, ylabel, title)
     # fig = plot_error(args.kfold, rmse, std_dev)
     # fig.save(args.gp_pred_plot_error_fname, format="svg")
+
+    # dirname = Path(args.gp_pred_plot_error_fname).parent
+    # for key, val in data.items():
+    #     # Recompose the DWI signal from the folds
+    #     _signal = np.hstack([t[1] for t in val])
+    #     _pred = np.hstack([t[2] for t in val])
+
+    #     # Build the NIfTI images for the carpet plots
+    #     gt_img = _signal[np.newaxis, np.newaxis, np.newaxis, :]
+    #     gp_img = _pred[np.newaxis, np.newaxis, np.newaxis, :]
+    #     affine = np.eye(4)
+    #     gt_nii = nib.Nifti1Image(gt_img, affine)
+    #     gp_nii = nib.Nifti1Image(gp_img, affine)
+
+    #     title = f"DWI signal carpet plot\n(SNR={args.snr}; N={key})"
+    #     _ = plot_estimation_carpet(gt_nii, gp_nii, gtab[~gtab.b0s_mask], title)
+    #     # fname = dirname / f"carpet_plot_fold-{key}.svg"
+    #     # fig.savefig(fname, format="svg")
+
+    #     title = f"DWI signal correlation\n(SNR={args.snr}; N={key})"
+    #     _ = plot_correlation(_signal, _pred, title)
+    #     # fname = dirname / f"correlation_plot_fold-{key}.svg"
+    #     # fig.savefig(fname, format="svg")
 
 
 if __name__ == "__main__":

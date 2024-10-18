@@ -155,6 +155,8 @@ class GaussianProcessModel(ReconstModel):
         lambda_s: float = 2.0,
         a: float = 0.1,
         sigma_sq: float = 1.0,
+        lambda_s_bounds: tuple[float, float] = (1e-3, 1e3),
+        a_bounds: tuple[float, float] = (1e-3, np.pi),
         *args,
         **kwargs,
     ) -> None:
@@ -182,6 +184,8 @@ class GaussianProcessModel(ReconstModel):
                 a=a,
                 lambda_s=lambda_s,
                 sigma_sq=sigma_sq,
+                lambda_s_bounds=lambda_s_bounds,
+                a_bounds=a_bounds,
             )
             if kernel_model != "test"
             else DotProduct() + WhiteKernel()
@@ -213,9 +217,7 @@ class GaussianProcessModel(ReconstModel):
 
         """
 
-        y = (
-            y[mask[..., None]] if mask is not None else np.reshape(y, (-1, y.shape[-1]))
-        ).T
+        y = (y[mask[..., None]] if mask is not None else np.reshape(y, (-1, y.shape[-1]))).T
 
         # sklearn wants (n_samples, n_targets) for Y, where n_targets = n_voxels to simulate.
         if (grad_dirs := X.shape[0]) != (signal_dirs := y.shape[0]):
@@ -464,9 +466,10 @@ def compute_derivative(
         raise ValueError(f"Unknown kernel weighting '{weighting}'.")
 
     K_gradient = np.zeros((*theta.shape, n_partials))
-    K_gradient[..., 0] = kernel / lambda_s
-    K_gradient[..., 1][min_angles] = lambda_s * deriv_a
-    K_gradient[..., 2][theta > 1e-5] = 2
+
+    # Parameters are ordered alphabetically
+    K_gradient[..., 0][min_angles] = lambda_s * deriv_a  # Derivative w.r.t. a
+    K_gradient[..., 1] = kernel / lambda_s  # Derivative w.r.t. lambda_s
 
     return K_gradient
 
@@ -550,9 +553,8 @@ class PairwiseOrientationKernel(Kernel):
         lambda_s: float = 2.0,
         a: float = 0.1,
         sigma_sq: float = 1.0,
-        lambda_s_bounds: tuple[float, float] = (1e-5, 1e4),
-        a_bounds: tuple[float, float] = (1e-5, np.pi),
-        sigma_sq_bounds: tuple[float, float] = (1e-5, 1e4),
+        lambda_s_bounds: tuple[float, float] = (1e-3, 1e3),
+        a_bounds: tuple[float, float] = (1e-5, 0.5 * np.pi),
     ):
         r"""
         Initialize a kernel with pairwise angles.
@@ -571,17 +573,14 @@ class PairwiseOrientationKernel(Kernel):
             Bounds for the :math:`\lambda_s` hyperparameter.
         a_bounds : :obj:`tuple`
             Bounds for the a parameter.
-        sigma_sq_bounds : :obj:`tuple`
-            Bounds for the error parameter.
 
         """
-        self._weighting = weighting  # For __repr__
+        self.weighting = weighting  # For __repr__
         self.lambda_s = lambda_s
         self.a = a
         self.sigma_sq = sigma_sq
         self.lambda_s_bounds = lambda_s_bounds
         self.a_bounds = a_bounds
-        self.sigma_sq_bounds = sigma_sq_bounds
 
     @property
     def hyperparameter_lambda_s(self):
@@ -593,7 +592,7 @@ class PairwiseOrientationKernel(Kernel):
 
     @property
     def hyperparameter_sigma_sq(self):
-        return Hyperparameter("sigma_sq", "numeric", self.sigma_sq_bounds)
+        return Hyperparameter("sigma_sq", "numeric", "fixed")
 
     def __call__(self, gtab_X, gtab_Y=None, eval_gradient=False):
         """
@@ -626,7 +625,7 @@ class PairwiseOrientationKernel(Kernel):
         collinear = np.abs(thetas) < 1e-5
         thetas[collinear] = 0.0
 
-        covfunc = getattr(modules[__name__], f"compute_{self._weighting}_covariance")
+        covfunc = getattr(modules[__name__], f"compute_{self.weighting}_covariance")
 
         K = self.lambda_s * covfunc(thetas, self.a)
         K[collinear] += self.sigma_sq
@@ -637,12 +636,19 @@ class PairwiseOrientationKernel(Kernel):
         if gtab_Y is not None:
             raise RuntimeError("Gradients should not be calculated in inference time")
 
+        params = {p.name: self.get_params()[p.name] for p in self.hyperparameters if not p.fixed}
         K_gradient = compute_derivative(
             thetas,
             K,
-            weighting=self._weighting,
-            params=self.get_params(),
+            weighting=self.weighting,
+            params=params,
         )
+
+        # Gradient scaling
+        # K_gradient[np.abs(K_gradient) < 1e-5] = 0
+        # maxg = np.max((np.abs(K_gradient).max(axis=(0, 1)), (1, 1)), axis=-1)
+        # K_gradient /= maxg
+        # print(K_gradient.mean(axis=(0, 1)))
 
         return K, K_gradient
 
@@ -668,7 +674,7 @@ class PairwiseOrientationKernel(Kernel):
         except TypeError:
             n = len(X.bvals)
 
-        covfunc = getattr(modules[__name__], f"compute_{self._weighting}_covariance")
+        covfunc = getattr(modules[__name__], f"compute_{self.weighting}_covariance")
         return self.lambda_s * covfunc(np.zeros(n), self.a) + self.sigma_sq
 
     def is_stationary(self):
@@ -677,46 +683,9 @@ class PairwiseOrientationKernel(Kernel):
 
     def __repr__(self):
         return (
-            f"{self._weighting} kernel"
+            f"{self.weighting} kernel"
             f"(a={self.a}, lambda_s={self.lambda_s}, sigma_sq={self.sigma_sq})"
         )
-
-    def get_params(self, deep=True):
-        """
-        Get parameters of the kernel.
-
-        Parameters
-        ----------
-        deep : :obj:`bool`
-            Whether to return the parameters of the contained subobjects.
-
-        Returns
-        -------
-        params : :obj:`dict`
-            Parameter names mapped to their values.
-
-        """
-        return {"lambda_s": self.lambda_s, "a": self.a, "sigma_sq": self.sigma_sq}
-
-    def set_params(self, **params):
-        """
-        Set parameters of the kernel.
-
-        Parameters
-        ----------
-        params : :obj:`dict`
-            Kernel parameters.
-
-        Returns
-        -------
-        self : :obj:`object`
-            Returns self.
-
-        """
-        self.lambda_s = params.get("lambda_s", self.lambda_s)
-        self.a = params.get("a", self.a)
-        self.sigma_sq = params.get("sigma_sq", self.sigma_sq)
-        return self
 
 
 def _rasb2dipy(gradient):

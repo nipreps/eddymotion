@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 
 import matplotlib.gridspec as gridspec
+
 # import nibabel as nib
 import numpy as np
 from dipy.core.geometry import sphere2cart
@@ -41,9 +42,8 @@ from matplotlib import pyplot as plt
 from nireports.reportlets.modality.dwi import nii_to_carpetplot_data
 from nireports.reportlets.nuisance import plot_carpet
 from scipy.stats import pearsonr
-from sklearn.model_selection import cross_val_score
 from sklearn.metrics import root_mean_squared_error
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, cross_val_score
 
 from eddymotion.model._dipy import GaussianProcessModel
 
@@ -314,7 +314,9 @@ def perform_experiment(
     # Create the DWI signal using a single tensor
     signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr, rng=rng)
 
-    import pdb; pdb.set_trace()
+    import pdb
+
+    pdb.set_trace()
 
     # Loop over the number of indices that are left out from the training/need to be predicted
     for n in kfold:
@@ -381,10 +383,10 @@ def cross_validate(
     """
 
     gp_params = {
-        "kernel_model": "spherical",
+        "weighting": "exponential",
         "lambda_s": 2.0,
         "a": 1.0,
-        "sigma_sq": 0.5,
+        "sigma_sq": 2.0,
     }
 
     signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr)
@@ -591,7 +593,8 @@ def main() -> None:
     # notebook or maybe we leave that for a separate script/notebook ??
     scores = {
         n: cross_validate(gtab, args.S0, args.evals1, evecs, args.snr, n)
-        for n in args.kfold for _ in range(args.repeats)
+        for n in args.kfold
+        for _ in range(args.repeats)
     }
 
     print({n: (np.mean(scores[n]), np.std(scores[n])) for n in args.kfold})

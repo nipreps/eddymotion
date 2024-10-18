@@ -39,13 +39,14 @@ from dipy.core.gradients import gradient_table
 from dipy.core.sphere import HemiSphere, Sphere, disperse_charges
 from dipy.sims.voxel import all_tensor_evecs, single_tensor
 from matplotlib import pyplot as plt
-from nireports.reportlets.modality.dwi import nii_to_carpetplot_data
-from nireports.reportlets.nuisance import plot_carpet
 from scipy.stats import pearsonr
 from sklearn.metrics import root_mean_squared_error
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import KFold, RepeatedKFold, cross_val_score
 
-from eddymotion.model._dipy import GaussianProcessModel
+from eddymotion.model._sklearn import (
+    EddyMotionGPR,
+    SphericalKriging,
+)
 
 
 def add_b0(bvals: np.ndarray, bvecs: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -300,7 +301,6 @@ def perform_experiment(
     rng = np.random.default_rng(1234)
 
     # Define the Gaussian process model parameter
-    kernel_model = "spherical"
     lambda_s = 2.0
     a = 1.0
     sigma_sq = 0.5
@@ -326,9 +326,12 @@ def perform_experiment(
         kf = KFold(n_splits=n, shuffle=False)
 
         # Define the Gaussian process model instance
-        gp_model = GaussianProcessModel(
-            kernel_model=kernel_model, lambda_s=lambda_s, a=a, sigma_sq=sigma_sq
+        gp_model = EddyMotionGPR(
+            kernel=SphericalKriging(a=a, lambda_s=lambda_s),
+            alpha=sigma_sq,
+            optimizer=None,
         )
+
         _data = []
         for _, (train_index, test_index) in enumerate(kf.split(nzero_bvecs)):
             # Create the training mask leaving out the requested number of samples
@@ -382,20 +385,18 @@ def cross_validate(
 
     """
 
-    gp_params = {
-        "weighting": "exponential",
-        "lambda_s": 2.0,
-        "a": 1.0,
-        "sigma_sq": 2.0,
-    }
-
     signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr)
-    gpm = GaussianProcessModel(**gp_params)
+    gpm = EddyMotionGPR(
+        kernel=SphericalKriging(a=2.15, lambda_s=120),
+        alpha=50,
+        optimizer=None,
+    )
 
     X = gtab[~gtab.b0s_mask].bvecs
     y = signal[~gtab.b0s_mask]
 
-    scores = cross_val_score(gpm, X, y, scoring="neg_root_mean_squared_error", cv=cv)
+    rkf = RepeatedKFold(n_splits=cv, n_repeats=120 // cv)
+    scores = cross_val_score(gpm, X, y, scoring="neg_root_mean_squared_error", cv=rkf)
     return scores
 
 
@@ -486,6 +487,9 @@ def plot_error(
 
 
 def plot_estimation_carpet(gt_nii, gp_nii, gtab, suptitle, **kwargs):
+    from nireports.reportlets.modality.dwi import nii_to_carpetplot_data
+    from nireports.reportlets.nuisance import plot_carpet
+
     fig = plt.figure(layout="tight")
     gs = gridspec.GridSpec(ncols=1, nrows=2, figure=fig)
     fig.suptitle(suptitle)

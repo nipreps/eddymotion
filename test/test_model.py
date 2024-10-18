@@ -118,7 +118,7 @@ def test_gp_model():
     bvecs = X.T / np.linalg.norm(X.T, axis=0)
     gtab = gradient_table([1000] * bvecs.shape[-1], bvecs)
 
-    gpfit = gp.fit(y, gtab)
+    gpfit = gp.fit(gtab, y)
 
     X_qry = bvecs[:, :2].T
     prediction = gpfit.predict(X_qry)

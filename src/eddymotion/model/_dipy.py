@@ -424,56 +424,6 @@ def compute_spherical_covariance(
     return np.where(theta <= a, 1 - 3 * theta / (2 * a) + theta**3 / (2 * a**3), 0)
 
 
-def compute_derivative(
-    theta: np.ndarray,
-    kernel: np.ndarray,
-    weighting: str,
-    params: dict[float],
-):
-    """
-    Compute the analytical derivative of the kernel.
-
-    Parameters
-    ----------
-    theta : :obj:`~numpy.ndarray`
-        Pairwise angles across diffusion gradient encoding directions.
-    kernel : :obj:`~numpy.ndarray`
-        Current kernel.
-    weighting : :obj:`str`
-        The kind of kernel which derivatives will be calculated.
-    params : :obj:`dict`
-        Current parameter values.
-
-    Returns
-    -------
-    :obj:`~numpy.ndarray`
-        Gradients of the kernel.
-
-    """
-
-    n_partials = len(params)
-
-    a = params.pop("a")
-    lambda_s = params.pop("lambda_s")
-
-    min_angles = theta > a
-
-    if weighting == "spherical":
-        deriv_a = 1.5 * (theta[min_angles] / a**2 - theta[min_angles] ** 3 / a**4)
-    elif weighting == "exponential":
-        deriv_a = np.exp(-theta[min_angles] / a) * theta[min_angles] / a**2
-    else:
-        raise ValueError(f"Unknown kernel weighting '{weighting}'.")
-
-    K_gradient = np.zeros((*theta.shape, n_partials))
-
-    # Parameters are ordered alphabetically
-    K_gradient[..., 0][min_angles] = lambda_s * deriv_a  # Derivative w.r.t. a
-    K_gradient[..., 1] = kernel / lambda_s  # Derivative w.r.t. lambda_s
-
-    return K_gradient
-
-
 def compute_pairwise_angles(
     gtab_X: GradientTable | np.ndarray,
     gtab_Y: GradientTable | np.ndarray | None = None,
@@ -637,12 +587,25 @@ class PairwiseOrientationKernel(Kernel):
             raise RuntimeError("Gradients should not be calculated in inference time")
 
         params = {p.name: self.get_params()[p.name] for p in self.hyperparameters if not p.fixed}
-        K_gradient = compute_derivative(
-            thetas,
-            K,
-            weighting=self.weighting,
-            params=params,
-        )
+        n_partials = len(params)
+
+        a = params.pop("a")
+        lambda_s = params.pop("lambda_s")
+
+        min_angles = thetas > a
+
+        if self.weighting == "spherical":
+            deriv_a = 1.5 * (thetas[min_angles] / a**2 - thetas[min_angles] ** 3 / a**4)
+        elif self.weighting == "exponential":
+            deriv_a = np.exp(-thetas[min_angles] / a) * thetas[min_angles] / a**2
+        else:
+            raise ValueError(f"Unknown kernel weighting '{self.weighting}'.")
+
+        K_gradient = np.zeros((*thetas.shape, n_partials))
+
+        # Parameters are ordered alphabetically
+        K_gradient[..., 0][min_angles] = lambda_s * deriv_a  # Derivative w.r.t. a
+        K_gradient[..., 1] = K / lambda_s  # Derivative w.r.t. lambda_s
 
         # Gradient scaling
         # K_gradient[np.abs(K_gradient) < 1e-5] = 0

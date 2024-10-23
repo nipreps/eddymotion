@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.cli.run - eddymotion 24.0.0.dev151 documentation</title>
+        <title>eddymotion.testing.simulations - eddymotion 24.0.0.dev151 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -285,11 +285,11 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for eddymotion.cli.run</h1><div class="highlight"><pre>
+          <h1>Source code for eddymotion.testing.simulations</h1><div class="highlight"><pre>
 <span></span><span class="c1"># emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-</span>
 <span class="c1"># vi: set ft=python sts=4 ts=4 sw=4 et:</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
+<span class="c1"># © The NiPreps Developers &lt;nipreps@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
@@ -308,52 +308,199 @@
 <span class="c1">#</span>
 <span class="c1">#     https://www.nipreps.org/community/licensing/</span>
 <span class="c1">#</span>
-<span class="sd">&quot;&quot;&quot;Eddymotion runner.&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Utilities for testing purposes.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">eddymotion.cli.parser</span> <span class="kn">import</span> <span class="n">parse_args</span>
-<span class="kn">from</span> <span class="nn">eddymotion.data.dmri</span> <span class="kn">import</span> <span class="n">DWI</span>
-<span class="kn">from</span> <span class="nn">eddymotion.estimator</span> <span class="kn">import</span> <span class="n">EddyMotionEstimator</span>
+<span class="c1"># import nibabel as nib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">dipy.core.geometry</span> <span class="kn">import</span> <span class="n">sphere2cart</span>
+<span class="kn">from</span> <span class="nn">dipy.core.gradients</span> <span class="kn">import</span> <span class="n">gradient_table</span>
+<span class="kn">from</span> <span class="nn">dipy.core.sphere</span> <span class="kn">import</span> <span class="n">HemiSphere</span><span class="p">,</span> <span class="n">Sphere</span><span class="p">,</span> <span class="n">disperse_charges</span>
+<span class="kn">from</span> <span class="nn">dipy.sims.voxel</span> <span class="kn">import</span> <span class="n">all_tensor_evecs</span>
 
 
-<div class="viewcode-block" id="main">
-<a class="viewcode-back" href="../../../api/eddymotion.cli.run.html#eddymotion.cli.run.main">[docs]</a>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="add_b0">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.add_b0">[docs]</a>
+<span class="k">def</span> <span class="nf">add_b0</span><span class="p">(</span><span class="n">bvals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">bvecs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Entry point.</span>
+<span class="sd">    Insert a b=0 at the front of the gradient table (b-values and b-vectors).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bvals : :obj:`~numpy.ndarray`</span>
+<span class="sd">        Array of b-values.</span>
+<span class="sd">    bvecs : :obj:`~numpy.ndarray`</span>
+<span class="sd">        Array of b-vectors.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    None</span>
+<span class="sd">    :obj:`tuple`</span>
+<span class="sd">        Updated gradient table (b-values, b-vectors) including a b=0.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
-
-    <span class="c1"># Open the data with the given file path</span>
-    <span class="n">dwi_dataset</span><span class="p">:</span> <span class="n">DWI</span> <span class="o">=</span> <span class="n">DWI</span><span class="o">.</span><span class="n">from_filename</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span>
-
-    <span class="n">estimator</span><span class="p">:</span> <span class="n">EddyMotionEstimator</span> <span class="o">=</span> <span class="n">EddyMotionEstimator</span><span class="p">()</span>
-
-    <span class="n">_</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span>
-        <span class="n">dwi_dataset</span><span class="p">,</span>
-        <span class="n">align_kwargs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">align_config</span><span class="p">,</span>
-        <span class="n">models</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">models</span><span class="p">,</span>
-        <span class="n">omp_nthreads</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nthreads</span><span class="p">,</span>
-        <span class="n">njobs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">njobs</span><span class="p">,</span>
-        <span class="n">seed</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Set the output filename to be the same as the input filename</span>
-    <span class="n">output_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
-    <span class="n">output_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">output_filename</span>
-
-    <span class="c1"># Save the DWI dataset to the output path</span>
-    <span class="n">dwi_dataset</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span></div>
+    <span class="n">_bvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">bvals</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">_bvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">bvecs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_bvals</span><span class="p">,</span> <span class="n">_bvecs</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
+<div class="viewcode-block" id="create_single_fiber_evecs">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.create_single_fiber_evecs">[docs]</a>
+<span class="k">def</span> <span class="nf">create_single_fiber_evecs</span><span class="p">(</span><span class="n">theta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create eigenvectors for a simulated fiber given the polar coordinates of its pricipal axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    theta : :obj:`float`</span>
+<span class="sd">        Theta coordinate</span>
+<span class="sd">    phi : :obj:`float`</span>
+<span class="sd">        Phi coordinate</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`~numpy.ndarray`</span>
+<span class="sd">        Eigenvectors for a single fiber.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Polar coordinates (theta, phi) of the principal axis of the tensor</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">])</span>
+    <span class="n">sticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sphere2cart</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+    <span class="n">evecs</span> <span class="o">=</span> <span class="n">all_tensor_evecs</span><span class="p">(</span><span class="n">sticks</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">evecs</span></div>
+
+
+
+<div class="viewcode-block" id="create_random_polar_coordinates">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.create_random_polar_coordinates">[docs]</a>
+<span class="k">def</span> <span class="nf">create_random_polar_coordinates</span><span class="p">(</span>
+    <span class="n">hsph_dirs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1234</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create random polar coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hsph_dirs : :obj:`int`</span>
+<span class="sd">        Number of hemisphere directions.</span>
+<span class="sd">    seed : :obj:`int`, optional</span>
+<span class="sd">        Seed for the random number generator, by default 1234.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`tuple`</span>
+<span class="sd">        Theta and Phi values of polar coordinates.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">hsph_dirs</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">hsph_dirs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span></div>
+
+
+
+<div class="viewcode-block" id="create_diffusion_encoding_gradient_dirs">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.create_diffusion_encoding_gradient_dirs">[docs]</a>
+<span class="k">def</span> <span class="nf">create_diffusion_encoding_gradient_dirs</span><span class="p">(</span>
+    <span class="n">hsph_dirs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1234</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sphere</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the dMRI gradient-encoding directions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hsph_dirs : :obj:`int`</span>
+<span class="sd">        Number of hemisphere directions.</span>
+<span class="sd">    iterations : :obj:`int`, optional</span>
+<span class="sd">        Number of iterations for charge dispersion, by default 5000.</span>
+<span class="sd">    seed : :obj:`int`, optional</span>
+<span class="sd">        Seed for the random number generator, by default 1234.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`~dipy.core.sphere.Sphere`</span>
+<span class="sd">        A sphere with diffusion-encoding gradient directions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create the gradient-encoding directions placing random points on a hemisphere</span>
+    <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">create_random_polar_coordinates</span><span class="p">(</span><span class="n">hsph_dirs</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">hsph_initial</span> <span class="o">=</span> <span class="n">HemiSphere</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">)</span>
+
+    <span class="c1"># Move the points so that the electrostatic potential energy is minimized</span>
+    <span class="n">hsph_updated</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">disperse_charges</span><span class="p">(</span><span class="n">hsph_initial</span><span class="p">,</span> <span class="n">iterations</span><span class="p">)</span>
+
+    <span class="c1"># Create a sphere</span>
+    <span class="k">return</span> <span class="n">Sphere</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">hsph_updated</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="o">-</span><span class="n">hsph_updated</span><span class="o">.</span><span class="n">vertices</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="create_single_shell_gradient_table">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.create_single_shell_gradient_table">[docs]</a>
+<span class="k">def</span> <span class="nf">create_single_shell_gradient_table</span><span class="p">(</span>
+    <span class="n">hsph_dirs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bval_shell</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gradient_table</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a single-shell gradient table.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hsph_dirs : :obj:`int`</span>
+<span class="sd">        Number of hemisphere directions.</span>
+<span class="sd">    bval_shell : :obj:`float`</span>
+<span class="sd">        Shell b-value.</span>
+<span class="sd">    iterations : :obj:`int`, optional</span>
+<span class="sd">        Number of iterations for charge dispersion, by default 5000.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`~dipy.core.gradients.gradient_table`</span>
+<span class="sd">        The gradient table for the single-shell.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create diffusion-encoding gradient directions</span>
+    <span class="n">sph</span> <span class="o">=</span> <span class="n">create_diffusion_encoding_gradient_dirs</span><span class="p">(</span><span class="n">hsph_dirs</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">)</span>
+
+    <span class="c1"># Create the gradient bvals and bvecs</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">sph</span><span class="o">.</span><span class="n">vertices</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">bvecs</span> <span class="o">=</span> <span class="n">vertices</span>
+    <span class="n">bvals</span> <span class="o">=</span> <span class="n">bval_shell</span> <span class="o">*</span> <span class="n">values</span>
+
+    <span class="c1"># Add a b0 value to the gradient table</span>
+    <span class="n">bvals</span><span class="p">,</span> <span class="n">bvecs</span> <span class="o">=</span> <span class="n">add_b0</span><span class="p">(</span><span class="n">bvals</span><span class="p">,</span> <span class="n">bvecs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gradient_table</span><span class="p">(</span><span class="n">bvals</span><span class="p">,</span> <span class="n">bvecs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_query_vectors">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.get_query_vectors">[docs]</a>
+<span class="k">def</span> <span class="nf">get_query_vectors</span><span class="p">(</span>
+    <span class="n">gtab</span><span class="p">:</span> <span class="n">gradient_table</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the diffusion-encoding gradient vectors for estimation from the gradient table.</span>
+
+<span class="sd">    Get the diffusion-encoding gradient vectors where the signal is to be estimated from the</span>
+<span class="sd">    gradient table and the training mask: the vectors of interest are those that are masked in</span>
+<span class="sd">    the training mask. b0 values are excluded.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gtab : :obj:`~dipy.core.gradients.gradient_table`</span>
+<span class="sd">        Gradient table.</span>
+<span class="sd">    train_mask : :obj:`~numpy.ndarray`</span>
+<span class="sd">        Mask for selecting training vectors.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`tuple`</span>
+<span class="sd">        Gradient vectors and indices for estimation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="o">~</span><span class="n">train_mask</span><span class="p">,</span> <span class="o">~</span><span class="n">gtab</span><span class="o">.</span><span class="n">b0s_mask</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gtab</span><span class="o">.</span><span class="n">bvecs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
 </pre></div>
         </article>
       </div>

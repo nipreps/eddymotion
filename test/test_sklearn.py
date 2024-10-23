@@ -24,15 +24,9 @@ from collections import namedtuple
 
 import numpy as np
 import pytest
-from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
-from eddymotion.model._dipy import (
-    PairwiseOrientationKernel,
-    compute_exponential_covariance,
-    compute_pairwise_angles,
-    compute_spherical_covariance,
-)
+from eddymotion.model import _sklearn as ems
 
 GradientTablePatch = namedtuple("gtab", ["bvals", "bvecs"])
 
@@ -263,63 +257,42 @@ EXPECTED_SPHERICAL = [
 )
 def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
     # DIPY requires the vectors to be normalized
-    _bvecs1 = bvecs1 / np.linalg.norm(bvecs1, axis=0)
-    gtab1 = gradient_table([1000] * _bvecs1.shape[-1], _bvecs1)
-
+    _bvecs1 = (bvecs1 / np.linalg.norm(bvecs1, axis=0)).T
     _bvecs2 = None
-    gtab2 = None
-    if bvecs2 is not None:
-        _bvecs2 = bvecs2 / np.linalg.norm(bvecs2, axis=0)
-        gtab2 = gradient_table([1000] * _bvecs2.shape[-1], _bvecs2)
 
-    obtained = compute_pairwise_angles(gtab1, gtab2, closest_polarity)
+    if bvecs2 is not None:
+        _bvecs2 = (bvecs2 / np.linalg.norm(bvecs2, axis=0)).T
+
+    obtained = ems.compute_pairwise_angles(_bvecs1, _bvecs2, closest_polarity)
 
     if _bvecs2 is not None:
-        assert (_bvecs1.shape[-1], _bvecs2.shape[-1]) == obtained.shape
+        assert (_bvecs1.shape[0], _bvecs2.shape[0]) == obtained.shape
     assert obtained.shape == expected.shape
     np.testing.assert_array_almost_equal(obtained, expected, decimal=2)
 
 
-def test_compute_exponential_covariance():
-    obtained = compute_exponential_covariance(THETAS, 0.5)
-    assert np.allclose(obtained, EXPECTED_EXPONENTIAL)
-
-
-def test_compute_spherical_covariance():
-    obtained = compute_spherical_covariance(THETAS, 1.23)
-    assert np.allclose(obtained, EXPECTED_SPHERICAL)
-
-
-def test_kernel(repodata):
+@pytest.mark.parametrize("covariance", ["Spherical", "Exponential"])
+def test_kernel(repodata, covariance):
     """Check kernel construction."""
 
     bvals, bvecs = read_bvals_bvecs(
         str(repodata / "ds000114_singleshell.bval"),
         str(repodata / "ds000114_singleshell.bvec"),
     )
-    gtab_original = gradient_table(bvals, bvecs)
 
-    bvals = gtab_original.bvals[~gtab_original.b0s_mask]
-    bvecs = gtab_original.bvecs[~gtab_original.b0s_mask, :]
-    gtab = gradient_table(bvals, bvecs)
+    bvecs = bvecs[bvals > 10]
 
-    kernel = PairwiseOrientationKernel()
+    KernelType = getattr(ems, f"{covariance}Kriging")
+    kernel = KernelType()
+    K = kernel(bvecs)
 
-    K = kernel(gtab)
+    assert K.shape == (bvecs.shape[0],) * 2
 
-    assert K.shape == (len(bvals), len(bvals))
-    assert np.allclose(np.diagonal(K), kernel.diag(gtab))
+    assert np.allclose(np.diagonal(K), kernel.diag(bvecs))
 
-    # DIPY bug - gradient tables cannot be created with just one bvec/bval
-    # https://github.com/dipy/dipy/issues/3283
-    gtab_Y = GradientTablePatch(bvals[10], bvecs[10, ...])
-
-    K_predict = kernel(gtab, gtab_Y)
+    K_predict = kernel(bvecs, [bvecs[10, ...]])
 
     assert K_predict.shape == (K.shape[0], 1)
 
-    gtab_Y = gradient_table(bvals[10:14], bvecs[10:14, ...])
-
-    K_predict = kernel(gtab, gtab_Y)
-
+    K_predict = kernel(bvecs, bvecs[10:14, ...])
     assert K_predict.shape == (K.shape[0], 4)

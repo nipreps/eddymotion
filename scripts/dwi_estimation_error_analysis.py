@@ -34,8 +34,6 @@ from collections import defaultdict
 # import nibabel as nib
 import numpy as np
 import pandas as pd
-from dipy.core.gradients import gradient_table
-from dipy.sims.voxel import single_tensor
 from sklearn.model_selection import RepeatedKFold, cross_val_score
 
 from eddymotion.model._sklearn import (
@@ -46,11 +44,8 @@ from eddymotion.testing import simulations as testsims
 
 
 def cross_validate(
-    gtab: gradient_table,
-    S0: float,
-    evals1: np.ndarray,
-    evecs: np.ndarray,
-    snr: float,
+    X: np.ndarray,
+    y: np.ndarray,
     cv: int,
 ) -> dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]]:
     """
@@ -77,16 +72,11 @@ def cross_validate(
         Data for the predicted signal and its error.
 
     """
-
-    signal = single_tensor(gtab, S0=S0, evals=evals1, evecs=evecs, snr=snr)
     gpm = EddyMotionGPR(
-        kernel=SphericalKriging(a=2.15, lambda_s=120),
-        alpha=50,
+        kernel=SphericalKriging(a=1.15, lambda_s=120),
+        alpha=100,
         optimizer=None,
     )
-
-    X = gtab[~gtab.b0s_mask].bvecs
-    y = signal[~gtab.b0s_mask]
 
     rkf = RepeatedKFold(n_splits=cv, n_repeats=120 // cv)
     scores = cross_val_score(gpm, X, y, scoring="neg_root_mean_squared_error", cv=rkf)
@@ -144,18 +134,24 @@ def main() -> None:
     parser = _build_arg_parser()
     args = _parse_args(parser)
 
-    # create eigenvectors for a single fiber
-    evecs = testsims.create_single_fiber_evecs()
+    data, gtab = testsims.simulate_voxels(
+        args.S0,
+        args.evals1,
+        args.hsph_dirs,
+        bval_shell=args.bval_shell,
+        snr=args.snr,
+        n_voxels=100,
+        seed=None,
+    )
 
-    # Create a gradient table for a single-shell
-    gtab = testsims.create_single_shell_gradient_table(args.hsph_dirs, args.bval_shell)
+    X = gtab[~gtab.b0s_mask].bvecs
+    y = data[:, ~gtab.b0s_mask]
 
     # Use Scikit-learn cross validation
     scores = defaultdict(list, {})
-
     for n in args.kfold:
         for i in range(args.repeats):
-            cv_scores = -1.0 * cross_validate(gtab, args.S0, args.evals1, evecs, args.snr, n)
+            cv_scores = -1.0 * cross_validate(X, y.T, n)
             scores["rmse"] += cv_scores.tolist()
             scores["repeat"] += [i] * len(cv_scores)
             scores["n_folds"] += [n] * len(cv_scores)
@@ -168,37 +164,6 @@ def main() -> None:
     grouped = scores_df.groupby(["n_folds"])
     print(grouped[["rmse"]].mean())
     print(grouped[["rmse"]].std())
-
-    # Plot - import plot_* from eddymotion.viz.signals
-    # xlabel = "N"
-    # ylabel = "RMSE"
-    # title = f"Gaussian process estimation\n(SNR={args.snr})"
-    # _ = plot_error(args.kfold, rmse, std_dev, xlabel, ylabel, title)
-    # fig = plot_error(args.kfold, rmse, std_dev)
-    # fig.save(args.gp_pred_plot_error_fname, format="svg")
-
-    # dirname = Path(args.gp_pred_plot_error_fname).parent
-    # for key, val in data.items():
-    #     # Recompose the DWI signal from the folds
-    #     _signal = np.hstack([t[1] for t in val])
-    #     _pred = np.hstack([t[2] for t in val])
-
-    #     # Build the NIfTI images for the carpet plots
-    #     gt_img = _signal[np.newaxis, np.newaxis, np.newaxis, :]
-    #     gp_img = _pred[np.newaxis, np.newaxis, np.newaxis, :]
-    #     affine = np.eye(4)
-    #     gt_nii = nib.Nifti1Image(gt_img, affine)
-    #     gp_nii = nib.Nifti1Image(gp_img, affine)
-
-    #     title = f"DWI signal carpet plot\n(SNR={args.snr}; N={key})"
-    #     _ = plot_estimation_carpet(gt_nii, gp_nii, gtab[~gtab.b0s_mask], title)
-    #     # fname = dirname / f"carpet_plot_fold-{key}.svg"
-    #     # fig.savefig(fname, format="svg")
-
-    #     title = f"DWI signal correlation\n(SNR={args.snr}; N={key})"
-    #     _ = plot_correlation(_signal, _pred, title)
-    #     # fname = dirname / f"correlation_plot_fold-{key}.svg"
-    #     # fig.savefig(fname, format="svg")
 
 
 if __name__ == "__main__":

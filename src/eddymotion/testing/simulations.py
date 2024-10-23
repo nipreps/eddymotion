@@ -29,7 +29,7 @@ import numpy as np
 from dipy.core.geometry import sphere2cart
 from dipy.core.gradients import gradient_table
 from dipy.core.sphere import HemiSphere, Sphere, disperse_charges
-from dipy.sims.voxel import all_tensor_evecs
+from dipy.sims.voxel import all_tensor_evecs, single_tensor
 
 
 def add_b0(bvals: np.ndarray, bvecs: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -195,3 +195,33 @@ def get_query_vectors(
     """
     idx = np.logical_and(~train_mask, ~gtab.b0s_mask)
     return gtab.bvecs[idx], np.where(idx)[0]
+
+
+def single_fiber_voxel(gtab, S0, evals, theta=0, phi=0, snr=20):
+    # create eigenvectors for a single fiber
+    evecs = create_single_fiber_evecs(theta=theta, phi=phi)
+
+    # Generate some data
+    return single_tensor(gtab, S0=S0, evals=evals, evecs=evecs, snr=snr)
+
+
+def simulate_voxels(S0, evals, hsph_dirs, bval_shell=1000, snr=20, n_voxels=1, seed=None):
+    # Create a gradient table for a single-shell
+    gtab = create_single_shell_gradient_table(hsph_dirs, bval_shell)
+
+    rng = np.random.default_rng(seed)
+
+    angles = zip(
+        rng.uniform(0, np.pi, size=n_voxels),
+        rng.uniform(0, 2.0 * np.pi, size=n_voxels),
+        strict=False,
+    )
+
+    signal = np.vstack(
+        [
+            single_fiber_voxel(gtab, S0, evals, theta=theta, phi=phi, snr=snr)
+            for theta, phi in angles
+        ]
+    )
+
+    return signal, gtab

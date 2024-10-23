@@ -24,8 +24,7 @@
 
 import numpy as np
 import pytest
-from dipy.core.gradients import gradient_table
-from sklearn.datasets import make_regression
+from dipy.sims.voxel import single_tensor
 
 from eddymotion import model
 from eddymotion.data.dmri import DWI
@@ -33,6 +32,7 @@ from eddymotion.data.splitting import lovo_split
 from eddymotion.exceptions import ModelNotFittedError
 from eddymotion.model._dipy import GaussianProcessModel
 from eddymotion.model.dmri import DEFAULT_MAX_S0, DEFAULT_MIN_S0
+from eddymotion.testing import simulations as _sim
 
 
 def test_trivial_model():
@@ -108,22 +108,39 @@ def test_average_model():
     assert np.all(tmodel_2000.predict([0, 0, 0]) == 1100)
 
 
-def test_gp_model():
-    gp = GaussianProcessModel("test")
+@pytest.mark.parametrize(
+    (
+        "bval_shell",
+        "S0",
+        "evals",
+    ),
+    [
+        (
+            1000,
+            100,
+            (0.0015, 0.0003, 0.0003),
+        )
+    ],
+)
+@pytest.mark.parametrize("snr", (10, 20))
+@pytest.mark.parametrize("hsph_dirs", (60, 30))
+def test_gp_model(evals, S0, snr, hsph_dirs, bval_shell):
+    # Simulate signal for a single tensor
+    evecs = _sim.create_single_fiber_evecs()
+    gtab = _sim.create_single_shell_gradient_table(hsph_dirs, bval_shell)
+    signal = single_tensor(gtab, S0=S0, evals=evals, evecs=evecs, snr=snr)
 
+    # Drop the initial b=0
+    gtab = gtab[1:]
+    data = signal[1:]
+
+    gp = GaussianProcessModel(kernel_model="spherical")
     assert isinstance(gp, model._dipy.GaussianProcessModel)
 
-    X, y = make_regression(n_samples=100, n_features=3, noise=0, random_state=0)
+    gpfit = gp.fit(data[:-2], gtab[:-2])
+    prediction = gpfit.predict(gtab.bvecs[-2:])
 
-    bvecs = X.T / np.linalg.norm(X.T, axis=0)
-    gtab = gradient_table([1000] * bvecs.shape[-1], bvecs)
-
-    gpfit = gp.fit(gtab, y)
-
-    X_qry = bvecs[:, :2].T
-    prediction = gpfit.predict(X_qry)
-
-    assert prediction.shape == (X_qry.shape[0],)
+    assert prediction.shape == (2,)
 
 
 def test_two_initialisations(datadir):

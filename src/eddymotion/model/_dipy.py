@@ -67,7 +67,7 @@ def gp_prediction(
 
     """
 
-    X = gtab.bvecs.T if hasattr("bvecs") else np.asarray(gtab)
+    X = gtab.bvecs.T if hasattr(gtab, "bvecs") else np.asarray(gtab)
 
     # Check it's fitted as they do in sklearn internally
     # https://github.com/scikit-learn/scikit-learn/blob/972e17fe1aa12d481b120ad4a3dc076bae736931/\
@@ -151,7 +151,7 @@ class GaussianProcessModel(ReconstModel):
 
         # Extract b-vecs: Scikit learn wants (n_samples, n_features)
         # where n_features is 3, and n_samples the different diffusion orientations.
-        X = gtab.bvecs.T if hasattr("bvecs") else np.asarray(gtab)
+        X = gtab.bvecs if hasattr(gtab, "bvecs") else np.asarray(gtab)
 
         # Data must be shapes (n_samples, n_targets) where n_samples is
         # the number of diffusion orientations, and n_targets is number of voxels.

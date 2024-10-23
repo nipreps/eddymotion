@@ -46,4 +46,4 @@ jobs:
     - name: Build docs
       run: |
           python -m hatch build --hooks-only
-          make -C docs/ SPHINXOPTS="-W" BUILDDIR="$HOME/docs" OUTDIR="${CURBRANCH:-html}" html
+          make -C docs/ SPHINXOPTS="-W -v" BUILDDIR="$HOME/docs" OUTDIR="${CURBRANCH:-html}" html

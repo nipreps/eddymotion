@@ -177,6 +177,7 @@ branch = true
 concurrency = ['multiprocessing']
 omit = [
     '*/tests/*',
+    '*/testing/*',
     '*/__init__.py',
     '*/conftest.py',
     'src/eddymotion/_version.py'

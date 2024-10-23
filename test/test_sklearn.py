@@ -24,7 +24,6 @@ from collections import namedtuple
 
 import numpy as np
 import pytest
-from dipy.core.gradients import gradient_table
 from dipy.io import read_bvals_bvecs
 
 from eddymotion.model import _sklearn as ems
@@ -287,7 +286,7 @@ def test_kernel(repodata, covariance):
     kernel = KernelType()
     K = kernel(bvecs)
 
-    assert K.shape == (bvecs.shape[0], ) * 2
+    assert K.shape == (bvecs.shape[0],) * 2
 
     assert np.allclose(np.diagonal(K), kernel.diag(bvecs))
 

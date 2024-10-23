@@ -36,4 +36,5 @@ Information on specific functions, classes, and methods.
    api/eddymotion.math
    api/eddymotion.model
    api/eddymotion.registration
+   api/eddymotion.testing
    api/eddymotion.utils

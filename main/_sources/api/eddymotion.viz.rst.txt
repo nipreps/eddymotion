@@ -1,0 +1,15 @@
+eddymotion.viz package
+======================
+
+.. automodule:: eddymotion.viz
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   eddymotion.viz.signals

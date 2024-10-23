@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.data.utils module" href="eddymotion.data.utils.html" /><link rel="prev" title="eddymotion.data.pet module" href="eddymotion.data.pet.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.data.splitting module - eddymotion 24.0.0.dev138 documentation</title>
+        <title>eddymotion.data.splitting module - eddymotion 24.0.0.dev149 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev138 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev149 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,14 +190,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev138</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev149</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev138</span>
+  <span class="sidebar-brand-text">24.0.0.dev149</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -299,14 +299,14 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset</strong> (<a class="reference internal" href="eddymotion.data.dmri.html#eddymotion.data.dmri.DWI" title="eddymotion.data.dmri.DWI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eddymotion.data.dmri.DWI</span></code></a>) – DWI object</p></li>
-<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – Index of the DWI orientation to be left out in this fold.</p></li>
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – Index of the DWI orientation to be left out in this fold.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>(train_data, train_gradients)</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>) – Training DWI and corresponding gradients.
+<li><p><strong>(train_data, train_gradients)</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>) – Training DWI and corresponding gradients.
 Training data/gradients come <strong>from the updated dataset</strong>.</p></li>
-<li><p>(test_data, test_gradients) <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> – Test 3D map (one DWI orientation) and corresponding b-vector/value.
+<li><p>(test_data, test_gradients) <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> – Test 3D map (one DWI orientation) and corresponding b-vector/value.
 The test data/gradient come <strong>from the original dataset</strong>.</p></li>
 </ul>
 </p>
@@ -384,7 +384,7 @@ The test data/gradient come <strong>from the original dataset</strong>.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=05aaf20d"></script>
+</div><script src="../_static/documentation_options.js?v=44cc4189"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

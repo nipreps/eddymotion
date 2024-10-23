@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.utils module" href="eddymotion.utils.html" /><link rel="prev" title="eddymotion.registration.ants module" href="eddymotion.registration.ants.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.registration.utils module - eddymotion 24.0.0.dev138 documentation</title>
+        <title>eddymotion.registration.utils module - eddymotion 24.0.0.dev149 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev138 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev149 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,14 +190,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev138</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev149</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev138</span>
+  <span class="sidebar-brand-text">24.0.0.dev149</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -296,14 +296,14 @@ under a transformation, useful for assessing the accuracy of image registration
 processes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.registration.utils.displacement_framewise">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.registration.utils.</span></span><span class="sig-name descname"><span class="pre">displacement_framewise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.3.0.dev5+g773e3c40)"><span class="pre">nibabel.spatialimages.SpatialImage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nitransforms.base.BaseTransform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/registration/utils.html#displacement_framewise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.registration.utils.displacement_framewise" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.registration.utils.</span></span><span class="sig-name descname"><span class="pre">displacement_framewise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.4.0.dev1+g3b1c7b37)"><span class="pre">nibabel.spatialimages.SpatialImage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nitransforms.base.BaseTransform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/registration/utils.html#displacement_framewise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.registration.utils.displacement_framewise" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the framewise displacement (FD) for a given transformation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>img</strong> (<a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.3.0.dev5+g773e3c40)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialImage</span></code></a>) – The reference image. Used to extract the center coordinates.</p></li>
+<li><p><strong>img</strong> (<a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.4.0.dev1+g3b1c7b37)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialImage</span></code></a>) – The reference image. Used to extract the center coordinates.</p></li>
 <li><p><strong>test_xfm</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTransform</span></code>) – The transformation to test. Applied to coordinates around the image center.</p></li>
-<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The radius (in mm) of the spherical neighborhood around the center of the image.
+<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The radius (in mm) of the spherical neighborhood around the center of the image.
 Default is 50.0 mm.</p></li>
 </ul>
 </dd>
@@ -311,19 +311,19 @@ Default is 50.0 mm.</p></li>
 <dd class="field-even"><p>The average framewise displacement (FD) for the test transformation.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.registration.utils.displacements_within_mask">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.registration.utils.</span></span><span class="sig-name descname"><span class="pre">displacements_within_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask_img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nb.spatialimages.SpatialImage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nt.base.BaseTransform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nt.base.BaseTransform</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/eddymotion/registration/utils.html#displacements_within_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.registration.utils.displacements_within_mask" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.registration.utils.</span></span><span class="sig-name descname"><span class="pre">displacements_within_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask_img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nb.spatialimages.SpatialImage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nt.base.BaseTransform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_xfm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nt.base.BaseTransform</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/eddymotion/registration/utils.html#displacements_within_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.registration.utils.displacements_within_mask" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the distance between voxel coordinates mapped through two transforms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mask_img</strong> (<a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.3.0.dev5+g773e3c40)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialImage</span></code></a>) – A mask image that defines the region of interest. Voxel coordinates
+<li><p><strong>mask_img</strong> (<a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v5.4.0.dev1+g3b1c7b37)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialImage</span></code></a>) – A mask image that defines the region of interest. Voxel coordinates
 within the mask are transformed.</p></li>
 <li><p><strong>test_xfm</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTransform</span></code>) – The transformation to test. This transformation is applied to the
 voxel coordinates.</p></li>
@@ -411,7 +411,7 @@ transformation is assumed (no transformation).</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=05aaf20d"></script>
+</div><script src="../_static/documentation_options.js?v=44cc4189"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

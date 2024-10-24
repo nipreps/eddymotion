@@ -39,8 +39,8 @@ from eddymotion.model._sklearn import (
 
 
 def gp_prediction(
-    gtab: GradientTable | np.ndarray,
     model: GaussianProcessRegressor,
+    gtab: GradientTable | np.ndarray,
     mask: np.ndarray | None = None,
     return_std: bool = False,
 ) -> np.ndarray:
@@ -267,7 +267,7 @@ class GPFit:
             A 3D or 4D array with the simulated gradient(s).
 
         """
-        return gp_prediction(gtab, self.model, mask=self.mask)
+        return gp_prediction(self.model, gtab, mask=self.mask)
 
 
 def _rasb2dipy(gradient):

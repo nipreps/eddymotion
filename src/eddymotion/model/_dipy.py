@@ -162,12 +162,14 @@ class GaussianProcessModel(ReconstModel):
 
         """
 
-        # Extract b-vecs: Scikit learn wants (n_samples, n_features)
-        # where n_features is 3, and n_samples the different diffusion orientations.
+        # Extract b-vecs: scikit-learn wants (n_samples, n_features)
+        # where n_features is 3, and n_samples the different diffusion-encoding
+        # gradient orientations.
         X = gtab.bvecs if hasattr(gtab, "bvecs") else np.asarray(gtab)
 
-        # Data must be shapes (n_samples, n_targets) where n_samples is
-        # the number of diffusion orientations, and n_targets is number of voxels.
+        # Data must have shape (n_samples, n_targets) where n_samples is
+        # the number of diffusion-encoding gradient orientations, and n_targets
+        # is number of voxels.
         y = (
             data[mask[..., None]] if mask is not None else np.reshape(data, (-1, data.shape[-1]))
         ).T

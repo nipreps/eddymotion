@@ -73,7 +73,7 @@ def _to_nifti(
     filename : :obj:`os.pathlike`
         The file path where the NIfTI file will be saved.
     clip : :obj:`bool`, optional
-        Whether to apply clipping to the data before saving, by default True.
+        Whether to apply clipping to the data before saving.
 
     """
     data = np.squeeze(data)
@@ -144,7 +144,7 @@ def _get_ants_settings(settings: str = "b0-to-b0_level0") -> Path:
     Parameters
     ----------
     settings : :obj:`str`, optional
-        Name of the settings configuration, by default ``"b0-to-b0_level0"``.
+        Name of the settings configuration.
 
     Returns
     -------
@@ -225,13 +225,13 @@ def generate_command(
     moving_path : :obj:`os.pathlike`
         Path to the moving image.
     fixedmask_path : :obj:`os.pathlike` or :obj:`list`, optional
-        Path to the fixed image mask, by default None.
+        Path to the fixed image mask.
     movingmask_path : :obj:`os.pathlike` or :obj:`list`, optional
-        Path to the moving image mask, by default None.
+        Path to the moving image mask.
     init_affine : :obj:`os.pathlike`, optional
-        Initial affine transformation, by default None.
+        Initial affine transformation.
     default : :obj:`str`, optional
-        Default settings configuration, by default "b0-to-b0_level0".
+        Default settings configuration.
     **kwargs : :obj:`dict`
         Additional parameters for ANTs registration.
 

@@ -199,9 +199,9 @@ class ExponentialKriging(Kernel):
 
         Parameters
         ----------
-        X: :obj:`~numpy.ndarray`
+        X : :obj:`~numpy.ndarray`
             Gradient table (X)
-        Y: :obj:`~numpy.ndarray`, optional
+        Y : :obj:`~numpy.ndarray`, optional
             Gradient table (Y, optional)
         eval_gradient : :obj:`bool`, optional
             Determines whether the gradient with respect to the log of
@@ -275,13 +275,13 @@ class SphericalKriging(Kernel):
 
         Parameters
         ----------
-        a : :obj:`float`
+        a : :obj:`float`, optional
             Minimum angle in rads.
-        lambda_s : :obj:`float`
+        lambda_s : :obj:`float`, optional
             The :math:`\lambda_s` hyperparameter.
-        a_bounds : :obj:`tuple`
-            Bounds for the a parameter.
-        lambda_s_bounds : :obj:`tuple`
+        a_bounds : :obj:`tuple`, optional
+            Bounds for the ``a`` parameter.
+        lambda_s_bounds : :obj:`tuple`, optional
             Bounds for the :math:`\lambda_s` hyperparameter.
 
         """
@@ -306,9 +306,9 @@ class SphericalKriging(Kernel):
 
         Parameters
         ----------
-        X: :obj:`~numpy.ndarray`
+        X : :obj:`~numpy.ndarray`
             Gradient table (X)
-        Y: :obj:`~numpy.ndarray`, optional
+        Y : :obj:`~numpy.ndarray`, optional
             Gradient table (Y, optional)
         eval_gradient : :obj:`bool`, optional
             Determines whether the gradient with respect to the log of
@@ -323,7 +323,7 @@ class SphericalKriging(Kernel):
         K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
                 optional
             The gradient of the kernel k(X, X) with respect to the log of the
-            hyperparameter of the kernel. Only returned when `eval_gradient`
+            hyperparameter of the kernel. Only returned when ``eval_gradient``
             is True.
 
         """
@@ -394,14 +394,13 @@ def compute_pairwise_angles(
     ----------
     X : {array-like, sparse matrix} of shape (n_samples_X, n_features)
         Input data.
-    Y : {array-like, sparse matrix} of shape (n_samples_Y, n_features), \
-            default=None
+    Y : {array-like, sparse matrix} of shape (n_samples_Y, n_features), optional
         Input data. If ``None``, the output will be the pairwise
         similarities between all samples in ``X``.
-    dense_output : :obj:`bool`, default=True
+    dense_output : :obj:`bool`, optional
         Whether to return dense output even when the input is sparse. If
         ``False``, the output is sparse if both input arrays are sparse.
-    closest_polarity : :obj:`bool`, default=True
+    closest_polarity : :obj:`bool`, optional
         ``True`` to consider the smallest of the two angles between the crossing
          lines resulting from reversing each vector pair.
 

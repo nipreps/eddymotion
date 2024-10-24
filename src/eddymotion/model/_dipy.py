@@ -53,12 +53,14 @@ def gp_prediction(
 
     Parameters
     ----------
-    model: :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
+    model : :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
         A fitted GaussianProcessRegressor model.
     gtab : :obj:`~dipy.core.gradients.GradientTable` or :obj:`~np.ndarray`
         Gradient table with one or more orientations at which the GP will be evaluated.
-    mask: :obj:`numpy.ndarray`
+    mask: :obj:`numpy.ndarray`, optional
         A boolean mask indicating which voxels to use (optional).
+    return_std : bool, optional
+        Whether to return the standard deviation of the predicted signal.
 
     Returns
     -------
@@ -100,8 +102,16 @@ class GaussianProcessModel(ReconstModel):
 
         Parameters
         ----------
-        kernel : :obj:`~sklearn.gaussian_process.kernels.Kernel`
+        kernel_model : :obj:`~sklearn.gaussian_process.kernels.Kernel`, optional
             Kernel model to calculate the GP's covariance matrix.
+        lambda_s : :obj:`float`, optional
+            Signal scale parameter determining the variability of the signal.
+        a : :obj:`float`, optional
+            Distance scale parameter determining how fast the covariance
+            decreases as one moves along the surface of the sphere. Must have a
+            positive value.
+        sigma_sq : :obj:`float`, optional
+            Uncertainty of the measured values.
 
         References
         ----------
@@ -136,11 +146,14 @@ class GaussianProcessModel(ReconstModel):
         ----------
         gtab : :obj:`~dipy.core.gradients.GradientTable` or :obj:`~np.ndarray`
             The gradient table corresponding to the training data.
-        y : :obj:`~numpy.ndarray`
+        data : :obj:`~numpy.ndarray`
             The measured signal from one voxel.
         mask : :obj:`~numpy.ndarray`
             A boolean array used to mark the coordinates in the data that
             should be analyzed that has the shape data.shape[:-1]
+        random_state: :obj:`int`, optional
+            Determines random number generation used to initialize the centers
+            of the kernel bounds.
 
         Returns
         -------
@@ -208,9 +221,9 @@ class GPFit:
 
     Attributes
     ----------
-    model: :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
+    model : :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
         The fitted Gaussian process regressor object.
-    mask: :obj:`~numpy.ndarray`
+    mask : :obj:`~numpy.ndarray`
         The boolean mask used during fitting (can be ``None``).
 
     """
@@ -225,10 +238,10 @@ class GPFit:
 
         Parameters
         ----------
-        model: :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
+        model : :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
             The fitted Gaussian process regressor object.
-        mask: :obj:`~numpy.ndarray`
-            The boolean mask used during fitting (can be ``None``).
+        mask : :obj:`~numpy.ndarray`, optional
+            The boolean mask used during fitting.
 
         """
         self.model = model

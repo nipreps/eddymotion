@@ -89,7 +89,7 @@ def create_random_polar_coordinates(
     hsph_dirs : :obj:`int`
         Number of hemisphere directions.
     seed : :obj:`int`, optional
-        Seed for the random number generator, by default 1234.
+        Seed for the random number generator.
 
     Returns
     -------
@@ -114,9 +114,9 @@ def create_diffusion_encoding_gradient_dirs(
     hsph_dirs : :obj:`int`
         Number of hemisphere directions.
     iterations : :obj:`int`, optional
-        Number of iterations for charge dispersion, by default 5000.
+        Number of iterations for charge dispersion.
     seed : :obj:`int`, optional
-        Seed for the random number generator, by default 1234.
+        Seed for the random number generator.
 
     Returns
     -------
@@ -148,7 +148,7 @@ def create_single_shell_gradient_table(
     bval_shell : :obj:`float`
         Shell b-value.
     iterations : :obj:`int`, optional
-        Number of iterations for charge dispersion, by default 5000.
+        Number of iterations for charge dispersion.
 
     Returns
     -------

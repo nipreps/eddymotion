@@ -73,7 +73,7 @@ def cross_validate(
 
     """
     gpm = EddyMotionGPR(
-        kernel=SphericalKriging(a=1.8, lambda_s=1000),
+        kernel=SphericalKriging(beta_a=1.8, beta_l=1000),
         alpha=100,
         disp=True,
         # optimizer="Nelder-Mead",

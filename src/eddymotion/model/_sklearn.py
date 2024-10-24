@@ -103,7 +103,7 @@ from sklearn.utils._param_validation import Interval, StrOptions
 
 BOUNDS_A: tuple[float, float] = (0.1, np.pi)
 """The limits for the parameter *a*."""
-BOUNDS_LAMBDA_S: tuple[float, float] = (1.0, 1000)
+BOUNDS_LAMBDA: tuple[float, float] = (1.0, 1000)
 """The limits for the parameter lambda."""
 THETA_EPSILON: float = 1e-5
 """Minimum nonzero angle."""
@@ -246,38 +246,38 @@ class ExponentialKriging(Kernel):
 
     def __init__(
         self,
-        a: float = 0.01,
-        lambda_s: float = 2.0,
+        beta_a: float = 0.01,
+        beta_l: float = 2.0,
         a_bounds: tuple[float, float] = BOUNDS_A,
-        lambda_s_bounds: tuple[float, float] = BOUNDS_LAMBDA_S,
+        l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
         Initialize an exponential Kriging kernel.
 
         Parameters
         ----------
-        a : :obj:`float`
+        beta_a : :obj:`float`, optional
             Minimum angle in rads.
-        lambda_s : :obj:`float`
-            The :math:`\lambda_s` hyperparameter.
-        a_bounds : :obj:`tuple`
+        beta_l : :obj:`float`, optional
+            The :math:`\lambda` hyperparameter.
+        a_bounds : :obj:`tuple`, optional
             Bounds for the a parameter.
-        lambda_s_bounds : :obj:`tuple`
-            Bounds for the :math:`\lambda_s` hyperparameter.
+        l_bounds : :obj:`tuple`, optional
+            Bounds for the :math:`\lambda` hyperparameter.
 
         """
-        self.a = a
-        self.lambda_s = lambda_s
+        self.beta_a = beta_a
+        self.beta_l = beta_l
         self.a_bounds = a_bounds
-        self.lambda_s_bounds = lambda_s_bounds
+        self.l_bounds = l_bounds
 
     @property
     def hyperparameter_a(self) -> Hyperparameter:
-        return Hyperparameter("a", "numeric", self.a_bounds)
+        return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_lambda_s(self) -> Hyperparameter:
-        return Hyperparameter("lambda_s", "numeric", self.lambda_s_bounds)
+    def hyperparameter_beta_l(self) -> Hyperparameter:
+        return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(
         self, X: np.ndarray, Y: np.ndarray | None = None, eval_gradient: bool = False
@@ -310,16 +310,16 @@ class ExponentialKriging(Kernel):
         """
         thetas = compute_pairwise_angles(X, Y)
         thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
-        C_theta = np.exp(-thetas / self.a)
+        C_theta = np.exp(-thetas / self.beta_a)
 
         if not eval_gradient:
-            return self.lambda_s * C_theta
+            return self.beta_l * C_theta
 
         K_gradient = np.zeros((*thetas.shape, 2))
-        K_gradient[..., 0] = self.lambda_s * C_theta * thetas / self.a**2  # Derivative w.r.t. a
+        K_gradient[..., 0] = self.beta_l * C_theta * thetas / self.beta_a**2  # Derivative w.r.t. a
         K_gradient[..., 1] = C_theta
 
-        return self.lambda_s * C_theta, K_gradient
+        return self.beta_l * C_theta, K_gradient
 
     def diag(self, X: np.ndarray) -> np.ndarray:
         """Returns the diagonal of the kernel k(X, X).
@@ -338,14 +338,14 @@ class ExponentialKriging(Kernel):
         K_diag : ndarray of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
-        return self.lambda_s * np.ones(X.shape[0])
+        return self.beta_l * np.ones(X.shape[0])
 
     def is_stationary(self) -> bool:
         """Returns whether the kernel is stationary."""
         return True
 
     def __repr__(self) -> str:
-        return f"ExponentialKriging (a={self.a}, λₛ={self.lambda_s})"
+        return f"ExponentialKriging (a={self.beta_a}, λ={self.beta_l})"
 
 
 class SphericalKriging(Kernel):
@@ -353,38 +353,38 @@ class SphericalKriging(Kernel):
 
     def __init__(
         self,
-        a: float = 0.01,
-        lambda_s: float = 2.0,
+        beta_a: float = 0.01,
+        beta_l: float = 2.0,
         a_bounds: tuple[float, float] = BOUNDS_A,
-        lambda_s_bounds: tuple[float, float] = BOUNDS_LAMBDA_S,
+        l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
         Initialize a spherical Kriging kernel.
 
         Parameters
         ----------
-        a : :obj:`float`, optional
+        beta_a : :obj:`float`, optional
             Minimum angle in rads.
-        lambda_s : :obj:`float`, optional
-            The :math:`\lambda_s` hyperparameter.
+        beta_l : :obj:`float`, optional
+            The :math:`\lambda` hyperparameter.
         a_bounds : :obj:`tuple`, optional
             Bounds for the ``a`` parameter.
-        lambda_s_bounds : :obj:`tuple`, optional
-            Bounds for the :math:`\lambda_s` hyperparameter.
+        l_bounds : :obj:`tuple`, optional
+            Bounds for the :math:`\lambda` hyperparameter.
 
         """
-        self.a = a
-        self.lambda_s = lambda_s
+        self.beta_a = beta_a
+        self.beta_l = beta_l
         self.a_bounds = a_bounds
-        self.lambda_s_bounds = lambda_s_bounds
+        self.l_bounds = l_bounds
 
     @property
     def hyperparameter_a(self) -> Hyperparameter:
-        return Hyperparameter("a", "numeric", self.a_bounds)
+        return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_lambda_s(self) -> Hyperparameter:
-        return Hyperparameter("lambda_s", "numeric", self.lambda_s_bounds)
+    def hyperparameter_beta_l(self) -> Hyperparameter:
+        return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(
         self, X: np.ndarray, Y: np.ndarray | None = None, eval_gradient: bool = False
@@ -418,23 +418,25 @@ class SphericalKriging(Kernel):
         thetas = compute_pairwise_angles(X, Y)
         thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
 
-        nonzero = thetas <= self.a
+        nonzero = thetas <= self.beta_a
 
         C_theta = np.zeros_like(thetas)
         C_theta[nonzero] = (
-            1 - 1.5 * thetas[nonzero] / self.a + 0.5 * thetas[nonzero] ** 3 / self.a**3
+            1 - 1.5 * thetas[nonzero] / self.beta_a + 0.5 * thetas[nonzero] ** 3 / self.beta_a**3
         )
 
         if not eval_gradient:
-            return self.lambda_s * C_theta
+            return self.beta_l * C_theta
 
         deriv_a = np.zeros_like(thetas)
         deriv_a[nonzero] = (
-            1.5 * self.lambda_s * (thetas[nonzero] / self.a**2 - thetas[nonzero] ** 3 / self.a**4)
+            1.5
+            * self.beta_l
+            * (thetas[nonzero] / self.beta_a**2 - thetas[nonzero] ** 3 / self.beta_a**4)
         )
         K_gradient = np.dstack((deriv_a, C_theta))
 
-        return self.lambda_s * C_theta, K_gradient
+        return self.beta_l * C_theta, K_gradient
 
     def diag(self, X: np.ndarray) -> np.ndarray:
         """Returns the diagonal of the kernel k(X, X).
@@ -453,14 +455,14 @@ class SphericalKriging(Kernel):
         K_diag : ndarray of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
-        return self.lambda_s * np.ones(X.shape[0])
+        return self.beta_l * np.ones(X.shape[0])
 
     def is_stationary(self) -> bool:
         """Returns whether the kernel is stationary."""
         return True
 
     def __repr__(self) -> str:
-        return f"SphericalKriging (a={self.a}, λₛ={self.lambda_s})"
+        return f"SphericalKriging (a={self.beta_a}, λ={self.beta_l})"
 
 
 def compute_pairwise_angles(

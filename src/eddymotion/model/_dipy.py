@@ -92,8 +92,8 @@ class GaussianProcessModel(ReconstModel):
     def __init__(
         self,
         kernel_model: str = "spherical",
-        lambda_s: float = 2.0,
-        a: float = 0.1,
+        beta_l: float = 2.0,
+        beta_a: float = 0.1,
         sigma_sq: float = 1.0,
         *args,
         **kwargs,
@@ -129,8 +129,8 @@ class GaussianProcessModel(ReconstModel):
 
         KernelType = SphericalKriging if kernel_model == "spherical" else ExponentialKriging
         self.kernel = KernelType(
-            a=a,
-            lambda_s=lambda_s,
+            beta_a=beta_a,
+            beta_l=beta_l,
         )
 
     def fit(

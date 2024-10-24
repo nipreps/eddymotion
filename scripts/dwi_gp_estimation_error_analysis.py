@@ -180,6 +180,10 @@ def main() -> None:
         kernel=SphericalKriging(a=a, lambda_s=lambda_s),
         alpha=alpha,
         optimizer=None,
+        # optimizer="Nelder-Mead",
+        # disp=True,
+        # ftol=1,
+        # max_iter=2e5,
     )
 
     # Use Scikit-learn cross validation

@@ -101,7 +101,7 @@ from sklearn.gaussian_process.kernels import (
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.utils._param_validation import Interval, StrOptions
 
-BOUNDS_A: tuple[float, float] = (0.1, np.pi)
+BOUNDS_A: tuple[float, float] = (0.1, 0.5 * np.pi)
 """The limits for the parameter *a*."""
 BOUNDS_LAMBDA: tuple[float, float] = (1.0, 1000)
 """The limits for the parameter lambda."""
@@ -309,8 +309,7 @@ class ExponentialKriging(Kernel):
 
         """
         thetas = compute_pairwise_angles(X, Y)
-        thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
-        C_theta = np.exp(-thetas / self.beta_a)
+        C_theta = exponential_covariance(thetas, self.beta_a)
 
         if not eval_gradient:
             return self.beta_l * C_theta
@@ -416,19 +415,13 @@ class SphericalKriging(Kernel):
 
         """
         thetas = compute_pairwise_angles(X, Y)
-        thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
-
-        nonzero = thetas <= self.beta_a
-
-        C_theta = np.zeros_like(thetas)
-        C_theta[nonzero] = (
-            1 - 1.5 * thetas[nonzero] / self.beta_a + 0.5 * thetas[nonzero] ** 3 / self.beta_a**3
-        )
+        C_theta = spherical_covariance(thetas, self.beta_a)
 
         if not eval_gradient:
             return self.beta_l * C_theta
 
         deriv_a = np.zeros_like(thetas)
+        nonzero = thetas <= self.beta_a
         deriv_a[nonzero] = (
             1.5
             * self.beta_l
@@ -463,6 +456,46 @@ class SphericalKriging(Kernel):
 
     def __repr__(self) -> str:
         return f"SphericalKriging (a={self.beta_a}, λ={self.beta_l})"
+
+
+def exponential_covariance(theta: np.ndarray, a: float) -> np.ndarray:
+    """
+    Compute the exponential covariance for given distances and scale parameter.
+
+    Parameters
+    ----------
+    theta : :obj:`~numpy.ndarray`
+        Array of distances between points.
+    a : :obj:`float`
+        Scale parameter that controls the range of the covariance function.
+
+    Returns
+    -------
+    :obj:`~numpy.ndarray`
+        Exponential covariance values for the input distances.
+
+    """
+    return np.exp(-theta / a)
+
+
+def spherical_covariance(theta: np.ndarray, a: float) -> np.ndarray:
+    """
+    Compute the spherical covariance for given distances and scale parameter.
+
+    Parameters
+    ----------
+    theta : :obj:`~numpy.ndarray`
+        Array of distances between points.
+    a : :obj:`float`
+        Scale parameter that controls the range of the covariance function.
+
+    Returns
+    -------
+    :obj:`~numpy.ndarray`
+        Spherical covariance values for the input distances.
+
+    """
+    return np.where(theta <= a, 1 - 1.5 * theta / a + 0.5 * (theta**3) / (a**3), 0.0)
 
 
 def compute_pairwise_angles(
@@ -521,4 +554,6 @@ def compute_pairwise_angles(
     """
 
     cosines = np.clip(cosine_similarity(X, Y, dense_output=dense_output), -1.0, 1.0)
-    return np.arccos(np.abs(cosines)) if closest_polarity else np.arccos(cosines)
+    thetas = np.arccos(np.abs(cosines)) if closest_polarity else np.arccos(cosines)
+    thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
+    return thetas

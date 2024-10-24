@@ -73,9 +73,12 @@ def cross_validate(
 
     """
     gpm = EddyMotionGPR(
-        kernel=SphericalKriging(a=1.15, lambda_s=120),
+        kernel=SphericalKriging(a=1.8, lambda_s=1000),
         alpha=100,
-        optimizer=None,
+        disp=True,
+        # optimizer="Nelder-Mead",
+        # ftol=1,
+        # max_iter=2e5,
     )
 
     rkf = RepeatedKFold(n_splits=cv, n_repeats=120 // cv)
@@ -140,7 +143,7 @@ def main() -> None:
         args.hsph_dirs,
         bval_shell=args.bval_shell,
         snr=args.snr,
-        n_voxels=100,
+        n_voxels=100000,
         seed=None,
     )
 

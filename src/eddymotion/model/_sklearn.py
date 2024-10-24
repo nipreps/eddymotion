@@ -87,7 +87,8 @@ shells; and :math:`{a, \ell}` some hyperparameters.
 
 from __future__ import annotations
 
-from typing import Callable, Sequence
+from numbers import Integral, Real
+from typing import Callable, Mapping, Sequence
 
 import numpy as np
 from scipy import optimize
@@ -98,13 +99,58 @@ from sklearn.gaussian_process.kernels import (
     Kernel,
 )
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.utils._param_validation import Interval, StrOptions
 
-BOUNDS_A: tuple[float, float] = (1e-4, np.pi)
-BOUNDS_LAMBDA_S: tuple[float, float] = (1e-4, 1e4)
+BOUNDS_A: tuple[float, float] = (0.1, np.pi)
+"""The limits for the parameter *a*."""
+BOUNDS_LAMBDA_S: tuple[float, float] = (1.0, 1000)
+"""The limits for the parameter lambda."""
 THETA_EPSILON: float = 1e-5
+"""Minimum nonzero angle."""
+LBFGS_CONFIGURABLE_OPTIONS = {"disp", "maxiter", "ftol", "gtol"}
+"""The set of extended options that can be set on the default BFGS."""
+CONFIGURABLE_OPTIONS: Mapping[str, set] = {"Nelder-Mead": {"disp", "maxiter", "adaptive", "fatol"}}
+"""
+A mapping from optimizer names to the option set they allow.
+
+Add new optimizers to this list, including what options may be
+configured.
+"""
+NONGRADIENT_METHODS = {"Nelder-Mead"}
+"""A set of gradients that do not allow analytical gradients."""
+SUPPORTED_OPTIMIZERS = set(CONFIGURABLE_OPTIONS.keys()) | {"fmin_l_bfgs_b"}
+"""A set of supported optimizers (automatically created)."""
 
 
 class EddyMotionGPR(GaussianProcessRegressor):
+    """
+    A GP regressor specialized for eddymotion.
+
+    This specialization of the default GP regressor is created to allow
+    the following extended behaviors:
+
+    * Pacify Scikit-learn's estimator parameter checker to allow optimizers
+      given by name (as a string) other than the default BFGS.
+    * Enable custom options of optimizers.
+      See :obj:`~scipy.optimize.minimize` for the available options.
+      Please note that only a few of them are currently supported.
+
+    In the future, this specialization would be the right place for hyperparameter
+    optimization using cross-validation and such.
+
+    """
+
+    _parameter_constraints: dict = {
+        "kernel": [None, Kernel],
+        "alpha": [Interval(Real, 0, None, closed="left"), np.ndarray],
+        "optimizer": [StrOptions(SUPPORTED_OPTIMIZERS), callable, None],
+        "n_restarts_optimizer": [Interval(Integral, 0, None, closed="left")],
+        "normalize_y": ["boolean"],
+        "copy_X_train": ["boolean"],
+        "n_targets": [Interval(Integral, 1, None, closed="left"), None],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         kernel: Kernel | None = None,
@@ -116,12 +162,15 @@ class EddyMotionGPR(GaussianProcessRegressor):
         copy_X_train: bool = True,
         n_targets: int | None = None,
         random_state: int | None = None,
-        max_iter: int = 2e05,
-        gtol: float = 1e-06,
+        eval_gradient: bool = True,
+        tol: float | None = None,
+        disp: bool | int | None = None,
+        maxiter: int | None = None,
+        ftol: float | None = None,
+        gtol: float | None = None,
+        adaptive: bool | int | None = None,
+        fatol: float | None = None,
     ):
-        self.max_iter = max_iter
-        self.gtol = gtol
-
         super().__init__(
             kernel,
             alpha=alpha,
@@ -133,24 +182,63 @@ class EddyMotionGPR(GaussianProcessRegressor):
             random_state=random_state,
         )
 
+        self.tol = tol
+        self.eval_gradient = eval_gradient if optimizer not in NONGRADIENT_METHODS else False
+        self.maxiter = maxiter
+        self.disp = disp
+        self.ftol = ftol
+        self.gtol = gtol
+        self.adaptive = adaptive
+        self.fatol = fatol
+
     def _constrained_optimization(
         self,
         obj_func: Callable,
         initial_theta: np.ndarray,
         bounds: Sequence[tuple[float, float]] | Bounds,
     ) -> tuple[float, float]:
-        from sklearn.utils.optimize import _check_optimize_result
+        options = {}
+        if self.optimizer == "fmin_l_bfgs_b":
+            from sklearn.utils.optimize import _check_optimize_result
 
-        opt_res = optimize.minimize(
-            obj_func,
-            initial_theta,
-            method="L-BFGS-B",
-            jac=True,
-            bounds=bounds,
-            options={"maxiter": self.max_iter, "gtol": self.gtol},
-        )
-        _check_optimize_result("lbfgs", opt_res)
-        return opt_res.x, opt_res.fun
+            for name in LBFGS_CONFIGURABLE_OPTIONS:
+                if (value := getattr(self, name, None)) is not None:
+                    options[name] = value
+
+            opt_res = optimize.minimize(
+                obj_func,
+                initial_theta,
+                method="L-BFGS-B",
+                bounds=bounds,
+                jac=self.eval_gradient,
+                options=options,
+                args=(self.eval_gradient,),
+                tol=self.tol,
+            )
+            _check_optimize_result("lbfgs", opt_res)
+            return opt_res.x, opt_res.fun
+
+        if isinstance(self.optimizer, str) and self.optimizer in CONFIGURABLE_OPTIONS:
+            for name in CONFIGURABLE_OPTIONS[self.optimizer]:
+                if (value := getattr(self, name, None)) is not None:
+                    options[name] = value
+
+            opt_res = optimize.minimize(
+                obj_func,
+                initial_theta,
+                method=self.optimizer,
+                bounds=bounds,
+                jac=self.eval_gradient,
+                options=options,
+                args=(self.eval_gradient,),
+                tol=self.tol,
+            )
+            return opt_res.x, opt_res.fun
+
+        if callable(self.optimizer):
+            return self.optimizer(obj_func, initial_theta, bounds=bounds)
+
+        raise ValueError(f"Unknown optimizer {self.optimizer}.")
 
 
 class ExponentialKriging(Kernel):

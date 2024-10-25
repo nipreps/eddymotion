@@ -29,15 +29,18 @@ import numpy as np
 from dipy.core.geometry import sphere2cart
 from dipy.core.gradients import gradient_table
 from dipy.core.sphere import HemiSphere, Sphere, disperse_charges
-from dipy.sims.voxel import all_tensor_evecs, single_tensor
+from dipy.sims.voxel import all_tensor_evecs, multi_tensor, single_tensor
 
-<<<<<<< HEAD
 # Bounds defined following Canales-Rodriguez, NIMG 184 2019, https://doi.org/10.1016/j.neuroimage.2018.08.071
-=======
-# Set according to Canales-Rodriguez, NIMG 184 2019, https://doi.org/10.1016/j.neuroimage.2018.08.071
->>>>>>> 73963e0 (ENH: Add a script to plot the signal estimated by the GP)
 BOUNDS_LAMBDA1: tuple[float, float] = (1.4e-3, 1.8e-3)
 BOUNDS_LAMBDA23: tuple[float, float] = (0.1e-3, 0.5e-3)
+
+BOUNDS_2FIBERS_NONDOMINANT_VF1: tuple[float, float] = (0.3, 0.7)
+
+BOUNDS_2FIBERS_DOMINANT_VF1: tuple[float, float] = (0.1, 0.3)
+
+BOUNDS_3FIBERS_VF1: tuple[float, float] = (0.25, 0.3)
+BOUNDS_3FIBERS_VF2: tuple[float, float] = (0.3, 0.35)
 
 
 def add_b0(bvals: np.ndarray, bvecs: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -236,6 +239,38 @@ def create_random_diffusivity_eigenvalues(size, rng):
     )
 
 
+def create_three_fiber_random_volume_fractions(size, rng):
+    """Create fiber volume fractions drawn from a uniform distribution for a
+    three-fiber configuration."""
+
+    # f1 ~ U(0.25, 0.3) f2 ~ U(0.3, 0.35) and f3 = 1 - (f1 + f2) set
+    # according to Canales-Rodriguez, NIMG 184 2019,
+    # https://doi.org/10.1016/j.neuroimage.2018.08.071
+    f1 = rng.uniform(*BOUNDS_3FIBERS_VF1, size=size)
+    f2 = rng.uniform(*BOUNDS_3FIBERS_VF2, size=size)
+    return zip(f1 * 100, f2 * 100, (1 - (f1 + f2)) * 100, strict=True)
+
+
+def create_two_fiber_nondominant_random_volume_fractions(size, rng):
+    """Create fiber volume fractions drawn from a uniform distribution for a
+    two-fiber configuration with non-dominant fibers."""
+
+    # f1 ~ U(0.3, 0.7), f2 = 1 - f1 following Canales-Rodriguez, NIMG 184 2019,
+    # https://doi.org/10.1016/j.neuroimage.2018.08.071
+    f1 = rng.uniform(*BOUNDS_2FIBERS_NONDOMINANT_VF1, size=size)
+    return zip(f1 * 100, (1 - f1) * 100, strict=True)
+
+
+def create_two_fiber_dominant_random_volume_fractions(size, rng):
+    """Create fiber volume fractions drawn from a uniform distribution for a
+    two-fiber configuration with a dominant fiber."""
+
+    # f1 ~ U(0.1, 0.3), f2 = 1 - f1 following to Canales-Rodriguez, NIMG 184
+    # 2019, https://doi.org/10.1016/j.neuroimage.2018.08.071
+    f1 = rng.uniform(*BOUNDS_2FIBERS_DOMINANT_VF1, size=size)
+    return zip(f1 * 100, (1 - f1) * 100, strict=True)
+
+
 def group_values(values, group_size):
     return np.asarray([values[i : i + group_size] for i in range(0, len(values), group_size)])
 
@@ -268,6 +303,111 @@ def simulate_voxels(S0, hsph_dirs, bval_shell=1000, snr=20, n_voxels=1, evals=No
     rng = np.random.default_rng(seed)
 
     signal = simulate_one_fiber_multivoxel(gtab, evals, S0, snr, n_voxels, rng)
+
+    return signal, gtab
+
+
+def simulate_two_fiber_multivoxel(gtab, S0, snr, n_voxels, rng, dominant):
+    """Create two-fiber multi-voxel DWI signal."""
+
+    evals = zip(
+        create_random_diffusivity_eigenvalues(n_voxels, rng),
+        create_random_diffusivity_eigenvalues(n_voxels, rng),
+        strict=False,
+    )
+    angles = zip(
+        create_random_polar_angles(n_voxels, rng),
+        create_random_polar_angles(n_voxels, rng),
+        strict=False,
+    )
+
+    if dominant:
+        fractions = create_two_fiber_dominant_random_volume_fractions(n_voxels, rng)
+    else:
+        fractions = create_two_fiber_nondominant_random_volume_fractions(n_voxels, rng)
+
+    signal = np.vstack(
+        [
+            multi_tensor(
+                gtab, _eignvls, S0=S0, angles=_angles, fractions=_fractions, snr=snr, rng=rng
+            )[0]
+            for _angles, _eignvls, _fractions in zip(angles, evals, fractions, strict=True)
+        ]
+    )
+
+    return signal
+
+
+def simulate_three_fiber_multivoxel(gtab, S0, snr, n_voxels, rng):
+    """Create three-fiber multi-voxel DWI signal."""
+
+    evals = zip(
+        create_random_diffusivity_eigenvalues(n_voxels, rng),
+        create_random_diffusivity_eigenvalues(n_voxels, rng),
+        create_random_diffusivity_eigenvalues(n_voxels, rng),
+        strict=False,
+    )
+    angles = zip(
+        create_random_polar_angles(n_voxels, rng),
+        create_random_polar_angles(n_voxels, rng),
+        create_random_polar_angles(n_voxels, rng),
+        strict=False,
+    )
+    fractions = create_three_fiber_random_volume_fractions(n_voxels, rng)
+
+    signal = np.vstack(
+        [
+            multi_tensor(
+                gtab, _eignvls, S0=S0, angles=_angles, fractions=_fractions, snr=snr, rng=rng
+            )[0]
+            for _angles, _eignvls, _fractions in zip(angles, evals, fractions, strict=True)
+        ]
+    )
+
+    return signal
+
+
+def simulate_multifiber_voxels(S0, hsph_dirs, bval_shell=1000, snr=20, n_voxels=1, seed=None):
+    """Create a DWI signal with multiple tensors."""
+
+    # Create a gradient table for a single-shell
+    gtab = create_single_shell_gradient_table(hsph_dirs, bval_shell)
+
+    rng = np.random.default_rng(seed)
+
+    # Generate the number of fibers on each voxel from a uniform distribution
+    n_fibers = rng.integers(1, 4, size=n_voxels)
+    unique, counts = np.unique(n_fibers, return_counts=True)
+
+    signal = []
+    # Loop over the voxels to create the signals
+    for _unique, _counts in zip(unique, counts, strict=False):
+        if _unique == 1:
+            _signal = simulate_one_fiber_multivoxel(gtab, S0, snr, n_voxels, rng)
+        elif _unique == 2:
+            # Set a number of voxels where volume fractions will be similar vs.
+            # others with a very dominant fiber
+            count_nondominant_vf = rng.integers(1, _counts + 1, size=1).item()
+            count_dominant_vf = _counts - count_nondominant_vf
+            signal_nondominant_vf = simulate_two_fiber_multivoxel(
+                gtab, S0, snr, count_nondominant_vf, rng, False
+            )
+            signal_dominant_vf = simulate_two_fiber_multivoxel(
+                gtab, S0, snr, count_dominant_vf, rng, True
+            )
+            _signal = np.vstack([signal_nondominant_vf, signal_dominant_vf])
+        elif _unique == 3:
+            _signal = simulate_three_fiber_multivoxel(gtab, S0, snr, _counts, rng)
+        else:
+            raise NotImplementedError(
+                "Diffusion gradient-encoding signal generation not implemented "
+                f"for more than 3 fibers: {_unique}"
+            )
+
+        signal.append(_signal)
+
+    # Shuffle voxels
+    signal = rng.permutation(np.vstack(signal))
 
     return signal, gtab
 

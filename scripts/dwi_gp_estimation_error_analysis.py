@@ -30,11 +30,11 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+from pathlib import Path
 
-# import nibabel as nib
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import RepeatedKFold, cross_val_score
+from sklearn.model_selection import KFold, RepeatedKFold, cross_val_predict, cross_val_score
 
 from eddymotion.model._sklearn import (
     EddyMotionGPR,
@@ -47,24 +47,21 @@ def cross_validate(
     X: np.ndarray,
     y: np.ndarray,
     cv: int,
+    gpr: EddyMotionGPR,
 ) -> dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]]:
     """
     Perform the experiment by estimating the dMRI signal using a Gaussian process model.
 
     Parameters
     ----------
-    gtab : :obj:`~dipy.core.gradients.gradient_table`
-        Gradient table.
-    S0 : :obj:`float`
-        S0 value.
-    evals1 : :obj:`~numpy.ndarray`
-        Eigenvalues of the tensor.
-    evecs : :obj:`~numpy.ndarray`
-        Eigenvectors of the tensor.
-    snr : :obj:`float`
-        Signal-to-noise ratio.
+    X : :obj:`~numpy.ndarray`
+        Diffusion-encoding gradient vectors.
+    y : :obj:`~numpy.ndarray`
+        DWI signal.
     cv : :obj:`int`
         number of folds
+    gpr : obj:`~eddymotion.model._sklearn.EddyMotionGPR`
+        The eddymotion Gaussian process regressor object.
 
     Returns
     -------
@@ -72,14 +69,9 @@ def cross_validate(
         Data for the predicted signal and its error.
 
     """
-    gpm = EddyMotionGPR(
-        kernel=SphericalKriging(a=1.15, lambda_s=120),
-        alpha=100,
-        optimizer=None,
-    )
 
     rkf = RepeatedKFold(n_splits=cv, n_repeats=120 // cv)
-    scores = cross_val_score(gpm, X, y, scoring="neg_root_mean_squared_error", cv=rkf)
+    scores = cross_val_score(gpr, X, y, scoring="neg_root_mean_squared_error", cv=rkf)
     return scores
 
 
@@ -103,7 +95,32 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("bval_shell", help="Shell b-value", type=float)
     parser.add_argument("S0", help="S0 value", type=float)
-    parser.add_argument("--evals1", help="Eigenvalues of the tensor", nargs="+", type=float)
+    parser.add_argument(
+        "error_data_fname",
+        help="Filename of TSV file containing the data to plot",
+        type=Path,
+    )
+    parser.add_argument(
+        "dwi_gt_data_fname",
+        help="Filename of NIfTI file containing the generated DWI signal",
+        type=Path,
+    )
+    parser.add_argument(
+        "bval_data_fname",
+        help="Filename of b-val file containing the diffusion-encoding gradient b-vals",
+        type=Path,
+    )
+    parser.add_argument(
+        "bvec_data_fname",
+        help="Filename of b-vecs file containing the diffusion-encoding gradient b-vecs",
+        type=Path,
+    )
+    parser.add_argument(
+        "dwi_pred_data_fname",
+        help="Filename of NIfTI file containing the predicted DWI signal",
+        type=Path,
+    )
+    parser.add_argument("--evals", help="Eigenvalues of the tensor", nargs="+", type=float)
     parser.add_argument("--snr", help="Signal to noise ratio", type=float)
     parser.add_argument("--repeats", help="Number of repeats", type=int, default=5)
     parser.add_argument(
@@ -134,36 +151,59 @@ def main() -> None:
     parser = _build_arg_parser()
     args = _parse_args(parser)
 
+    n_voxels = 100
+
     data, gtab = testsims.simulate_voxels(
         args.S0,
-        args.evals1,
         args.hsph_dirs,
         bval_shell=args.bval_shell,
         snr=args.snr,
-        n_voxels=100,
+        n_voxels=n_voxels,
+        evals=args.evals,
         seed=None,
+    )
+
+    # Save the generated signal and gradient table
+    testsims.serialize_dmri(
+        data, gtab, args.dwi_gt_data_fname, args.bval_data_fname, args.bvec_data_fname
     )
 
     X = gtab[~gtab.b0s_mask].bvecs
     y = data[:, ~gtab.b0s_mask]
 
+    snr_str = args.snr if args.snr is not None else "None"
+
+    a = 1.15
+    lambda_s = 120
+    alpha = 100
+    gpr = EddyMotionGPR(
+        kernel=SphericalKriging(a=a, lambda_s=lambda_s),
+        alpha=alpha,
+        optimizer=None,
+    )
+
     # Use Scikit-learn cross validation
     scores = defaultdict(list, {})
     for n in args.kfold:
         for i in range(args.repeats):
-            cv_scores = -1.0 * cross_validate(X, y.T, n)
+            cv_scores = -1.0 * cross_validate(X, y.T, n, gpr)
             scores["rmse"] += cv_scores.tolist()
             scores["repeat"] += [i] * len(cv_scores)
             scores["n_folds"] += [n] * len(cv_scores)
+            scores["snr"] += [snr_str] * len(cv_scores)
 
         print(f"Finished {n}-fold cross-validation")
 
     scores_df = pd.DataFrame(scores)
-    scores_df.to_csv("cv_scores.tsv", sep="\t", index=None, na_rep="n/a")
+    scores_df.to_csv(args.error_data_fname, sep="\t", index=None, na_rep="n/a")
 
     grouped = scores_df.groupby(["n_folds"])
     print(grouped[["rmse"]].mean())
     print(grouped[["rmse"]].std())
+
+    cv = KFold(n_splits=3, shuffle=False, random_state=None)
+    predictions = cross_val_predict(gpr, X, y.T, cv=cv)
+    testsims.serialize_dwi(predictions.T, args.dwi_pred_data_fname)
 
 
 if __name__ == "__main__":

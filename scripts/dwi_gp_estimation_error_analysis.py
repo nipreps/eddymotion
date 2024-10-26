@@ -60,7 +60,7 @@ def cross_validate(
     y : :obj:`~numpy.ndarray`
         DWI signal.
     cv : :obj:`int`
-        number of folds
+        Number of folds.
     n_repeats : :obj:`int`
         Number of times the cross-validator needs to be repeated.
     gpr : obj:`~eddymotion.model._sklearn.EddyMotionGPR`

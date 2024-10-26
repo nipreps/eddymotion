@@ -22,57 +22,21 @@
 #
 
 """
-Simulate the DWI signal from a single fiber and analyze the prediction error of an estimator using
-Gaussian processes.
+Generate a synthetic dMRI signal and estimate values using Gaussian processes.
 """
 
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
-from sklearn.model_selection import RepeatedKFold, cross_val_score
+from dipy.core.sphere import Sphere
 
-from eddymotion.model._sklearn import (
-    EddyMotionGPR,
-    SphericalKriging,
-)
+from eddymotion.model._sklearn import EddyMotionGPR, SphericalKriging
 from eddymotion.testing import simulations as testsims
 
-
-def cross_validate(
-    X: np.ndarray,
-    y: np.ndarray,
-    cv: int,
-    gpr: EddyMotionGPR,
-) -> dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]]:
-    """
-    Perform the experiment by estimating the dMRI signal using a Gaussian process model.
-
-    Parameters
-    ----------
-    X : :obj:`~numpy.ndarray`
-        Diffusion-encoding gradient vectors.
-    y : :obj:`~numpy.ndarray`
-        DWI signal.
-    cv : :obj:`int`
-        number of folds
-    gpr : obj:`~eddymotion.model._sklearn.EddyMotionGPR`
-        The eddymotion Gaussian process regressor object.
-
-    Returns
-    -------
-    :obj:`dict`
-        Data for the predicted signal and its error.
-
-    """
-
-    rkf = RepeatedKFold(n_splits=cv, n_repeats=120 // cv)
-    scores = cross_val_score(gpr, X, y, scoring="neg_root_mean_squared_error", cv=rkf)
-    return scores
+SAMPLING_DIRECTIONS = 200
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -95,16 +59,33 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("bval_shell", help="Shell b-value", type=int)
     parser.add_argument("S0", help="S0 value", type=float)
-    parser.add_argument(
-        "error_data_fname",
-        help="Filename of TSV file containing the data to plot",
-        type=Path,
-    )
     parser.add_argument("--evals", help="Eigenvalues of the tensor", nargs="+", type=float)
     parser.add_argument("--snr", help="Signal to noise ratio", type=float)
-    parser.add_argument("--repeats", help="Number of repeats", type=int, default=5)
     parser.add_argument(
-        "--kfold", help="Number of directions to leave out/predict", nargs="+", type=int
+        "dwi_gt_data_fname",
+        help="Filename of NIfTI file containing the ground truth DWI signal",
+        type=Path,
+    )
+    parser.add_argument(
+        "bval_data_fname",
+        help="Filename of b-val file containing the diffusion-weighting values",
+        type=Path,
+    )
+    parser.add_argument(
+        "bvec_data_fname",
+        help="Filename of b-vecs file containing the diffusion-encoding gradient directions",
+        type=Path,
+    )
+    parser.add_argument(
+        "dwi_pred_data_fname",
+        help="Filename of NIfTI file containing the predicted DWI signal",
+        type=Path,
+    )
+    parser.add_argument(
+        "bvec_pred_data_fname",
+        help="Filename of b-vecs file containing the diffusion-encoding gradient b-vecs where "
+        "the prediction is done",
+        type=Path,
     )
     return parser
 
@@ -131,6 +112,7 @@ def main() -> None:
     parser = _build_arg_parser()
     args = _parse_args(parser)
 
+    seed = 1234
     n_voxels = 100
 
     data, gtab = testsims.simulate_voxels(
@@ -140,14 +122,16 @@ def main() -> None:
         snr=args.snr,
         n_voxels=n_voxels,
         evals=args.evals,
-        seed=None,
+        seed=seed,
     )
 
-    X = gtab[~gtab.b0s_mask].bvecs
-    y = data[:, ~gtab.b0s_mask]
+    # Save the generated signal and gradient table
+    testsims.serialize_dmri(
+        data, gtab, args.dwi_gt_data_fname, args.bval_data_fname, args.bvec_data_fname
+    )
 
-    snr_str = args.snr if args.snr is not None else "None"
-
+    # Fit the Gaussian Process regressor and predict on an arbitrary number of
+    # directions
     a = 1.15
     lambda_s = 120
     alpha = 100
@@ -157,25 +141,23 @@ def main() -> None:
         optimizer=None,
     )
 
-    # Use Scikit-learn cross validation
-    scores = defaultdict(list, {})
-    for n in args.kfold:
-        for i in range(args.repeats):
-            cv_scores = -1.0 * cross_validate(X, y.T, n, gpr)
-            scores["rmse"] += cv_scores.tolist()
-            scores["repeat"] += [i] * len(cv_scores)
-            scores["n_folds"] += [n] * len(cv_scores)
-            scores["bval"] += [args.bval_shell] * len(cv_scores)
-            scores["snr"] += [snr_str] * len(cv_scores)
+    # Use all available data to train the GP
+    X_train = gtab[~gtab.b0s_mask].bvecs
+    y = data[:, ~gtab.b0s_mask]
 
-        print(f"Finished {n}-fold cross-validation")
+    gpr_fit = gpr.fit(X_train, y.T)
 
-    scores_df = pd.DataFrame(scores)
-    scores_df.to_csv(args.error_data_fname, sep="\t", index=None, na_rep="n/a")
+    # Predict on the testing data, plus a series of random directions
+    theta, phi = testsims.create_random_polar_coordinates(SAMPLING_DIRECTIONS, seed=seed)
+    sph = Sphere(theta=theta, phi=phi)
 
-    grouped = scores_df.groupby(["n_folds"])
-    print(grouped[["rmse"]].mean())
-    print(grouped[["rmse"]].std())
+    X_test = np.vstack([gtab[~gtab.b0s_mask].bvecs, sph.vertices])
+
+    predictions = gpr_fit.predict(X_test)
+
+    # Save the predicted data
+    testsims.serialize_dwi(predictions.T, args.dwi_pred_data_fname)
+    np.savetxt(args.bvec_pred_data_fname, X_test.T, fmt="%.3f")
 
 
 if __name__ == "__main__":

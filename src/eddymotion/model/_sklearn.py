@@ -148,7 +148,6 @@ class EddyMotionGPR(GaussianProcessRegressor):
         "alpha": [Interval(Real, 0, None, closed="left"), np.ndarray],
         "optimizer": [StrOptions(SUPPORTED_OPTIMIZERS), callable, None],
         "n_restarts_optimizer": [Interval(Integral, 0, None, closed="left")],
-        "normalize_y": ["boolean"],
         "copy_X_train": ["boolean"],
         "n_targets": [Interval(Integral, 1, None, closed="left"), None],
         "random_state": ["random_state"],
@@ -161,7 +160,6 @@ class EddyMotionGPR(GaussianProcessRegressor):
         alpha: float = 1e-10,
         optimizer: str | Callable | None = "fmin_l_bfgs_b",
         n_restarts_optimizer: int = 0,
-        normalize_y: bool = True,
         copy_X_train: bool = True,
         n_targets: int | None = None,
         random_state: int | None = None,
@@ -179,7 +177,7 @@ class EddyMotionGPR(GaussianProcessRegressor):
             alpha=alpha,
             optimizer=optimizer,
             n_restarts_optimizer=n_restarts_optimizer,
-            normalize_y=normalize_y,
+            normalize_y=False,  # We control normalization
             copy_X_train=copy_X_train,
             n_targets=n_targets,
             random_state=random_state,
@@ -242,6 +240,45 @@ class EddyMotionGPR(GaussianProcessRegressor):
             return self.optimizer(obj_func, initial_theta, bounds=bounds)
 
         raise ValueError(f"Unknown optimizer {self.optimizer}.")
+
+    def fit(self, X, y):
+        r"""Fit Gaussian process regression model.
+
+        This overshadows Scikit-Learn's implementation to remove access over
+        the normalization of y.
+
+        Instead, and following Anderson 2015 and what it looks like from
+        `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/\
+2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__,
+        our fit method should also remove the mean.
+
+        From their paper (p. 167, end of first column):
+
+            Typically one just substracts the mean (:math:`\hat{\mathbf{f}}`)
+            from :math:`\mathbf{f}` and then add it back to
+            :math:`f^{*}`, which is analogous to what is often done in
+            "traditional" regression.
+
+        It is still unclear to me how :math:`f^{*}` is interpolated from
+        :math:`\hat{\mathbf{f}}` (grand mean?), or whether the fitted model
+        accounts for that factor (I doubt it).
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features) or list of object
+            Feature vectors or other representations of training data.
+
+        y : array-like of shape (n_samples,) or (n_samples, n_targets)
+            Target values.
+
+        Returns
+        -------
+        :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
+            GaussianProcessRegressor class instance.
+        """
+        super().fit(X, y - y.mean(1)[:, None])
+
+        return self
 
 
 class ExponentialKriging(Kernel):

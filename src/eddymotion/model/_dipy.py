@@ -39,8 +39,8 @@ from eddymotion.model._sklearn import (
 
 
 def gp_prediction(
-    gtab: GradientTable | np.ndarray,
     model: GaussianProcessRegressor,
+    gtab: GradientTable | np.ndarray,
     mask: np.ndarray | None = None,
     return_std: bool = False,
 ) -> np.ndarray:
@@ -53,12 +53,14 @@ def gp_prediction(
 
     Parameters
     ----------
-    model: :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
+    model : :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
         A fitted GaussianProcessRegressor model.
     gtab : :obj:`~dipy.core.gradients.GradientTable` or :obj:`~np.ndarray`
         Gradient table with one or more orientations at which the GP will be evaluated.
-    mask: :obj:`numpy.ndarray`
+    mask : :obj:`numpy.ndarray`, optional
         A boolean mask indicating which voxels to use (optional).
+    return_std : bool, optional
+        Whether to return the standard deviation of the predicted signal.
 
     Returns
     -------
@@ -100,8 +102,16 @@ class GaussianProcessModel(ReconstModel):
 
         Parameters
         ----------
-        kernel : :obj:`~sklearn.gaussian_process.kernels.Kernel`
+        kernel_model : :obj:`~sklearn.gaussian_process.kernels.Kernel`, optional
             Kernel model to calculate the GP's covariance matrix.
+        lambda_s : :obj:`float`, optional
+            Signal scale parameter determining the variability of the signal.
+        a : :obj:`float`, optional
+            Distance scale parameter determining how fast the covariance
+            decreases as one moves along the surface of the sphere. Must have a
+            positive value.
+        sigma_sq : :obj:`float`, optional
+            Uncertainty of the measured values.
 
         References
         ----------
@@ -136,11 +146,14 @@ class GaussianProcessModel(ReconstModel):
         ----------
         gtab : :obj:`~dipy.core.gradients.GradientTable` or :obj:`~np.ndarray`
             The gradient table corresponding to the training data.
-        y : :obj:`~numpy.ndarray`
+        data : :obj:`~numpy.ndarray`
             The measured signal from one voxel.
         mask : :obj:`~numpy.ndarray`
             A boolean array used to mark the coordinates in the data that
             should be analyzed that has the shape data.shape[:-1]
+        random_state: :obj:`int`, optional
+            Determines random number generation used to initialize the centers
+            of the kernel bounds.
 
         Returns
         -------
@@ -149,12 +162,14 @@ class GaussianProcessModel(ReconstModel):
 
         """
 
-        # Extract b-vecs: Scikit learn wants (n_samples, n_features)
-        # where n_features is 3, and n_samples the different diffusion orientations.
+        # Extract b-vecs: scikit-learn wants (n_samples, n_features)
+        # where n_features is 3, and n_samples the different diffusion-encoding
+        # gradient orientations.
         X = gtab.bvecs if hasattr(gtab, "bvecs") else np.asarray(gtab)
 
-        # Data must be shapes (n_samples, n_targets) where n_samples is
-        # the number of diffusion orientations, and n_targets is number of voxels.
+        # Data must have shape (n_samples, n_targets) where n_samples is
+        # the number of diffusion-encoding gradient orientations, and n_targets
+        # is number of voxels.
         y = (
             data[mask[..., None]] if mask is not None else np.reshape(data, (-1, data.shape[-1]))
         ).T
@@ -208,9 +223,9 @@ class GPFit:
 
     Attributes
     ----------
-    model: :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
+    model : :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
         The fitted Gaussian process regressor object.
-    mask: :obj:`~numpy.ndarray`
+    mask : :obj:`~numpy.ndarray`
         The boolean mask used during fitting (can be ``None``).
 
     """
@@ -225,10 +240,10 @@ class GPFit:
 
         Parameters
         ----------
-        model: :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
+        model : :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
             The fitted Gaussian process regressor object.
-        mask: :obj:`~numpy.ndarray`
-            The boolean mask used during fitting (can be ``None``).
+        mask : :obj:`~numpy.ndarray`, optional
+            The boolean mask used during fitting.
 
         """
         self.model = model
@@ -252,7 +267,7 @@ class GPFit:
             A 3D or 4D array with the simulated gradient(s).
 
         """
-        return gp_prediction(gtab, self.model, mask=self.mask)
+        return gp_prediction(self.model, gtab, mask=self.mask)
 
 
 def _rasb2dipy(gradient):

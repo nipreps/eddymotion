@@ -109,7 +109,10 @@ THETA_EPSILON: float = 1e-5
 """Minimum nonzero angle."""
 LBFGS_CONFIGURABLE_OPTIONS = {"disp", "maxiter", "ftol", "gtol"}
 """The set of extended options that can be set on the default BFGS."""
-CONFIGURABLE_OPTIONS: Mapping[str, set] = {"Nelder-Mead": {"disp", "maxiter", "adaptive", "fatol"}}
+CONFIGURABLE_OPTIONS: Mapping[str, set] = {
+    "Nelder-Mead": {"disp", "maxiter", "adaptive", "fatol"},
+    "CG": {"disp", "maxiter", "gtol"},
+}
 """
 A mapping from optimizer names to the option set they allow.
 

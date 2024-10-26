@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.viz.signals - eddymotion 24.0.0.dev181 documentation</title>
+        <title>eddymotion.viz.signals - eddymotion 24.0.0.dev185 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev181 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev185 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,14 +189,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev181</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev185</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev181</span>
+  <span class="sidebar-brand-text">24.0.0.dev185</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -317,13 +317,21 @@
 <span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">gridspec</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span><span class="p">,</span> <span class="n">KDTree</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">pearsonr</span>
 
 
 <div class="viewcode-block" id="plot_error">
 <a class="viewcode-back" href="../../../api/eddymotion.viz.signals.html#eddymotion.viz.signals.plot_error">[docs]</a>
 <span class="k">def</span> <span class="nf">plot_error</span><span class="p">(</span>
-    <span class="n">kfolds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">std_dev</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">kfolds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">std_dev</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">19.2</span><span class="p">,</span> <span class="mf">10.8</span><span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the error and standard deviation.</span>
@@ -342,6 +350,10 @@
 <span class="sd">        Y-axis label.</span>
 <span class="sd">    title : :obj:`str`</span>
 <span class="sd">        Plot title.</span>
+<span class="sd">    color : :obj:`str`, optional</span>
+<span class="sd">        Plot color.</span>
+<span class="sd">    figsize : :obj:`tuple`, optional</span>
+<span class="sd">        Figure size.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -349,10 +361,10 @@
 <span class="sd">        Matplotlib figure object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kfolds</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">kfolds</span><span class="p">,</span> <span class="n">mean</span> <span class="o">-</span> <span class="n">std_dev</span><span class="p">,</span> <span class="n">mean</span> <span class="o">+</span> <span class="n">std_dev</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">kfolds</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kfolds</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">kfolds</span><span class="p">,</span> <span class="n">mean</span> <span class="o">-</span> <span class="n">std_dev</span><span class="p">,</span> <span class="n">mean</span> <span class="o">+</span> <span class="n">std_dev</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">kfolds</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">kfolds</span><span class="p">)</span>
@@ -413,6 +425,114 @@
 
     <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">r</span></div>
 
+
+
+<div class="viewcode-block" id="calculate_sphere_pts">
+<a class="viewcode-back" href="../../../api/eddymotion.viz.signals.html#eddymotion.viz.signals.calculate_sphere_pts">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_sphere_pts</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the location of each point when it is expanded out to the sphere.&quot;&quot;&quot;</span>
+
+    <span class="n">kdtree</span> <span class="o">=</span> <span class="n">KDTree</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>  <span class="c1"># tree of nearest points</span>
+    <span class="c1"># d is an array of distances, i is an array of indices</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">kdtree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">sphere_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">sphere_pts</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">/</span> <span class="n">d</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+    <span class="c1"># points and the indices for where they were in the original lists</span>
+    <span class="k">return</span> <span class="n">sphere_pts</span><span class="p">,</span> <span class="n">i</span></div>
+
+
+
+<div class="viewcode-block" id="compute_dmri_convex_hull">
+<a class="viewcode-back" href="../../../api/eddymotion.viz.signals.html#eddymotion.viz.signals.compute_dmri_convex_hull">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_dmri_convex_hull</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the convex hull of the dMRI signal s.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dirs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="c1"># Scale the original sampling directions by the corresponding signal values</span>
+    <span class="n">scaled_bvecs</span> <span class="o">=</span> <span class="n">dirs</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">s</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="c1"># Create the data for the convex hull: project the scaled vectors to a</span>
+    <span class="c1"># sphere</span>
+    <span class="n">sphere_pts</span><span class="p">,</span> <span class="n">sphere_idx</span> <span class="o">=</span> <span class="n">calculate_sphere_pts</span><span class="p">(</span><span class="n">scaled_bvecs</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Create the convex hull: find the right ordering of vertices for the</span>
+    <span class="c1"># triangles: ConvexHull finds the simplices of the points on the outside of</span>
+    <span class="c1"># the data set</span>
+    <span class="n">hull</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">sphere_pts</span><span class="p">)</span>
+    <span class="n">triang_idx</span> <span class="o">=</span> <span class="n">hull</span><span class="o">.</span><span class="n">simplices</span>  <span class="c1"># returns the list of indices for each triangle</span>
+
+    <span class="k">return</span> <span class="n">scaled_bvecs</span><span class="p">,</span> <span class="n">sphere_idx</span><span class="p">,</span> <span class="n">triang_idx</span></div>
+
+
+
+<div class="viewcode-block" id="plot_surface">
+<a class="viewcode-back" href="../../../api/eddymotion.viz.signals.html#eddymotion.viz.signals.plot_surface">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_surface</span><span class="p">(</span><span class="n">scaled_vecs</span><span class="p">,</span> <span class="n">sphere_idx</span><span class="p">,</span> <span class="n">triang_idx</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a surface.&quot;&quot;&quot;</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter3D</span><span class="p">(</span>
+        <span class="n">scaled_vecs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">scaled_vecs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">scaled_vecs</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span>
+    <span class="p">)</span>
+
+    <span class="n">surface</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot_trisurf</span><span class="p">(</span>
+        <span class="n">scaled_vecs</span><span class="p">[</span><span class="n">sphere_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">scaled_vecs</span><span class="p">[</span><span class="n">sphere_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">scaled_vecs</span><span class="p">[</span><span class="n">sphere_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="n">triangles</span><span class="o">=</span><span class="n">triang_idx</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">surface</span></div>
+
+
+
+<div class="viewcode-block" id="plot_signal_data">
+<a class="viewcode-back" href="../../../api/eddymotion.viz.signals.html#eddymotion.viz.signals.plot_signal_data">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_signal_data</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the data provided as a scatter plot&quot;&quot;&quot;</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original points&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="plot_prediction_surface">
+<a class="viewcode-back" href="../../../api/eddymotion.viz.signals.html#eddymotion.viz.signals.plot_prediction_surface">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_prediction_surface</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">y_dirs</span><span class="p">,</span> <span class="n">y_pred_dirs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the prediction surface obtained by computing the convex hull of the</span>
+<span class="sd">    predicted signal data, and plot the true data as a scatter plot.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Scale the original sampling directions by the corresponding signal values</span>
+    <span class="n">y_bvecs</span> <span class="o">=</span> <span class="n">y_dirs</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="c1"># Compute the convex hull</span>
+    <span class="n">y_pred_bvecs</span><span class="p">,</span> <span class="n">sphere_idx</span><span class="p">,</span> <span class="n">triang_idx</span> <span class="o">=</span> <span class="n">compute_dmri_convex_hull</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_pred_dirs</span><span class="p">)</span>
+
+    <span class="c1"># Plot the surface</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">surface</span> <span class="o">=</span> <span class="n">plot_surface</span><span class="p">(</span><span class="n">y_pred_bvecs</span><span class="p">,</span> <span class="n">sphere_idx</span><span class="p">,</span> <span class="n">triang_idx</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">cmap</span><span class="p">)</span>
+
+    <span class="c1"># Add the underlying signal to the plot</span>
+    <span class="c1"># plot_signal_data(y_bvecs/S0, ax)</span>
+    <span class="n">plot_signal_data</span><span class="p">(</span><span class="n">y_bvecs</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">surface</span></div>
+
 </pre></div>
         </article>
       </div>
@@ -445,7 +565,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=bf8dbb75"></script>
+</div><script src="../../../_static/documentation_options.js?v=43fca1d2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

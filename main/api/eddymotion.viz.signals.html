@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="What’s new?" href="../changes.html" /><link rel="prev" title="eddymotion.viz package" href="eddymotion.viz.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.viz.signals module - eddymotion 24.0.0.dev181 documentation</title>
+        <title>eddymotion.viz.signals module - eddymotion 24.0.0.dev185 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev181 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev185 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,14 +190,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev181</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev185</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev181</span>
+  <span class="sidebar-brand-text">24.0.0.dev185</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -300,13 +300,25 @@
 <span id="eddymotion-viz-signals-module"></span><h1>eddymotion.viz.signals module<a class="headerlink" href="#module-eddymotion.viz.signals" title="Link to this heading">¶</a></h1>
 <p>Visualizing signals and intermediate aspects of models.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.viz.signals.calculate_sphere_pts">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">calculate_sphere_pts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#calculate_sphere_pts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.calculate_sphere_pts" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the location of each point when it is expanded out to the sphere.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.viz.signals.compute_dmri_convex_hull">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">compute_dmri_convex_hull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#compute_dmri_convex_hull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.compute_dmri_convex_hull" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the convex hull of the dMRI signal s.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.signals.plot_correlation">
 <span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">plot_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#plot_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.plot_correlation" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eddymotion.viz.signals.plot_error">
-<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">plot_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kfolds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_dev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">matplotlib.pyplot.Figure</span></span></span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#plot_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.plot_error" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">plot_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kfolds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_dev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'orange'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(19.2,</span> <span class="pre">10.8)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">matplotlib.pyplot.Figure</span></span></span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#plot_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.plot_error" title="Link to this definition">¶</a></dt>
 <dd><p>Plot the error and standard deviation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -317,6 +329,8 @@
 <li><p><strong>xlabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – X-axis label.</p></li>
 <li><p><strong>ylabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Y-axis label.</p></li>
 <li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Plot title.</p></li>
+<li><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Plot color.</p></li>
+<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>, optional) – Figure size.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -332,6 +346,25 @@
 <dt class="sig sig-object py" id="eddymotion.viz.signals.plot_estimation_carpet">
 <span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">plot_estimation_carpet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_nii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gp_nii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suptitle</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#plot_estimation_carpet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.plot_estimation_carpet" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.viz.signals.plot_prediction_surface">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">plot_prediction_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dirs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_dirs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#plot_prediction_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.plot_prediction_surface" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the prediction surface obtained by computing the convex hull of the
+predicted signal data, and plot the true data as a scatter plot.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.viz.signals.plot_signal_data">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">plot_signal_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#plot_signal_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.plot_signal_data" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the data provided as a scatter plot</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eddymotion.viz.signals.plot_surface">
+<span class="sig-prename descclassname"><span class="pre">eddymotion.viz.signals.</span></span><span class="sig-name descname"><span class="pre">plot_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaled_vecs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphere_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triang_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/viz/signals.html#plot_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.viz.signals.plot_surface" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a surface.</p>
+</dd></dl>
 
 </section>
 
@@ -391,9 +424,14 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">eddymotion.viz.signals module</a><ul>
+<li><a class="reference internal" href="#eddymotion.viz.signals.calculate_sphere_pts"><code class="docutils literal notranslate"><span class="pre">calculate_sphere_pts()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.viz.signals.compute_dmri_convex_hull"><code class="docutils literal notranslate"><span class="pre">compute_dmri_convex_hull()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.viz.signals.plot_correlation"><code class="docutils literal notranslate"><span class="pre">plot_correlation()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.viz.signals.plot_error"><code class="docutils literal notranslate"><span class="pre">plot_error()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.viz.signals.plot_estimation_carpet"><code class="docutils literal notranslate"><span class="pre">plot_estimation_carpet()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.viz.signals.plot_prediction_surface"><code class="docutils literal notranslate"><span class="pre">plot_prediction_surface()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.viz.signals.plot_signal_data"><code class="docutils literal notranslate"><span class="pre">plot_signal_data()</span></code></a></li>
+<li><a class="reference internal" href="#eddymotion.viz.signals.plot_surface"><code class="docutils literal notranslate"><span class="pre">plot_surface()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -405,7 +443,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=bf8dbb75"></script>
+</div><script src="../_static/documentation_options.js?v=43fca1d2"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

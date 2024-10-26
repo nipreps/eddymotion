@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.testing.simulations - eddymotion 24.0.0.dev181 documentation</title>
+        <title>eddymotion.testing.simulations - eddymotion 24.0.0.dev185 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev181 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev185 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,14 +189,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev181</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev185</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev181</span>
+  <span class="sidebar-brand-text">24.0.0.dev185</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -316,12 +316,16 @@
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="c1"># import nibabel as nib</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">dipy.core.geometry</span> <span class="kn">import</span> <span class="n">sphere2cart</span>
 <span class="kn">from</span> <span class="nn">dipy.core.gradients</span> <span class="kn">import</span> <span class="n">gradient_table</span>
 <span class="kn">from</span> <span class="nn">dipy.core.sphere</span> <span class="kn">import</span> <span class="n">HemiSphere</span><span class="p">,</span> <span class="n">Sphere</span><span class="p">,</span> <span class="n">disperse_charges</span>
 <span class="kn">from</span> <span class="nn">dipy.sims.voxel</span> <span class="kn">import</span> <span class="n">all_tensor_evecs</span><span class="p">,</span> <span class="n">single_tensor</span>
+
+<span class="c1"># Bounds defined following Canales-Rodriguez, NIMG 184 2019, https://doi.org/10.1016/j.neuroimage.2018.08.071</span>
+<span class="n">BOUNDS_LAMBDA1</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.4e-3</span><span class="p">,</span> <span class="mf">1.8e-3</span><span class="p">)</span>
+<span class="n">BOUNDS_LAMBDA23</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1e-3</span><span class="p">,</span> <span class="mf">0.5e-3</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="add_b0">
@@ -509,37 +513,165 @@
 
 <div class="viewcode-block" id="single_fiber_voxel">
 <a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.single_fiber_voxel">[docs]</a>
-<span class="k">def</span> <span class="nf">single_fiber_voxel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">evals</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">single_fiber_voxel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">evals</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
     <span class="c1"># create eigenvectors for a single fiber</span>
     <span class="n">evecs</span> <span class="o">=</span> <span class="n">create_single_fiber_evecs</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">)</span>
 
     <span class="c1"># Generate some data</span>
-    <span class="k">return</span> <span class="n">single_tensor</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="n">S0</span><span class="p">,</span> <span class="n">evals</span><span class="o">=</span><span class="n">evals</span><span class="p">,</span> <span class="n">evecs</span><span class="o">=</span><span class="n">evecs</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="n">snr</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">single_tensor</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="o">=</span><span class="n">S0</span><span class="p">,</span> <span class="n">evals</span><span class="o">=</span><span class="n">evals</span><span class="p">,</span> <span class="n">evecs</span><span class="o">=</span><span class="n">evecs</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="n">snr</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_random_polar_angles">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.create_random_polar_angles">[docs]</a>
+<span class="k">def</span> <span class="nf">create_random_polar_angles</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create polar angles drawn from a uniform distribution.&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">),</span>
+        <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">),</span>
+        <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_random_diffusivity_eigenvalues">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.create_random_diffusivity_eigenvalues">[docs]</a>
+<span class="k">def</span> <span class="nf">create_random_diffusivity_eigenvalues</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create DTI model diffusion tensor eigenvalues ($\lambda_{1},</span>
+<span class="sd">    \lambda_{2}, \lambda_{3}$) drawn from a uniform distribution.&quot;&quot;&quot;</span>
+
+    <span class="c1"># lambda_2 = lambda_3 following Canales-Rodriguez, NIMG 184 2019,</span>
+    <span class="c1"># https://doi.org/10.1016/j.neuroimage.2018.08.071</span>
+    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">BOUNDS_LAMBDA1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">),</span>
+        <span class="o">*</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">BOUNDS_LAMBDA23</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="group_values">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.group_values">[docs]</a>
+<span class="k">def</span> <span class="nf">group_values</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">group_size</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">values</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">group_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="n">group_size</span><span class="p">)])</span></div>
+
+
+
+<div class="viewcode-block" id="simulate_one_fiber_multivoxel">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.simulate_one_fiber_multivoxel">[docs]</a>
+<span class="k">def</span> <span class="nf">simulate_one_fiber_multivoxel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">n_voxels</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">evals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a single-fiber multi-voxel DWI signal.&quot;&quot;&quot;</span>
+
+    <span class="n">angles</span> <span class="o">=</span> <span class="n">create_random_polar_angles</span><span class="p">(</span><span class="n">n_voxels</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">evals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_evals</span> <span class="o">=</span> <span class="n">create_random_diffusivity_eigenvalues</span><span class="p">(</span><span class="n">n_voxels</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_evals</span> <span class="o">=</span> <span class="n">group_values</span><span class="p">(</span><span class="n">evals</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_evals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">n_voxels</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">_evals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">_evals</span><span class="p">,</span> <span class="n">n_voxels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">single_fiber_voxel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">_eignvls</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="n">snr</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">),</span> <span class="n">_eignvls</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">_evals</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">signal</span></div>
 
 
 
 <div class="viewcode-block" id="simulate_voxels">
 <a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.simulate_voxels">[docs]</a>
-<span class="k">def</span> <span class="nf">simulate_voxels</span><span class="p">(</span><span class="n">S0</span><span class="p">,</span> <span class="n">evals</span><span class="p">,</span> <span class="n">hsph_dirs</span><span class="p">,</span> <span class="n">bval_shell</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_voxels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">simulate_voxels</span><span class="p">(</span><span class="n">S0</span><span class="p">,</span> <span class="n">hsph_dirs</span><span class="p">,</span> <span class="n">bval_shell</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_voxels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">evals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1"># Create a gradient table for a single-shell</span>
     <span class="n">gtab</span> <span class="o">=</span> <span class="n">create_single_shell_gradient_table</span><span class="p">(</span><span class="n">hsph_dirs</span><span class="p">,</span> <span class="n">bval_shell</span><span class="p">)</span>
 
     <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
-    <span class="n">angles</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
-        <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_voxels</span><span class="p">),</span>
-        <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_voxels</span><span class="p">),</span>
-        <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="n">single_fiber_voxel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">evals</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="n">snr</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="ow">in</span> <span class="n">angles</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">simulate_one_fiber_multivoxel</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">n_voxels</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">evals</span><span class="o">=</span><span class="n">evals</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">signal</span><span class="p">,</span> <span class="n">gtab</span></div>
+
+
+
+<div class="viewcode-block" id="serialize_dwi">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.serialize_dwi">[docs]</a>
+<span class="k">def</span> <span class="nf">serialize_dwi</span><span class="p">(</span><span class="n">dwi_data</span><span class="p">,</span> <span class="n">dwi_data_fname</span><span class="p">,</span> <span class="n">affine</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize DWI data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dwi_data : :obj:`~numpy.ndarray`</span>
+<span class="sd">       DWI data.</span>
+<span class="sd">    dwi_data_fname : :obj:`str`</span>
+<span class="sd">        Filename of NIfTI file to save the DWI signal.</span>
+<span class="sd">    affine : :obj:`~numpy.ndarray`, optional</span>
+<span class="sd">        Affine matrix. If ``None`` an identity affine matrix is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">affine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">affine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">dwi_img</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">dwi_data</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">)</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">dwi_img</span><span class="p">,</span> <span class="n">dwi_data_fname</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="serialize_gtab">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.serialize_gtab">[docs]</a>
+<span class="k">def</span> <span class="nf">serialize_gtab</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">bval_data_fname</span><span class="p">,</span> <span class="n">bvec_data_fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize dMRI gradient-encoding table data into a pair of b-vals and</span>
+<span class="sd">    b-vecs files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gtab : :obj:`~dipy.core.gradients.gradient_table`</span>
+<span class="sd">        Gradient table.</span>
+<span class="sd">    bval_data_fname : :obj:`str`</span>
+<span class="sd">        Filename of NIfTI file to save the diffusion-encoding gradient b-vals.</span>
+<span class="sd">    bvec_data_fname : :obj:`str`</span>
+<span class="sd">        Filename of NIfTI file to save the diffusion-encoding gradient b-vecs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">bval_data_fname</span><span class="p">,</span> <span class="n">gtab</span><span class="o">.</span><span class="n">bvals</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">bvec_data_fname</span><span class="p">,</span> <span class="n">gtab</span><span class="o">.</span><span class="n">bvecs</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="serialize_dmri">
+<a class="viewcode-back" href="../../../api/eddymotion.testing.simulations.html#eddymotion.testing.simulations.serialize_dmri">[docs]</a>
+<span class="k">def</span> <span class="nf">serialize_dmri</span><span class="p">(</span>
+    <span class="n">dwi_data</span><span class="p">,</span>
+    <span class="n">gtab</span><span class="p">,</span>
+    <span class="n">dwi_data_fname</span><span class="p">,</span>
+    <span class="n">bval_data_fname</span><span class="p">,</span>
+    <span class="n">bvec_data_fname</span><span class="p">,</span>
+    <span class="n">affine</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize dMRI data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dwi_data : :obj:`~numpy.ndarray`</span>
+<span class="sd">       DWI data.</span>
+<span class="sd">    gtab : :obj:`~dipy.core.gradients.gradient_table`</span>
+<span class="sd">        Gradient table.</span>
+<span class="sd">    dwi_data_fname : :obj:`str`</span>
+<span class="sd">        Filename of NIfTI file to save the DWI signal.</span>
+<span class="sd">    bval_data_fname : :obj:`str`</span>
+<span class="sd">        Filename of NIfTI file to save the diffusion-encoding gradient b-vals.</span>
+<span class="sd">    bvec_data_fname : :obj:`str`</span>
+<span class="sd">        Filename of NIfTI file to save the diffusion-encoding gradient b-vecs.</span>
+<span class="sd">    affine : :obj:`~numpy.ndarray`, optional</span>
+<span class="sd">        Affine matrix. If ``None`` an identity affine matrix is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">serialize_dwi</span><span class="p">(</span><span class="n">dwi_data</span><span class="p">,</span> <span class="n">dwi_data_fname</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">)</span>
+    <span class="n">serialize_gtab</span><span class="p">(</span><span class="n">gtab</span><span class="p">,</span> <span class="n">bval_data_fname</span><span class="p">,</span> <span class="n">bvec_data_fname</span><span class="p">)</span></div>
 
 </pre></div>
         </article>
@@ -573,7 +705,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=bf8dbb75"></script>
+</div><script src="../../../_static/documentation_options.js?v=43fca1d2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

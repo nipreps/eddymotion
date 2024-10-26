@@ -57,7 +57,7 @@ def gp_prediction(
         A fitted GaussianProcessRegressor model.
     gtab : :obj:`~dipy.core.gradients.GradientTable` or :obj:`~np.ndarray`
         Gradient table with one or more orientations at which the GP will be evaluated.
-    mask: :obj:`numpy.ndarray`, optional
+    mask : :obj:`numpy.ndarray`, optional
         A boolean mask indicating which voxels to use (optional).
     return_std : bool, optional
         Whether to return the standard deviation of the predicted signal.

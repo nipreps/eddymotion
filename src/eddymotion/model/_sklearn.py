@@ -87,7 +87,8 @@ shells; and :math:`{a, \ell}` some hyperparameters.
 
 from __future__ import annotations
 
-from typing import Callable, Sequence
+from numbers import Integral, Real
+from typing import Callable, Mapping, Sequence
 
 import numpy as np
 from scipy import optimize
@@ -98,30 +99,116 @@ from sklearn.gaussian_process.kernels import (
     Kernel,
 )
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.utils._param_validation import Interval, StrOptions
 
-BOUNDS_A: tuple[float, float] = (1e-4, np.pi)
-BOUNDS_LAMBDA_S: tuple[float, float] = (1e-4, 1e4)
+BOUNDS_A: tuple[float, float] = (0.1, np.pi)
+"""The limits for the parameter *a*."""
+BOUNDS_LAMBDA: tuple[float, float] = (1e-3, 1000)
+"""The limits for the parameter lambda."""
 THETA_EPSILON: float = 1e-5
+"""Minimum nonzero angle."""
+LBFGS_CONFIGURABLE_OPTIONS = {"disp", "maxiter", "ftol", "gtol"}
+"""The set of extended options that can be set on the default BFGS."""
+CONFIGURABLE_OPTIONS: Mapping[str, set] = {
+    "Nelder-Mead": {"disp", "maxiter", "adaptive", "fatol"},
+    "CG": {"disp", "maxiter", "gtol"},
+}
+"""
+A mapping from optimizer names to the option set they allow.
+
+Add new optimizers to this list, including what options may be
+configured.
+"""
+NONGRADIENT_METHODS = {"Nelder-Mead"}
+"""A set of gradients that do not allow analytical gradients."""
+SUPPORTED_OPTIMIZERS = set(CONFIGURABLE_OPTIONS.keys()) | {"fmin_l_bfgs_b"}
+"""A set of supported optimizers (automatically created)."""
 
 
 class EddyMotionGPR(GaussianProcessRegressor):
+    r"""
+    A GP regressor specialized for eddymotion.
+
+    This specialization of the default GP regressor is created to allow
+    the following extended behaviors:
+
+    * Pacify Scikit-learn's estimator parameter checker to allow optimizers
+      given by name (as a string) other than the default BFGS.
+    * Enable custom options of optimizers.
+      See :obj:`~scipy.optimize.minimize` for the available options.
+      Please note that only a few of them are currently supported.
+
+    In the future, this specialization would be the right place for hyperparameter
+    optimization using cross-validation and such.
+
+    In principle, Scikit-Learn's implementation normalizes the training data
+    as in [Andersson15]_ (see
+    `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/\
+2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
+    From their paper (p. 167, end of first column):
+
+        Typically one just substracts the mean (:math:`\bar{\mathbf{f}}`)
+        from :math:`\mathbf{f}` and then add it back to
+        :math:`f^{*}`, which is analogous to what is often done in
+        "traditional" regression.
+
+    Finally, the parameter :math:`\sigma^2` maps on to Scikit-learn's ``alpha``
+    of the regressor.
+    Because it is not a parameter of the kernel, hyperparameter selection
+    through gradient-descent with analytical gradient calculations
+    would not work (the derivative of the kernel w.r.t. alpha is zero).
+
+    I believe this is overlooked in [Andersson15]_, or they actually did not
+    use analytical gradient-descent:
+
+        _A note on optimisation_
+
+        It is suggested, for example in Rasmussen and Williams (2006), that
+        an optimisation method that uses derivative information should be
+        used when finding the hyperparameters that maximise Eq. (12).
+        The reason for that is that such methods typically use fewer steps, and
+        when the cost of calculating the derivatives is small/moderate compared
+        to calculating the functions itself (as is the case for Eq. (12)) then
+        execution time can be much shorter.
+        However, we found that for the multi-shell case a heuristic optimisation
+        method such as the Nelder-Mead simplex method (Nelder and Mead, 1965) was
+        frequently better at avoiding local maxima.
+        Hence, that was the method we used for all optimisations in the present
+        paper.
+
+    """
+
+    _parameter_constraints: dict = {
+        "kernel": [None, Kernel],
+        "alpha": [Interval(Real, 0, None, closed="left"), np.ndarray],
+        "optimizer": [StrOptions(SUPPORTED_OPTIMIZERS), callable, None],
+        "n_restarts_optimizer": [Interval(Integral, 0, None, closed="left")],
+        "copy_X_train": ["boolean"],
+        "zeromean_y": ["boolean"],
+        "n_targets": [Interval(Integral, 1, None, closed="left"), None],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
         kernel: Kernel | None = None,
         *,
-        alpha: float = 1e-10,
+        alpha: float = 0.5,
         optimizer: str | Callable | None = "fmin_l_bfgs_b",
         n_restarts_optimizer: int = 0,
-        normalize_y: bool = True,
         copy_X_train: bool = True,
+        normalize_y: bool = True,
         n_targets: int | None = None,
         random_state: int | None = None,
-        max_iter: int = 2e05,
-        gtol: float = 1e-06,
+        eval_gradient: bool = True,
+        tol: float | None = None,
+        disp: bool | int | None = None,
+        maxiter: int | None = None,
+        ftol: float | None = None,
+        gtol: float | None = None,
+        adaptive: bool | int | None = None,
+        fatol: float | None = None,
     ):
-        self.max_iter = max_iter
-        self.gtol = gtol
-
         super().__init__(
             kernel,
             alpha=alpha,
@@ -133,24 +220,63 @@ class EddyMotionGPR(GaussianProcessRegressor):
             random_state=random_state,
         )
 
+        self.tol = tol
+        self.eval_gradient = eval_gradient if optimizer not in NONGRADIENT_METHODS else False
+        self.maxiter = maxiter
+        self.disp = disp
+        self.ftol = ftol
+        self.gtol = gtol
+        self.adaptive = adaptive
+        self.fatol = fatol
+
     def _constrained_optimization(
         self,
         obj_func: Callable,
         initial_theta: np.ndarray,
         bounds: Sequence[tuple[float, float]] | Bounds,
     ) -> tuple[float, float]:
-        from sklearn.utils.optimize import _check_optimize_result
+        options = {}
+        if self.optimizer == "fmin_l_bfgs_b":
+            from sklearn.utils.optimize import _check_optimize_result
 
-        opt_res = optimize.minimize(
-            obj_func,
-            initial_theta,
-            method="L-BFGS-B",
-            jac=True,
-            bounds=bounds,
-            options={"maxiter": self.max_iter, "gtol": self.gtol},
-        )
-        _check_optimize_result("lbfgs", opt_res)
-        return opt_res.x, opt_res.fun
+            for name in LBFGS_CONFIGURABLE_OPTIONS:
+                if (value := getattr(self, name, None)) is not None:
+                    options[name] = value
+
+            opt_res = optimize.minimize(
+                obj_func,
+                initial_theta,
+                method="L-BFGS-B",
+                bounds=bounds,
+                jac=self.eval_gradient,
+                options=options,
+                args=(self.eval_gradient,),
+                tol=self.tol,
+            )
+            _check_optimize_result("lbfgs", opt_res)
+            return opt_res.x, opt_res.fun
+
+        if isinstance(self.optimizer, str) and self.optimizer in CONFIGURABLE_OPTIONS:
+            for name in CONFIGURABLE_OPTIONS[self.optimizer]:
+                if (value := getattr(self, name, None)) is not None:
+                    options[name] = value
+
+            opt_res = optimize.minimize(
+                obj_func,
+                initial_theta,
+                method=self.optimizer,
+                bounds=bounds,
+                jac=self.eval_gradient,
+                options=options,
+                args=(self.eval_gradient,),
+                tol=self.tol,
+            )
+            return opt_res.x, opt_res.fun
+
+        if callable(self.optimizer):
+            return self.optimizer(obj_func, initial_theta, bounds=bounds)
+
+        raise ValueError(f"Unknown optimizer {self.optimizer}.")
 
 
 class ExponentialKriging(Kernel):
@@ -158,38 +284,38 @@ class ExponentialKriging(Kernel):
 
     def __init__(
         self,
-        a: float = 0.01,
-        lambda_s: float = 2.0,
+        beta_a: float = 0.01,
+        beta_l: float = 2.0,
         a_bounds: tuple[float, float] = BOUNDS_A,
-        lambda_s_bounds: tuple[float, float] = BOUNDS_LAMBDA_S,
+        l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
         Initialize an exponential Kriging kernel.
 
         Parameters
         ----------
-        a : :obj:`float`
+        beta_a : :obj:`float`, optional
             Minimum angle in rads.
-        lambda_s : :obj:`float`
-            The :math:`\lambda_s` hyperparameter.
-        a_bounds : :obj:`tuple`
+        beta_l : :obj:`float`, optional
+            The :math:`\lambda` hyperparameter.
+        a_bounds : :obj:`tuple`, optional
             Bounds for the a parameter.
-        lambda_s_bounds : :obj:`tuple`
-            Bounds for the :math:`\lambda_s` hyperparameter.
+        l_bounds : :obj:`tuple`, optional
+            Bounds for the :math:`\lambda` hyperparameter.
 
         """
-        self.a = a
-        self.lambda_s = lambda_s
+        self.beta_a = beta_a
+        self.beta_l = beta_l
         self.a_bounds = a_bounds
-        self.lambda_s_bounds = lambda_s_bounds
+        self.l_bounds = l_bounds
 
     @property
     def hyperparameter_a(self) -> Hyperparameter:
-        return Hyperparameter("a", "numeric", self.a_bounds)
+        return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_lambda_s(self) -> Hyperparameter:
-        return Hyperparameter("lambda_s", "numeric", self.lambda_s_bounds)
+    def hyperparameter_beta_l(self) -> Hyperparameter:
+        return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(
         self, X: np.ndarray, Y: np.ndarray | None = None, eval_gradient: bool = False
@@ -221,17 +347,16 @@ class ExponentialKriging(Kernel):
 
         """
         thetas = compute_pairwise_angles(X, Y)
-        thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
-        C_theta = np.exp(-thetas / self.a)
+        C_theta = exponential_covariance(thetas, self.beta_a)
 
         if not eval_gradient:
-            return self.lambda_s * C_theta
+            return self.beta_l * C_theta
 
         K_gradient = np.zeros((*thetas.shape, 2))
-        K_gradient[..., 0] = self.lambda_s * C_theta * thetas / self.a**2  # Derivative w.r.t. a
+        K_gradient[..., 0] = self.beta_l * C_theta * thetas / self.beta_a**2  # Derivative w.r.t. a
         K_gradient[..., 1] = C_theta
 
-        return self.lambda_s * C_theta, K_gradient
+        return self.beta_l * C_theta, K_gradient
 
     def diag(self, X: np.ndarray) -> np.ndarray:
         """Returns the diagonal of the kernel k(X, X).
@@ -250,14 +375,14 @@ class ExponentialKriging(Kernel):
         K_diag : ndarray of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
-        return self.lambda_s * np.ones(X.shape[0])
+        return self.beta_l * np.ones(X.shape[0])
 
     def is_stationary(self) -> bool:
         """Returns whether the kernel is stationary."""
         return True
 
     def __repr__(self) -> str:
-        return f"ExponentialKriging (a={self.a}, λₛ={self.lambda_s})"
+        return f"ExponentialKriging (a={self.beta_a}, λ={self.beta_l})"
 
 
 class SphericalKriging(Kernel):
@@ -265,38 +390,38 @@ class SphericalKriging(Kernel):
 
     def __init__(
         self,
-        a: float = 0.01,
-        lambda_s: float = 2.0,
+        beta_a: float = 1.38,
+        beta_l: float = 0.5,
         a_bounds: tuple[float, float] = BOUNDS_A,
-        lambda_s_bounds: tuple[float, float] = BOUNDS_LAMBDA_S,
+        l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
         Initialize a spherical Kriging kernel.
 
         Parameters
         ----------
-        a : :obj:`float`, optional
+        beta_a : :obj:`float`, optional
             Minimum angle in rads.
-        lambda_s : :obj:`float`, optional
-            The :math:`\lambda_s` hyperparameter.
+        beta_l : :obj:`float`, optional
+            The :math:`\lambda` hyperparameter.
         a_bounds : :obj:`tuple`, optional
             Bounds for the ``a`` parameter.
-        lambda_s_bounds : :obj:`tuple`, optional
-            Bounds for the :math:`\lambda_s` hyperparameter.
+        l_bounds : :obj:`tuple`, optional
+            Bounds for the :math:`\lambda` hyperparameter.
 
         """
-        self.a = a
-        self.lambda_s = lambda_s
+        self.beta_a = beta_a
+        self.beta_l = beta_l
         self.a_bounds = a_bounds
-        self.lambda_s_bounds = lambda_s_bounds
+        self.l_bounds = l_bounds
 
     @property
     def hyperparameter_a(self) -> Hyperparameter:
-        return Hyperparameter("a", "numeric", self.a_bounds)
+        return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_lambda_s(self) -> Hyperparameter:
-        return Hyperparameter("lambda_s", "numeric", self.lambda_s_bounds)
+    def hyperparameter_beta_l(self) -> Hyperparameter:
+        return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(
         self, X: np.ndarray, Y: np.ndarray | None = None, eval_gradient: bool = False
@@ -328,25 +453,21 @@ class SphericalKriging(Kernel):
 
         """
         thetas = compute_pairwise_angles(X, Y)
-        thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
-
-        nonzero = thetas <= self.a
-
-        C_theta = np.zeros_like(thetas)
-        C_theta[nonzero] = (
-            1 - 1.5 * thetas[nonzero] / self.a + 0.5 * thetas[nonzero] ** 3 / self.a**3
-        )
+        C_theta = spherical_covariance(thetas, self.beta_a)
 
         if not eval_gradient:
-            return self.lambda_s * C_theta
+            return self.beta_l * C_theta
 
         deriv_a = np.zeros_like(thetas)
+        nonzero = thetas <= self.beta_a
         deriv_a[nonzero] = (
-            1.5 * self.lambda_s * (thetas[nonzero] / self.a**2 - thetas[nonzero] ** 3 / self.a**4)
+            1.5
+            * self.beta_l
+            * (thetas[nonzero] / self.beta_a**2 - thetas[nonzero] ** 3 / self.beta_a**4)
         )
         K_gradient = np.dstack((deriv_a, C_theta))
 
-        return self.lambda_s * C_theta, K_gradient
+        return self.beta_l * C_theta, K_gradient
 
     def diag(self, X: np.ndarray) -> np.ndarray:
         """Returns the diagonal of the kernel k(X, X).
@@ -365,14 +486,54 @@ class SphericalKriging(Kernel):
         K_diag : ndarray of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
-        return self.lambda_s * np.ones(X.shape[0])
+        return self.beta_l * np.ones(X.shape[0])
 
     def is_stationary(self) -> bool:
         """Returns whether the kernel is stationary."""
         return True
 
     def __repr__(self) -> str:
-        return f"SphericalKriging (a={self.a}, λₛ={self.lambda_s})"
+        return f"SphericalKriging (a={self.beta_a}, λ={self.beta_l})"
+
+
+def exponential_covariance(theta: np.ndarray, a: float) -> np.ndarray:
+    """
+    Compute the exponential covariance for given distances and scale parameter.
+
+    Parameters
+    ----------
+    theta : :obj:`~numpy.ndarray`
+        Array of distances between points.
+    a : :obj:`float`
+        Scale parameter that controls the range of the covariance function.
+
+    Returns
+    -------
+    :obj:`~numpy.ndarray`
+        Exponential covariance values for the input distances.
+
+    """
+    return np.exp(-theta / a)
+
+
+def spherical_covariance(theta: np.ndarray, a: float) -> np.ndarray:
+    """
+    Compute the spherical covariance for given distances and scale parameter.
+
+    Parameters
+    ----------
+    theta : :obj:`~numpy.ndarray`
+        Array of distances between points.
+    a : :obj:`float`
+        Scale parameter that controls the range of the covariance function.
+
+    Returns
+    -------
+    :obj:`~numpy.ndarray`
+        Spherical covariance values for the input distances.
+
+    """
+    return np.where(theta <= a, 1 - 1.5 * theta / a + 0.5 * (theta**3) / (a**3), 0.0)
 
 
 def compute_pairwise_angles(
@@ -431,4 +592,6 @@ def compute_pairwise_angles(
     """
 
     cosines = np.clip(cosine_similarity(X, Y, dense_output=dense_output), -1.0, 1.0)
-    return np.arccos(np.abs(cosines)) if closest_polarity else np.arccos(cosines)
+    thetas = np.arccos(np.abs(cosines)) if closest_polarity else np.arccos(cosines)
+    thetas[np.abs(thetas) < THETA_EPSILON] = 0.0
+    return thetas

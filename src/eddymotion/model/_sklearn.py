@@ -101,9 +101,9 @@ from sklearn.gaussian_process.kernels import (
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.utils._param_validation import Interval, StrOptions
 
-BOUNDS_A: tuple[float, float] = (0.1, 0.5 * np.pi)
+BOUNDS_A: tuple[float, float] = (0.1, np.pi)
 """The limits for the parameter *a*."""
-BOUNDS_LAMBDA: tuple[float, float] = (1.0, 1000)
+BOUNDS_LAMBDA: tuple[float, float] = (1e-3, 1000)
 """The limits for the parameter lambda."""
 THETA_EPSILON: float = 1e-5
 """Minimum nonzero angle."""
@@ -126,7 +126,7 @@ SUPPORTED_OPTIMIZERS = set(CONFIGURABLE_OPTIONS.keys()) | {"fmin_l_bfgs_b"}
 
 
 class EddyMotionGPR(GaussianProcessRegressor):
-    """
+    r"""
     A GP regressor specialized for eddymotion.
 
     This specialization of the default GP regressor is created to allow
@@ -141,6 +141,41 @@ class EddyMotionGPR(GaussianProcessRegressor):
     In the future, this specialization would be the right place for hyperparameter
     optimization using cross-validation and such.
 
+    In principle, Scikit-Learn's implementation normalizes the training data
+    as in [Andersson15]_ (see
+    `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/\
+2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
+    From their paper (p. 167, end of first column):
+
+        Typically one just substracts the mean (:math:`\bar{\mathbf{f}}`)
+        from :math:`\mathbf{f}` and then add it back to
+        :math:`f^{*}`, which is analogous to what is often done in
+        "traditional" regression.
+
+    Finally, the parameter :math:`\sigma^2` maps on to Scikit-learn's ``alpha``
+    of the regressor.
+    Because it is not a parameter of the kernel, hyperparameter selection
+    through gradient-descent with analytical gradient calculations
+    would not work (the derivative of the kernel w.r.t. alpha is zero).
+
+    I believe this is overlooked in [Andersson15]_, or they actually did not
+    use analytical gradient-descent:
+
+        _A note on optimisation_
+
+        It is suggested, for example in Rasmussen and Williams (2006), that
+        an optimisation method that uses derivative information should be
+        used when finding the hyperparameters that maximise Eq. (12).
+        The reason for that is that such methods typically use fewer steps, and
+        when the cost of calculating the derivatives is small/moderate compared
+        to calculating the functions itself (as is the case for Eq. (12)) then
+        execution time can be much shorter.
+        However, we found that for the multi-shell case a heuristic optimisation
+        method such as the Nelder-Mead simplex method (Nelder and Mead, 1965) was
+        frequently better at avoiding local maxima.
+        Hence, that was the method we used for all optimisations in the present
+        paper.
+
     """
 
     _parameter_constraints: dict = {
@@ -149,6 +184,7 @@ class EddyMotionGPR(GaussianProcessRegressor):
         "optimizer": [StrOptions(SUPPORTED_OPTIMIZERS), callable, None],
         "n_restarts_optimizer": [Interval(Integral, 0, None, closed="left")],
         "copy_X_train": ["boolean"],
+        "zeromean_y": ["boolean"],
         "n_targets": [Interval(Integral, 1, None, closed="left"), None],
         "random_state": ["random_state"],
     }
@@ -157,10 +193,11 @@ class EddyMotionGPR(GaussianProcessRegressor):
         self,
         kernel: Kernel | None = None,
         *,
-        alpha: float = 1e-10,
+        alpha: float = 0.5,
         optimizer: str | Callable | None = "fmin_l_bfgs_b",
         n_restarts_optimizer: int = 0,
         copy_X_train: bool = True,
+        normalize_y: bool = True,
         n_targets: int | None = None,
         random_state: int | None = None,
         eval_gradient: bool = True,
@@ -177,7 +214,7 @@ class EddyMotionGPR(GaussianProcessRegressor):
             alpha=alpha,
             optimizer=optimizer,
             n_restarts_optimizer=n_restarts_optimizer,
-            normalize_y=False,  # We control normalization
+            normalize_y=normalize_y,
             copy_X_train=copy_X_train,
             n_targets=n_targets,
             random_state=random_state,
@@ -240,45 +277,6 @@ class EddyMotionGPR(GaussianProcessRegressor):
             return self.optimizer(obj_func, initial_theta, bounds=bounds)
 
         raise ValueError(f"Unknown optimizer {self.optimizer}.")
-
-    def fit(self, X, y):
-        r"""Fit Gaussian process regression model.
-
-        This overshadows Scikit-Learn's implementation to remove access over
-        the normalization of y.
-
-        Instead, and following Anderson 2015 and what it looks like from
-        `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/\
-2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__,
-        our fit method should also remove the mean.
-
-        From their paper (p. 167, end of first column):
-
-            Typically one just substracts the mean (:math:`\hat{\mathbf{f}}`)
-            from :math:`\mathbf{f}` and then add it back to
-            :math:`f^{*}`, which is analogous to what is often done in
-            "traditional" regression.
-
-        It is still unclear to me how :math:`f^{*}` is interpolated from
-        :math:`\hat{\mathbf{f}}` (grand mean?), or whether the fitted model
-        accounts for that factor (I doubt it).
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features) or list of object
-            Feature vectors or other representations of training data.
-
-        y : array-like of shape (n_samples,) or (n_samples, n_targets)
-            Target values.
-
-        Returns
-        -------
-        :obj:`~sklearn.gaussian_process.GaussianProcessRegressor`
-            GaussianProcessRegressor class instance.
-        """
-        super().fit(X, y - y.mean(1)[:, None])
-
-        return self
 
 
 class ExponentialKriging(Kernel):
@@ -392,8 +390,8 @@ class SphericalKriging(Kernel):
 
     def __init__(
         self,
-        beta_a: float = 0.01,
-        beta_l: float = 2.0,
+        beta_a: float = 1.38,
+        beta_l: float = 0.5,
         a_bounds: tuple[float, float] = BOUNDS_A,
         l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):

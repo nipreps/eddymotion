@@ -211,6 +211,7 @@ def main() -> None:
                 scores["rmse"] += cv_scores.tolist()
                 scores["repeat"] += [i] * len(cv_scores)
                 scores["n_folds"] += [n] * len(cv_scores)
+                scores["bval"] += [args.bval-shell] * len(cv_scores)
                 scores["snr"] += [snr_str] * len(cv_scores)
 
             print(f"Finished {n}-fold cross-validation")

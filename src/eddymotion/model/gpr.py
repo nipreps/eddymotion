@@ -38,8 +38,8 @@ from sklearn.gaussian_process.kernels import (
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.utils._param_validation import Interval, StrOptions
 
-BOUNDS_A: tuple[float, float] = (0.1, 0.75 * np.pi)
-"""The limits for the parameter *a* (angular distance)."""
+BOUNDS_A: tuple[float, float] = (0.1, 2.35)
+"""The limits for the parameter *a* (angular distance in rad)."""
 BOUNDS_LAMBDA: tuple[float, float] = (1e-3, 1000)
 """The limits for the parameter λ (signal scaling factor)."""
 THETA_EPSILON: float = 1e-5

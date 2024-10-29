@@ -34,7 +34,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import KFold, RepeatedKFold, cross_val_predict, cross_val_score
+from sklearn.model_selection import RepeatedKFold, cross_val_score
 
 from eddymotion.model._sklearn import (
     EddyMotionGPR,
@@ -47,6 +47,7 @@ def cross_validate(
     X: np.ndarray,
     y: np.ndarray,
     cv: int,
+    n_repeats: int,
     gpr: EddyMotionGPR,
 ) -> dict[int, list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]]:
     """
@@ -59,7 +60,9 @@ def cross_validate(
     y : :obj:`~numpy.ndarray`
         DWI signal.
     cv : :obj:`int`
-        number of folds
+        Number of folds.
+    n_repeats : :obj:`int`
+        Number of times the cross-validator needs to be repeated.
     gpr : obj:`~eddymotion.model._sklearn.EddyMotionGPR`
         The eddymotion Gaussian process regressor object.
 
@@ -70,7 +73,7 @@ def cross_validate(
 
     """
 
-    rkf = RepeatedKFold(n_splits=cv, n_repeats=120 // cv)
+    rkf = RepeatedKFold(n_splits=cv, n_repeats=n_repeats)
     scores = cross_val_score(gpr, X, y, scoring="neg_root_mean_squared_error", cv=rkf)
     return scores
 
@@ -93,31 +96,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Number of diffusion gradient-encoding directions in the half sphere",
         type=int,
     )
-    parser.add_argument("bval_shell", help="Shell b-value", type=float)
+    parser.add_argument("bval_shell", help="Shell b-value", type=int)
     parser.add_argument("S0", help="S0 value", type=float)
     parser.add_argument(
         "error_data_fname",
         help="Filename of TSV file containing the data to plot",
-        type=Path,
-    )
-    parser.add_argument(
-        "dwi_gt_data_fname",
-        help="Filename of NIfTI file containing the generated DWI signal",
-        type=Path,
-    )
-    parser.add_argument(
-        "bval_data_fname",
-        help="Filename of b-val file containing the diffusion-encoding gradient b-vals",
-        type=Path,
-    )
-    parser.add_argument(
-        "bvec_data_fname",
-        help="Filename of b-vecs file containing the diffusion-encoding gradient b-vecs",
-        type=Path,
-    )
-    parser.add_argument(
-        "dwi_pred_data_fname",
-        help="Filename of NIfTI file containing the predicted DWI signal",
         type=Path,
     )
     parser.add_argument("--evals", help="Eigenvalues of the tensor", nargs="+", type=float)
@@ -147,7 +130,7 @@ def _parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
 
 
 def main() -> None:
-    """Main function for running the experiment and plotting the results."""
+    """Main function for running the experiment."""
     parser = _build_arg_parser()
     args = _parse_args(parser)
 
@@ -161,11 +144,6 @@ def main() -> None:
         n_voxels=n_voxels,
         evals=args.evals,
         seed=None,
-    )
-
-    # Save the generated signal and gradient table
-    testsims.serialize_dmri(
-        data, gtab, args.dwi_gt_data_fname, args.bval_data_fname, args.bvec_data_fname
     )
 
     X = gtab[~gtab.b0s_mask].bvecs
@@ -190,10 +168,11 @@ def main() -> None:
     scores = defaultdict(list, {})
     for n in args.kfold:
         for i in range(args.repeats):
-            cv_scores = -1.0 * cross_validate(X, y.T, n, gpr)
+            cv_scores = -1.0 * cross_validate(X, y.T, n, np.max(args.kfold) // n, gpr)
             scores["rmse"] += cv_scores.tolist()
             scores["repeat"] += [i] * len(cv_scores)
             scores["n_folds"] += [n] * len(cv_scores)
+            scores["bval"] += [args.bval_shell] * len(cv_scores)
             scores["snr"] += [snr_str] * len(cv_scores)
 
         print(f"Finished {n}-fold cross-validation")
@@ -204,10 +183,6 @@ def main() -> None:
     grouped = scores_df.groupby(["n_folds"])
     print(grouped[["rmse"]].mean())
     print(grouped[["rmse"]].std())
-
-    cv = KFold(n_splits=3, shuffle=False, random_state=None)
-    predictions = cross_val_predict(gpr, X, y.T, cv=cv)
-    testsims.serialize_dwi(predictions.T, args.dwi_pred_data_fname)
 
 
 if __name__ == "__main__":

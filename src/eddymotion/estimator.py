@@ -30,7 +30,7 @@ from tqdm import tqdm
 
 from eddymotion import utils as eutils
 from eddymotion.data.splitting import lovo_split
-from eddymotion.model import ModelFactory
+from eddymotion.model.base import ModelFactory
 from eddymotion.registration.ants import _prepare_registration_data, _run_registration
 
 

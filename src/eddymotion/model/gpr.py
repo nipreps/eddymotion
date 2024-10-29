@@ -23,6 +23,7 @@
 r"""
 Derivations from scikit-learn for Gaussian Processes.
 
+
 Gaussian Process Model: Pairwise orientation angles
 ---------------------------------------------------
 Squared Exponential covariance kernel
@@ -101,10 +102,10 @@ from sklearn.gaussian_process.kernels import (
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.utils._param_validation import Interval, StrOptions
 
-BOUNDS_A: tuple[float, float] = (0.1, np.pi)
-"""The limits for the parameter *a*."""
+BOUNDS_A: tuple[float, float] = (0.1, 0.75 * np.pi)
+"""The limits for the parameter *a* (angular distance)."""
 BOUNDS_LAMBDA: tuple[float, float] = (1e-3, 1000)
-"""The limits for the parameter lambda."""
+"""The limits for the parameter λ (signal scaling factor)."""
 THETA_EPSILON: float = 1e-5
 """Minimum nonzero angle."""
 LBFGS_CONFIGURABLE_OPTIONS = {"disp", "maxiter", "ftol", "gtol"}
@@ -143,8 +144,7 @@ class EddyMotionGPR(GaussianProcessRegressor):
 
     In principle, Scikit-Learn's implementation normalizes the training data
     as in [Andersson15]_ (see
-    `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/\
-2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
+    `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
     From their paper (p. 167, end of first column):
 
         Typically one just substracts the mean (:math:`\bar{\mathbf{f}}`)
@@ -161,7 +161,7 @@ class EddyMotionGPR(GaussianProcessRegressor):
     I believe this is overlooked in [Andersson15]_, or they actually did not
     use analytical gradient-descent:
 
-        _A note on optimisation_
+        *A note on optimisation*
 
         It is suggested, for example in Rasmussen and Williams (2006), that
         an optimisation method that uses derivative information should be
@@ -184,7 +184,7 @@ class EddyMotionGPR(GaussianProcessRegressor):
         "optimizer": [StrOptions(SUPPORTED_OPTIMIZERS), callable, None],
         "n_restarts_optimizer": [Interval(Integral, 0, None, closed="left")],
         "copy_X_train": ["boolean"],
-        "zeromean_y": ["boolean"],
+        "normalize_y": ["boolean"],
         "n_targets": [Interval(Integral, 1, None, closed="left"), None],
         "random_state": ["random_state"],
     }

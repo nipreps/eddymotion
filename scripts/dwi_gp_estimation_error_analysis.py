@@ -36,7 +36,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold, RepeatedKFold, cross_val_predict, cross_val_score
 
-from eddymotion.model._sklearn import (
+from eddymotion.model.gpr import (
     EddyMotionGPR,
     SphericalKriging,
 )
@@ -63,7 +63,7 @@ def cross_validate(
         Number of folds.
     n_repeats : :obj:`int`
         Number of times the cross-validator needs to be repeated.
-    gpr : obj:`~eddymotion.model._sklearn.EddyMotionGPR`
+    gpr : obj:`~eddymotion.model.gpr.EddyMotionGPR`
         The eddymotion Gaussian process regressor object.
 
     Returns

@@ -33,7 +33,7 @@ from pathlib import Path
 import numpy as np
 from dipy.core.sphere import Sphere
 
-from eddymotion.model._sklearn import EddyMotionGPR, SphericalKriging
+from eddymotion.model.gpr import EddyMotionGPR, SphericalKriging
 from eddymotion.testing import simulations as testsims
 
 SAMPLING_DIRECTIONS = 200

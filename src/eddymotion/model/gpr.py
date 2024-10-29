@@ -20,71 +20,7 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-r"""
-Derivations from scikit-learn for Gaussian Processes.
-
-
-Gaussian Process Model: Pairwise orientation angles
----------------------------------------------------
-Squared Exponential covariance kernel
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Kernel based on a squared exponential function for Gaussian processes on
-multi-shell DWI data following to eqs. 14 and 16 in [Andersson15]_.
-For a 2-shell case, the :math:`\mathbf{K}` kernel can be written as:
-
-.. math::
-    \begin{equation}
-    \mathbf{K} = \left[
-    \begin{matrix}
-        \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &
-        \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
-        \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &
-        \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\
-    \end{matrix}
-    \right]
-    \end{equation}
-
-**Squared exponential shell-wise covariance kernel**:
-Compute the squared exponential smooth function describing how the
-covariance changes along the b direction.
-It uses the log of the b-values as the measure of distance along the
-b-direction according to eq. 15 in [Andersson15]_.
-
-.. math::
-    C_{b}(b, b'; \ell) = \exp\left( - \frac{(\log b - \log b')^2}{2 \ell^2} \right).
-
-**Squared exponential covariance kernel**:
-Compute the squared exponential covariance matrix following to eq. 14 in [Andersson15]_.
-
-.. math::
-    k(\textbf{x}, \textbf{x'}) = C_{\theta}(\mathbf{g}, \mathbf{g'}; a) C_{b}(|b - b'|; \ell)
-
-where :math:`C_{\theta}` is given by:
-
-.. math::
-    \begin{equation}
-    C(\theta) =
-    \begin{cases}
-    1 - \frac{3 \theta}{2 a} + \frac{\theta^3}{2 a^3} & \textnormal{if} \; \theta \leq a \\
-    0 & \textnormal{if} \; \theta > a
-    \end{cases}
-    \end{equation}
-
-:math:`\theta` being computed as:
-
-.. math::
-    \theta(\mathbf{g}, \mathbf{g'}) = \arccos(|\langle \mathbf{g}, \mathbf{g'} \rangle|)
-
-and :math:`C_{b}` is given by:
-
-.. math::
-    C_{b}(b, b'; \ell) = \exp\left( - \frac{(\log b - \log b')^2}{2 \ell^2} \right)
-
-:math:`b` and :math:`b'` being the b-values, and :math:`\mathbf{g}` and
-:math:`\mathbf{g'}` the unit diffusion-encoding gradient unit vectors of the
-shells; and :math:`{a, \ell}` some hyperparameters.
-
-"""
+"""Derivations from scikit-learn for Gaussian Processes."""
 
 from __future__ import annotations
 
@@ -175,6 +111,44 @@ class EddyMotionGPR(GaussianProcessRegressor):
         frequently better at avoiding local maxima.
         Hence, that was the method we used for all optimisations in the present
         paper.
+    
+    **Multi-shell regression (TODO).**
+    For multi-shell modeling, the kernel :math:`k(\textbf{x}, \textbf{x'})`
+    is updated following Eq. (14) in [Andersson15]_.
+
+    .. math::
+        k(\textbf{x}, \textbf{x'}) = C_{\theta}(\mathbf{g}, \mathbf{g'}; a) C_{b}(|b - b'|; \ell)
+
+    and :math:`C_{b}` is based the log of the b-values ratio, a measure of distance along the
+    b-direction, according to Eq. (15) given by:
+
+    .. math::
+        C_{b}(b, b'; \ell) = \exp\left( - \frac{(\log b - \log b')^2}{2 \ell^2} \right),
+
+    :math:`b` and :math:`b'` being the b-values, and :math:`\mathbf{g}` and
+    :math:`\mathbf{g'}` the unit diffusion-encoding gradient unit vectors of the
+    shells; and :math:`{a, \ell}` some hyperparameters.
+
+    The full GP regression kernel :math:`\mathbf{K}` is then updated for a 2-shell case as
+    follows (Eq. (16) in [Andersson15]_):
+
+    .. math::
+        \begin{equation}
+        \mathbf{K} = \left[
+        \begin{matrix}
+            \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &
+            \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
+            \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &
+            \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\
+        \end{matrix}
+        \right]
+        \end{equation}
+
+    References
+    ----------
+    .. [Andersson15] J. L. R. Andersson. et al., An integrated approach to
+        correction for off-resonance effects and subject movement in diffusion MR
+        imaging, NeuroImage 125 (2016) 1063-11078
 
     """
 
@@ -497,8 +471,20 @@ class SphericalKriging(Kernel):
 
 
 def exponential_covariance(theta: np.ndarray, a: float) -> np.ndarray:
-    """
+    r"""
     Compute the exponential covariance for given distances and scale parameter.
+
+    Implements :math:`C_{\theta}`, following Eq. (9) in [Andersson15]_:
+
+    .. math::
+        \begin{equation}
+        C(\theta) = e^{-\theta/a} \,\, \text{for} \, 0 \leq \theta \leq \pi,
+        \end{equation}
+
+    :math:`\theta` being computed as:
+
+    .. math::
+        \theta(\mathbf{g}, \mathbf{g'}) = \arccos(|\langle \mathbf{g}, \mathbf{g'} \rangle|)
 
     Parameters
     ----------
@@ -517,8 +503,24 @@ def exponential_covariance(theta: np.ndarray, a: float) -> np.ndarray:
 
 
 def spherical_covariance(theta: np.ndarray, a: float) -> np.ndarray:
-    """
+    r"""
     Compute the spherical covariance for given distances and scale parameter.
+
+    Implements :math:`C_{\theta}`, following Eq. (10) in [Andersson15]_:
+
+    .. math::
+        \begin{equation}
+        C(\theta) =
+        \begin{cases}
+        1 - \frac{3 \theta}{2 a} + \frac{\theta^3}{2 a^3} & \textnormal{if} \; \theta \leq a \\
+        0 & \textnormal{if} \; \theta > a
+        \end{cases}
+        \end{equation}
+
+    :math:`\theta` being computed as:
+
+    .. math::
+        \theta(\mathbf{g}, \mathbf{g'}) = \arccos(|\langle \mathbf{g}, \mathbf{g'} \rangle|)
 
     Parameters
     ----------
@@ -582,12 +584,6 @@ def compute_pairwise_angles(
     >>> X = np.asarray([(1.0, -1.0), (0.0, 0.0), (0.0, 0.0)]).T
     >>> compute_pairwise_angles(X)[0, 1]
     0.0
-
-    References
-    ----------
-    .. [Andersson15] J. L. R. Andersson. et al., An integrated approach to
-       correction for off-resonance effects and subject movement in diffusion MR
-       imaging, NeuroImage 125 (2016) 1063-11078
 
     """
 

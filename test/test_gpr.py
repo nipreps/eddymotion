@@ -26,7 +26,7 @@ import numpy as np
 import pytest
 from dipy.io import read_bvals_bvecs
 
-from eddymotion.model import _sklearn as ems
+from eddymotion.model import gpr
 
 GradientTablePatch = namedtuple("gtab", ["bvals", "bvecs"])
 
@@ -263,7 +263,7 @@ def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
     if bvecs2 is not None:
         _bvecs2 = (bvecs2 / np.linalg.norm(bvecs2, axis=0)).T
 
-    obtained = ems.compute_pairwise_angles(_bvecs1, _bvecs2, closest_polarity)
+    obtained = gpr.compute_pairwise_angles(_bvecs1, _bvecs2, closest_polarity)
 
     if _bvecs2 is not None:
         assert (_bvecs1.shape[0], _bvecs2.shape[0]) == obtained.shape
@@ -282,7 +282,7 @@ def test_kernel(repodata, covariance):
 
     bvecs = bvecs[bvals > 10]
 
-    KernelType = getattr(ems, f"{covariance}Kriging")
+    KernelType = getattr(gpr, f"{covariance}Kriging")
     kernel = KernelType()
     K = kernel(bvecs)
 

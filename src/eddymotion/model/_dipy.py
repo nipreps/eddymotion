@@ -31,7 +31,7 @@ from dipy.core.gradients import GradientTable
 from dipy.reconst.base import ReconstModel
 from sklearn.gaussian_process import GaussianProcessRegressor
 
-from eddymotion.model._sklearn import (
+from eddymotion.model.gpr import (
     EddyMotionGPR,
     ExponentialKriging,
     SphericalKriging,

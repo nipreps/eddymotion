@@ -1,0 +1,7 @@
+eddymotion.model.gpr module
+===========================
+
+.. automodule:: eddymotion.model.gpr
+   :members:
+   :undoc-members:
+   :show-inheritance:

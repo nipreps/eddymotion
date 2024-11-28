@@ -195,8 +195,8 @@ def main() -> None:
     gpr = EddyMotionGPR(
         kernel=SphericalKriging(beta_a=a, beta_l=lambda_s),
         alpha=alpha,
-        optimizer=None,
-        # optimizer="Nelder-Mead",
+        # optimizer=None,
+        optimizer="cross-validation",
         # disp=True,
         # ftol=1,
         # max_iter=2e5,

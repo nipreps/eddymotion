@@ -80,10 +80,10 @@ class EddyMotionGPR(GaussianProcessRegressor):
 
     In principle, Scikit-Learn's implementation normalizes the training data
     as in [Andersson15]_ (see
-    `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
+    `FSL's source code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
     From their paper (p. 167, end of first column):
 
-        Typically one just substracts the mean (:math:`\bar{\mathbf{f}}`)
+        Typically one just subtracts the mean (:math:`\bar{\mathbf{f}}`)
         from :math:`\mathbf{f}` and then add it back to
         :math:`f^{*}`, which is analogous to what is often done in
         "traditional" regression.

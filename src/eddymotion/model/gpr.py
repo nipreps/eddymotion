@@ -94,8 +94,8 @@ class EddyMotionGPR(GaussianProcessRegressor):
     through gradient-descent with analytical gradient calculations
     would not work (the derivative of the kernel w.r.t. alpha is zero).
 
-    I believe this is overlooked in [Andersson15]_, or they actually did not
-    use analytical gradient-descent:
+    This might have been overlooked in [Andersson15]_, or else they actually did
+    not use analytical gradient-descent:
 
         *A note on optimisation*
 

@@ -64,7 +64,7 @@ SUPPORTED_OPTIMIZERS = set(CONFIGURABLE_OPTIONS.keys()) | {"fmin_l_bfgs_b"}
 
 class EddyMotionGPR(GaussianProcessRegressor):
     r"""
-    A GP regressor specialized for eddymotion.
+    A Gaussian process (GP) regressor specialized for eddymotion.
 
     This specialization of the default GP regressor is created to allow
     the following extended behaviors:

@@ -239,6 +239,7 @@ apidoc_extra_args = ["--module-first", "-d 1", "-T"]
 autodoc_default_options = {
     "special-members": "__call__, __len__",
 }
+autoclass_content = "both"
 
 
 # -- Options for intersphinx extension ---------------------------------------
@@ -260,3 +261,25 @@ intersphinx_mapping = {
 
 # -- Options for versioning extension ----------------------------------------
 scv_show_banner = True
+
+
+# -- Special functions -------------------------------------------------------
+import inspect
+
+
+def autodoc_process_signature(app, what, name, obj, options, signature, return_annotation):
+    """Replace the class signature by the signature from cls.__init__"""
+
+    if what == "class" and hasattr(obj, "__init__"):
+        try:
+            init_signature = inspect.signature(obj.__init__)
+            # Convert the Signature object to a string
+            return str(init_signature), return_annotation
+        except ValueError:
+            # Handle cases where `inspect.signature` fails
+            return signature, return_annotation
+    return signature, return_annotation
+
+
+def setup(app):
+    app.connect("autodoc-process-signature", autodoc_process_signature)

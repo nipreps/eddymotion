@@ -1,9 +1,8 @@
 .. include:: links.rst
 .. include:: ../README.rst
-   :end-line: 29
+   :end-before: BEGIN FLOWCHART
 .. include:: ../README.rst
-   :start-line: 34
-
+   :start-after: END FLOWCHART
 
 .. image:: _static/eddymotion-flowchart.svg
    :alt: The eddymotion flowchart

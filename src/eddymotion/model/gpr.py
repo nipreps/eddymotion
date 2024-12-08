@@ -264,7 +264,6 @@ class ExponentialKriging(Kernel):
         l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
-        Initialize an exponential Kriging kernel.
 
         Parameters
         ----------
@@ -370,7 +369,6 @@ class SphericalKriging(Kernel):
         l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
-        Initialize a spherical Kriging kernel.
 
         Parameters
         ----------

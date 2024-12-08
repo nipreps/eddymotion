@@ -234,6 +234,13 @@ apidoc_excluded_paths = ["conftest.py", "*/tests/*", "tests/*", "config/*"]
 apidoc_separate_modules = True
 apidoc_extra_args = ["--module-first", "-d 1", "-T"]
 
+
+# -- Options for autodoc extension -------------------------------------------
+autodoc_default_options = {
+    "special-members": "__call__, __len__",
+}
+
+
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.

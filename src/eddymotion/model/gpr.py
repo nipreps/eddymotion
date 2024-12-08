@@ -89,10 +89,9 @@ class EddyMotionGPR(GaussianProcessRegressor):
         "traditional" regression.
 
     Finally, the parameter :math:`\sigma^2` maps on to Scikit-learn's ``alpha``
-    of the regressor.
-    Because it is not a parameter of the kernel, hyperparameter selection
-    through gradient-descent with analytical gradient calculations
-    would not work (the derivative of the kernel w.r.t. alpha is zero).
+    of the regressor. Because it is not a parameter of the kernel, hyperparameter
+    selection through gradient-descent with analytical gradient calculations
+    would not work (the derivative of the kernel w.r.t. ``alpha`` is zero).
 
     This might have been overlooked in [Andersson15]_, or else they actually did
     not use analytical gradient-descent:
@@ -105,13 +104,12 @@ class EddyMotionGPR(GaussianProcessRegressor):
         The reason for that is that such methods typically use fewer steps, and
         when the cost of calculating the derivatives is small/moderate compared
         to calculating the functions itself (as is the case for Eq. (12)) then
-        execution time can be much shorter.
-        However, we found that for the multi-shell case a heuristic optimisation
-        method such as the Nelder-Mead simplex method (Nelder and Mead, 1965) was
-        frequently better at avoiding local maxima.
-        Hence, that was the method we used for all optimisations in the present
-        paper.
-    
+        execution time can be much shorter. However, we found that for the
+        multi-shell case a heuristic optimisation method such as the Nelder-Mead
+        simplex method (Nelder and Mead, 1965) was frequently better at avoiding
+        local maxima. Hence, that was the method we used for all optimisations
+        in the present paper.
+
     **Multi-shell regression (TODO).**
     For multi-shell modeling, the kernel :math:`k(\textbf{x}, \textbf{x'})`
     is updated following Eq. (14) in [Andersson15]_.

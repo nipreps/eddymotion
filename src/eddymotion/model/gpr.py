@@ -271,7 +271,7 @@ class ExponentialKriging(Kernel):
         beta_l : :obj:`float`, optional
             The :math:`\lambda` hyperparameter.
         a_bounds : :obj:`tuple`, optional
-            Bounds for the a parameter.
+            Bounds for the ``a`` parameter.
         l_bounds : :obj:`tuple`, optional
             Bounds for the :math:`\lambda` hyperparameter.
 

@@ -271,8 +271,8 @@ def test_compute_pairwise_angles(bvecs1, bvecs2, closest_polarity, expected):
     np.testing.assert_array_almost_equal(obtained, expected, decimal=2)
 
 
-@pytest.mark.parametrize("covariance", ["Spherical", "Exponential"])
-def test_kernel(repodata, covariance):
+@pytest.mark.parametrize("covariance", ["Spherical", "Exponential", "SquaredExponential"])
+def test_kernel_single_shell(repodata, covariance):
     """Check kernel construction."""
 
     bvals, bvecs = read_bvals_bvecs(
@@ -296,3 +296,65 @@ def test_kernel(repodata, covariance):
 
     K_predict = kernel(bvecs, bvecs[10:14, ...])
     assert K_predict.shape == (K.shape[0], 4)
+
+
+# ToDo
+@pytest.mark.parametrize(
+    ("bvals1", "bvals2", "expected"),
+    [
+        (
+            np.array(
+                [
+                    [1000, 1000, 1000, 1000],
+                ]
+            ),
+            None,
+            np.array(
+                [
+                    [0, 0, 0, 0],
+                ]
+            ),
+        ),
+        (
+            np.array(
+                [
+                    [1000, 1000, 1000, 1000],
+                    [2000, 2000, 2000],
+                ]
+            ),
+            None,
+            np.array(
+                [
+                    [1000, 1000, 1000, 1000],
+                ]
+            ),
+        ),
+    ],
+)
+def test_compute_shell_distance(bvals1, bvals2, expected):
+
+    obtained = gpr.compute_shell_distance(bvals1, bvals2)
+
+    if bvals2 is not None:
+        assert (bvals1.shape[0], bvals2.shape[0]) == obtained.shape
+    assert obtained.shape == expected.shape
+    np.testing.assert_array_almost_equal(obtained, expected, decimal=2)
+
+
+@pytest.mark.parametrize("covariance", ["SquaredExponential"])
+def test_kernel_multi_shell(repodata, covariance):
+    """Check kernel construction."""
+
+    bvals, bvecs = read_bvals_bvecs(
+        str(repodata / "ds000114_multishell.bval"),
+        str(repodata / "ds000114_multishell.bvec"),
+    )
+
+    bvals = bvals[bvals > 10]
+
+    KernelType = getattr(gpr, f"{covariance}Kriging")
+    kernel = KernelType()
+
+    K = kernel(bvals)
+
+    assert K.shape == (bvals.shape[0],) * 2

@@ -308,10 +308,10 @@ class ExponentialKriging(Kernel):
 
         Returns
         -------
-        K : ndarray of shape (n_samples_X, n_samples_Y)
+        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)
             Kernel k(X, Y)
 
-        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
+        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\
                 optional
             The gradient of the kernel k(X, X) with respect to the log of the
             hyperparameter of the kernel. Only returned when `eval_gradient`
@@ -339,12 +339,12 @@ class ExponentialKriging(Kernel):
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples_X, n_features)
+        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)
             Left argument of the returned kernel k(X, Y)
 
         Returns
         -------
-        K_diag : ndarray of shape (n_samples_X,)
+        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
         return self.beta_l * np.ones(X.shape[0])
@@ -414,10 +414,10 @@ class SphericalKriging(Kernel):
 
         Returns
         -------
-        K : ndarray of shape (n_samples_X, n_samples_Y)
+        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)
             Kernel k(X, Y)
 
-        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
+        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\
                 optional
             The gradient of the kernel k(X, X) with respect to the log of the
             hyperparameter of the kernel. Only returned when ``eval_gradient``
@@ -450,12 +450,12 @@ class SphericalKriging(Kernel):
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples_X, n_features)
+        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)
             Left argument of the returned kernel k(X, Y)
 
         Returns
         -------
-        K_diag : ndarray of shape (n_samples_X,)
+        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
         return self.beta_l * np.ones(X.shape[0])

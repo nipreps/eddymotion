@@ -1,5 +1,5 @@
 # setuptools-scm
-eddymotion/_version.py
+nifreeze/_version.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -115,4 +115,4 @@ ENV/
 kubernetes/jobs/
 
 # Version files
-src/eddymotion/_version.py
+src/nifreeze/_version.py

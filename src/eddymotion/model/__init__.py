@@ -22,18 +22,18 @@
 #
 """Data models."""
 
-from eddymotion.model.base import (
+from nifreeze.model.base import (
     AverageModel,
     ModelFactory,
     TrivialModel,
 )
-from eddymotion.model.dmri import (
+from nifreeze.model.dmri import (
     AverageDWModel,
     DKIModel,
     DTIModel,
     GPModel,
 )
-from eddymotion.model.pet import PETModel
+from nifreeze.model.pet import PETModel
 
 __all__ = (
     "ModelFactory",

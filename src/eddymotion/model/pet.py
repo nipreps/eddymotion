@@ -25,8 +25,8 @@
 import numpy as np
 from joblib import Parallel, delayed
 
-from eddymotion.exceptions import ModelNotFittedError
-from eddymotion.model.base import BaseModel
+from nifreeze.exceptions import ModelNotFittedError
+from nifreeze.model.base import BaseModel
 
 DEFAULT_TIMEFRAME_MIDPOINT_TOL = 1e-2
 """Time frame tolerance in seconds."""

@@ -34,7 +34,7 @@ def lovo_split(dataset, index, with_b0=False):
 
     Parameters
     ----------
-    dataset : :obj:`eddymotion.data.dmri.DWI`
+    dataset : :obj:`nifreeze.data.dmri.DWI`
         DWI object
     index : :obj:`int`
         Index of the DWI orientation to be left out in this fold.

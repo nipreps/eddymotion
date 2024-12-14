@@ -28,10 +28,10 @@ from tempfile import TemporaryDirectory, mkstemp
 import nibabel as nb
 from tqdm import tqdm
 
-from eddymotion import utils as eutils
-from eddymotion.data.splitting import lovo_split
-from eddymotion.model.base import ModelFactory
-from eddymotion.registration.ants import _prepare_registration_data, _run_registration
+from nifreeze import utils as eutils
+from nifreeze.data.splitting import lovo_split
+from nifreeze.model.base import ModelFactory
+from nifreeze.registration.ants import _prepare_registration_data, _run_registration
 
 
 class EddyMotionEstimator:
@@ -53,7 +53,7 @@ class EddyMotionEstimator:
 
         Parameters
         ----------
-        dwdata : :obj:`~eddymotion.dmri.DWI`
+        dwdata : :obj:`~nifreeze.dmri.DWI`
             The target DWI dataset, represented by this tool's internal
             type. The object is used in-place, and will contain the estimated
             parameters in its ``em_affines`` property, as well as the rotated
@@ -67,7 +67,7 @@ class EddyMotionEstimator:
         models : :obj:`list`
             Selects the diffusion model that will generate the registration target
             corresponding to each gradient map.
-            See :obj:`~eddymotion.model.ModelFactory` for allowed models (and corresponding
+            See :obj:`~nifreeze.model.ModelFactory` for allowed models (and corresponding
             keywords).
         omp_nthreads : :obj:`int`
             Maximum number of threads an individual process may use.
@@ -228,12 +228,12 @@ def _prepare_kwargs(dwdata, kwargs):
 
     Parameters
     ----------
-    dwdata : :class:`eddymotion.data.dmri.DWI`
+    dwdata : :class:`nifreeze.data.dmri.DWI`
         DWI data object.
     kwargs : :obj:`dict`
         Keyword arguments.
     """
-    from eddymotion.data.filtering import advanced_clip as _advanced_clip
+    from nifreeze.data.filtering import advanced_clip as _advanced_clip
 
     if dwdata.brainmask is not None:
         kwargs["mask"] = dwdata.brainmask

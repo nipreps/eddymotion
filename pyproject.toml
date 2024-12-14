@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "eddymotion"
+name = "nifreeze"
 description = "Pure python eddy-current and head-motion correction for dMRI, an extension of QSIprep's SHOREline algorithm (Cieslak, 2020) to multiple diffusion models."
 readme = "README.rst"
 authors = [{name = "The NiPreps Developers", email = "nipreps@gmail.com"}]
@@ -34,8 +34,8 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Documentation = "https://www.nipreps.org/eddymotion"
-Home = "https://github.com/nipreps/eddymotion"
+Documentation = "https://www.nipreps.org/nifreeze"
+Home = "https://github.com/nipreps/nifreeze"
 NiPreps = "https://www.nipreps.org/"
 
 [project.optional-dependencies]
@@ -80,12 +80,12 @@ antsopt = [
 ]
 
 # Aliases
-docs = ["eddymotion[doc]"]
-tests = ["eddymotion[test]"]
-all = ["eddymotion[doc,test,dev,plotting,resmon,antsopt]"]
+docs = ["nifreeze[doc]"]
+tests = ["nifreeze[test]"]
+all = ["nifreeze[doc,test,dev,plotting,resmon,antsopt]"]
 
 [project.scripts]
-eddymotion = "eddymotion.cli.run:main"
+nifreeze = "nifreeze.cli.run:main"
 
 #
 # Hatch configurations
@@ -98,9 +98,9 @@ allow-direct-references = true
 exclude = [".git_archival.txt"]  # No longer needed in sdist
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/eddymotion"]
+packages = ["src/nifreeze"]
 # exclude = [
-#     "eddymotion/tests/data",  # Large test data directory
+#     "nifreeze/tests/data",  # Large test data directory
 # ]
 
 
@@ -114,7 +114,7 @@ local_scheme = "no-local-version"
 
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/eddymotion/_version.py"
+version-file = "src/nifreeze/_version.py"
 
 #
 # Developer tool configurations
@@ -161,7 +161,7 @@ inline-quotes = "double"
 quote-style = "double"
 
 [tool.ruff.lint.isort]
-known-first-party=["eddymotion"]
+known-first-party=["nifreeze"]
 
 [tool.pytest.ini_options]
 pythonpath = "src/ test/"
@@ -181,7 +181,7 @@ omit = [
     '*/viz/*',
     '*/__init__.py',
     '*/conftest.py',
-    'src/eddymotion/_version.py'
+    'src/nifreeze/_version.py'
 ]
 
 [tool.coverage.report]

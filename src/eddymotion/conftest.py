@@ -29,7 +29,7 @@ import nibabel
 import numpy
 import pytest
 
-test_data_env = os.getenv("TEST_DATA_HOME", str(Path.home() / "eddymotion-tests"))
+test_data_env = os.getenv("TEST_DATA_HOME", str(Path.home() / "nifreeze-tests"))
 test_output_dir = os.getenv("TEST_OUTPUT_DIR")
 test_workdir = os.getenv("TEST_WORK_DIR")
 

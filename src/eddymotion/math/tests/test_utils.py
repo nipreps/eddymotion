@@ -23,7 +23,7 @@
 import numpy as np
 import pytest
 
-from eddymotion.math.utils import compute_angle, is_positive_definite
+from nifreeze.math.utils import compute_angle, is_positive_definite
 
 
 def test_is_positive_definite():

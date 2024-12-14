@@ -78,7 +78,7 @@ def _to_nifti(
     """
     data = np.squeeze(data)
     if clip:
-        from eddymotion.data.filtering import advanced_clip
+        from nifreeze.data.filtering import advanced_clip
 
         data = advanced_clip(data)
     nii = nb.Nifti1Image(
@@ -162,7 +162,7 @@ def _get_ants_settings(settings: str = "b0-to-b0_level0") -> Path:
     """
     return Path(
         pkg_fn(
-            "eddymotion.registration",
+            "nifreeze.registration",
             f"config/{settings}.json",
         )
     )
@@ -461,7 +461,7 @@ def _run_registration(
     registration = Registration(
         terminal_output="file",
         from_file=pkg_fn(
-            "eddymotion.registration",
+            "nifreeze.registration",
             f"config/{reg_target_type[0]}-to-{reg_target_type[1]}_level{i_iter}.json",
         ),
         fixed_image=str(fixed.absolute()),

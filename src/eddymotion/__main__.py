@@ -20,7 +20,7 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Entry point for Eddymotion."""
+"""Entry point for NiFreeze."""
 
 import sys
 

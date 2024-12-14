@@ -20,11 +20,11 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Base infrastructure for eddymotion's models."""
+"""Base infrastructure for nifreeze's models."""
 
 import numpy as np
 
-from eddymotion.exceptions import ModelNotFittedError
+from nifreeze.exceptions import ModelNotFittedError
 
 
 class ModelFactory:
@@ -51,7 +51,7 @@ class ModelFactory:
             return TrivialModel(predicted=kwargs.pop("S0"), gtab=kwargs.pop("gtab"))
 
         if model.lower() in ("avgdwi", "averagedwi", "meandwi"):
-            from eddymotion.model.dmri import AverageDWModel
+            from nifreeze.model.dmri import AverageDWModel
 
             return AverageDWModel(**kwargs)
 

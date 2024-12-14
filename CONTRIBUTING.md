@@ -1,3 +1,3 @@
-# Contributing to *eddymotion*
+# Contributing to *NiFreeze*
 
-*eddymotion* is a project of the [*NiPreps* Community, which specifies the contributing guidelines](https://www.nipreps.org/community/).
+*NiFreeze* is a project of the [*NiPreps* Community, which specifies the contributing guidelines](https://www.nipreps.org/community/).

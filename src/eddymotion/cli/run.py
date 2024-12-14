@@ -20,13 +20,13 @@
 #
 #     https://www.nipreps.org/community/licensing/
 #
-"""Eddymotion runner."""
+"""NiFreeze runner."""
 
 from pathlib import Path
 
-from eddymotion.cli.parser import parse_args
-from eddymotion.data.dmri import DWI
-from eddymotion.estimator import EddyMotionEstimator
+from nifreeze.cli.parser import parse_args
+from nifreeze.data.dmri import DWI
+from nifreeze.estimator import EddyMotionEstimator
 
 
 def main(argv=None) -> None:

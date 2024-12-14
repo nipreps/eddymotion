@@ -31,7 +31,7 @@ from dipy.core.gradients import GradientTable
 from dipy.reconst.base import ReconstModel
 from sklearn.gaussian_process import GaussianProcessRegressor
 
-from eddymotion.model.gpr import (
+from nifreeze.model.gpr import (
     EddyMotionGPR,
     ExponentialKriging,
     SphericalKriging,
@@ -157,7 +157,7 @@ class GaussianProcessModel(ReconstModel):
 
         Returns
         -------
-        :obj:`~eddymotion.model.dipy.GPFit`
+        :obj:`~nifreeze.model.dipy.GPFit`
             A model fit container object.
 
         """

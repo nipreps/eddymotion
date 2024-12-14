@@ -1,5 +1,5 @@
-*Eddymotion*
-============
+*NiFreeze*
+==========
 Estimating head-motion and deformations derived from eddy-currents in diffusion MRI data.
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4680599.svg
@@ -7,23 +7,23 @@ Estimating head-motion and deformations derived from eddy-currents in diffusion 
    :alt: DOI
 
 .. image:: https://img.shields.io/badge/License-Apache_2.0-blue.svg
-   :target: https://github.com/nipreps/eddymotion/blob/main/LICENSE
+   :target: https://github.com/nipreps/nifreeze/blob/main/LICENSE
    :alt: License
 
-.. image:: https://img.shields.io/pypi/v/eddymotion.svg
-   :target: https://pypi.python.org/pypi/eddymotion/
+.. image:: https://img.shields.io/pypi/v/nifreeze.svg
+   :target: https://pypi.python.org/pypi/nifreeze/
    :alt: Latest Version
 
-.. image:: https://github.com/nipreps/eddymotion/actions/workflows/test.yml/badge.svg
-   :target: https://github.com/nipreps/eddymotion/actions/workflows/test.yml
+.. image:: https://github.com/nipreps/nifreeze/actions/workflows/test.yml/badge.svg
+   :target: https://github.com/nipreps/nifreeze/actions/workflows/test.yml
    :alt: Testing
 
-.. image:: https://github.com/nipreps/eddymotion/actions/workflows/pages/pages-build-deployment/badge.svg
-   :target: https://www.nipreps.org/eddymotion/main/index.html
+.. image:: https://github.com/nipreps/nifreeze/actions/workflows/pages/pages-build-deployment/badge.svg
+   :target: https://www.nipreps.org/nifreeze/main/index.html
    :alt: Documentation
 
-.. image:: https://github.com/nipreps/eddymotion/actions/workflows/pythonpackage.yml/badge.svg
-   :target: https://github.com/nipreps/eddymotion/actions/workflows/pythonpackage.yml
+.. image:: https://github.com/nipreps/nifreeze/actions/workflows/pythonpackage.yml/badge.svg
+   :target: https://github.com/nipreps/nifreeze/actions/workflows/pythonpackage.yml
    :alt: Python package
 
 Retrospective estimation of head-motion between diffusion-weighted images (DWI) acquired within
@@ -43,7 +43,7 @@ More recently, Cieslak et al. [#r3]_ integrated both approaches in *SHORELine*, 
 (i) setting up a leave-one-out prediction framework as in eddy; and
 (ii) replacing eddy’s general-purpose Gaussian process prediction with the SHORE [#r4]_ diffusion model.
 
-*Eddymotion* is an open implementation of eddy-current and head-motion correction that builds upon
+*NiFreeze* is an open implementation of eddy-current and head-motion correction that builds upon
 the work of ``eddy`` and *SHORELine*, while generalizing these methods to multiple acquisition schemes
 (single-shell, multi-shell, and diffusion spectrum imaging) using diffusion models available with DIPY [#r5]_.
 

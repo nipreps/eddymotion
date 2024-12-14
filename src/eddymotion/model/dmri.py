@@ -24,9 +24,9 @@
 import numpy as np
 from joblib import Parallel, delayed
 
-from eddymotion.exceptions import ModelNotFittedError
-from eddymotion.model._dipy import _rasb2dipy
-from eddymotion.model.base import BaseModel
+from nifreeze.exceptions import ModelNotFittedError
+from nifreeze.model._dipy import _rasb2dipy
+from nifreeze.model.base import BaseModel
 
 
 def _exec_fit(model, data, chunk=None):
@@ -238,7 +238,7 @@ class AverageDWModel(BaseDWIModel):
         bias : :obj:`bool`
             Whether the overall distribution of each diffusion weighted image will be
             standardized and centered around the
-            :data:`src.eddymotion.model.base.DEFAULT_CLIP_PERCENTILE` percentile.
+            :data:`src.nifreeze.model.base.DEFAULT_CLIP_PERCENTILE` percentile.
         stat : :obj:`str`
             Whether the summary statistic to apply is ``"mean"`` or ``"median"``.
 
@@ -310,10 +310,10 @@ class DKIModel(BaseDWIModel):
 
 
 class GPModel(BaseDWIModel):
-    """A wrapper of :obj:`~eddymotion.model.dipy.GaussianProcessModel`."""
+    """A wrapper of :obj:`~nifreeze.model.dipy.GaussianProcessModel`."""
 
     _modelargs = ("kernel_model",)
-    _model_class = "eddymotion.model._dipy.GaussianProcessModel"
+    _model_class = "nifreeze.model._dipy.GaussianProcessModel"
 
 
 def find_shelling_scheme(

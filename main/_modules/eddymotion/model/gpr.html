@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.model.gpr - eddymotion 24.0.0.dev234 documentation</title>
+        <title>eddymotion.model.gpr - eddymotion 24.0.0.dev237 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev234 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev237 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,14 +189,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev234</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev237</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev234</span>
+  <span class="sidebar-brand-text">24.0.0.dev237</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -586,6 +586,8 @@
     <span class="k">def</span> <span class="nf">hyperparameter_l</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Hyperparameter</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Hyperparameter</span><span class="p">(</span><span class="s2">&quot;beta_l&quot;</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_bounds</span><span class="p">)</span>
 
+<div class="viewcode-block" id="ExponentialKriging.__call__">
+<a class="viewcode-back" href="../../../api/eddymotion.model.gpr.html#eddymotion.model.gpr.ExponentialKriging.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eval_gradient</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
@@ -625,7 +627,8 @@
         <span class="n">K_gradient</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_l</span> <span class="o">*</span> <span class="n">C_theta</span> <span class="o">*</span> <span class="n">thetas</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_a</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># Derivative w.r.t. a</span>
         <span class="n">K_gradient</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">C_theta</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_l</span> <span class="o">*</span> <span class="n">C_theta</span><span class="p">,</span> <span class="n">K_gradient</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_l</span> <span class="o">*</span> <span class="n">C_theta</span><span class="p">,</span> <span class="n">K_gradient</span></div>
+
 
 <div class="viewcode-block" id="ExponentialKriging.diag">
 <a class="viewcode-back" href="../../../api/eddymotion.model.gpr.html#eddymotion.model.gpr.ExponentialKriging.diag">[docs]</a>
@@ -700,6 +703,8 @@
     <span class="k">def</span> <span class="nf">hyperparameter_l</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Hyperparameter</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Hyperparameter</span><span class="p">(</span><span class="s2">&quot;beta_l&quot;</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_bounds</span><span class="p">)</span>
 
+<div class="viewcode-block" id="SphericalKriging.__call__">
+<a class="viewcode-back" href="../../../api/eddymotion.model.gpr.html#eddymotion.model.gpr.SphericalKriging.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eval_gradient</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
@@ -744,7 +749,8 @@
         <span class="p">)</span>
         <span class="n">K_gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">deriv_a</span><span class="p">,</span> <span class="n">C_theta</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_l</span> <span class="o">*</span> <span class="n">C_theta</span><span class="p">,</span> <span class="n">K_gradient</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_l</span> <span class="o">*</span> <span class="n">C_theta</span><span class="p">,</span> <span class="n">K_gradient</span></div>
+
 
 <div class="viewcode-block" id="SphericalKriging.diag">
 <a class="viewcode-back" href="../../../api/eddymotion.model.gpr.html#eddymotion.model.gpr.SphericalKriging.diag">[docs]</a>
@@ -942,7 +948,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=4837054e"></script>
+</div><script src="../../../_static/documentation_options.js?v=7fcf8f24"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

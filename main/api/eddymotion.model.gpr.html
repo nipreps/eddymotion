@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.model.pet module" href="eddymotion.model.pet.html" /><link rel="prev" title="eddymotion.model.dmri module" href="eddymotion.model.dmri.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.model.gpr module - eddymotion 24.0.0.dev234 documentation</title>
+        <title>eddymotion.model.gpr module - eddymotion 24.0.0.dev237 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev234 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev237 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,14 +190,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev234</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev237</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev234</span>
+  <span class="sidebar-brand-text">24.0.0.dev237</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -425,6 +425,32 @@ imaging, NeuroImage 125 (2016) 1063-11078</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.gpr.ExponentialKriging.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_gradient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">np.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/eddymotion/model/gpr.html#ExponentialKriging.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.gpr.ExponentialKriging.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Return the kernel K(X, Y) and optionally its gradient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Gradient table (X)</p></li>
+<li><p><strong>Y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, optional) – Gradient table (Y, optional)</p></li>
+<li><p><strong>eval_gradient</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Determines whether the gradient with respect to the log of
+the kernel hyperparameter is computed.
+Only supported when Y is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>K</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a> of shape (n_samples_X, n_samples_Y)) – Kernel k(X, Y)</p></li>
+<li><p><strong>K_gradient</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a> of shape (n_samples_X, n_samples_X, n_dims),                optional) – The gradient of the kernel k(X, X) with respect to the log of the
+hyperparameter of the kernel. Only returned when <cite>eval_gradient</cite>
+is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="eddymotion.model.gpr.ExponentialKriging.diag">
 <span class="sig-name descname"><span class="pre">diag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><span class="pre">numpy.ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../_modules/eddymotion/model/gpr.html#ExponentialKriging.diag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.gpr.ExponentialKriging.diag" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the diagonal of the kernel k(X, X).</p>
@@ -495,6 +521,32 @@ evaluated.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eddymotion.model.gpr.SphericalKriging.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_gradient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">np.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/eddymotion/model/gpr.html#SphericalKriging.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.gpr.SphericalKriging.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Return the kernel K(X, Y) and optionally its gradient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Gradient table (X)</p></li>
+<li><p><strong>Y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, optional) – Gradient table (Y, optional)</p></li>
+<li><p><strong>eval_gradient</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Determines whether the gradient with respect to the log of
+the kernel hyperparameter is computed.
+Only supported when Y is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>K</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a> of shape (n_samples_X, n_samples_Y)) – Kernel k(X, Y)</p></li>
+<li><p><strong>K_gradient</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a> of shape (n_samples_X, n_samples_X, n_dims),                optional) – The gradient of the kernel k(X, X) with respect to the log of the
+hyperparameter of the kernel. Only returned when <code class="docutils literal notranslate"><span class="pre">eval_gradient</span></code>
+is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="eddymotion.model.gpr.SphericalKriging.diag">
 <span class="sig-name descname"><span class="pre">diag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><span class="pre">numpy.ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../_modules/eddymotion/model/gpr.html#SphericalKriging.diag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.gpr.SphericalKriging.diag" title="Link to this definition">¶</a></dt>
@@ -718,6 +770,7 @@ C(\theta) =
 <li><a class="reference internal" href="#eddymotion.model.gpr.CONFIGURABLE_OPTIONS"><code class="docutils literal notranslate"><span class="pre">CONFIGURABLE_OPTIONS</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.EddyMotionGPR"><code class="docutils literal notranslate"><span class="pre">EddyMotionGPR</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.ExponentialKriging"><code class="docutils literal notranslate"><span class="pre">ExponentialKriging</span></code></a><ul>
+<li><a class="reference internal" href="#eddymotion.model.gpr.ExponentialKriging.__call__"><code class="docutils literal notranslate"><span class="pre">ExponentialKriging.__call__()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.ExponentialKriging.diag"><code class="docutils literal notranslate"><span class="pre">ExponentialKriging.diag()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.ExponentialKriging.hyperparameter_a"><code class="docutils literal notranslate"><span class="pre">ExponentialKriging.hyperparameter_a</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.ExponentialKriging.hyperparameter_l"><code class="docutils literal notranslate"><span class="pre">ExponentialKriging.hyperparameter_l</span></code></a></li>
@@ -728,6 +781,7 @@ C(\theta) =
 <li><a class="reference internal" href="#eddymotion.model.gpr.NONGRADIENT_METHODS"><code class="docutils literal notranslate"><span class="pre">NONGRADIENT_METHODS</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.SUPPORTED_OPTIMIZERS"><code class="docutils literal notranslate"><span class="pre">SUPPORTED_OPTIMIZERS</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.SphericalKriging"><code class="docutils literal notranslate"><span class="pre">SphericalKriging</span></code></a><ul>
+<li><a class="reference internal" href="#eddymotion.model.gpr.SphericalKriging.__call__"><code class="docutils literal notranslate"><span class="pre">SphericalKriging.__call__()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.SphericalKriging.diag"><code class="docutils literal notranslate"><span class="pre">SphericalKriging.diag()</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.SphericalKriging.hyperparameter_a"><code class="docutils literal notranslate"><span class="pre">SphericalKriging.hyperparameter_a</span></code></a></li>
 <li><a class="reference internal" href="#eddymotion.model.gpr.SphericalKriging.hyperparameter_l"><code class="docutils literal notranslate"><span class="pre">SphericalKriging.hyperparameter_l</span></code></a></li>
@@ -749,7 +803,7 @@ C(\theta) =
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=4837054e"></script>
+</div><script src="../_static/documentation_options.js?v=7fcf8f24"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

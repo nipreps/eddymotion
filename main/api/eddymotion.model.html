@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="eddymotion.model.base module" href="eddymotion.model.base.html" /><link rel="prev" title="eddymotion.math.utils module" href="eddymotion.math.utils.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.model package - eddymotion 24.0.0.dev224 documentation</title>
+        <title>eddymotion.model package - eddymotion 24.0.0.dev231 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev224 documentation</div></a>
+      <a href="../index.html"><div class="brand">eddymotion 24.0.0.dev231 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,14 +190,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev224</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev231</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev224</span>
+  <span class="sidebar-brand-text">24.0.0.dev231</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -363,14 +363,14 @@ standardized and centered around the
 <dt class="sig sig-object py" id="eddymotion.model.DKIModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.</span></span><span class="sig-name descname"><span class="pre">DKIModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dmri.html#DKIModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.DKIModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="eddymotion.model.dmri.html#eddymotion.model.dmri.BaseDWIModel" title="eddymotion.model.dmri.BaseDWIModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDWIModel</span></code></a></p>
-<p>A wrapper of <a class="reference external" href="https://docs.dipy.org/stable/reference/dipy.reconst.html#dipy.reconst.dki.DiffusionKurtosisModel" title="(in dipy v1.9.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dipy.reconst.dki.DiffusionKurtosisModel</span></code></a>.</p>
+<p>A wrapper of <a class="reference external" href="https://docs.dipy.org/stable/reference/dipy.reconst.html#dipy.reconst.dki.DiffusionKurtosisModel" title="(in dipy v1.10.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dipy.reconst.dki.DiffusionKurtosisModel</span></code></a>.</p>
 <p>Initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gtab</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – An <span class="math notranslate nohighlight">\(N         imes 4\)</span> table, where rows (<em>N</em>) are diffusion gradients and
+<li><p><strong>gtab</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – An <span class="math notranslate nohighlight">\(N         imes 4\)</span> table, where rows (<em>N</em>) are diffusion gradients and
 columns are b-vector components and corresponding b-value, respectively.</p></li>
-<li><p><strong>S0</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <span class="math notranslate nohighlight">\(S_{0}\)</span> signal.</p></li>
+<li><p><strong>S0</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <span class="math notranslate nohighlight">\(S_{0}\)</span> signal.</p></li>
 <li><p><strong>b_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – Maximum value to cap b-values.</p></li>
 </ul>
 </dd>
@@ -381,14 +381,14 @@ columns are b-vector components and corresponding b-value, respectively.</p></li
 <dt class="sig sig-object py" id="eddymotion.model.DTIModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eddymotion.model.</span></span><span class="sig-name descname"><span class="pre">DTIModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/eddymotion/model/dmri.html#DTIModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eddymotion.model.DTIModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="eddymotion.model.dmri.html#eddymotion.model.dmri.BaseDWIModel" title="eddymotion.model.dmri.BaseDWIModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDWIModel</span></code></a></p>
-<p>A wrapper of <a class="reference external" href="https://docs.dipy.org/stable/reference/dipy.reconst.html#dipy.reconst.dti.TensorModel" title="(in dipy v1.9.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dipy.reconst.dti.TensorModel</span></code></a>.</p>
+<p>A wrapper of <a class="reference external" href="https://docs.dipy.org/stable/reference/dipy.reconst.html#dipy.reconst.dti.TensorModel" title="(in dipy v1.10.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dipy.reconst.dti.TensorModel</span></code></a>.</p>
 <p>Initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gtab</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – An <span class="math notranslate nohighlight">\(N         imes 4\)</span> table, where rows (<em>N</em>) are diffusion gradients and
+<li><p><strong>gtab</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – An <span class="math notranslate nohighlight">\(N         imes 4\)</span> table, where rows (<em>N</em>) are diffusion gradients and
 columns are b-vector components and corresponding b-value, respectively.</p></li>
-<li><p><strong>S0</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <span class="math notranslate nohighlight">\(S_{0}\)</span> signal.</p></li>
+<li><p><strong>S0</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <span class="math notranslate nohighlight">\(S_{0}\)</span> signal.</p></li>
 <li><p><strong>b_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – Maximum value to cap b-values.</p></li>
 </ul>
 </dd>
@@ -404,9 +404,9 @@ columns are b-vector components and corresponding b-value, respectively.</p></li
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gtab</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – An <span class="math notranslate nohighlight">\(N         imes 4\)</span> table, where rows (<em>N</em>) are diffusion gradients and
+<li><p><strong>gtab</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – An <span class="math notranslate nohighlight">\(N         imes 4\)</span> table, where rows (<em>N</em>) are diffusion gradients and
 columns are b-vector components and corresponding b-value, respectively.</p></li>
-<li><p><strong>S0</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <span class="math notranslate nohighlight">\(S_{0}\)</span> signal.</p></li>
+<li><p><strong>S0</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <span class="math notranslate nohighlight">\(S_{0}\)</span> signal.</p></li>
 <li><p><strong>b_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – Maximum value to cap b-values.</p></li>
 </ul>
 </dd>
@@ -612,7 +612,7 @@ model.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=2cf8d50a"></script>
+</div><script src="../_static/documentation_options.js?v=103e9bf0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.model.gpr - eddymotion 24.0.0.dev224 documentation</title>
+        <title>eddymotion.model.gpr - eddymotion 24.0.0.dev231 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev224 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev231 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,14 +189,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev224</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev231</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev224</span>
+  <span class="sidebar-brand-text">24.0.0.dev231</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -359,7 +359,7 @@
 <a class="viewcode-back" href="../../../api/eddymotion.model.gpr.html#eddymotion.model.gpr.EddyMotionGPR">[docs]</a>
 <span class="k">class</span> <span class="nc">EddyMotionGPR</span><span class="p">(</span><span class="n">GaussianProcessRegressor</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A GP regressor specialized for eddymotion.</span>
+<span class="sd">    A Gaussian process (GP) regressor specialized for eddymotion.</span>
 
 <span class="sd">    This specialization of the default GP regressor is created to allow</span>
 <span class="sd">    the following extended behaviors:</span>
@@ -375,22 +375,21 @@
 
 <span class="sd">    In principle, Scikit-Learn&#39;s implementation normalizes the training data</span>
 <span class="sd">    as in [Andersson15]_ (see</span>
-<span class="sd">    `FSL&#39;s souce code &lt;https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218&gt;`__).</span>
+<span class="sd">    `FSL&#39;s source code &lt;https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218&gt;`__).</span>
 <span class="sd">    From their paper (p. 167, end of first column):</span>
 
-<span class="sd">        Typically one just substracts the mean (:math:`\bar{\mathbf{f}}`)</span>
+<span class="sd">        Typically one just subtracts the mean (:math:`\bar{\mathbf{f}}`)</span>
 <span class="sd">        from :math:`\mathbf{f}` and then add it back to</span>
 <span class="sd">        :math:`f^{*}`, which is analogous to what is often done in</span>
 <span class="sd">        &quot;traditional&quot; regression.</span>
 
 <span class="sd">    Finally, the parameter :math:`\sigma^2` maps on to Scikit-learn&#39;s ``alpha``</span>
-<span class="sd">    of the regressor.</span>
-<span class="sd">    Because it is not a parameter of the kernel, hyperparameter selection</span>
-<span class="sd">    through gradient-descent with analytical gradient calculations</span>
-<span class="sd">    would not work (the derivative of the kernel w.r.t. alpha is zero).</span>
+<span class="sd">    of the regressor. Because it is not a parameter of the kernel, hyperparameter</span>
+<span class="sd">    selection through gradient-descent with analytical gradient calculations</span>
+<span class="sd">    would not work (the derivative of the kernel w.r.t. ``alpha`` is zero).</span>
 
-<span class="sd">    I believe this is overlooked in [Andersson15]_, or they actually did not</span>
-<span class="sd">    use analytical gradient-descent:</span>
+<span class="sd">    This might have been overlooked in [Andersson15]_, or else they actually did</span>
+<span class="sd">    not use analytical gradient-descent:</span>
 
 <span class="sd">        *A note on optimisation*</span>
 
@@ -400,13 +399,12 @@
 <span class="sd">        The reason for that is that such methods typically use fewer steps, and</span>
 <span class="sd">        when the cost of calculating the derivatives is small/moderate compared</span>
 <span class="sd">        to calculating the functions itself (as is the case for Eq. (12)) then</span>
-<span class="sd">        execution time can be much shorter.</span>
-<span class="sd">        However, we found that for the multi-shell case a heuristic optimisation</span>
-<span class="sd">        method such as the Nelder-Mead simplex method (Nelder and Mead, 1965) was</span>
-<span class="sd">        frequently better at avoiding local maxima.</span>
-<span class="sd">        Hence, that was the method we used for all optimisations in the present</span>
-<span class="sd">        paper.</span>
-<span class="sd">    </span>
+<span class="sd">        execution time can be much shorter. However, we found that for the</span>
+<span class="sd">        multi-shell case a heuristic optimisation method such as the Nelder-Mead</span>
+<span class="sd">        simplex method (Nelder and Mead, 1965) was frequently better at avoiding</span>
+<span class="sd">        local maxima. Hence, that was the method we used for all optimisations</span>
+<span class="sd">        in the present paper.</span>
+
 <span class="sd">    **Multi-shell regression (TODO).**</span>
 <span class="sd">    For multi-shell modeling, the kernel :math:`k(\textbf{x}, \textbf{x&#39;})`</span>
 <span class="sd">    is updated following Eq. (14) in [Andersson15]_.</span>
@@ -570,7 +568,7 @@
 <span class="sd">        beta_l : :obj:`float`, optional</span>
 <span class="sd">            The :math:`\lambda` hyperparameter.</span>
 <span class="sd">        a_bounds : :obj:`tuple`, optional</span>
-<span class="sd">            Bounds for the a parameter.</span>
+<span class="sd">            Bounds for the ``a`` parameter.</span>
 <span class="sd">        l_bounds : :obj:`tuple`, optional</span>
 <span class="sd">            Bounds for the :math:`\lambda` hyperparameter.</span>
 
@@ -607,10 +605,10 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        K : ndarray of shape (n_samples_X, n_samples_Y)</span>
+<span class="sd">        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)</span>
 <span class="sd">            Kernel k(X, Y)</span>
 
-<span class="sd">        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\</span>
+<span class="sd">        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\</span>
 <span class="sd">                optional</span>
 <span class="sd">            The gradient of the kernel k(X, X) with respect to the log of the</span>
 <span class="sd">            hyperparameter of the kernel. Only returned when `eval_gradient`</span>
@@ -640,12 +638,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : ndarray of shape (n_samples_X, n_features)</span>
+<span class="sd">        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)</span>
 <span class="sd">            Left argument of the returned kernel k(X, Y)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        K_diag : ndarray of shape (n_samples_X,)</span>
+<span class="sd">        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)</span>
 <span class="sd">            Diagonal of kernel k(X, X)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_l</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
@@ -721,10 +719,10 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        K : ndarray of shape (n_samples_X, n_samples_Y)</span>
+<span class="sd">        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)</span>
 <span class="sd">            Kernel k(X, Y)</span>
 
-<span class="sd">        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\</span>
+<span class="sd">        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\</span>
 <span class="sd">                optional</span>
 <span class="sd">            The gradient of the kernel k(X, X) with respect to the log of the</span>
 <span class="sd">            hyperparameter of the kernel. Only returned when ``eval_gradient``</span>
@@ -759,12 +757,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : ndarray of shape (n_samples_X, n_features)</span>
+<span class="sd">        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)</span>
 <span class="sd">            Left argument of the returned kernel k(X, Y)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        K_diag : ndarray of shape (n_samples_X,)</span>
+<span class="sd">        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)</span>
 <span class="sd">            Diagonal of kernel k(X, X)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_l</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
@@ -944,7 +942,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=2cf8d50a"></script>
+</div><script src="../../../_static/documentation_options.js?v=103e9bf0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

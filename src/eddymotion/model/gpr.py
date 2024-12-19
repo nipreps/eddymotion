@@ -104,11 +104,12 @@ class EddyMotionGPR(GaussianProcessRegressor):
         The reason for that is that such methods typically use fewer steps, and
         when the cost of calculating the derivatives is small/moderate compared
         to calculating the functions itself (as is the case for Eq. (12)) then
-        execution time can be much shorter. However, we found that for the
-        multi-shell case a heuristic optimisation method such as the Nelder-Mead
-        simplex method (Nelder and Mead, 1965) was frequently better at avoiding
-        local maxima. Hence, that was the method we used for all optimisations
-        in the present paper.
+        execution time can be much shorter.
+        However, we found that for the multi-shell case a heuristic optimisation
+        method such as the Nelder-Mead simplex method (Nelder and Mead, 1965) was
+        frequently better at avoiding local maxima.
+        Hence, that was the method we used for all optimisations in the present
+        paper.
 
     **Multi-shell regression (TODO).**
     For multi-shell modeling, the kernel :math:`k(\textbf{x}, \textbf{x'})`
@@ -135,8 +136,10 @@ class EddyMotionGPR(GaussianProcessRegressor):
         \mathbf{K} = \left[
         \begin{matrix}
             \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &
-            \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
-            \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &
+            \lambda C_{\theta}(\theta (\mathbf{G}_{2},
+              \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
+            \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2});
+              a) C_{b}(b_{1}, b_{2}; \ell) &
             \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\
         \end{matrix}
         \right]

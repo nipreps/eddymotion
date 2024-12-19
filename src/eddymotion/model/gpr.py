@@ -285,7 +285,7 @@ class ExponentialKriging(Kernel):
         return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_beta_l(self) -> Hyperparameter:
+    def hyperparameter_l(self) -> Hyperparameter:
         return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(
@@ -390,7 +390,7 @@ class SphericalKriging(Kernel):
         return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_beta_l(self) -> Hyperparameter:
+    def hyperparameter_l(self) -> Hyperparameter:
         return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(

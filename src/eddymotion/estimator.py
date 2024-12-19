@@ -39,7 +39,7 @@ class EddyMotionEstimator:
 
     @staticmethod
     def estimate(
-        dwdata,
+        data,
         *,
         align_kwargs=None,
         iter_kwargs=None,
@@ -53,7 +53,7 @@ class EddyMotionEstimator:
 
         Parameters
         ----------
-        dwdata : :obj:`~eddymotion.dmri.DWI`
+        data : :obj:`~eddymotion.dmri.DWI`
             The target DWI dataset, represented by this tool's internal
             type. The object is used in-place, and will contain the estimated
             parameters in its ``em_affines`` property, as well as the rotated
@@ -88,7 +88,7 @@ class EddyMotionEstimator:
             "seed": None,
             "bvals": None,  # TODO: extract b-vals here if pertinent
         } | iter_kwargs
-        iter_kwargs["size"] = len(dwdata)
+        iter_kwargs["size"] = len(data)
 
         iterfunc = getattr(eutils, f'{iter_kwargs.pop("strategy", "random")}_iterator')
         index_order = list(iterfunc(**iter_kwargs))
@@ -107,9 +107,9 @@ class EddyMotionEstimator:
 
         for i_iter, model in enumerate(models):
             # When downsampling these need to be set per-level
-            bmask_img = _prepare_brainmask_data(dwdata.brainmask, dwdata.affine)
+            bmask_img = _prepare_brainmask_data(data.brainmask, data.affine)
 
-            _prepare_kwargs(dwdata, kwargs)
+            _prepare_kwargs(data, kwargs)
 
             single_model = model.lower() in (
                 "b0",
@@ -130,7 +130,7 @@ class EddyMotionEstimator:
                     model=model,
                     **kwargs,
                 )
-                dwmodel.fit(dwdata.dataobj, n_jobs=n_jobs)
+                dwmodel.fit(data.dataobj, n_jobs=n_jobs)
 
             with TemporaryDirectory() as tmp_dir:
                 print(f"Processing in <{tmp_dir}>")
@@ -141,12 +141,12 @@ class EddyMotionEstimator:
                         pbar.set_description_str(
                             f"Pass {i_iter + 1}/{n_iter} | Fit and predict b-index <{i}>"
                         )
-                        data_train, data_test = lovo_split(dwdata, i, with_b0=True)
+                        data_train, data_test = lovo_split(data, i, with_b0=True)
                         grad_str = f"{i}, {data_test[1][:3]}, b={int(data_test[1][3])}"
                         pbar.set_description_str(f"[{grad_str}], {n_jobs} jobs")
 
                         if not single_model:  # A true LOGO estimator
-                            if hasattr(dwdata, "gradients"):
+                            if hasattr(data, "gradients"):
                                 kwargs["gtab"] = data_train[1]
                             # Factory creates the appropriate model and pipes arguments
                             dwmodel = ModelFactory.init(
@@ -166,7 +166,7 @@ class EddyMotionEstimator:
 
                         # prepare data for running ANTs
                         fixed, moving = _prepare_registration_data(
-                            data_test[0], predicted, dwdata.affine, i, ptmp_dir, reg_target_type
+                            data_test[0], predicted, data.affine, i, ptmp_dir, reg_target_type
                         )
 
                         pbar.set_description_str(
@@ -177,11 +177,11 @@ class EddyMotionEstimator:
                             fixed,
                             moving,
                             bmask_img,
-                            dwdata.em_affines,
-                            dwdata.affine,
-                            dwdata.dataobj.shape[:3],
+                            data.em_affines,
+                            data.affine,
+                            data.dataobj.shape[:3],
                             data_test[1][3],
-                            dwdata.fieldmap,
+                            data.fieldmap,
                             i_iter,
                             i,
                             ptmp_dir,
@@ -190,10 +190,10 @@ class EddyMotionEstimator:
                         )
 
                         # update
-                        dwdata.set_transform(i, xform.matrix)
+                        data.set_transform(i, xform.matrix)
                         pbar.update()
 
-        return dwdata.em_affines
+        return data.em_affines
 
 
 def _prepare_brainmask_data(brainmask, affine):
@@ -219,7 +219,7 @@ def _prepare_brainmask_data(brainmask, affine):
     return bmask_img
 
 
-def _prepare_kwargs(dwdata, kwargs):
+def _prepare_kwargs(data, kwargs):
     """Prepare the keyword arguments depending on the DWI data: add attributes corresponding to
     the ``brainmask``, ``bzero``, ``gradients``, ``frame_time``, and ``total_duration`` DWI data
     properties.
@@ -228,24 +228,24 @@ def _prepare_kwargs(dwdata, kwargs):
 
     Parameters
     ----------
-    dwdata : :class:`eddymotion.data.dmri.DWI`
+    data : :class:`eddymotion.data.dmri.DWI`
         DWI data object.
     kwargs : :obj:`dict`
         Keyword arguments.
     """
     from eddymotion.data.filtering import advanced_clip as _advanced_clip
 
-    if dwdata.brainmask is not None:
-        kwargs["mask"] = dwdata.brainmask
+    if data.brainmask is not None:
+        kwargs["mask"] = data.brainmask
 
-    if hasattr(dwdata, "bzero") and dwdata.bzero is not None:
-        kwargs["S0"] = _advanced_clip(dwdata.bzero)
+    if hasattr(data, "bzero") and data.bzero is not None:
+        kwargs["S0"] = _advanced_clip(data.bzero)
 
-    if hasattr(dwdata, "gradients"):
-        kwargs["gtab"] = dwdata.gradients
+    if hasattr(data, "gradients"):
+        kwargs["gtab"] = data.gradients
 
-    if hasattr(dwdata, "frame_time"):
-        kwargs["timepoints"] = dwdata.frame_time
+    if hasattr(data, "frame_time"):
+        kwargs["timepoints"] = data.frame_time
 
-    if hasattr(dwdata, "total_duration"):
-        kwargs["xlim"] = dwdata.total_duration
+    if hasattr(data, "total_duration"):
+        kwargs["xlim"] = data.total_duration

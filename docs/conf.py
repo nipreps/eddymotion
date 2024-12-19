@@ -236,6 +236,9 @@ apidoc_extra_args = ["--module-first", "-d 1", "-T"]
 
 
 # -- Options for autodoc extension -------------------------------------------
+autodoc_default_options = {
+    "special-members": "__call__, __len__",
+}
 autoclass_content = "both"
 
 

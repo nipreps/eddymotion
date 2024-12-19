@@ -64,7 +64,7 @@ SUPPORTED_OPTIMIZERS = set(CONFIGURABLE_OPTIONS.keys()) | {"fmin_l_bfgs_b"}
 
 class EddyMotionGPR(GaussianProcessRegressor):
     r"""
-    A GP regressor specialized for eddymotion.
+    A Gaussian process (GP) regressor specialized for eddymotion.
 
     This specialization of the default GP regressor is created to allow
     the following extended behaviors:
@@ -80,22 +80,21 @@ class EddyMotionGPR(GaussianProcessRegressor):
 
     In principle, Scikit-Learn's implementation normalizes the training data
     as in [Andersson15]_ (see
-    `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
+    `FSL's source code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
     From their paper (p. 167, end of first column):
 
-        Typically one just substracts the mean (:math:`\bar{\mathbf{f}}`)
+        Typically one just subtracts the mean (:math:`\bar{\mathbf{f}}`)
         from :math:`\mathbf{f}` and then add it back to
         :math:`f^{*}`, which is analogous to what is often done in
         "traditional" regression.
 
     Finally, the parameter :math:`\sigma^2` maps on to Scikit-learn's ``alpha``
-    of the regressor.
-    Because it is not a parameter of the kernel, hyperparameter selection
-    through gradient-descent with analytical gradient calculations
-    would not work (the derivative of the kernel w.r.t. alpha is zero).
+    of the regressor. Because it is not a parameter of the kernel, hyperparameter
+    selection through gradient-descent with analytical gradient calculations
+    would not work (the derivative of the kernel w.r.t. ``alpha`` is zero).
 
-    I believe this is overlooked in [Andersson15]_, or they actually did not
-    use analytical gradient-descent:
+    This might have been overlooked in [Andersson15]_, or else they actually did
+    not use analytical gradient-descent:
 
         *A note on optimisation*
 
@@ -266,7 +265,6 @@ class ExponentialKriging(Kernel):
         l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
-        Initialize an exponential Kriging kernel.
 
         Parameters
         ----------
@@ -275,7 +273,7 @@ class ExponentialKriging(Kernel):
         beta_l : :obj:`float`, optional
             The :math:`\lambda` hyperparameter.
         a_bounds : :obj:`tuple`, optional
-            Bounds for the a parameter.
+            Bounds for the ``a`` parameter.
         l_bounds : :obj:`tuple`, optional
             Bounds for the :math:`\lambda` hyperparameter.
 
@@ -290,7 +288,7 @@ class ExponentialKriging(Kernel):
         return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_beta_l(self) -> Hyperparameter:
+    def hyperparameter_l(self) -> Hyperparameter:
         return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(
@@ -312,10 +310,10 @@ class ExponentialKriging(Kernel):
 
         Returns
         -------
-        K : ndarray of shape (n_samples_X, n_samples_Y)
+        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)
             Kernel k(X, Y)
 
-        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
+        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\
                 optional
             The gradient of the kernel k(X, X) with respect to the log of the
             hyperparameter of the kernel. Only returned when `eval_gradient`
@@ -343,12 +341,12 @@ class ExponentialKriging(Kernel):
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples_X, n_features)
+        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)
             Left argument of the returned kernel k(X, Y)
 
         Returns
         -------
-        K_diag : ndarray of shape (n_samples_X,)
+        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
         return self.beta_l * np.ones(X.shape[0])
@@ -372,7 +370,6 @@ class SphericalKriging(Kernel):
         l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
-        Initialize a spherical Kriging kernel.
 
         Parameters
         ----------
@@ -396,7 +393,7 @@ class SphericalKriging(Kernel):
         return Hyperparameter("beta_a", "numeric", self.a_bounds)
 
     @property
-    def hyperparameter_beta_l(self) -> Hyperparameter:
+    def hyperparameter_l(self) -> Hyperparameter:
         return Hyperparameter("beta_l", "numeric", self.l_bounds)
 
     def __call__(
@@ -418,10 +415,10 @@ class SphericalKriging(Kernel):
 
         Returns
         -------
-        K : ndarray of shape (n_samples_X, n_samples_Y)
+        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)
             Kernel k(X, Y)
 
-        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
+        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\
                 optional
             The gradient of the kernel k(X, X) with respect to the log of the
             hyperparameter of the kernel. Only returned when ``eval_gradient``
@@ -454,12 +451,12 @@ class SphericalKriging(Kernel):
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples_X, n_features)
+        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)
             Left argument of the returned kernel k(X, Y)
 
         Returns
         -------
-        K_diag : ndarray of shape (n_samples_X,)
+        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
         return self.beta_l * np.ones(X.shape[0])

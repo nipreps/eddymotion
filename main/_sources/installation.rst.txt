@@ -5,7 +5,7 @@ Installation
 ============
 Make sure all of *eddymotion*' `External Dependencies`_ are installed.
 
-On a functional Python 3.7 (or above) environment with ``pip`` installed,
+On a functional Python 3.10 (or above) environment with ``pip`` installed,
 *eddymotion* can be installed using the habitual command ::
 
     $ python -m pip install eddymotion

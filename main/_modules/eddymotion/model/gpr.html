@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.model.gpr - eddymotion 24.0.0.dev237 documentation</title>
+        <title>eddymotion.model.gpr - eddymotion 24.0.0.dev247 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev237 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">eddymotion 24.0.0.dev247 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,14 +189,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev237</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev247</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev237</span>
+  <span class="sidebar-brand-text">24.0.0.dev247</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -399,11 +399,12 @@
 <span class="sd">        The reason for that is that such methods typically use fewer steps, and</span>
 <span class="sd">        when the cost of calculating the derivatives is small/moderate compared</span>
 <span class="sd">        to calculating the functions itself (as is the case for Eq. (12)) then</span>
-<span class="sd">        execution time can be much shorter. However, we found that for the</span>
-<span class="sd">        multi-shell case a heuristic optimisation method such as the Nelder-Mead</span>
-<span class="sd">        simplex method (Nelder and Mead, 1965) was frequently better at avoiding</span>
-<span class="sd">        local maxima. Hence, that was the method we used for all optimisations</span>
-<span class="sd">        in the present paper.</span>
+<span class="sd">        execution time can be much shorter.</span>
+<span class="sd">        However, we found that for the multi-shell case a heuristic optimisation</span>
+<span class="sd">        method such as the Nelder-Mead simplex method (Nelder and Mead, 1965) was</span>
+<span class="sd">        frequently better at avoiding local maxima.</span>
+<span class="sd">        Hence, that was the method we used for all optimisations in the present</span>
+<span class="sd">        paper.</span>
 
 <span class="sd">    **Multi-shell regression (TODO).**</span>
 <span class="sd">    For multi-shell modeling, the kernel :math:`k(\textbf{x}, \textbf{x&#39;})`</span>
@@ -430,8 +431,10 @@
 <span class="sd">        \mathbf{K} = \left[</span>
 <span class="sd">        \begin{matrix}</span>
 <span class="sd">            \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &amp;</span>
-<span class="sd">            \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\</span>
-<span class="sd">            \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &amp;</span>
+<span class="sd">            \lambda C_{\theta}(\theta (\mathbf{G}_{2},</span>
+<span class="sd">              \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\</span>
+<span class="sd">            \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2});</span>
+<span class="sd">              a) C_{b}(b_{1}, b_{2}; \ell) &amp;</span>
 <span class="sd">            \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\</span>
 <span class="sd">        \end{matrix}</span>
 <span class="sd">        \right]</span>
@@ -948,7 +951,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=7fcf8f24"></script>
+</div><script src="../../../_static/documentation_options.js?v=9ad1b8b9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>eddymotion.estimator - eddymotion 24.0.0.dev237 documentation</title>
+        <title>eddymotion.estimator - eddymotion 24.0.0.dev247 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev237 documentation</div></a>
+      <a href="../../index.html"><div class="brand">eddymotion 24.0.0.dev247 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,14 +189,14 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
     <span class="sidebar-brand-text">eddymotion</span>
-    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev237</span>
+    <span id="version-slug" class="sidebar-brand-text">24.0.0.dev247</span>
 </a>
 
 <!-- Versions dropdown -->
 <div id="version-menu" class="version-tree">
   <ul>
   <li class="toctree-l1 has-children">
-  <span class="sidebar-brand-text">24.0.0.dev237</span>
+  <span class="sidebar-brand-text">24.0.0.dev247</span>
   <input class="toctree-checkbox" id="toctree-checkbox-v" name="toctree-checkbox-v" role="switch" type="checkbox">
   <label for="toctree-checkbox-v"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label>
   <ul id="v-tags"></ul>
@@ -336,7 +336,7 @@
 <a class="viewcode-back" href="../../api/eddymotion.estimator.html#eddymotion.estimator.EddyMotionEstimator.estimate">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">estimate</span><span class="p">(</span>
-        <span class="n">dwdata</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">align_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">iter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -350,7 +350,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        dwdata : :obj:`~eddymotion.dmri.DWI`</span>
+<span class="sd">        data : :obj:`~eddymotion.dmri.DWI`</span>
 <span class="sd">            The target DWI dataset, represented by this tool&#39;s internal</span>
 <span class="sd">            type. The object is used in-place, and will contain the estimated</span>
 <span class="sd">            parameters in its ``em_affines`` property, as well as the rotated</span>
@@ -385,7 +385,7 @@
             <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">&quot;bvals&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># TODO: extract b-vals here if pertinent</span>
         <span class="p">}</span> <span class="o">|</span> <span class="n">iter_kwargs</span>
-        <span class="n">iter_kwargs</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dwdata</span><span class="p">)</span>
+        <span class="n">iter_kwargs</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
         <span class="n">iterfunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">eutils</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">iter_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;strategy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;random&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">_iterator&#39;</span><span class="p">)</span>
         <span class="n">index_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterfunc</span><span class="p">(</span><span class="o">**</span><span class="n">iter_kwargs</span><span class="p">))</span>
@@ -404,9 +404,9 @@
 
         <span class="k">for</span> <span class="n">i_iter</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
             <span class="c1"># When downsampling these need to be set per-level</span>
-            <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">_prepare_brainmask_data</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span><span class="p">,</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+            <span class="n">bmask_img</span> <span class="o">=</span> <span class="n">_prepare_brainmask_data</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">brainmask</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
 
-            <span class="n">_prepare_kwargs</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">_prepare_kwargs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
             <span class="n">single_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
                 <span class="s2">&quot;b0&quot;</span><span class="p">,</span>
@@ -427,7 +427,7 @@
                     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">dwmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+                <span class="n">dwmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing in &lt;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
@@ -438,12 +438,12 @@
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;Pass </span><span class="si">{</span><span class="n">i_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> | Fit and predict b-index &lt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
                         <span class="p">)</span>
-                        <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">lovo_split</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span> <span class="o">=</span> <span class="n">lovo_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">with_b0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                         <span class="n">grad_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">, b=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">grad_str</span><span class="si">}</span><span class="s2">], </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> jobs&quot;</span><span class="p">)</span>
 
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">single_model</span><span class="p">:</span>  <span class="c1"># A true LOGO estimator</span>
-                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
                                 <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_train</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                             <span class="c1"># Factory creates the appropriate model and pipes arguments</span>
                             <span class="n">dwmodel</span> <span class="o">=</span> <span class="n">ModelFactory</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
@@ -463,7 +463,7 @@
 
                         <span class="c1"># prepare data for running ANTs</span>
                         <span class="n">fixed</span><span class="p">,</span> <span class="n">moving</span> <span class="o">=</span> <span class="n">_prepare_registration_data</span><span class="p">(</span>
-                            <span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">ptmp_dir</span><span class="p">,</span> <span class="n">reg_target_type</span>
+                            <span class="n">data_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">ptmp_dir</span><span class="p">,</span> <span class="n">reg_target_type</span>
                         <span class="p">)</span>
 
                         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span>
@@ -474,11 +474,11 @@
                             <span class="n">fixed</span><span class="p">,</span>
                             <span class="n">moving</span><span class="p">,</span>
                             <span class="n">bmask_img</span><span class="p">,</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span><span class="p">,</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">em_affines</span><span class="p">,</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">dataobj</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
                             <span class="n">data_test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
-                            <span class="n">dwdata</span><span class="o">.</span><span class="n">fieldmap</span><span class="p">,</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">fieldmap</span><span class="p">,</span>
                             <span class="n">i_iter</span><span class="p">,</span>
                             <span class="n">i</span><span class="p">,</span>
                             <span class="n">ptmp_dir</span><span class="p">,</span>
@@ -487,10 +487,10 @@
                         <span class="p">)</span>
 
                         <span class="c1"># update</span>
-                        <span class="n">dwdata</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xform</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
+                        <span class="n">data</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xform</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
                         <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">em_affines</span></div>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">em_affines</span></div>
 </div>
 
 
@@ -518,7 +518,7 @@
     <span class="k">return</span> <span class="n">bmask_img</span>
 
 
-<span class="k">def</span> <span class="nf">_prepare_kwargs</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prepare_kwargs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare the keyword arguments depending on the DWI data: add attributes corresponding to</span>
 <span class="sd">    the ``brainmask``, ``bzero``, ``gradients``, ``frame_time``, and ``total_duration`` DWI data</span>
 <span class="sd">    properties.</span>
@@ -527,27 +527,27 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dwdata : :class:`eddymotion.data.dmri.DWI`</span>
+<span class="sd">    data : :class:`eddymotion.data.dmri.DWI`</span>
 <span class="sd">        DWI data object.</span>
 <span class="sd">    kwargs : :obj:`dict`</span>
 <span class="sd">        Keyword arguments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">eddymotion.data.filtering</span> <span class="kn">import</span> <span class="n">advanced_clip</span> <span class="k">as</span> <span class="n">_advanced_clip</span>
 
-    <span class="k">if</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">brainmask</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">brainmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">brainmask</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;bzero&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;S0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">dwdata</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;bzero&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">bzero</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;S0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_advanced_clip</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">bzero</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">gradients</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gtab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">gradients</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;frame_time&quot;</span><span class="p">):</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timepoints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">frame_time</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;frame_time&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;timepoints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">frame_time</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dwdata</span><span class="p">,</span> <span class="s2">&quot;total_duration&quot;</span><span class="p">):</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;xlim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dwdata</span><span class="o">.</span><span class="n">total_duration</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;total_duration&quot;</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;xlim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">total_duration</span>
 </pre></div>
         </article>
       </div>
@@ -580,7 +580,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=7fcf8f24"></script>
+</div><script src="../../_static/documentation_options.js?v=9ad1b8b9"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

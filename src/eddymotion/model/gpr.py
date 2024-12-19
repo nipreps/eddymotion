@@ -64,7 +64,7 @@ SUPPORTED_OPTIMIZERS = set(CONFIGURABLE_OPTIONS.keys()) | {"fmin_l_bfgs_b"}
 
 class EddyMotionGPR(GaussianProcessRegressor):
     r"""
-    A GP regressor specialized for eddymotion.
+    A Gaussian process (GP) regressor specialized for eddymotion.
 
     This specialization of the default GP regressor is created to allow
     the following extended behaviors:
@@ -80,22 +80,21 @@ class EddyMotionGPR(GaussianProcessRegressor):
 
     In principle, Scikit-Learn's implementation normalizes the training data
     as in [Andersson15]_ (see
-    `FSL's souce code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
+    `FSL's source code <https://git.fmrib.ox.ac.uk/fsl/eddy/-/blob/2480dda293d4cec83014454db3a193b87921f6b0/DiffusionGP.cpp#L218>`__).
     From their paper (p. 167, end of first column):
 
-        Typically one just substracts the mean (:math:`\bar{\mathbf{f}}`)
+        Typically one just subtracts the mean (:math:`\bar{\mathbf{f}}`)
         from :math:`\mathbf{f}` and then add it back to
         :math:`f^{*}`, which is analogous to what is often done in
         "traditional" regression.
 
     Finally, the parameter :math:`\sigma^2` maps on to Scikit-learn's ``alpha``
-    of the regressor.
-    Because it is not a parameter of the kernel, hyperparameter selection
-    through gradient-descent with analytical gradient calculations
-    would not work (the derivative of the kernel w.r.t. alpha is zero).
+    of the regressor. Because it is not a parameter of the kernel, hyperparameter
+    selection through gradient-descent with analytical gradient calculations
+    would not work (the derivative of the kernel w.r.t. ``alpha`` is zero).
 
-    I believe this is overlooked in [Andersson15]_, or they actually did not
-    use analytical gradient-descent:
+    This might have been overlooked in [Andersson15]_, or else they actually did
+    not use analytical gradient-descent:
 
         *A note on optimisation*
 
@@ -105,13 +104,12 @@ class EddyMotionGPR(GaussianProcessRegressor):
         The reason for that is that such methods typically use fewer steps, and
         when the cost of calculating the derivatives is small/moderate compared
         to calculating the functions itself (as is the case for Eq. (12)) then
-        execution time can be much shorter.
-        However, we found that for the multi-shell case a heuristic optimisation
-        method such as the Nelder-Mead simplex method (Nelder and Mead, 1965) was
-        frequently better at avoiding local maxima.
-        Hence, that was the method we used for all optimisations in the present
-        paper.
-    
+        execution time can be much shorter. However, we found that for the
+        multi-shell case a heuristic optimisation method such as the Nelder-Mead
+        simplex method (Nelder and Mead, 1965) was frequently better at avoiding
+        local maxima. Hence, that was the method we used for all optimisations
+        in the present paper.
+
     **Multi-shell regression (TODO).**
     For multi-shell modeling, the kernel :math:`k(\textbf{x}, \textbf{x'})`
     is updated following Eq. (14) in [Andersson15]_.
@@ -264,113 +262,6 @@ class ExponentialKriging(Kernel):
         l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
     ):
         r"""
-        Initialize an exponential Kriging kernel.
-
-        Parameters
-        ----------
-        beta_a : :obj:`float`, optional
-            Minimum angle in rads.
-        beta_l : :obj:`float`, optional
-            The :math:`\lambda` hyperparameter.
-        a_bounds : :obj:`tuple`, optional
-            Bounds for the a parameter.
-        l_bounds : :obj:`tuple`, optional
-            Bounds for the :math:`\lambda` hyperparameter.
-
-        """
-        self.beta_a = beta_a
-        self.beta_l = beta_l
-        self.a_bounds = a_bounds
-        self.l_bounds = l_bounds
-
-    @property
-    def hyperparameter_a(self) -> Hyperparameter:
-        return Hyperparameter("beta_a", "numeric", self.a_bounds)
-
-    @property
-    def hyperparameter_l(self) -> Hyperparameter:
-        return Hyperparameter("beta_l", "numeric", self.l_bounds)
-
-    def __call__(
-        self, X: np.ndarray, Y: np.ndarray | None = None, eval_gradient: bool = False
-    ) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
-        """
-        Return the kernel K(X, Y) and optionally its gradient.
-
-        Parameters
-        ----------
-        X : :obj:`~numpy.ndarray`
-            Gradient table (X)
-        Y : :obj:`~numpy.ndarray`, optional
-            Gradient table (Y, optional)
-        eval_gradient : :obj:`bool`, optional
-            Determines whether the gradient with respect to the log of
-            the kernel hyperparameter is computed.
-            Only supported when Y is ``None``.
-
-        Returns
-        -------
-        K : ndarray of shape (n_samples_X, n_samples_Y)
-            Kernel k(X, Y)
-
-        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
-                optional
-            The gradient of the kernel k(X, X) with respect to the log of the
-            hyperparameter of the kernel. Only returned when `eval_gradient`
-            is True.
-
-        """
-        thetas = compute_pairwise_angles(X, Y)
-        C_theta = exponential_covariance(thetas, self.beta_a)
-
-        if not eval_gradient:
-            return self.beta_l * C_theta
-
-        K_gradient = np.zeros((*thetas.shape, 2))
-        K_gradient[..., 0] = self.beta_l * C_theta * thetas / self.beta_a**2  # Derivative w.r.t. a
-        K_gradient[..., 1] = C_theta
-
-        return self.beta_l * C_theta, K_gradient
-
-    def diag(self, X: np.ndarray) -> np.ndarray:
-        """Returns the diagonal of the kernel k(X, X).
-
-        The result of this method is identical to np.diag(self(X)); however,
-        it can be evaluated more efficiently since only the diagonal is
-        evaluated.
-
-        Parameters
-        ----------
-        X : ndarray of shape (n_samples_X, n_features)
-            Left argument of the returned kernel k(X, Y)
-
-        Returns
-        -------
-        K_diag : ndarray of shape (n_samples_X,)
-            Diagonal of kernel k(X, X)
-        """
-        return self.beta_l * np.ones(X.shape[0])
-
-    def is_stationary(self) -> bool:
-        """Returns whether the kernel is stationary."""
-        return True
-
-    def __repr__(self) -> str:
-        return f"ExponentialKriging (a={self.beta_a}, λ={self.beta_l})"
-
-
-class SphericalKriging(Kernel):
-    """A scikit-learn's kernel for DWI signals."""
-
-    def __init__(
-        self,
-        beta_a: float = 1.38,
-        beta_l: float = 0.5,
-        a_bounds: tuple[float, float] = BOUNDS_A,
-        l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
-    ):
-        r"""
-        Initialize a spherical Kriging kernel.
 
         Parameters
         ----------
@@ -416,10 +307,115 @@ class SphericalKriging(Kernel):
 
         Returns
         -------
-        K : ndarray of shape (n_samples_X, n_samples_Y)
+        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)
             Kernel k(X, Y)
 
-        K_gradient : ndarray of shape (n_samples_X, n_samples_X, n_dims),\
+        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\
+                optional
+            The gradient of the kernel k(X, X) with respect to the log of the
+            hyperparameter of the kernel. Only returned when `eval_gradient`
+            is True.
+
+        """
+        thetas = compute_pairwise_angles(X, Y)
+        C_theta = exponential_covariance(thetas, self.beta_a)
+
+        if not eval_gradient:
+            return self.beta_l * C_theta
+
+        K_gradient = np.zeros((*thetas.shape, 2))
+        K_gradient[..., 0] = self.beta_l * C_theta * thetas / self.beta_a**2  # Derivative w.r.t. a
+        K_gradient[..., 1] = C_theta
+
+        return self.beta_l * C_theta, K_gradient
+
+    def diag(self, X: np.ndarray) -> np.ndarray:
+        """Returns the diagonal of the kernel k(X, X).
+
+        The result of this method is identical to np.diag(self(X)); however,
+        it can be evaluated more efficiently since only the diagonal is
+        evaluated.
+
+        Parameters
+        ----------
+        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)
+            Left argument of the returned kernel k(X, Y)
+
+        Returns
+        -------
+        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)
+            Diagonal of kernel k(X, X)
+        """
+        return self.beta_l * np.ones(X.shape[0])
+
+    def is_stationary(self) -> bool:
+        """Returns whether the kernel is stationary."""
+        return True
+
+    def __repr__(self) -> str:
+        return f"ExponentialKriging (a={self.beta_a}, λ={self.beta_l})"
+
+
+class SphericalKriging(Kernel):
+    """A scikit-learn's kernel for DWI signals."""
+
+    def __init__(
+        self,
+        beta_a: float = 1.38,
+        beta_l: float = 0.5,
+        a_bounds: tuple[float, float] = BOUNDS_A,
+        l_bounds: tuple[float, float] = BOUNDS_LAMBDA,
+    ):
+        r"""
+
+        Parameters
+        ----------
+        beta_a : :obj:`float`, optional
+            Minimum angle in rads.
+        beta_l : :obj:`float`, optional
+            The :math:`\lambda` hyperparameter.
+        a_bounds : :obj:`tuple`, optional
+            Bounds for the ``a`` parameter.
+        l_bounds : :obj:`tuple`, optional
+            Bounds for the :math:`\lambda` hyperparameter.
+
+        """
+        self.beta_a = beta_a
+        self.beta_l = beta_l
+        self.a_bounds = a_bounds
+        self.l_bounds = l_bounds
+
+    @property
+    def hyperparameter_a(self) -> Hyperparameter:
+        return Hyperparameter("beta_a", "numeric", self.a_bounds)
+
+    @property
+    def hyperparameter_l(self) -> Hyperparameter:
+        return Hyperparameter("beta_l", "numeric", self.l_bounds)
+
+    def __call__(
+        self, X: np.ndarray, Y: np.ndarray | None = None, eval_gradient: bool = False
+    ) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
+        """
+        Return the kernel K(X, Y) and optionally its gradient.
+
+        Parameters
+        ----------
+        X : :obj:`~numpy.ndarray`
+            Gradient table (X)
+        Y : :obj:`~numpy.ndarray`, optional
+            Gradient table (Y, optional)
+        eval_gradient : :obj:`bool`, optional
+            Determines whether the gradient with respect to the log of
+            the kernel hyperparameter is computed.
+            Only supported when Y is ``None``.
+
+        Returns
+        -------
+        K : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_Y)
+            Kernel k(X, Y)
+
+        K_gradient : :obj:`~numpy.ndarray` of shape (n_samples_X, n_samples_X, n_dims),\
                 optional
             The gradient of the kernel k(X, X) with respect to the log of the
             hyperparameter of the kernel. Only returned when ``eval_gradient``
@@ -452,12 +448,12 @@ class SphericalKriging(Kernel):
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples_X, n_features)
+        X : :obj:`~numpy.ndarray` of shape (n_samples_X, n_features)
             Left argument of the returned kernel k(X, Y)
 
         Returns
         -------
-        K_diag : ndarray of shape (n_samples_X,)
+        K_diag : :obj:`~numpy.ndarray` of shape (n_samples_X,)
             Diagonal of kernel k(X, X)
         """
         return self.beta_l * np.ones(X.shape[0])

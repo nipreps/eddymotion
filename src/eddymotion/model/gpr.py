@@ -111,7 +111,7 @@ class EddyMotionGPR(GaussianProcessRegressor):
         frequently better at avoiding local maxima.
         Hence, that was the method we used for all optimisations in the present
         paper.
-    
+
     **Multi-shell regression (TODO).**
     For multi-shell modeling, the kernel :math:`k(\textbf{x}, \textbf{x'})`
     is updated following Eq. (14) in [Andersson15]_.
@@ -137,8 +137,10 @@ class EddyMotionGPR(GaussianProcessRegressor):
         \mathbf{K} = \left[
         \begin{matrix}
             \lambda C_{\theta}(\theta (\mathbf{G}_{1}); a) + \sigma_{1}^{2} \mathbf{I} &
-            \lambda C_{\theta}(\theta (\mathbf{G}_{2}, \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
-            \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2}); a) C_{b}(b_{1}, b_{2}; \ell) &
+            \lambda C_{\theta}(\theta (\mathbf{G}_{2},
+              \mathbf{G}_{1}); a) C_{b}(b_{2}, b_{1}; \ell) \\
+            \lambda C_{\theta}(\theta (\mathbf{G}_{1}, \mathbf{G}_{2});
+              a) C_{b}(b_{1}, b_{2}; \ell) &
             \lambda C_{\theta}(\theta (\mathbf{G}_{2}); a) + \sigma_{2}^{2} \mathbf{I} \\
         \end{matrix}
         \right]

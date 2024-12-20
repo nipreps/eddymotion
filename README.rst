@@ -1,3 +1,11 @@
+.. important:: *eddymotion* will be continued as *NiFreeze*
+
+   In November 2023, the *NiPreps Steering Committee* brought to the *Bi-monthly Roundup*
+   the discussion about re-branding *eddymotion* to better reflect its aspirations to
+   perform on diverse modalities.
+
+   The project has been moved to `nipreps/nifreeze <https://github.com/nipreps/nifreeze>`__.
+
 *Eddymotion*
 ============
 Estimating head-motion and deformations derived from eddy-currents in diffusion MRI data.

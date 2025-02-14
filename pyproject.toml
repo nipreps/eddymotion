@@ -74,6 +74,12 @@ test = [
     "pytest-xdist >= 1.28"
 ]
 
+notebooks = [
+    "jupyter",
+    "nbconvert",
+    "nbclient",
+]
+
 antsopt = [
     "ConfigSpace",
     "nipreps",
